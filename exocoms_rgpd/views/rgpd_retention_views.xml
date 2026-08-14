@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_rgpd_retention_rule_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.retention.rule.list</field>
+        <field name="model">exocoms.rgpd.retention.rule</field>
+        <field name="arch" type="xml">
+            <list string="Règles de conservation" decoration-danger="action_type == 'delete'">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="model_name"/>
+                <field name="date_field_name" optional="show"/>
+                <field name="retention_value"/>
+                <field name="retention_unit"/>
+                <field name="action_type"/>
+                <field name="pending_count" string="En attente"/>
+                <field name="auto_run" widget="boolean_toggle"/>
+                <field name="last_run" optional="show"/>
+                <field name="last_count" optional="hide"/>
+                <field name="total_processed" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rgpd_retention_rule_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.retention.rule.form</field>
+        <field name="model">exocoms.rgpd.retention.rule</field>
+        <field name="arch" type="xml">
+            <form string="Règle de conservation">
+                <header>
+                    <button name="action_preview" type="object" string="Simuler" class="btn-primary"/>
+                    <button name="action_run_manual" type="object" string="Exécuter maintenant"
+                            class="btn-secondary"
+                            confirm="Cette opération modifie ou supprime définitivement des données. Confirmez-vous ?"/>
+                    <button name="action_open_records" type="object" string="Voir les enregistrements concernés"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Ex. Purge des prospects inactifs"/></h1>
+                    </div>
+                    <div class="alert alert-danger" role="alert" invisible="action_type != 'delete'">
+                        <strong>Suppression définitive.</strong> Vérifiez qu'aucune obligation
+                        légale de conservation ne s'applique et privilégiez l'anonymisation
+                        lorsque les données doivent rester exploitables statistiquement.
+                    </div>
+                    <group>
+                        <group string="Périmètre">
+                            <field name="model_id" options="{'no_create': True}"/>
+                            <field name="model_name" invisible="1"/>
+                            <field name="date_field_id" options="{'no_create': True}"/>
+                            <field name="domain" widget="domain" options="{'model': 'model_name'}"/>
+                            <field name="treatment_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Portée" groups="base.group_multi_company">
+                            <div colspan="2" class="text-muted small">
+                                Avec une société renseignée, la règle ne traite que les
+                                enregistrements de cette société (et ceux qui n'en ont
+                                aucune). Laissée vide, elle s'applique à toutes les sociétés.
+                            </div>
+                        </group>
+                        <group string="Durée et action">
+                            <label for="retention_value"/>
+                            <div class="o_row">
+                                <field name="retention_value"/>
+                                <field name="retention_unit"/>
+                            </div>
+                            <field name="action_type"/>
+                            <field name="batch_size"/>
+                            <field name="auto_run"/>
+                            <field name="require_confirmation"/>
+                        </group>
+                    </group>
+                    <group string="Justification de la durée retenue">
+                        <field name="legal_basis_note" nolabel="1"
+                               placeholder="Ex. prescription commerciale de 5 ans, obligation comptable de 10 ans, recommandation CNIL de 3 ans après le dernier contact."/>
+                    </group>
+                    <notebook>
+                        <page string="Champs à anonymiser" name="fields" invisible="action_type != 'anonymize'">
+                            <field name="field_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="model_name" column_invisible="1"/>
+                                    <field name="field_id" options="{'no_create': True}"/>
+                                    <field name="strategy"/>
+                                    <field name="fixed_value" invisible="strategy != 'fixed'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Exécution" name="run">
+                            <group>
+                                <group>
+                                    <field name="last_run" readonly="1"/>
+                                    <field name="last_count" readonly="1"/>
+                                    <field name="total_processed" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="pending_count" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rgpd_retention_rule" model="ir.actions.act_window">
+        <field name="name">Politique de conservation</field>
+        <field name="res_model">exocoms.rgpd.retention.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Définissez vos durées de conservation</p>
+            <p>Le principe de limitation de la conservation (art. 5.1.e) impose de ne pas
+               garder les données au-delà de la durée nécessaire. Simulez toujours une
+               règle avant de l'automatiser.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_rgpd_audit_rule_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.audit.rule.list</field>
+        <field name="model">exocoms.rgpd.audit.rule</field>
+        <field name="arch" type="xml">
+            <list string="Règles de journalisation" editable="bottom">
+                <field name="name"/>
+                <field name="model_id" options="{'no_create': True}"/>
+                <field name="log_create" widget="boolean_toggle"/>
+                <field name="log_write" widget="boolean_toggle"/>
+                <field name="log_unlink" widget="boolean_toggle"/>
+                <field name="log_export" widget="boolean_toggle"/>
+                <field name="store_values" widget="boolean_toggle"/>
+                <field name="log_count" string="Entrées"/>
+                <button name="action_view_logs" type="object" string="Journal" icon="fa-list"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_rgpd_audit_rule" model="ir.actions.act_window">
+        <field name="name">Règles de journalisation</field>
+        <field name="res_model">exocoms.rgpd.audit.rule</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Activez la journalisation</p>
+            <p>Sélectionnez les modèles contenant des données personnelles à tracer.
+               Limitez-vous aux modèles réellement sensibles : la journalisation
+               génère un volume important et constitue elle-même un traitement.</p>
+        </field>
+    </record>
+
+    <record id="view_rgpd_audit_log_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.audit.log.list</field>
+        <field name="model">exocoms.rgpd.audit.log</field>
+        <field name="arch" type="xml">
+            <list string="Journal d'audit" create="0" edit="0"
+                  decoration-danger="action == 'unlink'"
+                  decoration-info="action == 'export'">
+                <field name="date"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="action" widget="badge"/>
+                <field name="model_label"/>
+                <field name="res_name"/>
+                <field name="partner_id" optional="show"/>
+                <field name="field_names" optional="show"/>
+                <field name="ip_address" optional="hide"/>
+                <field name="model_name" optional="hide"/>
+                <button name="action_open_record" type="object" string="Ouvrir" icon="fa-external-link"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rgpd_audit_log_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.audit.log.form</field>
+        <field name="model">exocoms.rgpd.audit.log</field>
+        <field name="arch" type="xml">
+            <form string="Entrée de journal" create="0" edit="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="user_id"/>
+                            <field name="action"/>
+                            <field name="ip_address"/>
+                        </group>
+                        <group>
+                            <field name="model_label"/>
+                            <field name="model_name"/>
+                            <field name="res_id"/>
+                            <field name="res_name"/>
+                            <field name="partner_id"/>
+                        </group>
+                    </group>
+                    <group string="Champs concernés">
+                        <field name="field_names" nolabel="1"/>
+                    </group>
+                    <group string="Valeurs">
+                        <field name="values" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rgpd_audit_log_search" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.audit.log.search</field>
+        <field name="model">exocoms.rgpd.audit.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="res_name"/>
+                <field name="user_id"/>
+                <field name="model_name"/>
+                <field name="partner_id"/>
+                <filter name="filter_today" string="Aujourd'hui" domain="[('date', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
+                <filter name="filter_unlink" string="Suppressions" domain="[('action', '=', 'unlink')]"/>
+                <filter name="filter_export" string="Exports" domain="[('action', '=', 'export')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_user" string="Utilisateur" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_model" string="Modèle" context="{'group_by': 'model_name'}"/>
+                    <filter name="group_action" string="Action" context="{'group_by': 'action'}"/>
+                    <filter name="group_day" string="Jour" context="{'group_by': 'date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rgpd_audit_log" model="ir.actions.act_window">
+        <field name="name">Journal d'audit</field>
+        <field name="res_model">exocoms.rgpd.audit.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_rgpd_audit_log_search"/>
+    </record>
+
+</odoo>

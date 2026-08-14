@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_rgpd_data_map_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.data.map.list</field>
+        <field name="model">exocoms.rgpd.data.map</field>
+        <field name="arch" type="xml">
+            <list string="Cartographie des données">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="model_name"/>
+                <field name="link_type"/>
+                <field name="partner_field_name" optional="show"/>
+                <field name="category_id" optional="show"/>
+                <field name="field_count" string="Champs"/>
+                <field name="include_in_export" widget="boolean_toggle"/>
+                <field name="include_in_erasure" widget="boolean_toggle"/>
+                <field name="legal_hold" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rgpd_data_map_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.data.map.form</field>
+        <field name="model">exocoms.rgpd.data.map</field>
+        <field name="arch" type="xml">
+            <form string="Cartographie">
+                <header>
+                    <button name="action_populate_fields" type="object" string="Détecter les champs personnels" class="btn-secondary"/>
+                    <button name="action_open_records" type="object" string="Voir les enregistrements"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Modèle et rattachement">
+                            <field name="model_id" options="{'no_create': True}"/>
+                            <field name="model_name" invisible="1"/>
+                            <field name="link_type"/>
+                            <field name="partner_field_id" invisible="link_type == 'self'" required="link_type != 'self'" options="{'no_create': True}"/>
+                            <field name="extra_domain" widget="domain" options="{'model': 'model_name'}"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Portée">
+                            <field name="category_id"/>
+                            <field name="include_in_export"/>
+                            <field name="export_limit" invisible="not include_in_export"/>
+                            <field name="include_in_erasure"/>
+                            <field name="legal_hold"/>
+                            <field name="legal_hold_note" invisible="not legal_hold" required="legal_hold"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="alert" invisible="not legal_hold">
+                        Les enregistrements de ce modèle ne seront jamais anonymisés :
+                        une obligation légale de conservation prévaut sur le droit à l'effacement
+                        (art. 17.3.b du RGPD).
+                    </div>
+                    <notebook>
+                        <page string="Champs personnels" name="fields">
+                            <field name="field_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="model_name" column_invisible="1"/>
+                                    <field name="field_id" options="{'no_create': True}"/>
+                                    <field name="field_label"/>
+                                    <field name="strategy"/>
+                                    <field name="fixed_value" invisible="strategy != 'fixed'"/>
+                                    <field name="sensitive" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Traitements" name="treatments">
+                            <field name="treatment_ids" widget="many2many_tags"/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rgpd_data_map" model="ir.actions.act_window">
+        <field name="name">Cartographie des données</field>
+        <field name="res_model">exocoms.rgpd.data.map</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cartographiez vos données personnelles</p>
+            <p>La cartographie pilote l'export (droit d'accès et portabilité) et
+               l'anonymisation (droit à l'effacement). Utilisez l'auto-détection pour
+               un premier inventaire, puis affinez les champs et les stratégies.</p>
+        </field>
+    </record>
+
+    <record id="action_rgpd_data_map_autodetect" model="ir.actions.server">
+        <field name="name">Auto-détecter les modèles contenant des données personnelles</field>
+        <field name="model_id" ref="model_exocoms_rgpd_data_map"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_autodetect()</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_rgpd_data_category_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.data.category.list</field>
+        <field name="model">exocoms.rgpd.data.category</field>
+        <field name="arch" type="xml">
+            <list string="Catégories de données" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="description" optional="show"/>
+                <field name="sensitive" widget="boolean_toggle"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rgpd_data_category_search" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.data.category.search</field>
+        <field name="model">exocoms.rgpd.data.category</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter name="filter_sensitive" string="Données sensibles" domain="[('sensitive', '=', True)]"/>
+                <filter name="filter_archived" string="Archivées" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rgpd_data_category" model="ir.actions.act_window">
+        <field name="name">Catégories de données</field>
+        <field name="res_model">exocoms.rgpd.data.category</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Définissez vos catégories de données</p>
+            <p>Elles alimentent le registre des traitements et permettent d'identifier
+               les données sensibles au sens de l'article 9 du RGPD.</p>
+        </field>
+    </record>
+
+    <!-- Personnes concernées -->
+    <record id="view_rgpd_subject_category_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.subject.category.list</field>
+        <field name="model">exocoms.rgpd.subject.category</field>
+        <field name="arch" type="xml">
+            <list string="Personnes concernées" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="description" optional="show"/>
+                <field name="minor" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_rgpd_subject_category" model="ir.actions.act_window">
+        <field name="name">Personnes concernées</field>
+        <field name="res_model">exocoms.rgpd.subject.category</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Destinataires -->
+    <record id="view_rgpd_recipient_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.recipient.list</field>
+        <field name="model">exocoms.rgpd.recipient</field>
+        <field name="arch" type="xml">
+            <list string="Destinataires">
+                <field name="name"/>
+                <field name="recipient_type"/>
+                <field name="country_id" optional="show"/>
+                <field name="outside_eu" widget="boolean_toggle"/>
+                <field name="safeguard" optional="show"/>
+                <field name="dpa_signed" widget="boolean_toggle"/>
+                <field name="dpa_date" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rgpd_recipient_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.recipient.form</field>
+        <field name="model">exocoms.rgpd.recipient</field>
+        <field name="arch" type="xml">
+            <form string="Destinataire">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Nom du destinataire"/></h1>
+                    </div>
+                    <group>
+                        <group string="Identification">
+                            <field name="recipient_type"/>
+                            <field name="partner_id"/>
+                            <field name="country_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Transfert et garanties">
+                            <field name="outside_eu"/>
+                            <field name="safeguard" required="outside_eu"/>
+                            <field name="dpa_signed"/>
+                            <field name="dpa_date" invisible="not dpa_signed"/>
+                            <field name="dpa_url" widget="url" invisible="not dpa_signed"/>
+                        </group>
+                    </group>
+                    <group string="Objet de la communication">
+                        <field name="purpose" nolabel="1" placeholder="Décrivez les données transmises et pourquoi."/>
+                    </group>
+                    <group string="Notes">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rgpd_recipient" model="ir.actions.act_window">
+        <field name="name">Destinataires et sous-traitants</field>
+        <field name="res_model">exocoms.rgpd.recipient</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

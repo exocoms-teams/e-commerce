@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_rgpd_export_wizard_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.export.wizard.form</field>
+        <field name="model">exocoms.rgpd.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export des données personnelles">
+                <div class="alert alert-info" role="alert">
+                    Cet export répond aux articles 15 (droit d'accès) et 20 (droit à la
+                    portabilité) du RGPD. Le fichier JSON est un format structuré,
+                    couramment utilisé et lisible par machine.
+                </div>
+                <group invisible="state == 'done'">
+                    <group>
+                        <field name="partner_id" options="{'no_create': True}"/>
+                        <field name="request_id" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="export_format" widget="radio"/>
+                        <field name="section_count"/>
+                        <field name="record_count"/>
+                    </group>
+                </group>
+                <group string="Aperçu du contenu" invisible="not preview">
+                    <field name="preview" nolabel="1" readonly="1"/>
+                </group>
+                <group invisible="state != 'done'">
+                    <div class="alert alert-success" role="alert" colspan="2">
+                        Export généré. Téléchargez le fichier ci-dessous puis
+                        transmettez-le au demandeur par un canal sécurisé.
+                    </div>
+                    <field name="file_data" filename="file_name" readonly="1"/>
+                    <field name="file_name" invisible="1"/>
+                </group>
+                <field name="state" invisible="1"/>
+                <footer>
+                    <button name="action_generate" type="object" string="Générer l'export"
+                            class="btn-primary" invisible="state == 'done'"/>
+                    <button name="action_print_pdf" type="object" string="Imprimer le PDF"
+                            class="btn-secondary" invisible="not partner_id"/>
+                    <button string="Fermer" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rgpd_export_wizard" model="ir.actions.act_window">
+        <field name="name">Exporter les données personnelles</field>
+        <field name="res_model">exocoms.rgpd.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

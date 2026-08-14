@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Contact : l'enregistrement EST la personne concernée -->
+        <record id="map_res_partner" model="exocoms.rgpd.data.map">
+            <field name="name">Contact</field>
+            <field name="sequence">1</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="link_type">self</field>
+            <field name="category_id" ref="data_cat_identity"/>
+            <field name="include_in_export" eval="True"/>
+            <field name="include_in_erasure" eval="True"/>
+        </record>
+
+        <record id="map_res_partner_f_name" model="exocoms.rgpd.data.map.field">
+            <field name="map_id" ref="map_res_partner"/>
+            <field name="field_id" ref="base.field_res_partner__name"/>
+            <field name="strategy">mask_name</field>
+        </record>
+        <record id="map_res_partner_f_email" model="exocoms.rgpd.data.map.field">
+            <field name="map_id" ref="map_res_partner"/>
+            <field name="field_id" ref="base.field_res_partner__email"/>
+            <field name="strategy">mask_email</field>
+        </record>
+        <record id="map_res_partner_f_phone" model="exocoms.rgpd.data.map.field">
+            <field name="map_id" ref="map_res_partner"/>
+            <field name="field_id" ref="base.field_res_partner__phone"/>
+            <field name="strategy">mask_phone</field>
+        </record>
+        <record id="map_res_partner_f_street" model="exocoms.rgpd.data.map.field">
+            <field name="map_id" ref="map_res_partner"/>
+            <field name="field_id" ref="base.field_res_partner__street"/>
+            <field name="strategy">mask_address</field>
+        </record>
+        <record id="map_res_partner_f_street2" model="exocoms.rgpd.data.map.field">
+            <field name="map_id" ref="map_res_partner"/>
+            <field name="field_id" ref="base.field_res_partner__street2"/>
+            <field name="strategy">clear</field>
+        </record>
+        <record id="map_res_partner_f_zip" model="exocoms.rgpd.data.map.field">
+            <field name="map_id" ref="map_res_partner"/>
+            <field name="field_id" ref="base.field_res_partner__zip"/>
+            <field name="strategy">clear</field>
+        </record>
+        <record id="map_res_partner_f_city" model="exocoms.rgpd.data.map.field">
+            <field name="map_id" ref="map_res_partner"/>
+            <field name="field_id" ref="base.field_res_partner__city"/>
+            <field name="strategy">clear</field>
+        </record>
+        <record id="map_res_partner_f_vat" model="exocoms.rgpd.data.map.field">
+            <field name="map_id" ref="map_res_partner"/>
+            <field name="field_id" ref="base.field_res_partner__vat"/>
+            <field name="strategy">hash</field>
+        </record>
+        <record id="map_res_partner_f_comment" model="exocoms.rgpd.data.map.field">
+            <field name="map_id" ref="map_res_partner"/>
+            <field name="field_id" ref="base.field_res_partner__comment"/>
+            <field name="strategy">clear</field>
+        </record>
+        <record id="map_res_partner_f_website" model="exocoms.rgpd.data.map.field">
+            <field name="map_id" ref="map_res_partner"/>
+            <field name="field_id" ref="base.field_res_partner__website"/>
+            <field name="strategy">clear</field>
+        </record>
+
+        <!-- Messages du chatter : contiennent souvent des données personnelles -->
+        <record id="map_mail_message" model="exocoms.rgpd.data.map">
+            <field name="name">Messages et historique de communication</field>
+            <field name="sequence">40</field>
+            <field name="model_id" ref="mail.model_mail_message"/>
+            <field name="link_type">partner</field>
+            <field name="partner_field_id" ref="mail.field_mail_message__author_id"/>
+            <field name="category_id" ref="data_cat_behavior"/>
+            <field name="include_in_export" eval="True"/>
+            <field name="include_in_erasure" eval="False"/>
+            <field name="export_limit">200</field>
+        </record>
+
+        <!-- Consentements : preuve à conserver -->
+        <record id="map_rgpd_consent" model="exocoms.rgpd.data.map">
+            <field name="name">Journal des consentements</field>
+            <field name="sequence">90</field>
+            <field name="model_id" ref="model_exocoms_rgpd_consent"/>
+            <field name="link_type">partner</field>
+            <field name="partner_field_id" ref="field_exocoms_rgpd_consent__partner_id"/>
+            <field name="include_in_export" eval="True"/>
+            <field name="include_in_erasure" eval="False"/>
+            <field name="legal_hold" eval="True"/>
+            <field name="legal_hold_note">Preuve du consentement exigée par l'article 7.1 du RGPD : conservée jusqu'à la prescription des actions.</field>
+        </record>
+
+        <!-- Demandes RGPD : traçabilité obligatoire -->
+        <record id="map_rgpd_request" model="exocoms.rgpd.data.map">
+            <field name="name">Demandes d'exercice des droits</field>
+            <field name="sequence">95</field>
+            <field name="model_id" ref="model_exocoms_rgpd_request"/>
+            <field name="link_type">partner</field>
+            <field name="partner_field_id" ref="field_exocoms_rgpd_request__partner_id"/>
+            <field name="include_in_export" eval="True"/>
+            <field name="include_in_erasure" eval="False"/>
+            <field name="legal_hold" eval="True"/>
+            <field name="legal_hold_note">Traçabilité des réponses apportées aux demandes de droits (accountability, art. 5.2).</field>
+        </record>
+
+    </data>
+</odoo>

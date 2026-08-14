@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_rgpd_request_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.request.list</field>
+        <field name="model">exocoms.rgpd.request</field>
+        <field name="arch" type="xml">
+            <list string="Demandes de droits" decoration-danger="is_late == True" decoration-warning="days_left &lt;= 7 and days_left &gt;= 0 and state not in ['done','refused','cancel']" decoration-muted="state in ['done','refused','cancel']">
+                <field name="name"/>
+                <field name="date_request"/>
+                <field name="requester_name"/>
+                <field name="email" optional="show"/>
+                <field name="request_type"/>
+                <field name="source" optional="hide"/>
+                <field name="identity_verified" widget="boolean_toggle" optional="show"/>
+                <field name="date_deadline"/>
+                <field name="days_left" string="Jours restants"/>
+                <field name="is_late" column_invisible="1"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'refused'"
+                       decoration-info="state in ['progress','extended']"
+                       decoration-muted="state == 'cancel'"/>
+                <field name="activity_ids" widget="list_activity" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rgpd_request_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.request.form</field>
+        <field name="model">exocoms.rgpd.request</field>
+        <field name="arch" type="xml">
+            <form string="Demande RGPD">
+                <header>
+                    <button name="action_send_identity_check" type="object" string="Demander la vérification d'identité"
+                            class="btn-secondary" invisible="identity_verified or state in ['done','refused','cancel']"/>
+                    <button name="action_confirm_identity" type="object" string="Identité vérifiée"
+                            class="btn-primary" invisible="identity_verified or state in ['done','refused','cancel']"/>
+                    <button name="action_start" type="object" string="Instruire"
+                            invisible="state != 'new' or not identity_verified"/>
+                    <button name="action_generate_export" type="object" string="Générer l'export"
+                            class="btn-primary"
+                            invisible="request_type not in ['access','portability'] or state in ['done','refused','cancel']"/>
+                    <button name="action_open_erase_wizard" type="object" string="Effacer les données"
+                            class="btn-danger"
+                            invisible="request_type != 'erasure' or state in ['done','refused','cancel']"/>
+                    <button name="action_extend" type="object" string="Proroger de 2 mois"
+                            invisible="extension_granted or state in ['done','refused','cancel']"/>
+                    <button name="action_done" type="object" string="Clôturer" class="btn-primary"
+                            invisible="state in ['done','refused','cancel']"/>
+                    <button name="action_refuse" type="object" string="Refuser"
+                            invisible="state in ['done','refused','cancel']"/>
+                    <button name="action_cancel" type="object" string="Annuler"
+                            invisible="state in ['done','refused','cancel']"/>
+                    <button name="action_reset" type="object" string="Réouvrir"
+                            invisible="state not in ['done','refused','cancel']"/>
+                    <button name="action_print" type="object" string="Imprimer la fiche" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,identity,progress,done"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="En retard" bg_color="text-bg-danger" invisible="not is_late"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="identity_verified">
+                        <strong>Identité non vérifiée.</strong> Aucune donnée personnelle ne doit être
+                        communiquée tant que l'identité du demandeur n'est pas établie (art. 12.6 du RGPD).
+                    </div>
+                    <group>
+                        <group string="Demandeur">
+                            <field name="requester_name"/>
+                            <field name="email" widget="email"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="partner_id"/>
+                            <field name="is_third_party"/>
+                            <field name="source"/>
+                        </group>
+                        <group string="Demande et délais">
+                            <field name="request_type"/>
+                            <field name="date_request"/>
+                            <field name="date_deadline"/>
+                            <field name="days_left"/>
+                            <field name="extension_granted"/>
+                            <field name="date_response" invisible="not date_response"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="is_late" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Demande" name="request">
+                            <group string="Demande exprimée">
+                                <field name="description" nolabel="1" placeholder="Reprise fidèle de la demande de la personne."/>
+                            </group>
+                            <group string="Périmètre retenu">
+                                <field name="scope_note" nolabel="1"/>
+                            </group>
+                            <group string="Traitements concernés">
+                                <field name="treatment_ids" widget="many2many_tags" nolabel="1"/>
+                            </group>
+                            <group string="Motif de la prorogation" invisible="not extension_granted">
+                                <field name="extension_reason" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Vérification d'identité" name="identity">
+                            <group>
+                                <group>
+                                    <field name="identity_verified"/>
+                                    <field name="identity_method"/>
+                                    <field name="identity_date" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="identity_note"/>
+                                </group>
+                            </group>
+                            <div class="text-muted">
+                                <p>La vérification doit être proportionnée : ne demandez une copie de
+                                   pièce d'identité que si un doute raisonnable subsiste sur l'identité
+                                   du demandeur, et ne la conservez pas au-delà du traitement de la demande.</p>
+                            </div>
+                        </page>
+                        <page string="Réponse" name="response">
+                            <group string="Réponse apportée">
+                                <field name="response_note" nolabel="1"/>
+                            </group>
+                            <group>
+                                <group string="Refus" invisible="state != 'refused' and not refusal_ground">
+                                    <field name="refusal_ground"/>
+                                    <field name="refusal_note"/>
+                                </group>
+                            </group>
+                            <group string="Export généré" invisible="not export_data">
+                                <field name="export_filename" invisible="1"/>
+                                <field name="export_data" filename="export_filename" readonly="1"/>
+                                <button name="action_print_export" type="object" string="Imprimer l'export en PDF" class="btn-secondary"/>
+                            </group>
+                            <group string="Rapport d'effacement" invisible="not erasure_report">
+                                <field name="erasure_report" nolabel="1" readonly="1"/>
+                            </group>
+                            <field name="attachment_ids" widget="many2many_binary" string="Pièces jointes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rgpd_request_kanban" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.request.kanban</field>
+        <field name="model">exocoms.rgpd.request</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" quick_create="false">
+                <field name="color"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <strong><field name="name"/></strong>
+                            <span class="badge text-bg-danger" t-if="record.is_late.raw_value">En retard</span>
+                        </div>
+                        <div><field name="requester_name"/></div>
+                        <div class="text-muted"><field name="request_type"/></div>
+                        <footer class="pt-2">
+                            <span>Échéance : <field name="date_deadline"/></span>
+                            <field name="user_id" widget="many2one_avatar_user" class="ms-auto"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rgpd_request_search" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.request.search</field>
+        <field name="model">exocoms.rgpd.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="requester_name"/>
+                <field name="email"/>
+                <field name="partner_id"/>
+                <filter name="filter_open" string="En cours" domain="[('state', 'in', ['new','identity','progress','extended'])]"/>
+                <filter name="filter_late" string="En retard" domain="[('is_late', '=', True)]"/>
+                <filter name="filter_unverified" string="Identité non vérifiée" domain="[('identity_verified', '=', False)]"/>
+                <separator/>
+                <filter name="filter_access" string="Accès / portabilité" domain="[('request_type', 'in', ['access','portability'])]"/>
+                <filter name="filter_erasure" string="Effacement" domain="[('request_type', '=', 'erasure')]"/>
+                <separator/>
+                <filter name="filter_mine" string="Mes demandes" domain="[('user_id', '=', uid)]"/>
+                <filter name="filter_this_month" string="Ce mois-ci" domain="[('date_request', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                    <filter name="group_type" string="Nature" context="{'group_by': 'request_type'}"/>
+                    <filter name="group_user" string="Responsable" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_month" string="Mois de réception" context="{'group_by': 'date_request:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rgpd_request" model="ir.actions.act_window">
+        <field name="name">Demandes de droits</field>
+        <field name="res_model">exocoms.rgpd.request</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_rgpd_request_search"/>
+        <field name="context">{'search_default_filter_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucune demande en cours</p>
+            <p>Les demandes déposées depuis le portail client ou le formulaire public
+               arrivent automatiquement ici, avec le calcul du délai légal d'un mois.</p>
+        </field>
+    </record>
+
+    <record id="action_rgpd_request_late" model="ir.actions.act_window">
+        <field name="name">Demandes en retard</field>
+        <field name="res_model">exocoms.rgpd.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_late', '=', True)]</field>
+    </record>
+
+</odoo>

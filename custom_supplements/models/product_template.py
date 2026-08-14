@@ -25,6 +25,11 @@ class ProductTemplate(models.Model):
     def write(self, vals):
         if vals.get("is_supplement"):
             vals["is_storable"] = True
+            vals.setdefault('tracking', 'lot')
+            vals.setdefault('use_expiration_date', True)
+            vals.setdefault('expiration_time', 365)
+            vals["is_storable"] = True
+            vals["alert_time"] = 30
         return super().write(vals)
 
     def _search_get_detail(self, website, order, options):

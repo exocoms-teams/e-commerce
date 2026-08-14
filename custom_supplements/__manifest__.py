@@ -10,6 +10,7 @@
         'website_sale',
         'stock',
         'product_expiry', # Ajout du module de gestion des DLC/DLUO
+        'exocoms_rgpd'
     ],
 
         #bloc 'assets' pour charger votre futur design :

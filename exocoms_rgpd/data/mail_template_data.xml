@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="mail_template_rgpd_request_ack" model="mail.template">
+            <field name="name">RGPD - Accusé de réception d'une demande</field>
+            <field name="model_id" ref="model_exocoms_rgpd_request"/>
+            <field name="subject">Votre demande {{ object.name }} relative à vos données personnelles</field>
+            <field name="email_from">{{ (object.company_id.rgpd_dpo_email or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.email }}</field>
+            <field name="lang">{{ object.partner_id.lang or user.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:14px;font-family:Arial,Helvetica,sans-serif;">
+                    <p>Bonjour <t t-out="object.requester_name or ''"/>,</p>
+                    <p>Nous accusons réception de votre demande enregistrée sous la référence
+                        <strong t-out="object.name or ''"/> le
+                        <t t-out="format_datetime(object.date_request, dt_format='dd/MM/yyyy')"/>.</p>
+                    <p>Conformément à l'article 12 du RGPD, une réponse vous sera apportée au plus tard le
+                        <strong t-out="format_date(object.date_deadline, date_format='dd/MM/yyyy')"/>.
+                        Ce délai peut être prorogé de deux mois en cas de complexité particulière ;
+                        vous en seriez alors informé.</p>
+                    <p>Afin de garantir la sécurité de vos données, une vérification de votre identité
+                        peut vous être demandée avant toute communication.</p>
+                    <p>Pour toute question, vous pouvez répondre à ce message ou écrire à
+                        <t t-out="object.company_id.rgpd_dpo_email or object.company_id.email or ''"/>.</p>
+                    <p>Cordialement,<br/>
+                        <t t-out="object.company_id.rgpd_dpo_name or object.company_id.name or ''"/></p>
+                </div>
+            </field>
+        </record>
+
+        <record id="mail_template_rgpd_identity_check" model="mail.template">
+            <field name="name">RGPD - Vérification d'identité</field>
+            <field name="model_id" ref="model_exocoms_rgpd_request"/>
+            <field name="subject">Confirmez votre demande {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.rgpd_dpo_email or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.email }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:14px;font-family:Arial,Helvetica,sans-serif;">
+                    <p>Bonjour <t t-out="object.requester_name or ''"/>,</p>
+                    <p>Une demande relative à vos données personnelles a été déposée avec cette
+                        adresse e-mail (référence <t t-out="object.name or ''"/>).</p>
+                    <p>Pour des raisons de sécurité, merci de confirmer qu'il s'agit bien de vous
+                        en cliquant sur le lien ci-dessous :</p>
+                    <p style="margin:16px 0;">
+                        <a t-attf-href="{{ object.get_base_url() }}/rgpd/demande/confirmer/{{ object.access_token }}"
+                           style="background-color:#00A09D;padding:10px 18px;color:#FFFFFF;text-decoration:none;border-radius:4px;display:inline-block;">
+                            Confirmer ma demande
+                        </a>
+                    </p>
+                    <p>Si vous n'êtes pas à l'origine de cette demande, ignorez ce message : aucune
+                        donnée ne vous sera communiquée.</p>
+                    <p>Cordialement,<br/>
+                        <t t-out="object.company_id.rgpd_dpo_name or object.company_id.name or ''"/></p>
+                </div>
+            </field>
+        </record>
+
+        <record id="mail_template_rgpd_extension" model="mail.template">
+            <field name="name">RGPD - Prorogation du délai</field>
+            <field name="model_id" ref="model_exocoms_rgpd_request"/>
+            <field name="subject">Prorogation du délai de réponse - {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.rgpd_dpo_email or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.email }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:14px;font-family:Arial,Helvetica,sans-serif;">
+                    <p>Bonjour <t t-out="object.requester_name or ''"/>,</p>
+                    <p>Votre demande <strong t-out="object.name or ''"/> nécessite un délai
+                        d'instruction supplémentaire compte tenu de sa complexité.</p>
+                    <p>Conformément à l'article 12.3 du RGPD, le délai de réponse est prorogé de
+                        deux mois. Nouvelle échéance :
+                        <strong t-out="format_date(object.date_deadline, date_format='dd/MM/yyyy')"/>.</p>
+                    <p t-if="object.extension_reason">Motif : <t t-out="object.extension_reason"/></p>
+                    <p>Cordialement,<br/>
+                        <t t-out="object.company_id.rgpd_dpo_name or object.company_id.name or ''"/></p>
+                </div>
+            </field>
+        </record>
+
+        <record id="mail_template_rgpd_response" model="mail.template">
+            <field name="name">RGPD - Réponse à la demande</field>
+            <field name="model_id" ref="model_exocoms_rgpd_request"/>
+            <field name="subject">Réponse à votre demande {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.rgpd_dpo_email or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.email }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:14px;font-family:Arial,Helvetica,sans-serif;">
+                    <p>Bonjour <t t-out="object.requester_name or ''"/>,</p>
+                    <p>Votre demande <strong t-out="object.name or ''"/> a été instruite.</p>
+                    <div t-out="object.response_note"/>
+                    <p>Si vous estimez, après nous avoir contactés, que vos droits ne sont pas
+                        respectés, vous pouvez introduire une réclamation auprès de
+                        <t t-out="object.company_id.rgpd_authority_name or 'la CNIL'"/> :
+                        <a t-attf-href="{{ object.company_id.rgpd_authority_url or 'https://www.cnil.fr/fr/plaintes' }}"
+                           t-out="object.company_id.rgpd_authority_url or 'https://www.cnil.fr/fr/plaintes'"/>.</p>
+                    <p>Cordialement,<br/>
+                        <t t-out="object.company_id.rgpd_dpo_name or object.company_id.name or ''"/></p>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

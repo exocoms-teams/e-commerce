@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_rgpd_request_document">
+        <t t-call="web.external_layout">
+            <t t-set="company" t-value="doc.company_id"/>
+            <div class="page o_rgpd_report">
+
+                <div class="text-center mb-4">
+                    <h2 class="mb-0">Demande d'exercice des droits</h2>
+                    <div class="text-muted">
+                        Articles 15 à 22 du règlement (UE) 2016/679 —
+                        référence <span t-field="doc.name"/>
+                    </div>
+                </div>
+
+                <h4 class="o_rgpd_h">Demandeur</h4>
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td style="width:35%"><strong>Nom</strong></td>
+                        <td><span t-field="doc.requester_name"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adresse e-mail</strong></td>
+                        <td><span t-field="doc.email"/></td>
+                    </tr>
+                    <tr t-if="doc.phone">
+                        <td><strong>Téléphone</strong></td>
+                        <td><span t-field="doc.phone"/></td>
+                    </tr>
+                    <tr t-if="doc.partner_id">
+                        <td><strong>Contact rattaché</strong></td>
+                        <td><span t-field="doc.partner_id.display_name"/></td>
+                    </tr>
+                    <tr t-if="doc.is_third_party">
+                        <td><strong>Agissant pour un tiers</strong></td>
+                        <td>Oui — vérification du mandat requise</td>
+                    </tr>
+                </table>
+
+                <h4 class="o_rgpd_h">Objet de la demande</h4>
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td style="width:35%"><strong>Nature</strong></td>
+                        <td><span t-field="doc.request_type"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Canal de réception</strong></td>
+                        <td><span t-field="doc.source"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>État</strong></td>
+                        <td><span t-field="doc.state"/></td>
+                    </tr>
+                </table>
+                <p t-if="doc.description">
+                    <strong>Demande exprimée :</strong><br/>
+                    <span t-field="doc.description"/>
+                </p>
+                <p t-if="doc.scope_note">
+                    <strong>Périmètre retenu :</strong><br/>
+                    <span t-field="doc.scope_note"/>
+                </p>
+                <p t-if="doc.treatment_ids">
+                    <strong>Traitements concernés :</strong>
+                    <t t-foreach="doc.treatment_ids" t-as="treatment">
+                        <span t-field="treatment.display_name"/><t t-if="not treatment_last">, </t>
+                    </t>
+                </p>
+
+                <h4 class="o_rgpd_h">Vérification de l'identité</h4>
+                <div t-if="doc.identity_verified" class="o_rgpd_box">
+                    Identité vérifiée le
+                    <strong t-field="doc.identity_date"/>
+                    par la méthode « <span t-field="doc.identity_method"/> ».
+                    <t t-if="doc.identity_note">
+                        <br/><span t-field="doc.identity_note"/>
+                    </t>
+                </div>
+                <div t-else="" class="o_rgpd_box o_rgpd_box_warn">
+                    Identité non vérifiée à ce jour. Aucune donnée personnelle ne doit
+                    être communiquée tant que cette vérification n'a pas abouti
+                    (art. 12.6).
+                </div>
+
+                <h4 class="o_rgpd_h">Délais</h4>
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td style="width:35%"><strong>Réception</strong></td>
+                        <td><span t-field="doc.date_request"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Échéance légale</strong></td>
+                        <td>
+                            <span t-field="doc.date_deadline"/>
+                            <span t-if="doc.is_late" class="text-danger"> — hors délai</span>
+                        </td>
+                    </tr>
+                    <tr t-if="doc.extension_granted">
+                        <td><strong>Prorogation (art. 12.3)</strong></td>
+                        <td>
+                            Deux mois supplémentaires.
+                            <t t-if="doc.extension_reason">
+                                Motif : <span t-field="doc.extension_reason"/>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr t-if="doc.date_response">
+                        <td><strong>Date de réponse</strong></td>
+                        <td><span t-field="doc.date_response"/></td>
+                    </tr>
+                    <tr t-if="doc.user_id">
+                        <td><strong>Responsable du dossier</strong></td>
+                        <td><span t-field="doc.user_id.name"/></td>
+                    </tr>
+                </table>
+
+                <div t-if="doc.state == 'refused'">
+                    <h4 class="o_rgpd_h">Motif du refus</h4>
+                    <p>
+                        <strong t-field="doc.refusal_ground"/>
+                        <t t-if="doc.refusal_note">
+                            <br/><span t-field="doc.refusal_note"/>
+                        </t>
+                    </p>
+                    <p class="text-muted small">
+                        Le demandeur a été informé de son droit d'introduire une
+                        réclamation auprès de l'autorité de contrôle et de former un
+                        recours juridictionnel (art. 12.4).
+                    </p>
+                </div>
+
+                <div t-if="doc.response_note">
+                    <h4 class="o_rgpd_h">Réponse apportée</h4>
+                    <div t-field="doc.response_note"/>
+                </div>
+
+                <div t-if="doc.erasure_report">
+                    <h4 class="o_rgpd_h">Rapport d'effacement</h4>
+                    <pre class="o_rgpd_pre" t-out="doc.erasure_report"/>
+                </div>
+
+                <div class="o_rgpd_footnote mt-4">
+                    Fiche de suivi générée le
+                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y à %H:%M')"/>.
+                    Elle constitue un élément de preuve du traitement de la demande au
+                    titre de l'obligation de responsabilité (art. 5.2).
+                </div>
+
+            </div>
+        </t>
+    </template>
+
+    <template id="report_rgpd_request">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="exocoms_rgpd.report_rgpd_request_document"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

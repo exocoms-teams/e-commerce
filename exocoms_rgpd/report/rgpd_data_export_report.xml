@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =============================================================== -->
+    <!-- Corps commun : rendu d'un dictionnaire retourné par le moteur    -->
+    <!-- =============================================================== -->
+    <template id="report_rgpd_export_body">
+        <div class="text-center mb-4">
+            <h2 class="mb-0">Données personnelles vous concernant</h2>
+            <div class="text-muted">
+                Articles 15 et 20 du règlement (UE) 2016/679
+            </div>
+        </div>
+
+        <table class="table table-sm table-borderless mb-4">
+            <tr>
+                <td style="width:35%"><strong>Personne concernée</strong></td>
+                <td>
+                    <span t-out="data['meta']['subject']['name']"/>
+                    <t t-if="data['meta']['subject']['email']">
+                        — <span t-out="data['meta']['subject']['email']"/>
+                    </t>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Responsable de traitement</strong></td>
+                <td>
+                    <span t-out="data['meta']['controller']"/>
+                    <t t-if="data['meta']['controller_vat']">
+                        (<span t-out="data['meta']['controller_vat']"/>)
+                    </t>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Date d'extraction</strong></td>
+                <td>
+                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y à %H:%M')"/>
+                </td>
+            </tr>
+            <tr t-if="rgpd_request">
+                <td><strong>Demande liée</strong></td>
+                <td><span t-out="rgpd_request.name"/></td>
+            </tr>
+        </table>
+
+        <div class="o_rgpd_box">
+            Ce document recense les catégories de données personnelles vous
+            concernant qui sont conservées dans nos systèmes à la date d'extraction.
+            Certaines informations peuvent être omises lorsque leur communication
+            porterait atteinte aux droits et libertés de tiers (art. 15.4) ou
+            lorsqu'elles relèvent d'un secret protégé par la loi.
+        </div>
+
+        <t t-if="not data['sections']">
+            <p class="mt-4">
+                Aucune donnée personnelle vous concernant n'a été trouvée dans les
+                traitements couverts par cet export.
+            </p>
+        </t>
+
+        <t t-foreach="data['sections']" t-as="section">
+            <div class="o_rgpd_section">
+                <h4 class="o_rgpd_h">
+                    <span t-out="section['title']"/>
+                    <small class="text-muted">
+                        (<span t-out="section['count']"/> enregistrement(s))
+                    </small>
+                </h4>
+                <div class="text-muted small mb-2" t-if="section['category']">
+                    Catégorie : <span t-out="section['category']"/>
+                </div>
+
+                <t t-set="columns" t-value="list(section['records'][0].keys()) if section['records'] else []"/>
+                <table class="table table-sm o_rgpd_data_table" t-if="columns">
+                    <thead>
+                        <tr>
+                            <th t-foreach="columns" t-as="column" t-out="column"/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="section['records']" t-as="row">
+                            <td t-foreach="columns" t-as="column"
+                                t-out="row.get(column) or ''"/>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="text-muted small" t-if="section['truncated']">
+                    Extrait limité pour des raisons de lisibilité. L'intégralité des
+                    enregistrements est disponible dans le fichier JSON joint à cet
+                    envoi.
+                </div>
+            </div>
+        </t>
+
+        <div class="o_rgpd_footnote mt-4">
+            <p class="mb-1">
+                <strong>Vos autres droits.</strong>
+                Vous pouvez demander la rectification (art. 16) ou l'effacement
+                (art. 17) de ces données, la limitation de leur traitement (art. 18),
+                vous opposer à certains traitements (art. 21) et retirer à tout
+                moment un consentement donné (art. 7.3).
+            </p>
+            <p class="mb-1" t-if="rgpd_company and rgpd_company.rgpd_dpo_email">
+                Contact : <span t-out="rgpd_company.rgpd_dpo_email"/>
+                <t t-if="rgpd_company.rgpd_dpo_phone">
+                    — <span t-out="rgpd_company.rgpd_dpo_phone"/>
+                </t>
+            </p>
+            <p class="mb-0" t-if="rgpd_company and rgpd_company.rgpd_authority_name">
+                Vous disposez du droit d'introduire une réclamation auprès de la
+                <span t-out="rgpd_company.rgpd_authority_name"/>
+                <t t-if="rgpd_company.rgpd_authority_url">
+                    (<span t-out="rgpd_company.rgpd_authority_url"/>)
+                </t>.
+            </p>
+        </div>
+    </template>
+
+    <!-- =============================================================== -->
+    <!-- Export à partir d'une demande RGPD                               -->
+    <!-- =============================================================== -->
+    <template id="report_rgpd_data_export_document">
+        <t t-call="web.external_layout">
+            <t t-set="company" t-value="doc.company_id"/>
+            <div class="page o_rgpd_report">
+                <t t-set="rgpd_request" t-value="doc"/>
+                <t t-set="rgpd_company" t-value="doc.company_id"/>
+                <t t-set="data"
+                   t-value="doc.env['exocoms.rgpd.engine'].collect_personal_data(doc.partner_id)"/>
+                <t t-call="exocoms_rgpd.report_rgpd_export_body"/>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_rgpd_data_export">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="exocoms_rgpd.report_rgpd_data_export_document"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- =============================================================== -->
+    <!-- Export à partir d'un contact                                     -->
+    <!-- =============================================================== -->
+    <template id="report_rgpd_partner_export_document">
+        <t t-call="web.external_layout">
+            <t t-set="company" t-value="doc.company_id or doc.env.company"/>
+            <div class="page o_rgpd_report">
+                <t t-set="rgpd_request" t-value="None"/>
+                <t t-set="rgpd_company" t-value="doc.company_id or doc.env.company"/>
+                <t t-set="data"
+                   t-value="doc.env['exocoms.rgpd.engine'].collect_personal_data(doc)"/>
+                <t t-call="exocoms_rgpd.report_rgpd_export_body"/>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_rgpd_partner_export">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="exocoms_rgpd.report_rgpd_partner_export_document"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

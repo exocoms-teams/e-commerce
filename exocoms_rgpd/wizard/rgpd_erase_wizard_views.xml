@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_rgpd_erase_wizard_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.erase.wizard.form</field>
+        <field name="model">exocoms.rgpd.erase.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Effacement des données personnelles">
+                <div class="alert alert-danger" role="alert" invisible="state == 'done'">
+                    <strong>Opération irréversible.</strong>
+                    Les données personnelles seront anonymisées de manière définitive.
+                    Les enregistrements soumis à une obligation légale de conservation
+                    (comptabilité, paie, garantie) sont automatiquement exclus et
+                    listés ci-dessous.
+                </div>
+                <group invisible="state == 'done'">
+                    <group>
+                        <field name="partner_id" options="{'no_create': True}"/>
+                        <field name="request_id" options="{'no_create': True}"/>
+                        <field name="total_records"/>
+                    </group>
+                    <group>
+                        <field name="reason" placeholder="Ex. : demande d'effacement du 12/03, article 17.1.b"/>
+                    </group>
+                </group>
+                <notebook invisible="state == 'done'">
+                    <page string="Données qui seront anonymisées" name="simulation">
+                        <field name="simulation" nolabel="1" readonly="1"/>
+                    </page>
+                    <page string="Données conservées" name="blocked">
+                        <field name="blocked" nolabel="1" readonly="1"/>
+                    </page>
+                </notebook>
+                <group invisible="state == 'done'">
+                    <field name="confirm_text" placeholder="ANONYMISER"/>
+                </group>
+                <group invisible="state != 'done'">
+                    <div class="alert alert-success" role="alert" colspan="2">
+                        Effacement exécuté. Le rapport ci-dessous constitue la preuve
+                        de l'opération : conservez-le dans le dossier de la demande.
+                    </div>
+                    <field name="result" nolabel="1" readonly="1"/>
+                </group>
+                <field name="state" invisible="1"/>
+                <footer>
+                    <button name="action_erase" type="object" string="Anonymiser définitivement"
+                            class="btn-danger" invisible="state == 'done'"
+                            confirm="Confirmez-vous l'anonymisation définitive de ces données ?"/>
+                    <button string="Fermer" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rgpd_erase_wizard" model="ir.actions.act_window">
+        <field name="name">Effacer les données personnelles</field>
+        <field name="res_model">exocoms.rgpd.erase.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

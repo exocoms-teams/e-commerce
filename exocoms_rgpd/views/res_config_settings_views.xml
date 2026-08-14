@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_rgpd" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.rgpd</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="RGPD" string="RGPD" name="exocoms_rgpd"
+                     groups="exocoms_rgpd.group_rgpd_officer">
+                    <block title="Délégué à la protection des données" name="rgpd_dpo_block">
+                        <setting string="Responsable désigné" help="Utilisateur assigné par défaut aux demandes et aux violations.">
+                            <field name="rgpd_dpo_user_id"/>
+                        </setting>
+                        <setting string="Coordonnées publiées" help="Reprises dans les e-mails, le portail et le formulaire public.">
+                            <div class="content-group">
+                                <div class="row">
+                                    <label for="rgpd_dpo_name" class="col-lg-4 o_light_label"/>
+                                    <field name="rgpd_dpo_name" placeholder="Ex. Délégué à la protection des données"/>
+                                </div>
+                                <div class="row">
+                                    <label for="rgpd_dpo_email" class="col-lg-4 o_light_label"/>
+                                    <field name="rgpd_dpo_email" widget="email" placeholder="dpo@exemple.fr"/>
+                                </div>
+                                <div class="row">
+                                    <label for="rgpd_dpo_phone" class="col-lg-4 o_light_label"/>
+                                    <field name="rgpd_dpo_phone" widget="phone"/>
+                                </div>
+                                <div class="row">
+                                    <label for="rgpd_dpo_address" class="col-lg-4 o_light_label"/>
+                                    <field name="rgpd_dpo_address"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Autorité de contrôle" help="Indiquée aux personnes dans les réponses aux demandes.">
+                            <div class="content-group">
+                                <div class="row">
+                                    <label for="rgpd_authority_name" class="col-lg-4 o_light_label"/>
+                                    <field name="rgpd_authority_name"/>
+                                </div>
+                                <div class="row">
+                                    <label for="rgpd_authority_url" class="col-lg-4 o_light_label"/>
+                                    <field name="rgpd_authority_url" widget="url"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                    <block title="Portail et formulaires" name="rgpd_portal_block">
+                        <setting string="Espace « Mes données » sur le portail"
+                                 help="Publie /my/privacy : consultation des données, gestion des consentements, dépôt d'une demande.">
+                            <field name="rgpd_portal_enabled"/>
+                        </setting>
+                        <setting string="Formulaire public de demande"
+                                 help="Publie /rgpd/demande avec vérification de l'adresse e-mail par jeton.">
+                            <field name="rgpd_public_form_enabled"/>
+                        </setting>
+                        <setting string="Accusé de réception automatique"
+                                 help="Envoie un e-mail rappelant le délai légal dès réception d'une demande.">
+                            <field name="rgpd_auto_acknowledge"/>
+                        </setting>
+                        <setting string="Politique de confidentialité">
+                            <field name="rgpd_privacy_policy_url" placeholder="/politique-de-confidentialite"/>
+                        </setting>
+                        <setting string="Liste noire de messagerie"
+                                 help="Un retrait de consentement marketing met l'adresse en liste noire d'Odoo, et une désinscription depuis une campagne est journalisée comme un retrait. Sans cette option, un retrait enregistré n'empêcherait pas l'envoi de la campagne suivante.">
+                            <field name="rgpd_blacklist_sync"/>
+                            <div class="mt-2" invisible="not rgpd_blacklist_sync">
+                                <button name="action_reconcile_blacklist" type="object"
+                                        string="Réconcilier maintenant" class="btn-link"/>
+                                <div class="text-muted small mt-1">
+                                    La liste noire d'Odoo est commune à toutes les sociétés :
+                                    une adresse n'est bloquée que si aucune société ne dispose
+                                    d'un consentement marketing accordé pour elle.
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                    <block title="Numérotation" name="rgpd_sequence_block"
+                           groups="base.group_multi_company">
+                        <setting string="Références par société"
+                                 help="Par défaut les références RGPD/, TRT/ et VIOL/ sont continues sur l'ensemble des sociétés. Générez des séquences dédiées pour que cette entité numérote indépendamment des autres.">
+                            <field name="rgpd_own_sequences" readonly="1"/>
+                            <div class="mt-2">
+                                <button name="action_create_rgpd_sequences" type="object"
+                                        string="Créer des séquences propres à cette société"
+                                        class="btn-link" invisible="rgpd_own_sequences"
+                                        confirm="Les nouvelles références de cette société repartiront de 1. Les références déjà attribuées restent inchangées. Confirmer ?"/>
+                                <span class="text-muted" invisible="not rgpd_own_sequences">
+                                    Cette société dispose déjà de ses propres séquences.
+                                    Ajustez-les dans Paramètres ‣ Technique ‣ Séquences.
+                                </span>
+                            </div>
+                        </setting>
+                    </block>
+                    <block title="Cartographie et journalisation" name="rgpd_technical_block">
+                        <setting string="Cartographie des données"
+                                 help="Inventaire des modèles et champs contenant des données personnelles.">
+                            <button name="action_open_data_map" type="object" string="Ouvrir la cartographie" class="btn-link"/>
+                            <button name="action_autodetect_data_map" type="object" string="Auto-détecter" class="btn-link"/>
+                        </setting>
+                        <setting string="Conservation du journal d'audit"
+                                 help="Au-delà de cette durée, les entrées sont purgées automatiquement. 0 = conservation illimitée.">
+                            <field name="rgpd_audit_retention_months"/> mois
+                        </setting>
+                        <setting string="Sel de pseudonymisation"
+                                 help="Généré à l'installation. Ne le modifiez plus une fois des données pseudonymisées.">
+                            <field name="rgpd_hash_salt" password="True"/>
+                        </setting>
+                        <setting string="Clé d'API consentements"
+                                 help="Attendue dans l'en-tête X-RGPD-Key sur /rgpd/consent/log pour les CMP externes (Axeptio, tarteaucitron, Didomi).">
+                            <field name="rgpd_consent_api_key" password="True"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_rgpd_settings" model="ir.actions.act_window">
+        <field name="name">Paramètres RGPD</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'exocoms_rgpd'}</field>
+    </record>
+
+</odoo>

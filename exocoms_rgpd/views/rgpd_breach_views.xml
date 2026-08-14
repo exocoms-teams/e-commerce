@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_rgpd_breach_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.breach.list</field>
+        <field name="model">exocoms.rgpd.breach</field>
+        <field name="arch" type="xml">
+            <list string="Violations de données" decoration-danger="is_late == True" decoration-warning="risk_level == 'high'">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="date_discovery"/>
+                <field name="breach_nature" optional="show"/>
+                <field name="cause" optional="hide"/>
+                <field name="affected_persons"/>
+                <field name="risk_level" widget="badge" decoration-danger="risk_level == 'high'" decoration-warning="risk_level == 'medium'"/>
+                <field name="date_deadline"/>
+                <field name="hours_left" string="Heures restantes"/>
+                <field name="is_late" column_invisible="1"/>
+                <field name="authority_notified" widget="boolean_toggle"/>
+                <field name="state" widget="badge" decoration-success="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rgpd_breach_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.breach.form</field>
+        <field name="model">exocoms.rgpd.breach</field>
+        <field name="arch" type="xml">
+            <form string="Violation de données">
+                <header>
+                    <button name="action_analysis" type="object" string="Analyser" invisible="state != 'draft'"/>
+                    <button name="action_contained" type="object" string="Incident contenu" invisible="state not in ['draft','analysis']"/>
+                    <button name="action_notify_authority" type="object" string="Notifier la CNIL"
+                            class="btn-primary" invisible="authority_notified or not notify_authority"/>
+                    <button name="action_notify_subjects" type="object" string="Informer les personnes"
+                            invisible="subjects_notified or not notify_subjects"/>
+                    <button name="action_close" type="object" string="Clôturer" invisible="state == 'closed'"/>
+                    <button name="action_draft" type="object" string="Rouvrir" invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,analysis,contained,notified,closed"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Délai dépassé" bg_color="text-bg-danger" invisible="not is_late"/>
+                    <div class="oe_title">
+                        <h2><field name="name" readonly="1"/></h2>
+                        <label for="title"/>
+                        <h1><field name="title" placeholder="Ex. Envoi d'un fichier client à un mauvais destinataire"/></h1>
+                    </div>
+                    <div class="alert alert-danger" role="alert" invisible="authority_notified or not notify_authority">
+                        <strong>Délai de 72 heures.</strong> La notification à l'autorité de contrôle
+                        doit intervenir avant le <field name="date_deadline" readonly="1" class="oe_inline"/>
+                        (article 33.1 du RGPD). Il reste <field name="hours_left" readonly="1" class="oe_inline"/> heure(s).
+                    </div>
+                    <group>
+                        <group string="Chronologie">
+                            <field name="date_incident"/>
+                            <field name="date_discovery"/>
+                            <field name="date_deadline" readonly="1"/>
+                            <field name="date_containment"/>
+                            <field name="is_late" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Qualification">
+                            <field name="breach_nature"/>
+                            <field name="cause"/>
+                            <field name="risk_level"/>
+                            <field name="dpo_user_id" widget="many2one_avatar_user"/>
+                            <field name="responsible_user_id" widget="many2one_avatar_user"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Faits et périmètre" name="facts">
+                            <group string="Description des faits">
+                                <field name="description" nolabel="1"/>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="affected_persons"/>
+                                    <field name="affected_records"/>
+                                    <field name="is_estimate"/>
+                                </group>
+                                <group>
+                                    <field name="treatment_ids" widget="many2many_tags"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="Catégories de données">
+                                    <field name="data_category_ids" widget="many2many_tags" options="{'color_field': 'color'}" nolabel="1"/>
+                                </group>
+                                <group string="Personnes concernées">
+                                    <field name="subject_category_ids" widget="many2many_tags" nolabel="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Conséquences et mesures" name="impact">
+                            <group string="Conséquences probables">
+                                <field name="consequences" nolabel="1"
+                                       placeholder="Usurpation d'identité, perte de confidentialité, préjudice financier, atteinte à la réputation..."/>
+                            </group>
+                            <group string="Mesures prises ou envisagées">
+                                <field name="measures_taken" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Notifications" name="notifications">
+                            <group>
+                                <group string="Autorité de contrôle (art. 33)">
+                                    <field name="notify_authority"/>
+                                    <field name="authority_notified"/>
+                                    <field name="authority_date" invisible="not authority_notified"/>
+                                    <field name="authority_ref" invisible="not authority_notified"/>
+                                    <field name="authority_delay_reason" invisible="not is_late"/>
+                                </group>
+                                <group string="Personnes concernées (art. 34)">
+                                    <field name="notify_subjects"/>
+                                    <field name="subjects_notified"/>
+                                    <field name="subjects_date" invisible="not subjects_notified"/>
+                                    <field name="subjects_method" invisible="not subjects_notified"/>
+                                    <field name="subjects_exemption" invisible="subjects_notified"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Retour d'expérience" name="lessons">
+                            <field name="lessons_learned" nolabel="1"/>
+                            <field name="attachment_ids" widget="many2many_binary" string="Pièces jointes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rgpd_breach_search" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.breach.search</field>
+        <field name="model">exocoms.rgpd.breach</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="title"/>
+                <filter name="filter_open" string="En cours" domain="[('state', '!=', 'closed')]"/>
+                <filter name="filter_to_notify" string="À notifier" domain="[('notify_authority', '=', True), ('authority_notified', '=', False)]"/>
+                <filter name="filter_high" string="Risque élevé" domain="[('risk_level', '=', 'high')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                    <filter name="group_cause" string="Cause" context="{'group_by': 'cause'}"/>
+                    <filter name="group_risk" string="Risque" context="{'group_by': 'risk_level'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rgpd_breach" model="ir.actions.act_window">
+        <field name="name">Violations de données</field>
+        <field name="res_model">exocoms.rgpd.breach</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_rgpd_breach_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucune violation enregistrée</p>
+            <p>L'article 33.5 impose de documenter <em>toutes</em> les violations, y compris
+               celles qui ne sont pas notifiées à la CNIL, afin de pouvoir démontrer la
+               conformité en cas de contrôle.</p>
+        </field>
+    </record>
+
+</odoo>

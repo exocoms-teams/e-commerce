@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_my_home_rgpd" name="Portail : mes données personnelles" inherit_id="portal.portal_my_home" priority="60">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/exocoms_rgpd/static/src/img/privacy.svg'"/>
+                <t t-set="title">Mes données personnelles</t>
+                <t t-set="text">Consultez vos données, gérez vos consentements et exercez vos droits.</t>
+                <t t-set="url" t-value="'/my/privacy'"/>
+                <t t-set="placeholder_count" t-value="'rgpd_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_privacy" name="Portail : mes données personnelles">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Mes données personnelles</t>
+            </t>
+
+            <div t-if="message == 'saved'" class="alert alert-success" role="alert">
+                Vos préférences de consentement ont été enregistrées.
+            </div>
+            <div t-if="message == 'nochange'" class="alert alert-info" role="alert">
+                Aucune modification à enregistrer.
+            </div>
+            <div t-if="message == 'request'" class="alert alert-success" role="alert">
+                Votre demande a bien été enregistrée. Une réponse vous sera apportée dans le
+                délai légal d'un mois.
+            </div>
+            <div t-if="error" class="alert alert-danger" role="alert">
+                La demande n'a pas pu être enregistrée. Merci de réessayer.
+            </div>
+
+            <!-- Résumé -->
+            <div class="card mb-4">
+                <div class="card-header fw-bold">Vos droits</div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        Le règlement général sur la protection des données vous permet
+                        d'accéder à vos données, de les corriger, de les récupérer, d'en demander
+                        l'effacement, de limiter leur traitement ou de vous y opposer.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <a href="/my/privacy/data" class="btn btn-primary">
+                            <i class="fa fa-eye me-1"/> Consulter mes données
+                        </a>
+                        <a href="/my/privacy/download" class="btn btn-secondary">
+                            <i class="fa fa-download me-1"/> Télécharger (JSON)
+                        </a>
+                        <a href="/my/privacy/pdf" class="btn btn-secondary">
+                            <i class="fa fa-file-pdf-o me-1"/> Télécharger (PDF)
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Consentements -->
+            <div class="card mb-4">
+                <div class="card-header fw-bold">Mes consentements</div>
+                <div class="card-body">
+                    <form action="/my/privacy/consent" method="post" class="o_rgpd_consent_form">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <t t-foreach="consent_lines" t-as="line">
+                            <div class="form-check form-switch py-2 border-bottom">
+                                <input class="form-check-input" type="checkbox"
+                                       t-attf-name="consent_#{line['purpose'].code}"
+                                       t-attf-id="consent_#{line['purpose'].code}"
+                                       t-att-checked="'checked' if line['granted'] else None"
+                                       t-att-disabled="'disabled' if line['purpose'].essential else None"/>
+                                <label class="form-check-label" t-attf-for="consent_#{line['purpose'].code}">
+                                    <span class="fw-bold" t-field="line['purpose'].name"/>
+                                    <span t-if="line['purpose'].essential" class="badge text-bg-secondary ms-2">Nécessaire</span>
+                                </label>
+                                <div class="small text-muted" t-field="line['purpose'].description"/>
+                                <div class="small text-muted" t-if="line['date']">
+                                    Dernière action :
+                                    <span t-out="line['date']" t-options='{"widget": "datetime"}'/>
+                                </div>
+                            </div>
+                        </t>
+                        <button type="submit" class="btn btn-primary mt-3">Enregistrer mes préférences</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Nouvelle demande -->
+            <div class="card mb-4">
+                <div class="card-header fw-bold">Exercer un droit</div>
+                <div class="card-body">
+                    <form action="/my/privacy/request" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="mb-3">
+                            <label class="form-label" for="request_type">Nature de la demande</label>
+                            <select name="request_type" id="request_type" class="form-select" required="required">
+                                <t t-foreach="request_types" t-as="rtype">
+                                    <option t-att-value="rtype[0]" t-out="rtype[1]"/>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="description">Précisions (facultatif)</label>
+                            <textarea name="description" id="description" rows="4" class="form-control"
+                                      placeholder="Décrivez votre demande."/>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Envoyer ma demande</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Historique -->
+            <div class="card" t-if="requests">
+                <div class="card-header fw-bold">Historique de mes demandes</div>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>Référence</th>
+                                <th>Date</th>
+                                <th>Nature</th>
+                                <th>Échéance</th>
+                                <th>État</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="requests" t-as="req">
+                                <td t-field="req.name"/>
+                                <td><span t-field="req.date_request" t-options='{"widget": "date"}'/></td>
+                                <td t-field="req.request_type"/>
+                                <td><span t-field="req.date_deadline" t-options='{"widget": "date"}'/></td>
+                                <td>
+                                    <span class="badge"
+                                          t-attf-class="badge #{'text-bg-success' if req.state == 'done' else ('text-bg-danger' if req.state == 'refused' else 'text-bg-info')}"
+                                          t-field="req.state"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <p class="small text-muted mt-4">
+                Responsable de traitement : <span t-field="company.name"/>.
+                Contact :
+                <span t-if="company.rgpd_dpo_email"><a t-attf-href="mailto:#{company.rgpd_dpo_email}" t-out="company.rgpd_dpo_email"/></span>
+                <span t-else="" t-field="company.email"/>.
+                Vous pouvez introduire une réclamation auprès de
+                <a t-att-href="company.rgpd_authority_url or 'https://www.cnil.fr/fr/plaintes'"
+                   t-out="company.rgpd_authority_name or 'la CNIL'"/>.
+            </p>
+        </t>
+    </template>
+
+    <template id="portal_privacy_data" name="Portail : détail de mes données">
+        <t t-call="portal.portal_layout">
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Détail de mes données</t>
+            </t>
+            <div class="mb-3">
+                <a href="/my/privacy" class="btn btn-sm btn-secondary">
+                    <i class="fa fa-arrow-left me-1"/> Retour
+                </a>
+                <a href="/my/privacy/download" class="btn btn-sm btn-primary ms-2">
+                    <i class="fa fa-download me-1"/> Télécharger en JSON
+                </a>
+            </div>
+            <p class="text-muted">
+                Export généré le <span t-out="data['meta']['generated_at']"/> par
+                <span t-out="data['meta']['controller']"/>.
+            </p>
+            <t t-if="not data['sections']">
+                <div class="alert alert-info">Aucune donnée personnelle n'est associée à votre compte.</div>
+            </t>
+            <t t-foreach="data['sections']" t-as="section">
+                <div class="card mb-3">
+                    <div class="card-header d-flex justify-content-between">
+                        <span class="fw-bold" t-out="section['title']"/>
+                        <span class="badge text-bg-secondary" t-out="section['count']"/>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <tbody>
+                                <t t-foreach="section['records']" t-as="row">
+                                    <tr t-foreach="row.items()" t-as="item">
+                                        <th class="w-25 text-muted fw-normal" t-out="item[0]"/>
+                                        <td t-out="item[1]"/>
+                                    </tr>
+                                    <tr t-if="not row_last"><td colspan="2" class="bg-light p-1"/></tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer small text-muted" t-if="section['truncated']">
+                        Affichage partiel. Téléchargez l'export complet au format JSON.
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

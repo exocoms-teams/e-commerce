@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_form_rgpd" model="ir.ui.view">
+        <field name="name">res.partner.form.rgpd</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_rgpd_requests" type="object" class="oe_stat_button" icon="fa-gavel"
+                        groups="exocoms_rgpd.group_rgpd_user">
+                    <field name="rgpd_request_count" widget="statinfo" string="Demandes RGPD"/>
+                </button>
+                <button name="action_view_rgpd_consents" type="object" class="oe_stat_button" icon="fa-check-square-o"
+                        groups="exocoms_rgpd.group_rgpd_user">
+                    <field name="rgpd_consent_count" widget="statinfo" string="Consentements"/>
+                </button>
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <widget name="web_ribbon" title="Anonymisé" bg_color="text-bg-secondary" invisible="not rgpd_anonymized"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="RGPD" name="rgpd" groups="exocoms_rgpd.group_rgpd_officer">
+                    <div class="alert alert-info" role="alert" invisible="not rgpd_anonymized">
+                        Les données de ce contact ont été anonymisées le
+                        <field name="rgpd_anonymized_date" readonly="1" class="oe_inline"/>.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="rgpd_anonymized" readonly="1"/>
+                            <field name="rgpd_marketing_ok"/>
+                        </group>
+                        <group>
+                            <button name="action_rgpd_export" type="object" string="Exporter les données personnelles"
+                                    class="btn-secondary" icon="fa-download"/>
+                            <button name="action_rgpd_erase" type="object" string="Anonymiser les données"
+                                    class="btn-danger" icon="fa-eraser" invisible="rgpd_anonymized"/>
+                        </group>
+                    </group>
+                    <field name="rgpd_consent_ids" readonly="1">
+                        <list>
+                            <field name="date_event"/>
+                            <field name="purpose_id"/>
+                            <field name="state" widget="badge"/>
+                            <field name="method"/>
+                            <field name="date_expiry"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

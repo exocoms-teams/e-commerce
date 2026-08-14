@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="module_category_rgpd" model="ir.module.category">
+        <field name="name">Protection des données</field>
+        <field name="description">Gestion de la conformité RGPD</field>
+        <field name="sequence">25</field>
+    </record>
+
+    <!-- Odoo 19 : les catégories de groupes passent par res.groups.privilege -->
+    <record id="res_groups_privilege_rgpd" model="res.groups.privilege">
+        <field name="name">RGPD</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_rgpd"/>
+    </record>
+
+    <record id="group_rgpd_user" model="res.groups">
+        <field name="name">Consultation</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_rgpd"/>
+        <field name="comment">Consultation du registre des traitements, des demandes
+            et des consentements, sans droit de modification.</field>
+    </record>
+
+    <record id="group_rgpd_officer" model="res.groups">
+        <field name="name">Délégué à la protection des données</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_rgpd"/>
+        <field name="implied_ids" eval="[(4, ref('group_rgpd_user'))]"/>
+        <field name="comment">Accès complet : registre, demandes de droits,
+            consentements, conservation, violations et journal d'audit.</field>
+    </record>
+
+    <record id="base.user_admin" model="res.users">
+        <field name="group_ids" eval="[(4, ref('exocoms_rgpd.group_rgpd_officer'))]"/>
+    </record>
+
+    <!-- Règles multi-sociétés -->
+    <record id="rule_rgpd_treatment_company" model="ir.rule">
+        <field name="name">Traitements RGPD : multi-sociétés</field>
+        <field name="model_id" ref="model_exocoms_rgpd_treatment"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_rgpd_request_company" model="ir.rule">
+        <field name="name">Demandes RGPD : multi-sociétés</field>
+        <field name="model_id" ref="model_exocoms_rgpd_request"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_rgpd_consent_company" model="ir.rule">
+        <field name="name">Consentements : multi-sociétés</field>
+        <field name="model_id" ref="model_exocoms_rgpd_consent"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_rgpd_breach_company" model="ir.rule">
+        <field name="name">Violations : multi-sociétés</field>
+        <field name="model_id" ref="model_exocoms_rgpd_breach"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_rgpd_audit_log_company" model="ir.rule">
+        <field name="name">Journal d'audit : multi-sociétés</field>
+        <field name="model_id" ref="model_exocoms_rgpd_audit_log"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_rgpd_purpose_company" model="ir.rule">
+        <field name="name">Finalités de consentement : multi-sociétés</field>
+        <field name="model_id" ref="model_exocoms_rgpd_consent_purpose"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_rgpd_recipient_company" model="ir.rule">
+        <field name="name">Destinataires et sous-traitants : multi-sociétés</field>
+        <field name="model_id" ref="model_exocoms_rgpd_recipient"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_rgpd_retention_company" model="ir.rule">
+        <field name="name">Règles de conservation : multi-sociétés</field>
+        <field name="model_id" ref="model_exocoms_rgpd_retention_rule"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

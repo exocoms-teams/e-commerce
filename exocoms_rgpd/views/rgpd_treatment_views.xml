@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_rgpd_treatment_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.treatment.list</field>
+        <field name="model">exocoms.rgpd.treatment</field>
+        <field name="arch" type="xml">
+            <list string="Registre des traitements" decoration-danger="review_overdue == True" decoration-muted="state == 'closed'">
+                <field name="reference"/>
+                <field name="name"/>
+                <field name="legal_basis"/>
+                <field name="has_sensitive_data" widget="boolean_toggle" optional="show"/>
+                <field name="transfer_outside_eu" widget="boolean_toggle" optional="show"/>
+                <field name="dpia_required" widget="boolean_toggle" optional="hide"/>
+                <field name="risk_level" widget="badge" decoration-danger="risk_level == 'high'" decoration-warning="risk_level == 'medium'" decoration-success="risk_level == 'low'"/>
+                <field name="owner_user_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="date_review" optional="show"/>
+                <field name="review_overdue" column_invisible="1"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'" decoration-warning="state == 'review'" decoration-muted="state in ['draft', 'closed']"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rgpd_treatment_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.treatment.form</field>
+        <field name="model">exocoms.rgpd.treatment</field>
+        <field name="arch" type="xml">
+            <form string="Traitement">
+                <header>
+                    <button name="action_review" type="object" string="Passer en revue" class="btn-secondary" invisible="state != 'draft'"/>
+                    <button name="action_activate" type="object" string="Activer" class="btn-primary" invisible="state not in ['draft', 'review', 'suspended']"/>
+                    <button name="action_suspend" type="object" string="Suspendre" invisible="state != 'active'"/>
+                    <button name="action_close" type="object" string="Clôturer" invisible="state in ['draft', 'closed']"/>
+                    <button name="action_draft" type="object" string="Remettre en brouillon" invisible="state == 'draft'"/>
+                    <button name="action_print_register" type="object" string="Imprimer la fiche" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,review,active,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_retention_rules" type="object" class="oe_stat_button" icon="fa-clock-o">
+                            <field name="retention_rule_count" widget="statinfo" string="Règles"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Ex. Gestion de la relation client"/></h1>
+                        <h3><field name="reference" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group string="Responsabilités">
+                            <field name="controller_name"/>
+                            <field name="dpo_user_id" widget="many2one_avatar_user"/>
+                            <field name="owner_user_id" widget="many2one_avatar_user"/>
+                            <field name="department"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Suivi">
+                            <field name="date_start"/>
+                            <field name="date_review"/>
+                            <field name="date_end" invisible="state != 'closed'"/>
+                            <field name="risk_level"/>
+                            <field name="estimated_volume"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Finalité et licéité" name="purpose">
+                            <group>
+                                <field name="purpose" nolabel="1" placeholder="Décrivez précisément les finalités poursuivies."/>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="legal_basis"/>
+                                    <field name="data_source"/>
+                                </group>
+                                <group>
+                                    <field name="consent_purpose_ids" widget="many2many_tags" invisible="legal_basis != 'consent'"/>
+                                </group>
+                            </group>
+                            <group string="Justification de la base légale" invisible="legal_basis != 'legitimate'">
+                                <field name="legal_basis_detail" nolabel="1"
+                                       placeholder="Intérêt poursuivi, nécessité, mise en balance avec les droits des personnes, mesures de protection."/>
+                            </group>
+                        </page>
+                        <page string="Données et personnes" name="data">
+                            <group>
+                                <group string="Catégories de données">
+                                    <field name="data_category_ids" widget="many2many_tags" options="{'color_field': 'color'}" nolabel="1"/>
+                                </group>
+                                <group string="Personnes concernées">
+                                    <field name="subject_category_ids" widget="many2many_tags" nolabel="1"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="has_sensitive_data"/>
+                                <field name="concerns_minors"/>
+                            </group>
+                            <group string="Exception de l'article 9 invoquée" invisible="not has_sensitive_data">
+                                <field name="sensitive_justification" nolabel="1"
+                                       placeholder="Consentement explicite, obligation en droit du travail, médecine du travail, intérêt public..."/>
+                            </group>
+                            <group string="Modèles Odoo concernés">
+                                <field name="model_ids" widget="many2many_tags" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Destinataires et transferts" name="recipients">
+                            <field name="recipient_ids" widget="many2many_tags"/>
+                            <group>
+                                <group>
+                                    <field name="transfer_outside_eu"/>
+                                    <field name="subcontracting"/>
+                                </group>
+                                <group>
+                                    <field name="transfer_country_ids" widget="many2many_tags" invisible="not transfer_outside_eu"/>
+                                </group>
+                            </group>
+                            <group string="Garanties encadrant le transfert" invisible="not transfer_outside_eu">
+                                <field name="transfer_safeguard" nolabel="1"
+                                       placeholder="Décision d'adéquation, clauses contractuelles types, BCR, dérogation de l'article 49..."/>
+                            </group>
+                        </page>
+                        <page string="Conservation" name="retention">
+                            <group>
+                                <group>
+                                    <label for="retention_value"/>
+                                    <div class="o_row">
+                                        <field name="retention_value"/>
+                                        <field name="retention_unit"/>
+                                    </div>
+                                    <field name="retention_start"/>
+                                </group>
+                            </group>
+                            <group string="Précisions">
+                                <field name="retention_note" nolabel="1"/>
+                            </group>
+                            <field name="retention_rule_ids" context="{'default_treatment_id': id}">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="model_name"/>
+                                    <field name="action_type"/>
+                                    <field name="retention_value"/>
+                                    <field name="retention_unit"/>
+                                    <field name="auto_run" widget="boolean_toggle"/>
+                                    <field name="pending_count"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Sécurité et AIPD" name="security">
+                            <group string="Mesures de sécurité (art. 32)">
+                                <field name="security_measures" nolabel="1"/>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="dpia_required"/>
+                                    <field name="dpia_done" invisible="not dpia_required"/>
+                                    <field name="dpia_date" invisible="not dpia_done"/>
+                                </group>
+                            </group>
+                            <group string="Conclusion de l'AIPD" invisible="not dpia_done">
+                                <field name="dpia_conclusion" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rgpd_treatment_kanban" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.treatment.kanban</field>
+        <field name="model">exocoms.rgpd.treatment</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" quick_create="false">
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <strong class="fs-5"><field name="name"/></strong>
+                            <field name="risk_level" widget="badge"
+                                   decoration-danger="risk_level == 'high'"
+                                   decoration-warning="risk_level == 'medium'"/>
+                        </div>
+                        <div class="text-muted"><field name="reference"/></div>
+                        <div class="mt-1"><field name="legal_basis"/></div>
+                        <div class="mt-1">
+                            <field name="data_category_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                        </div>
+                        <footer class="pt-2">
+                            <field name="date_review"/>
+                            <field name="owner_user_id" widget="many2one_avatar_user" class="ms-auto"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rgpd_treatment_search" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.treatment.search</field>
+        <field name="model">exocoms.rgpd.treatment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"/>
+                <field name="data_category_ids"/>
+                <field name="subject_category_ids"/>
+                <field name="owner_user_id"/>
+                <filter name="filter_active" string="Actifs" domain="[('state', '=', 'active')]"/>
+                <filter name="filter_draft" string="Brouillons" domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <filter name="filter_sensitive" string="Données sensibles" domain="[('has_sensitive_data', '=', True)]"/>
+                <filter name="filter_minors" string="Concerne des mineurs" domain="[('concerns_minors', '=', True)]"/>
+                <filter name="filter_transfer" string="Transfert hors UE" domain="[('transfer_outside_eu', '=', True)]"/>
+                <filter name="filter_dpia" string="AIPD requise" domain="[('dpia_required', '=', True)]"/>
+                <filter name="filter_high_risk" string="Risque élevé" domain="[('risk_level', '=', 'high')]"/>
+                <separator/>
+                <filter name="filter_review_overdue" string="Revue en retard" domain="[('review_overdue', '=', True)]"/>
+                <filter name="filter_archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                    <filter name="group_legal_basis" string="Base légale" context="{'group_by': 'legal_basis'}"/>
+                    <filter name="group_risk" string="Niveau de risque" context="{'group_by': 'risk_level'}"/>
+                    <filter name="group_owner" string="Responsable" context="{'group_by': 'owner_user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rgpd_treatment" model="ir.actions.act_window">
+        <field name="name">Registre des traitements</field>
+        <field name="res_model">exocoms.rgpd.treatment</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_rgpd_treatment_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Créez votre premier traitement</p>
+            <p>L'article 30 du RGPD impose de tenir un registre des activités de
+               traitement. Chaque fiche documente la finalité, la base légale, les
+               données, les destinataires et la durée de conservation.</p>
+        </field>
+    </record>
+
+</odoo>

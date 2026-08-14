@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="demo_recipient_hosting" model="exocoms.rgpd.recipient">
+            <field name="name">Hébergeur de la plateforme</field>
+            <field name="recipient_type">processor</field>
+            <field name="dpa_signed" eval="True"/>
+            <field name="purpose">Hébergement de la base de données et des sauvegardes.</field>
+        </record>
+
+        <record id="demo_treatment_crm" model="exocoms.rgpd.treatment">
+            <field name="name">Gestion de la relation client et prospection</field>
+            <field name="legal_basis">contract</field>
+            <field name="legal_basis_detail">Exécution des contrats de vente et de service ; intérêt légitime pour la prospection B2B.</field>
+            <field name="purpose" type="html">
+                <p>Gestion des devis, commandes, interventions et support ; suivi commercial des prospects.</p>
+            </field>
+            <field name="data_category_ids" eval="[(6, 0, [ref('data_cat_identity'), ref('data_cat_contact'), ref('data_cat_professional'), ref('data_cat_contract')])]"/>
+            <field name="subject_category_ids" eval="[(6, 0, [ref('subject_cat_customer'), ref('subject_cat_prospect')])]"/>
+            <field name="recipient_ids" eval="[(6, 0, [ref('demo_recipient_hosting')])]"/>
+            <field name="retention_value">3</field>
+            <field name="retention_unit">year</field>
+            <field name="retention_start">Dernier contact commercial</field>
+            <field name="state">active</field>
+        </record>
+
+        <record id="demo_treatment_web" model="exocoms.rgpd.treatment">
+            <field name="name">Site web, formulaires et mesure d'audience</field>
+            <field name="legal_basis">consent</field>
+            <field name="purpose" type="html">
+                <p>Traitement des demandes de contact, envoi de la lettre d'information et mesure d'audience.</p>
+            </field>
+            <field name="data_category_ids" eval="[(6, 0, [ref('data_cat_identity'), ref('data_cat_contact'), ref('data_cat_connection'), ref('data_cat_behavior')])]"/>
+            <field name="subject_category_ids" eval="[(6, 0, [ref('subject_cat_visitor'), ref('subject_cat_prospect')])]"/>
+            <field name="consent_purpose_ids" eval="[(6, 0, [ref('purpose_newsletter'), ref('purpose_cookies_analytics'), ref('purpose_cookies_marketing')])]"/>
+            <field name="retention_value">13</field>
+            <field name="retention_unit">month</field>
+            <field name="state">active</field>
+        </record>
+
+    </data>
+</odoo>

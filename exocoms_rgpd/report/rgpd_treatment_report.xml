@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Corps réutilisable d'une fiche : appelé par la fiche unitaire
+         comme par le registre consolidé. -->
+    <template id="report_rgpd_register_document_body">
+
+                <div class="text-center mb-4">
+                    <h2 class="mb-0">Registre des activités de traitement</h2>
+                    <div class="text-muted">Article 30 du règlement (UE) 2016/679</div>
+                </div>
+
+                <table class="table table-sm table-borderless mb-4">
+                    <tr>
+                        <td style="width:35%"><strong>Référence</strong></td>
+                        <td><span t-field="doc.reference"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Intitulé du traitement</strong></td>
+                        <td><span t-field="doc.name"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Responsable de traitement</strong></td>
+                        <td><span t-field="doc.controller_name"/></td>
+                    </tr>
+                    <tr t-if="doc.company_id.rgpd_dpo_name or doc.dpo_user_id">
+                        <td><strong>Délégué à la protection des données</strong></td>
+                        <td>
+                            <span t-if="doc.company_id.rgpd_dpo_name"
+                                  t-field="doc.company_id.rgpd_dpo_name"/>
+                            <span t-elif="doc.dpo_user_id" t-field="doc.dpo_user_id.name"/>
+                            <t t-if="doc.company_id.rgpd_dpo_email">
+                                — <span t-field="doc.company_id.rgpd_dpo_email"/>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr t-if="doc.owner_user_id">
+                        <td><strong>Responsable opérationnel</strong></td>
+                        <td>
+                            <span t-field="doc.owner_user_id.name"/>
+                            <t t-if="doc.department"> (<span t-field="doc.department"/>)</t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>État</strong></td>
+                        <td><span t-field="doc.state"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mise en œuvre</strong></td>
+                        <td>
+                            <span t-field="doc.date_start"/>
+                            <t t-if="doc.date_end"> — clôturé le <span t-field="doc.date_end"/></t>
+                        </td>
+                    </tr>
+                </table>
+
+                <h4 class="o_rgpd_h">1. Finalités du traitement</h4>
+                <div t-field="doc.purpose"/>
+
+                <h4 class="o_rgpd_h">2. Base légale</h4>
+                <p>
+                    <strong t-field="doc.legal_basis"/>
+                    <t t-if="doc.legal_basis_detail">
+                        <br/><span t-field="doc.legal_basis_detail"/>
+                    </t>
+                </p>
+                <p t-if="doc.consent_purpose_ids">
+                    Finalités de consentement rattachées :
+                    <t t-foreach="doc.consent_purpose_ids" t-as="purpose">
+                        <span t-field="purpose.name"/><t t-if="not purpose_last">, </t>
+                    </t>
+                </p>
+
+                <h4 class="o_rgpd_h">3. Catégories de personnes concernées</h4>
+                <ul t-if="doc.subject_category_ids">
+                    <li t-foreach="doc.subject_category_ids" t-as="subject">
+                        <span t-field="subject.name"/>
+                        <span t-if="subject.minor" class="text-danger"> (mineurs)</span>
+                    </li>
+                </ul>
+                <p t-else="" class="text-muted">Non renseigné.</p>
+                <p t-if="doc.estimated_volume">
+                    Volume estimé : <span t-field="doc.estimated_volume"/> personne(s).
+                </p>
+
+                <h4 class="o_rgpd_h">4. Catégories de données traitées</h4>
+                <table class="table table-sm" t-if="doc.data_category_ids">
+                    <thead>
+                        <tr>
+                            <th>Catégorie</th>
+                            <th>Nature</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="doc.data_category_ids" t-as="category">
+                            <td><span t-field="category.name"/></td>
+                            <td>
+                                <span t-if="category.sensitive" class="text-danger">
+                                    Donnée sensible (art. 9)
+                                </span>
+                                <span t-else="">Donnée courante</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p t-else="" class="text-muted">Non renseigné.</p>
+                <div t-if="doc.has_sensitive_data" class="o_rgpd_box">
+                    <strong>Traitement de données sensibles.</strong>
+                    Exception invoquée au titre de l'article 9.2 :
+                    <span t-field="doc.sensitive_justification"/>
+                </div>
+
+                <h4 class="o_rgpd_h">5. Origine des données</h4>
+                <p><span t-field="doc.data_source"/></p>
+
+                <h4 class="o_rgpd_h">6. Destinataires</h4>
+                <table class="table table-sm" t-if="doc.recipient_ids">
+                    <thead>
+                        <tr>
+                            <th>Destinataire</th>
+                            <th>Rôle</th>
+                            <th>Pays</th>
+                            <th>Contrat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="doc.recipient_ids" t-as="recipient">
+                            <td><span t-field="recipient.name"/></td>
+                            <td><span t-field="recipient.recipient_type"/></td>
+                            <td>
+                                <span t-field="recipient.country_id.name"/>
+                                <span t-if="recipient.outside_eu" class="text-danger"> (hors UE)</span>
+                            </td>
+                            <td>
+                                <span t-if="recipient.dpa_signed">DPA signé</span>
+                                <span t-else="" class="text-danger">À régulariser</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p t-else="" class="text-muted">Aucun destinataire externe déclaré.</p>
+
+                <h4 class="o_rgpd_h">7. Transferts hors Union européenne</h4>
+                <div t-if="doc.transfer_outside_eu">
+                    <p>
+                        Pays de destination :
+                        <t t-foreach="doc.transfer_country_ids" t-as="country">
+                            <span t-field="country.name"/><t t-if="not country_last">, </t>
+                        </t>
+                    </p>
+                    <p>
+                        <strong>Garanties (art. 44 à 49) :</strong><br/>
+                        <span t-field="doc.transfer_safeguard"/>
+                    </p>
+                </div>
+                <p t-else="" class="text-muted">Aucun transfert hors UE.</p>
+
+                <h4 class="o_rgpd_h">8. Durée de conservation</h4>
+                <p>
+                    <strong t-out="doc.retention_display()"/>
+                    <t t-if="doc.retention_start"> à compter de : <span t-field="doc.retention_start"/></t>
+                </p>
+                <p t-if="doc.retention_note"><span t-field="doc.retention_note"/></p>
+
+                <h4 class="o_rgpd_h">9. Mesures de sécurité (art. 32)</h4>
+                <div t-field="doc.security_measures"/>
+
+                <h4 class="o_rgpd_h">10. Analyse d'impact et risques</h4>
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td style="width:35%"><strong>AIPD requise</strong></td>
+                        <td><span t-if="doc.dpia_required">Oui</span><span t-else="">Non</span></td>
+                    </tr>
+                    <tr t-if="doc.dpia_required">
+                        <td><strong>AIPD réalisée</strong></td>
+                        <td>
+                            <span t-if="doc.dpia_done">Oui</span><span t-else="" class="text-danger">Non</span>
+                            <t t-if="doc.dpia_date"> — <span t-field="doc.dpia_date"/></t>
+                        </td>
+                    </tr>
+                    <tr t-if="doc.dpia_conclusion">
+                        <td><strong>Conclusion</strong></td>
+                        <td><span t-field="doc.dpia_conclusion"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Niveau de risque résiduel</strong></td>
+                        <td><span t-field="doc.risk_level"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prochaine revue</strong></td>
+                        <td>
+                            <span t-if="doc.date_review" t-field="doc.date_review"/>
+                            <span t-else="" class="text-muted">Non planifiée</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="o_rgpd_footnote mt-4">
+                    Fiche extraite du registre des activités de traitement tenu par
+                    <span t-field="doc.controller_name"/>.
+                    Document généré le
+                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y à %H:%M')"/>.
+                    Ce registre doit être tenu à la disposition de l'autorité de contrôle.
+                </div>
+    </template>
+
+    <template id="report_rgpd_register_document">
+        <t t-call="web.external_layout">
+            <t t-set="company" t-value="doc.company_id"/>
+            <div class="page o_rgpd_report">
+                <t t-call="exocoms_rgpd.report_rgpd_register_document_body"/>
+            </div>
+        </t>
+    </template>
+
+    <!-- =============================================================== -->
+    <!-- Registre consolidé : un document unique, présentable en contrôle -->
+    <!-- =============================================================== -->
+    <template id="report_rgpd_register_full">
+        <t t-call="web.html_container">
+            <t t-set="company" t-value="docs[:1].company_id or docs.env.company"/>
+            <t t-call="web.external_layout">
+                <div class="page o_rgpd_report">
+
+                    <!-- Page de garde -->
+                    <div class="o_rgpd_cover">
+                        <h1 class="mb-1">Registre des activités de traitement</h1>
+                        <div class="text-muted mb-4">
+                            Article 30 du règlement (UE) 2016/679
+                        </div>
+
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td style="width:35%"><strong>Responsable de traitement</strong></td>
+                                <td>
+                                    <span t-field="company.name"/>
+                                    <t t-if="company.vat"> — <span t-field="company.vat"/></t>
+                                </td>
+                            </tr>
+                            <tr t-if="company.street or company.city">
+                                <td><strong>Adresse</strong></td>
+                                <td>
+                                    <span t-field="company.street"/>
+                                    <t t-if="company.zip">, <span t-field="company.zip"/></t>
+                                    <t t-if="company.city"> <span t-field="company.city"/></t>
+                                </td>
+                            </tr>
+                            <tr t-if="company.rgpd_dpo_name or company.rgpd_dpo_email">
+                                <td><strong>Délégué à la protection des données</strong></td>
+                                <td>
+                                    <span t-field="company.rgpd_dpo_name"/>
+                                    <t t-if="company.rgpd_dpo_email">
+                                        — <span t-field="company.rgpd_dpo_email"/>
+                                    </t>
+                                    <t t-if="company.rgpd_dpo_phone">
+                                        — <span t-field="company.rgpd_dpo_phone"/>
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Nombre de traitements</strong></td>
+                                <td><span t-out="len(docs)"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Arrêté au</strong></td>
+                                <td>
+                                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y à %H:%M')"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="o_rgpd_box mt-4">
+                            Le présent registre est tenu par écrit sous forme électronique
+                            et mis à la disposition de l'autorité de contrôle sur demande,
+                            conformément à l'article 30.4 du RGPD.
+                        </div>
+
+                        <!-- Sommaire -->
+                        <h4 class="o_rgpd_h mt-4">Sommaire</h4>
+                        <table class="table table-sm o_rgpd_data_table">
+                            <thead>
+                                <tr>
+                                    <th style="width:15%">Référence</th>
+                                    <th>Traitement</th>
+                                    <th style="width:22%">Base légale</th>
+                                    <th style="width:13%">Conservation</th>
+                                    <th style="width:10%">État</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="docs" t-as="doc">
+                                    <td><span t-field="doc.reference"/></td>
+                                    <td>
+                                        <span t-field="doc.name"/>
+                                        <span t-if="doc.has_sensitive_data" class="text-danger">
+                                            (données sensibles)
+                                        </span>
+                                    </td>
+                                    <td><span t-field="doc.legal_basis"/></td>
+                                    <td><span t-out="doc.retention_display()"/></td>
+                                    <td><span t-field="doc.state"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="o_rgpd_footnote mt-4">
+                            Ce registre recense les traitements déclarés à la date
+                            d'arrêté. Il ne préjuge pas de leur conformité : la licéité
+                            de chaque traitement, la validité des bases légales invoquées
+                            et l'existence des contrats de sous-traitance relèvent d'une
+                            analyse distincte.
+                        </div>
+                    </div>
+
+                    <!-- Fiches détaillées -->
+                    <t t-foreach="docs" t-as="doc">
+                        <div style="page-break-before: always;"/>
+                        <t t-call="exocoms_rgpd.report_rgpd_register_document_body"/>
+                    </t>
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_rgpd_register">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="exocoms_rgpd.report_rgpd_register_document"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

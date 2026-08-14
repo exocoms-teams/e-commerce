@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_rgpd_retention_preview_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.retention.preview.form</field>
+        <field name="model">exocoms.rgpd.retention.preview</field>
+        <field name="arch" type="xml">
+            <form string="Simulation de la règle de conservation">
+                <div class="alert alert-warning" role="alert" invisible="not warning">
+                    <field name="warning" nolabel="1" readonly="1"/>
+                </div>
+                <group>
+                    <group>
+                        <field name="rule_id" options="{'no_create': True}"/>
+                        <field name="model_name"/>
+                        <field name="action_type"/>
+                    </group>
+                    <group>
+                        <field name="cutoff_date"/>
+                        <field name="match_count"/>
+                        <field name="batch_size"/>
+                    </group>
+                </group>
+                <group string="Échantillon des enregistrements concernés">
+                    <field name="sample" nolabel="1" readonly="1"/>
+                </group>
+                <group>
+                    <field name="confirm_text" placeholder="APPLIQUER"/>
+                </group>
+                <footer>
+                    <button name="action_apply" type="object" string="Appliquer la règle"
+                            class="btn-primary"
+                            confirm="Cette opération va traiter les enregistrements listés. Continuer ?"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rgpd_retention_preview" model="ir.actions.act_window">
+        <field name="name">Simuler la règle de conservation</field>
+        <field name="res_model">exocoms.rgpd.retention.preview</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

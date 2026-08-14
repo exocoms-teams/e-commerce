@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_rgpd_root"
+              name="RGPD"
+              web_icon="exocoms_rgpd,static/description/icon.png"
+              sequence="95"
+              groups="exocoms_rgpd.group_rgpd_user"/>
+
+    <!-- Demandes -->
+    <menuitem id="menu_rgpd_requests"
+              name="Demandes de droits"
+              parent="menu_rgpd_root"
+              sequence="10"/>
+
+    <menuitem id="menu_rgpd_request_all"
+              name="Toutes les demandes"
+              parent="menu_rgpd_requests"
+              action="action_rgpd_request"
+              sequence="10"/>
+
+    <menuitem id="menu_rgpd_request_late"
+              name="En retard"
+              parent="menu_rgpd_requests"
+              action="action_rgpd_request_late"
+              sequence="20"/>
+
+    <!-- Registre -->
+    <menuitem id="menu_rgpd_register"
+              name="Registre"
+              parent="menu_rgpd_root"
+              sequence="20"/>
+
+    <record id="action_rgpd_print_full_register" model="ir.actions.server">
+        <field name="name">Éditer le registre consolidé</field>
+        <field name="model_id" ref="model_exocoms_rgpd_treatment"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_print_full_register()</field>
+    </record>
+
+    <menuitem id="menu_rgpd_treatment"
+              name="Traitements"
+              parent="menu_rgpd_register"
+              action="action_rgpd_treatment"
+              sequence="10"/>
+
+    <menuitem id="menu_rgpd_register_print"
+              name="Registre consolidé (PDF)"
+              parent="menu_rgpd_register"
+              action="action_rgpd_print_full_register"
+              sequence="15"/>
+
+    <menuitem id="menu_rgpd_recipient"
+              name="Destinataires et sous-traitants"
+              parent="menu_rgpd_register"
+              action="action_rgpd_recipient"
+              sequence="20"/>
+
+    <menuitem id="menu_rgpd_breach"
+              name="Violations de données"
+              parent="menu_rgpd_register"
+              action="action_rgpd_breach"
+              sequence="30"/>
+
+    <!-- Consentements -->
+    <menuitem id="menu_rgpd_consents"
+              name="Consentements"
+              parent="menu_rgpd_root"
+              sequence="30"/>
+
+    <menuitem id="menu_rgpd_consent_log"
+              name="Journal des consentements"
+              parent="menu_rgpd_consents"
+              action="action_rgpd_consent"
+              sequence="10"/>
+
+    <menuitem id="menu_rgpd_consent_purpose"
+              name="Finalités"
+              parent="menu_rgpd_consents"
+              action="action_rgpd_consent_purpose"
+              sequence="20"/>
+
+    <!-- Données -->
+    <menuitem id="menu_rgpd_data"
+              name="Données"
+              parent="menu_rgpd_root"
+              sequence="40"
+              groups="exocoms_rgpd.group_rgpd_officer"/>
+
+    <menuitem id="menu_rgpd_data_map"
+              name="Cartographie"
+              parent="menu_rgpd_data"
+              action="action_rgpd_data_map"
+              sequence="10"/>
+
+    <menuitem id="menu_rgpd_retention"
+              name="Politique de conservation"
+              parent="menu_rgpd_data"
+              action="action_rgpd_retention_rule"
+              sequence="20"/>
+
+    <menuitem id="menu_rgpd_audit_log"
+              name="Journal d'audit"
+              parent="menu_rgpd_data"
+              action="action_rgpd_audit_log"
+              sequence="30"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_rgpd_config"
+              name="Configuration"
+              parent="menu_rgpd_root"
+              sequence="90"
+              groups="exocoms_rgpd.group_rgpd_officer"/>
+
+    <menuitem id="menu_rgpd_config_settings"
+              name="Paramètres"
+              parent="menu_rgpd_config"
+              action="action_rgpd_settings"
+              sequence="1"/>
+
+    <menuitem id="menu_rgpd_config_data_category"
+              name="Catégories de données"
+              parent="menu_rgpd_config"
+              action="action_rgpd_data_category"
+              sequence="10"/>
+
+    <menuitem id="menu_rgpd_config_subject_category"
+              name="Personnes concernées"
+              parent="menu_rgpd_config"
+              action="action_rgpd_subject_category"
+              sequence="20"/>
+
+    <menuitem id="menu_rgpd_config_audit_rule"
+              name="Règles de journalisation"
+              parent="menu_rgpd_config"
+              action="action_rgpd_audit_rule"
+              sequence="30"/>
+
+</odoo>

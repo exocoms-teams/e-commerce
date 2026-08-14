@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Finalités -->
+    <record id="view_rgpd_consent_purpose_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.consent.purpose.list</field>
+        <field name="model">exocoms.rgpd.consent.purpose</field>
+        <field name="arch" type="xml">
+            <list string="Finalités de consentement">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category"/>
+                <field name="essential" widget="boolean_toggle"/>
+                <field name="portal_visible" widget="boolean_toggle"/>
+                <field name="validity_months"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="granted_count" string="Accordés"/>
+                <field name="consent_count" string="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rgpd_consent_purpose_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.consent.purpose.form</field>
+        <field name="model">exocoms.rgpd.consent.purpose</field>
+        <field name="arch" type="xml">
+            <form string="Finalité">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_consents" type="object" class="oe_stat_button" icon="fa-check-square-o">
+                            <field name="consent_count" widget="statinfo" string="Consentements"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Ex. Newsletter"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code" placeholder="newsletter"/>
+                            <field name="category"/>
+                            <field name="essential"/>
+                            <field name="default_granted" invisible="not essential"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="portal_visible"/>
+                            <field name="validity_months"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="treatment_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <group string="Libellé du consentement (figé dans la preuve)">
+                        <field name="consent_text" nolabel="1"
+                               placeholder="Texte exact affiché à la personne au moment du recueil."/>
+                    </group>
+                    <group string="Description affichée sur le portail">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rgpd_consent_purpose" model="ir.actions.act_window">
+        <field name="name">Finalités de consentement</field>
+        <field name="res_model">exocoms.rgpd.consent.purpose</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Journal des consentements -->
+    <record id="view_rgpd_consent_list" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.consent.list</field>
+        <field name="model">exocoms.rgpd.consent</field>
+        <field name="arch" type="xml">
+            <list string="Journal des consentements" create="0" edit="0"
+                  decoration-success="state == 'granted'"
+                  decoration-muted="state in ['withdrawn','expired']"
+                  decoration-danger="state == 'refused'">
+                <field name="date_event"/>
+                <field name="email"/>
+                <field name="partner_id" optional="show"/>
+                <field name="purpose_id"/>
+                <field name="state" widget="badge"/>
+                <field name="method"/>
+                <field name="source_url" optional="hide"/>
+                <field name="ip_address" optional="hide"/>
+                <field name="date_expiry" optional="show"/>
+                <field name="external_ref" optional="hide"/>
+                <button name="action_check_integrity" type="object" string="Vérifier" icon="fa-shield" title="Vérifier l'intégrité"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rgpd_consent_form" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.consent.form</field>
+        <field name="model">exocoms.rgpd.consent</field>
+        <field name="arch" type="xml">
+            <form string="Consentement" create="0" edit="0">
+                <header>
+                    <button name="action_withdraw" type="object" string="Enregistrer un retrait"
+                            class="btn-primary" invisible="state != 'granted'"/>
+                    <button name="action_check_integrity" type="object" string="Vérifier l'intégrité"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        Cette entrée constitue une preuve au sens de l'article 7.1 du RGPD :
+                        elle ne peut être ni modifiée ni supprimée.
+                    </div>
+                    <group>
+                        <group string="Personne et finalité">
+                            <field name="email"/>
+                            <field name="partner_id"/>
+                            <field name="purpose_id"/>
+                            <field name="state"/>
+                            <field name="date_event"/>
+                            <field name="date_expiry"/>
+                        </group>
+                        <group string="Preuve technique">
+                            <field name="method"/>
+                            <field name="source_url" widget="url"/>
+                            <field name="ip_address"/>
+                            <field name="user_agent"/>
+                            <field name="external_ref"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                    <group string="Libellé accepté">
+                        <field name="consent_text" nolabel="1" readonly="1"/>
+                    </group>
+                    <group string="Chaîne d'intégrité">
+                        <field name="proof_hash"/>
+                        <field name="previous_hash"/>
+                        <field name="integrity_ok" widget="boolean_toggle"/>
+                    </group>
+                    <group string="Commentaire" invisible="not note">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rgpd_consent_search" model="ir.ui.view">
+        <field name="name">exocoms.rgpd.consent.search</field>
+        <field name="model">exocoms.rgpd.consent</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="email"/>
+                <field name="partner_id"/>
+                <field name="purpose_id"/>
+                <filter name="filter_granted" string="Accordés" domain="[('state', '=', 'granted')]"/>
+                <filter name="filter_withdrawn" string="Retirés" domain="[('state', '=', 'withdrawn')]"/>
+                <filter name="filter_expired" string="Expirés" domain="[('state', '=', 'expired')]"/>
+                <separator/>
+                <filter name="filter_expiring" string="Expirent sous 30 jours"
+                        domain="[('state', '=', 'granted'), ('date_expiry', '!=', False), ('date_expiry', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_purpose" string="Finalité" context="{'group_by': 'purpose_id'}"/>
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                    <filter name="group_method" string="Méthode" context="{'group_by': 'method'}"/>
+                    <filter name="group_date" string="Mois" context="{'group_by': 'date_event:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rgpd_consent" model="ir.actions.act_window">
+        <field name="name">Journal des consentements</field>
+        <field name="res_model">exocoms.rgpd.consent</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_rgpd_consent_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucun consentement enregistré</p>
+            <p>Les consentements recueillis sur le portail, via un formulaire web ou
+               poussés par un CMP externe sur /rgpd/consent/log apparaissent ici,
+               horodatés et chaînés par empreinte SHA-256.</p>
+        </field>
+    </record>
+
+</odoo>

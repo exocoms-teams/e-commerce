@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =============================================================== -->
+    <!-- Formulaire public de demande d'exercice des droits              -->
+    <!-- =============================================================== -->
+    <template id="public_request_form" name="RGPD - Formulaire de demande">
+        <t t-call="web.frontend_layout">
+            <t t-set="title">Exercer mes droits sur mes données personnelles</t>
+            <div id="wrap" class="o_rgpd_public oe_structure">
+                <div class="container py-5">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+
+                            <h1 class="mb-3">Exercer mes droits</h1>
+                            <p class="lead text-muted">
+                                Le règlement général sur la protection des données vous
+                                permet d'accéder aux informations que
+                                <strong t-out="company.name"/> détient à votre sujet, de
+                                les faire corriger, effacer ou limiter, de vous y opposer
+                                et d'en obtenir une copie portable.
+                            </p>
+
+                            <div t-if="error" class="alert alert-danger" role="alert">
+                                <t t-out="error"/>
+                            </div>
+
+                            <form action="/rgpd/demande/envoi" method="post" class="o_rgpd_form mt-4">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+
+                                <!-- Piège à robots : invisible pour les humains -->
+                                <div class="o_rgpd_hp" aria-hidden="true">
+                                    <label for="website_url">Ne pas remplir</label>
+                                    <input type="text" name="website_url" id="website_url"
+                                           tabindex="-1" autocomplete="off"/>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="requester_name">
+                                            Nom et prénom <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" required="required"
+                                               name="requester_name" id="requester_name"
+                                               t-att-value="values.get('requester_name', '')"/>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="email">
+                                            Adresse e-mail <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="email" class="form-control" required="required"
+                                               name="email" id="email"
+                                               t-att-value="values.get('email', '')"/>
+                                        <small class="form-text text-muted">
+                                            Un lien de confirmation vous sera envoyé à cette adresse.
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="phone">Téléphone</label>
+                                        <input type="tel" class="form-control" name="phone" id="phone"
+                                               t-att-value="values.get('phone', '')"/>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="request_type">
+                                            Nature de la demande <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" name="request_type"
+                                                id="request_type" required="required">
+                                            <option value="">Sélectionnez...</option>
+                                            <t t-foreach="request_types" t-as="rtype">
+                                                <option t-att-value="rtype[0]"
+                                                        t-att-selected="'selected' if values.get('request_type') == rtype[0] else None">
+                                                    <t t-out="rtype[1]"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="description">
+                                        Précisez votre demande
+                                    </label>
+                                    <textarea class="form-control" rows="5" name="description"
+                                              id="description"
+                                              placeholder="Indiquez, si vous le pouvez, les données ou les services concernés. Cela nous aidera à traiter votre demande plus rapidement."
+                                    ><t t-out="values.get('description', '')"/></textarea>
+                                </div>
+
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox"
+                                           name="is_third_party" id="is_third_party" value="1"/>
+                                    <label class="form-check-label" for="is_third_party">
+                                        J'agis pour le compte d'une autre personne
+                                        (un justificatif de mandat vous sera demandé).
+                                    </label>
+                                </div>
+
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" type="checkbox"
+                                           name="consent_processing" id="consent_processing"
+                                           value="1" required="required"/>
+                                    <label class="form-check-label" for="consent_processing">
+                                        J'accepte que les informations saisies soient utilisées
+                                        pour traiter ma demande.
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    Envoyer ma demande
+                                </button>
+                            </form>
+
+                            <hr class="my-5"/>
+
+                            <div class="o_rgpd_notice small text-muted">
+                                <h5>Ce que vous devez savoir</h5>
+                                <ul>
+                                    <li>
+                                        Nous répondons dans un délai d'<strong>un mois</strong> à
+                                        compter de la réception de votre demande. Ce délai peut être
+                                        prorogé de deux mois en cas de demande complexe ; vous en
+                                        seriez alors informé.
+                                    </li>
+                                    <li>
+                                        Nous devons nous assurer de votre identité avant de
+                                        communiquer des données personnelles. Une confirmation par
+                                        e-mail vous sera demandée, et un justificatif d'identité
+                                        pourra être sollicité en cas de doute raisonnable.
+                                    </li>
+                                    <li t-if="company.rgpd_dpo_email">
+                                        Vous pouvez aussi nous écrire directement à
+                                        <a t-att-href="'mailto:%s' % company.rgpd_dpo_email"
+                                           t-out="company.rgpd_dpo_email"/>.
+                                    </li>
+                                    <li t-if="company.rgpd_dpo_address">
+                                        Par courrier :
+                                        <span t-out="company.rgpd_dpo_address"/>
+                                    </li>
+                                    <li t-if="company.rgpd_authority_name">
+                                        Si notre réponse ne vous satisfait pas, vous pouvez
+                                        introduire une réclamation auprès de la
+                                        <a t-att-href="company.rgpd_authority_url or '#'"
+                                           target="_blank" rel="noreferrer"
+                                           t-out="company.rgpd_authority_name"/>.
+                                    </li>
+                                    <li t-if="company.rgpd_privacy_policy_url">
+                                        Consultez notre
+                                        <a t-att-href="company.rgpd_privacy_policy_url">politique de confidentialité</a>.
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- =============================================================== -->
+    <!-- Accusé de dépôt                                                 -->
+    <!-- =============================================================== -->
+    <template id="public_request_thanks" name="RGPD - Demande enregistrée">
+        <t t-call="web.frontend_layout">
+            <t t-set="title">Demande enregistrée</t>
+            <div id="wrap" class="o_rgpd_public oe_structure">
+                <div class="container py-5">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8 text-center">
+                            <div class="o_rgpd_icon_success mb-4">
+                                <i class="fa fa-check-circle fa-4x text-success"/>
+                            </div>
+                            <h1>Votre demande a bien été enregistrée</h1>
+                            <p class="lead">
+                                Référence :
+                                <strong t-out="rgpd_request.name"/>
+                            </p>
+                            <div class="alert alert-info text-start mt-4" role="alert">
+                                <p class="mb-2">
+                                    <strong>Une dernière étape :</strong> nous venons d'envoyer un
+                                    message à l'adresse
+                                    <strong t-out="rgpd_request.email"/>.
+                                    Cliquez sur le lien qu'il contient pour confirmer votre adresse.
+                                </p>
+                                <p class="mb-0">
+                                    Sans cette confirmation, nous ne pouvons pas vérifier votre
+                                    identité et votre demande ne pourra pas être traitée.
+                                    Pensez à vérifier vos indésirables.
+                                </p>
+                            </div>
+                            <p class="text-muted">
+                                Nous vous répondrons au plus tard le
+                                <strong t-field="rgpd_request.date_deadline"
+                                        t-options="{'widget': 'date'}"/>.
+                            </p>
+                            <a href="/" class="btn btn-primary mt-3">Retour à l'accueil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- =============================================================== -->
+    <!-- Confirmation d'adresse e-mail                                   -->
+    <!-- =============================================================== -->
+    <template id="public_request_confirmed" name="RGPD - Adresse confirmée">
+        <t t-call="web.frontend_layout">
+            <t t-set="title">Adresse confirmée</t>
+            <div id="wrap" class="o_rgpd_public oe_structure">
+                <div class="container py-5">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8 text-center">
+                            <div class="o_rgpd_icon_success mb-4">
+                                <i class="fa fa-envelope-open-o fa-4x text-success"/>
+                            </div>
+                            <h1>Adresse e-mail confirmée</h1>
+                            <p class="lead">
+                                Votre demande <strong t-out="rgpd_request.name"/> est
+                                désormais en cours de traitement.
+                            </p>
+                            <p class="text-muted">
+                                Vous recevrez notre réponse à l'adresse
+                                <strong t-out="rgpd_request.email"/>
+                                au plus tard le
+                                <strong t-field="rgpd_request.date_deadline"
+                                        t-options="{'widget': 'date'}"/>.
+                            </p>
+                            <p class="text-muted small" t-if="company.rgpd_dpo_email">
+                                Pour toute question sur cette demande, écrivez à
+                                <a t-att-href="'mailto:%s' % company.rgpd_dpo_email"
+                                   t-out="company.rgpd_dpo_email"/>
+                                en rappelant la référence ci-dessus.
+                            </p>
+                            <a href="/" class="btn btn-primary mt-3">Retour à l'accueil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

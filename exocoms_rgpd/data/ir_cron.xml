@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="cron_rgpd_retention" model="ir.cron">
+            <field name="name">RGPD : appliquer la politique de conservation</field>
+            <field name="model_id" ref="model_exocoms_rgpd_retention_rule"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_apply_retention()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="cron_rgpd_request_deadline" model="ir.cron">
+            <field name="name">RGPD : surveiller les délais des demandes de droits</field>
+            <field name="model_id" ref="model_exocoms_rgpd_request"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_check_deadlines()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="cron_rgpd_consent_expiry" model="ir.cron">
+            <field name="name">RGPD : expiration des consentements</field>
+            <field name="model_id" ref="model_exocoms_rgpd_consent"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_expire_consents()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="cron_rgpd_breach_deadline" model="ir.cron">
+            <field name="name">RGPD : compte à rebours 72 h des violations</field>
+            <field name="model_id" ref="model_exocoms_rgpd_breach"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_check_breach_deadline()</field>
+            <field name="interval_number">4</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="cron_rgpd_purge_logs" model="ir.cron">
+            <field name="name">RGPD : purge du journal d'audit</field>
+            <field name="model_id" ref="model_exocoms_rgpd_audit_log"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_purge_logs()</field>
+            <field name="interval_number">7</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="cron_rgpd_reconcile_blacklist" model="ir.cron">
+            <field name="name">RGPD : réconciliation de la liste noire de messagerie</field>
+            <field name="model_id" ref="model_exocoms_rgpd_consent"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_reconcile_blacklist()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
