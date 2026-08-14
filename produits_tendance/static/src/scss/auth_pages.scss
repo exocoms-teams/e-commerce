@@ -27,7 +27,11 @@ body:has(.oe_website_login_container) #wrapwrap > footer {
 // -----------------------------------------------------------
 // Page / grille 2 colonnes
 // -----------------------------------------------------------
-#o_winners_auth_page.o_winners_auth_page {
+// Le vrai conteneur flex est <main>, parent commun de
+// .o_winners_auth_side et .oe_website_login_container (frères
+// directs) — pas le panneau droit lui-même, qui ne fait
+// qu'apparaître en second dans le DOM.
+main:has(.oe_website_login_container) {
     max-width: none;
     padding: 0;
     display: flex;
@@ -39,6 +43,7 @@ body:has(.oe_website_login_container) #wrapwrap > footer {
 
     @media (max-width: 991.98px) {
         min-height: auto;
+        flex-direction: column;
         padding: $o-winners-spacing-unit * 3 $o-winners-spacing-unit * 2;
     }
 }
