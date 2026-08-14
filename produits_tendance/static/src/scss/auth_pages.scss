@@ -133,10 +133,23 @@ main:has(.oe_website_login_container) {
     height: 36px;
     border-radius: $o-winners-radius;
     background: rgba($o-winners-white, 0.1);
+    
+    // 1. Flexbox centering
     display: flex;
     align-items: center;
     justify-content: center;
     color: $o-winners-accent;
+
+    // 2. Override default font icon behavior
+    i, span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        line-height: 1 !important; // Stops font line-height from pushing the icon down/right
+        font-size: 1rem;            // Adjust size of the icon here
+    }
 }
 
 .o_winners_auth_partners_label {
@@ -155,8 +168,8 @@ main:has(.oe_website_login_container) {
 
 .o_winners_auth_partner_logo {
     // 1. Square container styling
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -165,7 +178,7 @@ main:has(.oe_website_login_container) {
     background: rgba(255, 255, 255, 0.08); // Semi-transparent white
     border: 1px solid rgba(255, 255, 255, 0.15); // Subtle white border
     border-radius: 10px; // Rounded corners (or use $o-winners-radius)
-    padding: 10px; // Inner spacing for the icon
+    padding: 8px; // Inner spacing for the icon
     
     // Smooth transition for hover effects
     transition: background 0.2s ease, border-color 0.2s ease;
@@ -179,6 +192,8 @@ main:has(.oe_website_login_container) {
     img, svg {
         width: 100%;
         height: 100%;
+        max-width: 32px;  // Gives icons a solid, readable size
+        max-height: 32px;
         object-fit: contain;
     }
 }
