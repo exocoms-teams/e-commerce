@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <record id="mail_template_signup_activation" model="mail.template">
-            <field name="name">Portail : activation du compte</field>
-            <field name="model_id" ref="base.model_res_users"/>
-            <field name="subject">Activez votre compte {{ object.company_id.name }}</field>
-            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
-            <field name="email_to">{{ object.email_formatted or object.login }}</field>
+        <record id="mail_template_signup_confirm" model="mail.template">
+            <field name="name">Inscription portail : confirmation d'adresse</field>
+            <field name="model_id" ref="model_exocoms_signup_request"/>
+            <field name="subject">Confirmez votre adresse email</field>
+            <field name="email_from">{{ object.company_id.partner_id.email_formatted or user.email_formatted }}</field>
+            <field name="email_to">{{ object.email }}</field>
             <field name="lang">{{ object.lang }}</field>
             <field name="auto_delete" eval="True"/>
             <field name="body_html" type="html">
@@ -23,24 +23,23 @@
                                 Bonjour <t t-out="object.name or ''">Client</t>,
                             </p>
                             <p style="margin:0 0 16px 0;font-size:15px;line-height:22px;">
-                                Merci pour votre inscription sur
-                                <strong t-out="object.company_id.name or ''">notre site</strong>.
-                                Il ne reste qu'une étape : confirmer votre adresse email.
+                                Une demande de création de compte sur
+                                <strong t-out="object.company_id.name or ''">notre site</strong>
+                                a été faite avec cette adresse email.
                             </p>
                             <p style="margin:0 0 24px 0;font-size:15px;line-height:22px;">
-                                <strong>Votre compte n'est pas encore actif.</strong>
-                                Vous ne pourrez pas vous connecter avant d'avoir
-                                cliqué sur le bouton ci-dessous.
+                                Confirmez votre adresse pour poursuivre.
+                                Vous choisirez votre mot de passe à l'étape suivante.
                             </p>
                         </td>
                     </tr>
                     <tr>
                         <td align="center" style="padding:0 32px 24px 32px;">
-                            <a t-att-href="object.exocoms_activation_url"
+                            <a t-att-href="object.confirm_url"
                                style="display:inline-block;padding:13px 30px;background:#0b5fff;
                                       color:#ffffff;text-decoration:none;border-radius:4px;
                                       font-size:16px;font-weight:bold;">
-                                Activer mon compte
+                                Confirmer mon adresse
                             </a>
                         </td>
                     </tr>
@@ -48,32 +47,32 @@
                         <td style="padding:0 32px 24px 32px;">
                             <p style="margin:0 0 8px 0;font-size:13px;color:#777777;line-height:19px;">
                                 Ce lien est valable jusqu'au
-                                <t t-out="format_datetime(object.exocoms_activation_expiry, tz=object.tz, dt_format='short', lang_code=object.lang)">…</t>.
-                                Passé ce délai, vous pourrez en demander un nouveau
-                                depuis la page de connexion.
+                                <t t-out="format_datetime(object.expiry, dt_format='short', lang_code=object.lang)">…</t>.
+                                Passé ce délai, il suffit de redéposer une demande.
                             </p>
                             <p style="margin:0 0 8px 0;font-size:13px;color:#777777;line-height:19px;">
                                 Si le bouton ne fonctionne pas, copiez ce lien
                                 dans votre navigateur :<br/>
-                                <span t-out="object.exocoms_activation_url"
+                                <span t-out="object.confirm_url"
                                       style="word-break:break-all;color:#0b5fff;">…</span>
                             </p>
                             <p style="margin:16px 0 0 0;font-size:13px;color:#777777;line-height:19px;">
-                                Vous n'êtes pas à l'origine de cette inscription ?
-                                Ignorez simplement cet email : le compte sera
-                                supprimé automatiquement.
+                                Vous n'êtes pas à l'origine de cette demande ?
+                                Ignorez simplement cet email. Aucun compte n'a
+                                été créé et la demande sera supprimée
+                                automatiquement.
                             </p>
                         </td>
                     </tr>
                     <tr>
                         <td style="padding:16px 32px 28px 32px;border-top:1px solid #ebebeb;">
                             <p style="margin:0;font-size:13px;color:#999999;line-height:19px;">
-                                <strong t-out="object.company_id.name or ''">Société</strong><br/>
+                                <strong t-out="object.company_id.name or ''">Société</strong>
                                 <t t-if="object.company_id.phone">
-                                    <t t-out="object.company_id.phone">—</t><br/>
+                                    <br/><t t-out="object.company_id.phone">—</t>
                                 </t>
                                 <t t-if="object.company_id.website">
-                                    <t t-out="object.company_id.website">—</t>
+                                    <br/><t t-out="object.company_id.website">—</t>
                                 </t>
                             </p>
                         </td>
