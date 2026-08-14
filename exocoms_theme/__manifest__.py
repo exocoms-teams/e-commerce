@@ -15,7 +15,7 @@
 
     'assets': {
         'web.assets_frontend': [
-            'monetique_theme/static/src/scss/main.scss',
+            'exocoms_theme/static/src/scss/main.scss',
         ],
     },
     'installable': True,
