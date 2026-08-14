@@ -1,19 +1,21 @@
 {
-    'name': 'monetiques.fr — Infrastructure de Paiement',
+    'name': 'Theme EXOCOMS',
     'version': '19.0.1.0.0',
     'category': 'Website',
     'author': 'monetiques.fr',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale'],
+    'depends': ['website', 'website_sale','website_crm'],
+
     'data': [
         'security/ir.model.access.csv',
-        'views/templates/layout.xml',
-        'views/templates/components.xml',
-        'views/pages/home.xml',
+
+        'views/layout.xml',
+        'views/pages.xml',
     ],
+
     'assets': {
         'web.assets_frontend': [
-            'monetique_theme/static/src/css/main.css',
+            'monetique_theme/static/src/scss/main.scss',
         ],
     },
     'installable': True,
