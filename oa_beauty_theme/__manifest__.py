@@ -1,12 +1,12 @@
 {
-    'name': 'O.A.I Beauty Theme',
+    'name': 'O&A Atelier Theme',
     'version': '19.0.7.0.0',
     'category': 'Website/Theme',
-    'summary': 'O.A.I Beauty frontend for Odoo 19: homepage, shop, product page, brand SCSS',
-    'description': 'Full migration of the O.A.I Beauty cosmetics frontend to Odoo 19. Clean Luxury positioning.',
+    'summary': 'O&A Atelier frontend for Odoo 19: homepage, shop, product page, brand SCSS',
+    'description': 'Full migration of the O&A Atelier cosmetics frontend to Odoo 19. Clean Luxury positioning.',
 
-    'author': 'O.A.I Beauty',
-    'website': 'http://oa-atelier.com/',
+    'author': 'O&A Atelier',
+    'website': 'https://oa-atelier.com/',
     'license': 'LGPL-3',
 
     'depends': [
@@ -24,6 +24,7 @@
     'data': [
         'security/ir.model.access.csv',
 
+        'data/website_data.xml',
         'data/delivery_data.xml',
         'data/product_attribute_data.xml',
         'data/product_public_category_data.xml',
@@ -52,6 +53,7 @@
         'views/image_audit_views.xml',
         'views/portal_templates.xml',
         'views/auth_templates.xml',
+        'data/website_views_scope.xml',
     ],
 
     # ---------------------------

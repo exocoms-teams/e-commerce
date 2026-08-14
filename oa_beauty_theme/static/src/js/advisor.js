@@ -157,6 +157,7 @@ const OaAdvisor = {
 };
 
 function initOaAdvisor() {
+    if (!document.body.classList.contains('oa-atelier-theme')) return;
     if (document.getElementById('oa_advisor_quiz') && !window.oaAdvisorInitialized) {
         window.oaAdvisorInitialized = true;
         OaAdvisor.init();

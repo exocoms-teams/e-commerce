@@ -16,7 +16,7 @@
     -->
     <template id="product_accordion_oa_specs"
               inherit_id="website_sale.product_accordion"
-              name="O&amp;A Beauty — Product Details Accordion">
+              name="O&amp;A Atelier — Product Details Accordion">
 
         <xpath expr="//div[@id='product_accordion']" position="inside">
 
@@ -187,7 +187,7 @@
          Uses the same working inherit point as the specs template.
          A <style> block hides the add-to-cart form for coming-soon products.
          ═══════════════════════════════════════════ -->
-    <template id="oa_beauty_coming_soon_badge" inherit_id="website_sale.product_accordion" name="O&amp;A Beauty — Coming Soon Badge">
+    <template id="oa_beauty_coming_soon_badge" inherit_id="website_sale.product_accordion" name="O&amp;A Atelier — Coming Soon Badge">
         <xpath expr="//div[@id='product_accordion']" position="before">
             <t t-if="product.oa_is_coming_soon">
                 <div class="oa-coming-soon-wrap text-center py-4 mb-4">
@@ -223,7 +223,7 @@
                     "sku": "<t t-esc='product.default_code or product.id'/>",
                     "brand": {
                         "@type": "Brand",
-                        "name": "O&amp;A Beauty"
+                        "name": "O&amp;A Atelier"
                     },
                     "keywords": "<t t-esc='product.oa_seo_keywords or product.name'/>",
                     "offers": {
@@ -294,7 +294,7 @@
     </template>
 
     <!-- Low Stock Indicator on Product Page -->
-    <template id="oa_beauty_low_stock_indicator" inherit_id="website_sale.product" name="O&amp;A Beauty — Low Stock Indicator">
+    <template id="oa_beauty_low_stock_indicator" inherit_id="website_sale.product" name="O&amp;A Atelier — Low Stock Indicator">
         <xpath expr="//div[@id='product_details']" position="inside">
             <t t-set="product_variant" t-value="product.product_variant_id"/>
             <t t-if="'qty_available' in product_variant._fields and product_variant.qty_available and product_variant.qty_available > 0 and product_variant.qty_available &lt;= 5">
@@ -306,7 +306,7 @@
     </template>
 
     <!-- Recently Viewed Products Section -->
-    <template id="oa_beauty_recently_viewed" inherit_id="website_sale.product" name="O&amp;A Beauty — Recently Viewed">
+    <template id="oa_beauty_recently_viewed" inherit_id="website_sale.product" name="O&amp;A Atelier — Recently Viewed">
         <xpath expr="." position="inside">
             <section class="oa-recently-viewed py-5" style="background-color: var(--oa-ivory);">
                 <div class="container">

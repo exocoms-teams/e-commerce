@@ -128,6 +128,7 @@ const OaChatbot = {
 };
 
 function initOaChatbot() {
+    if (!document.body.classList.contains('oa-atelier-theme')) return;
     if (!window.oaChatbotInitialized) {
         window.oaChatbotInitialized = true;
         OaChatbot.init();

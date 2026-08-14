@@ -7,7 +7,7 @@
         one of the most stable in the entire Odoo codebase (it's literally
         the HTML <head> element) and has not changed across versions.
     -->
-    <template id="oa_beauty_head_assets" inherit_id="web.layout" name="O&amp;A Beauty — Head Assets">
+    <template id="oa_beauty_head_assets" inherit_id="web.layout" name="O&amp;A Atelier — Head Assets">
         <xpath expr="//head" position="inside">
             <!-- Preconnect for performance -->
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -49,8 +49,8 @@
             <!-- Note: Canonical URLs are natively handled by Odoo's website module -->
             
             <meta name="twitter:card" content="summary_large_image"/>
-            <meta name="twitter:site" content="@oabeauty"/>
-            <meta property="og:site_name" content="O&amp;A Beauty"/>
+            <meta name="twitter:site" content="@oa_atelier"/>
+            <meta property="og:site_name" content="O&amp;A Atelier"/>
             <t t-if="main_object and 'name' in main_object">
                 <meta property="og:title" t-att-content="main_object.name"/>
                 <meta property="twitter:title" t-att-content="main_object.name"/>
@@ -69,30 +69,36 @@
             {
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "O&amp;A Beauty",
+              "name": "O&amp;A Atelier",
               "url": "http://oa-atelier.com/",
               "logo": "http://oa-atelier.com/web/image/website/1/logo",
               "sameAs": [
-                "https://instagram.com/oabeauty",
-                "https://tiktok.com/@oabeauty",
-                "https://pinterest.com/oabeauty"
+                "https://instagram.com/oa_atelier",
+                "https://tiktok.com/@oa_atelier",
+                "https://pinterest.com/oa_atelier"
               ]
             }
             </script>
         </xpath>
     </template>
 
+    <template id="oa_beauty_body_class" inherit_id="web.layout" name="O&amp;A Atelier — Body Class">
+        <xpath expr="//body" position="attributes">
+            <attribute name="class" add="oa-atelier-theme" separator=" "/>
+        </xpath>
+    </template>
+
     <!--
         Epic 6 & 1: Newsletter et Réseaux Sociaux dans le Footer
     -->
-    <template id="oa_beauty_footer" inherit_id="website.layout" name="O&amp;A Beauty — Footer">
+    <template id="oa_beauty_footer" inherit_id="website.layout" name="O&amp;A Atelier — Footer">
         <xpath expr="//footer" position="replace">
             <footer id="bottom" class="oa-footer bg-white">
                 
                 <!-- Newsletter Section -->
                 <section class="oa-footer-newsletter py-5 border-bottom">
                     <div class="container text-center">
-                        <h3 class="mb-3" style="font-family: var(--oa-font-display); color: var(--oa-prune); font-size: 2.2rem; font-style: italic;">Rejoignez le Cercle O&amp;A Beauty</h3>
+                        <h3 class="mb-3" style="font-family: var(--oa-font-display); color: var(--oa-prune); font-size: 2.2rem; font-style: italic;">Rejoignez le Cercle O&amp;A Atelier</h3>
                         <p class="mb-4 text-muted" style="font-family: var(--oa-font-body); max-width: 500px; margin: 0 auto; font-size: 0.9rem; letter-spacing: 0.05em;">Abonnez-vous pour accéder en exclusivité aux nouveaux lancements, rituels de beauté et événements privés.</p>
                         <div class="oa-newsletter-wrapper">
                             <div class="oa-newsletter-form input-group d-flex justify-content-center mx-auto" style="max-width: 450px;">
@@ -120,7 +126,7 @@
                         <div class="row gx-5">
                             <!-- Column 1: Brand -->
                             <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                                <h4 class="mb-4" style="font-family: var(--oa-font-display); color: var(--oa-prune); font-size: 1.8rem;">O&amp;A Beauty</h4>
+                                <h4 class="mb-4" style="font-family: var(--oa-font-display); color: var(--oa-prune); font-size: 1.8rem;">O&amp;A Atelier</h4>
                                 <p class="text-muted" style="font-size: 0.85rem; line-height: 1.8; letter-spacing: 0.05em; padding-right: 20px;">
                                     Une marque de cosmétiques de luxe dédiée à la célébration de la beauté naturelle grâce à des formulations propres, performantes et d'une élégance éditoriale.
                                 </p>
@@ -197,7 +203,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
                                 <span class="text-muted" style="font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
-                                    &amp;copy; 2026 O&amp;A Beauty. Tous droits réservés.
+                                    &amp;copy; 2026 O&amp;A Atelier. Tous droits réservés.
                                 </span>
                             </div>
                             <div class="col-md-6 text-center text-md-end">
@@ -215,7 +221,7 @@
         Phase 5: SEO Crawl Optimization (Robots.txt)
         Prevent indexing of cart and checkout to preserve crawl budget and avoid duplicate content issues.
     -->
-    <template id="oa_beauty_robots" inherit_id="website.robots" name="O&amp;A Beauty — Robots.txt">
+    <template id="oa_beauty_robots" inherit_id="website.robots" name="O&amp;A Atelier — Robots.txt">
         <xpath expr="." position="inside">
             <t t-out="'User-agent: *\nDisallow: /shop/cart\nDisallow: /shop/checkout\nDisallow: /shop/payment\nDisallow: /shop/address\nDisallow: /my/\n'"/>
         </xpath>
@@ -223,7 +229,7 @@
     <!--
         Phase 6: Accessibility Widget (Font Resizer + Text-To-Speech)
     -->
-    <template id="oa_beauty_accessibility_widget" inherit_id="website.layout" name="O&amp;A Beauty — Accessibility Widget">
+    <template id="oa_beauty_accessibility_widget" inherit_id="website.layout" name="O&amp;A Atelier — Accessibility Widget">
         <xpath expr="//footer" position="after">
             <!-- Accessibility Widget -->
             <div class="oa-accessibility-widget">
