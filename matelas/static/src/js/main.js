@@ -227,21 +227,12 @@
             });
         }
 
-        // ===== HEADER : icône favoris =====
+        // ===== HEADER : icône panier =====
         const header = document.querySelector('header#top') || document.querySelector('header') || document;
         const cartBtn = header.querySelector('.o_cart_btn, a[href="/shop/cart"], a[href*="/shop/cart"]');
 
         if (cartBtn) {
             cartBtn.classList.add('matelas-icon-btn');
-        }
-
-        if (cartBtn && !document.querySelector('.matelas-wishlist-btn')) {
-            const wishlistLink = document.createElement('a');
-            wishlistLink.href = '/shop/wishlist';
-            wishlistLink.className = 'matelas-wishlist-btn matelas-icon-btn nav-link';
-            wishlistLink.title = en ? 'My wishlist' : 'Mes favoris';
-            wishlistLink.innerHTML = '<i class="bi bi-heart"></i>';
-            cartBtn.insertAdjacentElement('beforebegin', wishlistLink);
         }
 
         // ===== HEADER : icône recherche =====
