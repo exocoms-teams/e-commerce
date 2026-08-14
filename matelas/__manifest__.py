@@ -31,6 +31,7 @@
         'data/header_templates.xml',
         'data/res_config_settings.xml',
         'data/mail_template.xml',
+        'data/branding_data.xml',
         'views/product_template_views.xml',
         'views/newsletter_wizard_views.xml',
         'views/avis_views.xml',

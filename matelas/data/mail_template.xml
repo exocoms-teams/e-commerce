@@ -8,50 +8,65 @@
       <field name="subject">Découvrez nos nouveautés Matelas</field>
       <field name="email_from">contact@matelas.com</field>
       <field name="body_html" type="html">
-        <table width="100%" cellpadding="0" cellspacing="0"
-          style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;">
-          <tr>
-            <td style="text-align:center;padding:24px 0;">
-              <h1 style="color:#3a3a3a;margin-bottom:4px;">MATELAS</h1>
-              <p style="color:#c96b4a;font-weight:700;letter-spacing:2px;margin:0;">
-                NOS NOUVEAUTÉS
-              </p>
-            </td>
-          </tr>
-
-          <t t-foreach="products" t-as="product">
-            <tr>
-              <td style="padding:16px 0;border-bottom:1px solid #f1efec;">
-                <table width="100%" cellpadding="0" cellspacing="0">
+        <!-- L'enveloppe ci-dessous (o_layout / o_mail_wrapper / row / col
+             ... oe_structure o_editable) reprend exactement la structure
+             qu'Odoo utilise pour ses propres mailings : c'est ce qui rend
+             le contenu reconnu par l'éditeur de blocs (glisser-déposer)
+             dans le formulaire mailing.mailing. Sans elle, l'éditeur
+             affiche "No block of this category can be dropped on this
+             page" pour toutes les catégories de blocs. -->
+        <div class="o_layout o_default_theme oe_unremovable oe_unmovable">
+          <div class="container o_mail_wrapper oe_unremovable oe_unmovable">
+            <div class="row">
+              <div class="col o_mail_no_options o_mail_wrapper_td bg-white oe_structure o_editable">
+                <table width="100%" cellpadding="0" cellspacing="0"
+                  style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;">
                   <tr>
-                    <td style="width:110px;vertical-align:top;">
-                      <img
-                        t-attf-src="#{base_url}/web/image/product.template/#{product.id}/image_256"
-                        style="width:100px;border-radius:8px;" t-att-alt="product.name" />
+                    <td style="text-align:center;padding:24px 0;">
+                      <h1 style="color:#3a3a3a;margin-bottom:4px;font-weight:700;">MATELAS</h1>
+                      <p style="color:#c96b4a;font-weight:700;letter-spacing:2px;margin:0;">
+                        NOS NOUVEAUTÉS
+                      </p>
                     </td>
-                    <td style="padding-left:16px;vertical-align:top;">
-                      <div style="font-weight:700;font-size:16px;color:#3a3a3a;"
-                        t-esc="product.name" />
-                      <div style="color:#c96b4a;font-weight:700;font-size:15px;margin:4px 0;">
-                        <t t-esc="'%.2f' % product.list_price" /> &#8364;
-                      </div>
-                      <a t-attf-href="#{base_url}#{product.website_url}"
-                        style="color:#c96b4a;text-decoration:none;font-weight:600;">
-                        Découvrir &#8594;
-                      </a>
+                  </tr>
+
+                  <t t-foreach="products" t-as="product">
+                    <tr>
+                      <td style="padding:16px 0;border-bottom:1px solid #f1efec;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                          <tr>
+                            <td style="width:110px;vertical-align:top;">
+                              <img
+                                t-attf-src="#{base_url}/web/image/product.template/#{product.id}/image_256"
+                                style="width:100px;border-radius:8px;" t-att-alt="product.name" />
+                            </td>
+                            <td style="padding-left:16px;vertical-align:top;">
+                              <div style="font-weight:700;font-size:16px;color:#3a3a3a;"
+                                t-esc="product.name" />
+                              <div style="color:#c96b4a;font-weight:700;font-size:15px;margin:4px 0;">
+                                <t t-esc="'%.2f' % product.list_price" /> &#8364;
+                              </div>
+                              <a t-attf-href="#{base_url}#{product.website_url}"
+                                style="color:#c96b4a;text-decoration:none;font-weight:600;">
+                                Découvrir &#8594;
+                              </a>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </t>
+
+                  <tr>
+                    <td style="text-align:center;padding:24px 0;color:#9a9a9a;font-size:12px;">
+                      Vous recevez cet email car vous êtes inscrit à la newsletter Matelas.
                     </td>
                   </tr>
                 </table>
-              </td>
-            </tr>
-          </t>
-
-          <tr>
-            <td style="text-align:center;padding:24px 0;color:#9a9a9a;font-size:12px;">
-              Vous recevez cet email car vous êtes inscrit à la newsletter Matelas.
-            </td>
-          </tr>
-        </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </field>
     </record>
 
