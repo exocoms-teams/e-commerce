@@ -13,7 +13,6 @@
 
         'views/templates/header.xml',
         'views/templates/footer.xml',
-        'views/templates/layout.xml',
 
         
     ],
