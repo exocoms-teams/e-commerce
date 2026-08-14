@@ -114,7 +114,7 @@ class TestDashboardFilterAPI(HttpCase):
        self.assertIn(self.product_ma.id, ids)
        self.assertNotIn(self.product_fr.id, ids)
 
-    def test_get_product_list_combines_price_and_source(self):
+   def test_get_product_list_combines_price_and_source(self):
        api = TrendDashboardAPI(self.env)
        data = api.get_product_list(price_max=200, source='api')
        ids = [p['id'] for p in data]

@@ -6,8 +6,8 @@
     'license': 'LGPL-3',
     'depends': [
         'website', 'website_sale', 'auth_signup',
-        'sale_subscription', 'website_sale_subscription',   # WIN-66
-    ],
+        'sale_subscription', 'website_sale_subscription',
+    ],   # WIN-66
     'data': [
         'security/security_groups.xml',
         'security/ir.model.access.csv',
@@ -43,8 +43,9 @@
             'web/static/lib/chartjs-adapter-luxon/chartjs-adapter-luxon.js',
             'produits_tendance/static/src/js/trend_chart.js',
             'produits_tendance/static/src/scss/subscription_pricing.scss',
-            'produits_tendance/static/src/js/dashboard_filters.js',
             'produits_tendance/static/src/scss/dashboard.scss',
+            'produits_tendance/static/src/scss/header.scss',
+            'produits_tendance/static/src/js/dashboard_filters.js',
         ],
     },
     'installable': True,
