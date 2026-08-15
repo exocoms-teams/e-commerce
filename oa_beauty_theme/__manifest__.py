@@ -1,6 +1,6 @@
 {
     'name': 'O&A Atelier Theme',
-    'version': '19.0.7.0.4',
+    'version': '19.0.7.0.5',
     'category': 'Website/Theme',
     'summary': 'O&A Atelier frontend for Odoo 19: homepage, shop, product page, brand SCSS',
     'description': 'Full migration of the O&A Atelier cosmetics frontend to Odoo 19. Clean Luxury positioning.',
