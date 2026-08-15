@@ -9,7 +9,7 @@
     'data': [
         'security/ir.model.access.csv',
 
-        'views/pages/home.xml',
+        'views/pages/home1.xml',
 
         'views/templates/header.xml',
         'views/templates/footer.xml',
@@ -22,7 +22,7 @@
         'web.assets_frontend': [
             'monetique_theme/static/src/css/templates/header.css',
             'monetique_theme/static/src/css/templates/footer.css',
-            'monetique_theme/static/src/css/pages/home.css',
+            'monetique_theme/static/src/css/pages/home1.css',
         ],
     },
     'installable': True,
