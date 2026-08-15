@@ -20,7 +20,6 @@
 
     'assets': {
         'web.assets_frontend': [
-            'monetique_theme/static/src/css/variables.css',
             'monetique_theme/static/src/css/templates/header.css',
             'monetique_theme/static/src/css/templates/footer.css',
             'monetique_theme/static/src/css/pages/home.css',
