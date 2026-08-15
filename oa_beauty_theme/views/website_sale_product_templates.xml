@@ -296,10 +296,10 @@
     <!-- Low Stock Indicator on Product Page -->
     <template id="oa_beauty_low_stock_indicator" inherit_id="website_sale.product" name="O&amp;A Atelier — Low Stock Indicator">
         <xpath expr="//div[@id='product_details']" position="inside">
-            <t t-set="product_variant" t-value="product.product_variant_id"/>
-            <t t-if="product_variant and product_variant.qty_available and product_variant.qty_available > 0 and product_variant.qty_available &lt;= 5">
+            <t t-set="oa_low_stock_qty" t-value="product._oa_get_low_stock_qty()"/>
+            <t t-if="oa_low_stock_qty">
                 <div class="oa-low-stock mt-2">
-                    Plus que <t t-esc="int(product_variant.qty_available)"/> en stock — commandez vite !
+                    Plus que <t t-esc="oa_low_stock_qty"/> en stock — commandez vite !
                 </div>
             </t>
         </xpath>

@@ -25,6 +25,17 @@ class ProductTemplate(models.Model):
     oa_is_ingram_product = fields.Boolean(string='Is Ingram Product', default=False, readonly=True)
     oa_ingram_sku = fields.Char(string='Ingram SKU', readonly=True, index=True)
 
+    def _oa_get_low_stock_qty(self):
+        self.ensure_one()
+        product_variant = self.product_variant_id
+        if not product_variant or 'qty_available' not in product_variant._fields:
+            return 0
+
+        qty_available = product_variant.qty_available
+        if qty_available and 0 < qty_available <= 5:
+            return int(qty_available)
+        return 0
+
     @api.model
     def _archive_default_demo_products(self):
         """
