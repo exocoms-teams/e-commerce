@@ -32,7 +32,7 @@ class NewsletterController(http.Controller):
 
         params = request.env['ir.config_parameter'].sudo()
         api_key = params.get_param('brevo.api_key')
-        list_id = params.get_param('brevo.list_id', default='2')
+        list_id = params.get_param('brevo.list_id')
 
         if not api_key:
             _logger.error("[Newsletter] Brevo API Key non configurée !")
