@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 # ⚠️ Ne jamais mettre les clés API en dur dans le code.
 # Configurez-les dans Odoo : Paramètres → Technique → Paramètres système
 # Clés à créer :
-#   brevo.api_key     → votre clé API Brevo (xkeysib-...)
+#   brevo.api_key     → votre clé API Brevo
 #   brevo.list_id     → ID numérique de votre liste Brevo (ex: 3)
 
 
@@ -31,8 +31,8 @@ class NewsletterController(http.Controller):
             return {'success': False, 'message': 'Adresse e-mail invalide.'}
 
         params = request.env['ir.config_parameter'].sudo()
-        api_key = params.get_param('brevo.api_key', default='')
-        list_id = params.get_param('brevo.list_id', default='')
+        api_key = params.get_param('brevo.api_key')
+        list_id = params.get_param('brevo.list_id', default='2')
 
         if not api_key:
             _logger.error("[Newsletter] Brevo API Key non configurée !")
