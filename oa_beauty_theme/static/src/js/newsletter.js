@@ -107,7 +107,6 @@
 
     // ── Main Handler ───────────────────────────────────────────────────────────
     function initNewsletterForm() {
-        if (!document.body.classList.contains('oa-atelier-theme')) return;
         var forms = document.querySelectorAll('.oa-newsletter-form');
 
         forms.forEach(function(form) {
