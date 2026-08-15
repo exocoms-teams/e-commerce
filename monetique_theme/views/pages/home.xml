@@ -7,932 +7,1513 @@
         <t t-call="website.layout">
 
             <main id="wrap" class="exo-homepage">
+                <!-- icones svg -->
+                 <svg class="exo-icon-sprite" aria-hidden="true">
+
+                    <symbol id="i-arrow-right" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 12h15"/>
+                        <path d="M13 6l6 6-6 6"/>
+                    </symbol>
+
+                    <symbol id="i-check" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m5 12.5 4.5 4.5L19 7"/>
+                    </symbol>
+
+                    <symbol id="i-check-circle" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9.5"/>
+                        <path d="m8 12.3 2.7 2.7L16 9.5"/>
+                    </symbol>
+
+                    <symbol id="i-user-circle" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="9" r="3.2"/>
+                        <path d="M5.5 20a6.8 6.8 0 0 1 13 0"/>
+                    </symbol>
+
+                    <symbol id="i-map-pin" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/>
+                        <circle cx="12" cy="10" r="2.6"/>
+                    </symbol>
+
+                    <symbol id="i-bolt" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13.5 2 4.5 13.5H11l-.5 8.5 9-11.5H13l.5-8.5Z"/>
+                    </symbol>
+
+                    <symbol id="i-badge-check" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 2.5 2.3 1.8 2.9-.2.9 2.8 2.4 1.7-1.1 2.7 1.1 2.7-2.4 1.7-.9 2.8-2.9-.2L12 21.5l-2.3-1.8-2.9.2-.9-2.8-2.4-1.7L4.6 12 3.5 9.3l2.4-1.7.9-2.8 2.9.2L12 2.5Z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </symbol>
+
+                    <symbol id="i-chart-up" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 20h18"/>
+                        <path d="m4 15 5-5 3.5 3.5L20 6"/>
+                        <path d="M15.5 6H20v4.5"/>
+                    </symbol>
+
+                    <symbol id="i-monetique" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2"/>
+                        <rect x="8" y="5" width="8" height="4" rx="1"/>
+                        <circle cx="9" cy="13" r=".6" fill="currentColor" stroke="none"/>
+                        <circle cx="12" cy="13" r=".6" fill="currentColor" stroke="none"/>
+                        <circle cx="15" cy="13" r=".6" fill="currentColor" stroke="none"/>
+                        <circle cx="9" cy="16" r=".6" fill="currentColor" stroke="none"/>
+                        <circle cx="12" cy="16" r=".6" fill="currentColor" stroke="none"/>
+                        <circle cx="15" cy="16" r=".6" fill="currentColor" stroke="none"/>
+                        <circle cx="12" cy="19" r=".6" fill="currentColor" stroke="none"/>
+                    </symbol>
+
+                    <symbol id="i-informatique" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="13" rx="2"/>
+                        <path d="M8 21h8M12 17v4"/>
+                    </symbol>
+
+                    <symbol id="i-reseaux" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="5" r="2.5"/>
+                        <circle cx="5" cy="19" r="2.5"/>
+                        <circle cx="19" cy="19" r="2.5"/>
+                        <path d="M12 7.5v4M12 11.5 6.5 17M12 11.5 17.5 17"/>
+                    </symbol>
+
+                    <symbol id="i-telecoms" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6.5 3h-2A1.5 1.5 0 0 0 3 4.6C3 13.1 10.9 21 19.4 21A1.5 1.5 0 0 0 21 19.5v-2a1.5 1.5 0 0 0-1.2-1.5l-3-.6a1.5 1.5 0 0 0-1.5.6l-1 1.3a13.5 13.5 0 0 1-5.6-5.6l1.3-1a1.5 1.5 0 0 0 .6-1.5l-.6-3A1.5 1.5 0 0 0 6.5 3Z"/>
+                    </symbol>
+
+                    <symbol id="i-securite" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2.5 4.5 5.5v6c0 4.7 3.1 8.6 7.5 10 4.4-1.4 7.5-5.3 7.5-10v-6L12 2.5Z"/>
+                        <path d="M12 10v2.5"/>
+                        <circle cx="12" cy="15.5" r=".7" fill="currentColor" stroke="none"/>
+                    </symbol>
+
+                    <symbol id="i-wifi" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2.5 8.5a15 15 0 0 1 19 0"/>
+                        <path d="M5.5 12.5a10.5 10.5 0 0 1 13 0"/>
+                        <path d="M8.5 16.4a6 6 0 0 1 7 0"/>
+                        <circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/>
+                    </symbol>
+
+                    <symbol id="i-cloud" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6.5 19a4.5 4.5 0 0 1-.3-9 6 6 0 0 1 11.5 1.4A3.8 3.8 0 0 1 17.5 19H6.5Z"/>
+                    </symbol>
+
+                    <symbol id="i-maintenance" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/>
+                    </symbol>
+
+                    <symbol id="i-video" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m3 10 14-5 2.2 5.8L5.2 15.8 3 10Z"/>
+                        <path d="M6.6 14.6 8 18.5M10 21h6"/>
+                        <path d="M13 21v-2.5a2.5 2.5 0 0 1 2.5-2.5H18"/>
+                    </symbol>
+
+                    <symbol id="i-restaurant" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2.5V10a2.5 2.5 0 0 0 5 0V2.5M8.5 10v11.5"/>
+                        <path d="M17.5 2.5c-1.4 1-2 2.6-2 4.5 0 1.6.7 2.8 2 3.2v11.3"/>
+                    </symbol>
+
+                    <symbol id="i-shop" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 8h16l-1 12.5H5L4 8Z"/>
+                        <path d="M8.5 10V6.5a3.5 3.5 0 0 1 7 0V10"/>
+                    </symbol>
+
+                    <symbol id="i-hotel" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 18v-9M3 13h18v5M21 18v-4"/>
+                        <path d="M6.5 13v-2.5h5.5a2.5 2.5 0 0 1 2.5 2.5"/>
+                        <path d="M3 20.5h18"/>
+                    </symbol>
+
+                    <symbol id="i-pharmacy" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3.5" y="3.5" width="17" height="17" rx="3"/>
+                        <path d="M12 8v8M8 12h8"/>
+                    </symbol>
+
+                    <symbol id="i-collectivite" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 21h18M4.5 21V9.5L12 4l7.5 5.5V21"/>
+                        <path d="M9.5 21v-6h5v6"/>
+                    </symbol>
+
+                    <symbol id="i-pme" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2.5" y="7.5" width="19" height="13" rx="2"/>
+                        <path d="M8.5 7.5V5.5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v2M2.5 13h19"/>
+                    </symbol>
+
+                    <symbol id="i-star" viewBox="0 0 24 24"
+                            fill="currentColor" stroke="none">
+                        <path d="m12 2.8 2.8 5.9 6.2.9-4.5 4.5 1.1 6.4-5.6-3.1-5.6 3.1 1.1-6.4L3 9.6l6.2-.9L12 2.8Z"/>
+                    </symbol>
+
+                    <symbol id="i-quote" viewBox="0 0 24 24"
+                            fill="currentColor" stroke="none">
+                        <path d="M9.5 6c-3 1.4-5 4.2-5 7.6 0 2.7 1.6 4.4 3.8 4.4 2 0 3.5-1.5 3.5-3.5S10.4 11 8.5 11c-.3 0-.6 0-.8.1.5-1.6 1.7-3 3.4-3.9L9.5 6Zm9 0c-3 1.4-5 4.2-5 7.6 0 2.7 1.6 4.4 3.8 4.4 2 0 3.5-1.5 3.5-3.5S19.4 11 17.5 11c-.3 0-.6 0-.8.1.5-1.6 1.7-3 3.4-3.9L18.5 6Z"/>
+                    </symbol>
+
+                </svg>
+
 
                 <!-- Hero -->
-                <section class="exo-hero">
-                    <div class="exo-container">
+                 <section class="hero" id="accueil" aria-labelledby="hero-title">
+                    <div class="wrap">
+                        <div class="hero-grid">
 
-                        <div class="exo-hero-content">
+                            <!-- Contenu principal -->
+                            <div class="hero-content">
+                                <div class="eyebrow">
+                                    Exocoms
+                                </div>
 
-                            <div class="exo-hero-text">
-
-                                <span class="exo-hero-subtitle">
-                                    Solutions technologiques pour les professionnels
-                                </span>
-
-                                <h1 class="exo-hero-title">
-                                    Votre partenaire technologique au quotidien
+                                <h1 id="hero-title">
+                                    Des solutions technologiques pour
+                                    <em>connecter</em>,
+                                    <em>sécuriser</em> et
+                                    <em>développer</em>
+                                    votre activité.
                                 </h1>
 
-                                <p class="exo-hero-description">
-                                    EXOCOMS accompagne les entreprises avec des solutions
-                                    professionnelles en monétique, télécom, encaissement,
-                                    informatique, réseau et sécurité.
+                                <p class="lead">
+                                    EXOCOMS accompagne les entreprises dans leur transformation
+                                    numérique avec des solutions performantes, fiables et évolutives.
                                 </p>
 
-                                <div class="exo-hero-actions">
+                                <div class="hero-actions">
+                                    <a href="#solutions" class="btn btn-primary">
+                                        Découvrir nos solutions
 
-                                    <a href="/shop" class="exo-btn exo-btn-primary">
-                                        Découvrir nos produits
+                                        <svg class="ic ic-sm"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="1.8"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            aria-hidden="true">
+                                            <path d="M4 12h15"/>
+                                            <path d="M13 6l6 6-6 6"/>
+                                        </svg>
                                     </a>
 
-                                    <a href="/contact" class="exo-btn exo-btn-secondary">
+                                    <a href="#contact" class="btn btn-ghost">
                                         Nous contacter
+
+                                        <svg class="ic ic-sm"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="1.8"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            aria-hidden="true">
+                                            <path d="M4 12h15"/>
+                                            <path d="M13 6l6 6-6 6"/>
+                                        </svg>
                                     </a>
+                                </div>
 
+                                <div class="hero-trust">
+                                    <div>
+                                        <svg class="ic ic-sm"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            aria-hidden="true">
+                                            <path d="m12 2.5 2.3 1.8 2.9-.2.9 2.8 2.4 1.7-1.1 2.7 1.1 2.7-2.4 1.7-.9 2.8-2.9-.2L12 21.5l-2.3-1.8-2.9.2-.9-2.8-2.4-1.7L4.6 12 3.5 9.3l2.4-1.7.9-2.8 2.9.2L12 2.5Z"/>
+                                            <path d="m9 12 2 2 4-4"/>
+                                        </svg>
+
+                                        Installation partout en France
+                                    </div>
+
+                                    <div>
+                                        <svg class="ic ic-sm"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            aria-hidden="true">
+                                            <path d="M4 14v-2a8 8 0 0 1 16 0v2"/>
+                                            <rect x="2.5" y="13.5" width="4" height="6" rx="1.6"/>
+                                            <rect x="17.5" y="13.5" width="4" height="6" rx="1.6"/>
+                                            <path d="M19.5 19.5v.5a2.5 2.5 0 0 1-2.5 2.5h-2.5"/>
+                                        </svg>
+
+                                        Support technique 24/7
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Illustration réseau -->
+                            <div class="netviz"
+                                role="img"
+                                aria-label="EXOCOMS, hub central connecté à plusieurs expertises technologiques">
+
+                                <svg class="lines"
+                                    viewBox="0 0 400 380"
+                                    preserveAspectRatio="none"
+                                    aria-hidden="true">
+
+                                    <line x1="200" y1="190" x2="200" y2="39.9"
+                                        class="pulse"/>
+
+                                    <line x1="200" y1="190" x2="306" y2="74.86"
+                                        class="pulse"/>
+
+                                    <line x1="200" y1="190" x2="363" y2="164.16"
+                                        class="pulse"/>
+
+                                    <line x1="200" y1="190" x2="343" y2="264.86"
+                                        class="pulse"/>
+
+                                    <line x1="200" y1="190" x2="256" y2="330.98"
+                                        class="pulse"/>
+
+                                    <line x1="200" y1="190" x2="144" y2="330.98"
+                                        class="pulse"/>
+
+                                    <line x1="200" y1="190" x2="57" y2="264.86"
+                                        class="pulse"/>
+
+                                    <line x1="200" y1="190" x2="37" y2="164.16"
+                                        class="pulse"/>
+
+                                    <line x1="200" y1="190" x2="94" y2="74.86"
+                                        class="pulse"/>
+                                </svg>
+
+                                <!-- Carte centrale -->
+                                <div class="center-card">
+                                    <div class="k">EXOCOMS</div>
+                                    <div class="v">Hub central</div>
+                                </div>
+
+                                <!-- Nœuds du réseau -->
+                                <div class="pnode" style="left:50%; top:10.5%;">
+                                    <svg class="ic"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <rect x="5" y="2" width="14" height="20" rx="2"/>
+                                        <rect x="8" y="5" width="8" height="4" rx="1"/>
+                                        <circle cx="9" cy="13" r=".6" fill="currentColor" stroke="none"/>
+                                        <circle cx="12" cy="13" r=".6" fill="currentColor" stroke="none"/>
+                                        <circle cx="15" cy="13" r=".6" fill="currentColor" stroke="none"/>
+                                        <circle cx="9" cy="16" r=".6" fill="currentColor" stroke="none"/>
+                                        <circle cx="12" cy="16" r=".6" fill="currentColor" stroke="none"/>
+                                        <circle cx="15" cy="16" r=".6" fill="currentColor" stroke="none"/>
+                                        <circle cx="12" cy="19" r=".6" fill="currentColor" stroke="none"/>
+                                    </svg>
+                                </div>
+
+                                <div class="pnode" style="left:76.5%; top:19.7%;">
+                                    <svg class="ic"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <rect x="2" y="4" width="20" height="13" rx="2"/>
+                                        <path d="M8 21h8M12 17v4"/>
+                                    </svg>
+                                </div>
+
+                                <div class="pnode" style="left:90.75%; top:43.2%;">
+                                    <svg class="ic"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <circle cx="12" cy="5" r="2.5"/>
+                                        <circle cx="5" cy="19" r="2.5"/>
+                                        <circle cx="19" cy="19" r="2.5"/>
+                                        <path d="M12 7.5v4M12 11.5 6.5 17M12 11.5 17.5 17"/>
+                                    </svg>
+                                </div>
+
+                                <div class="pnode" style="left:85.75%; top:69.7%;">
+                                    <svg class="ic"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <path d="M6.5 3h-2A1.5 1.5 0 0 0 3 4.6C3 13.1 10.9 21 19.4 21A1.5 1.5 0 0 0 21 19.5v-2a1.5 1.5 0 0 0-1.2-1.5l-3-.6a1.5 1.5 0 0 0-1.5.6l-1 1.3a13.5 13.5 0 0 1-5.6-5.6l1.3-1a1.5 1.5 0 0 0 .6-1.5l-.6-3A1.5 1.5 0 0 0 6.5 3Z"/>
+                                    </svg>
+                                </div>
+
+                                <div class="pnode" style="left:64%; top:87.1%;">
+                                    <svg class="ic"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <path d="M12 2.5 4.5 5.5v6c0 4.7 3.1 8.6 7.5 10 4.4-1.4 7.5-5.3 7.5-10v-6L12 2.5Z"/>
+                                        <path d="M12 10v2.5"/>
+                                        <circle cx="12" cy="15.5" r=".7" fill="currentColor" stroke="none"/>
+                                    </svg>
+                                </div>
+
+                                <div class="pnode" style="left:36%; top:87.1%;">
+                                    <svg class="ic"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <path d="M2.5 8.5a15 15 0 0 1 19 0"/>
+                                        <path d="M5.5 12.5a10.5 10.5 0 0 1 13 0"/>
+                                        <path d="M8.5 16.4a6 6 0 0 1 7 0"/>
+                                        <circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/>
+                                    </svg>
+                                </div>
+
+                                <div class="pnode" style="left:14.25%; top:69.7%;">
+                                    <svg class="ic"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <path d="M6.5 19a4.5 4.5 0 0 1-.3-9 6 6 0 0 1 11.5 1.4A3.8 3.8 0 0 1 17.5 19H6.5Z"/>
+                                    </svg>
+                                </div>
+
+                                <div class="pnode" style="left:9.25%; top:43.2%;">
+                                    <svg class="ic"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/>
+                                    </svg>
+                                </div>
+
+                                <div class="pnode" style="left:23.5%; top:19.7%;">
+                                    <svg class="ic"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <path d="m3 10 14-5 2.2 5.8L5.2 15.8 3 10Z"/>
+                                        <path d="M6.6 14.6 8 18.5M10 21h6"/>
+                                        <path d="M13 21v-2.5a2.5 2.5 0 0 1 2.5-2.5H18"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistiques -->
+                        <div class="statbar">
+                            <div class="statgrid">
+
+                                <div>
+                                    <svg class="ic ic-lg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"/>
+                                        <path d="M7 5.5H4.5V7a3 3 0 0 0 3 3M17 5.5h2.5V7a3 3 0 0 1-3 3"/>
+                                        <path d="M12 14v3.5M9 21h6M10 17.5h4"/>
+                                    </svg>
+
+                                    <div>
+                                        <div class="num">15+</div>
+                                        <div class="lab">Années d'expérience</div>
+                                        <div class="note">À vos côtés depuis 2009</div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <svg class="ic ic-lg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <rect x="6" y="2" width="12" height="20" rx="2"/>
+                                        <path d="M9 5.5h6"/>
+                                        <circle cx="12" cy="18.5" r="1"/>
+                                    </svg>
+
+                                    <div>
+                                        <div class="num">3000+</div>
+                                        <div class="lab">Équipements installés</div>
+                                        <div class="note">Sur tout le territoire</div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <svg class="ic ic-lg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <circle cx="9" cy="8" r="3.2"/>
+                                        <path d="M2.5 20a6.5 6.5 0 0 1 13 0"/>
+                                        <path d="M16 5.2a3.2 3.2 0 0 1 0 5.6M17.5 14.2a6.5 6.5 0 0 1 4 5.8"/>
+                                    </svg>
+
+                                    <div>
+                                        <div class="num">98%</div>
+                                        <div class="lab">De clients satisfaits</div>
+                                        <div class="note">Notre meilleure fierté</div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <svg class="ic ic-lg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true">
+                                        <path d="M4 14v-2a8 8 0 0 1 16 0v2"/>
+                                        <rect x="2.5" y="13.5" width="4" height="6" rx="1.6"/>
+                                        <rect x="17.5" y="13.5" width="4" height="6" rx="1.6"/>
+                                        <path d="M19.5 19.5v.5a2.5 2.5 0 0 1-2.5 2.5h-2.5"/>
+                                    </svg>
+
+                                    <div>
+                                        <div class="num">24/7</div>
+                                        <div class="lab">Support technique</div>
+                                        <div class="note">Une équipe toujours disponible</div>
+                                    </div>
                                 </div>
 
                             </div>
-
-                            <div class="exo-hero-image">
-
-                                <img
-                                    src="/monetique_theme/static/src/img/hero/hero-image.png"
-                                    alt="Solutions professionnelles EXOCOMS"
-                                />
-
-                            </div>
-
                         </div>
-
                     </div>
                 </section>
 
 
-                <!-- à propos d'exocoms -->
-                <section class="exo-about">
-                    <div class="exo-container">
+                <!-- Qui est Exocoms -->
+                <section class="section section-about"
+                    id="about"
+                    aria-labelledby="about-title">
 
-                        <div class="exo-about-content">
+                <div class="wrap">
 
-                            <div class="exo-about-image">
-                                <img
-                                    src="/monetique_theme/static/src/img/about/about-exocoms.jpg"
-                                    alt="À propos d'EXOCOMS"
-                                />
-                            </div>
+                    <div class="about-grid">
 
-                            <div class="exo-about-text">
-
-                                <span class="exo-section-subtitle">
-                                    À PROPOS D'EXOCOMS
+                        <div class="about-visual">
+                            <div class="about-visual-top">
+                                <span class="about-code">EXO / 2009</span>
+                                <span class="about-status">
+                                    <span></span>
+                                    ACTIF
                                 </span>
-
-                                <h2 class="exo-section-title">
-                                    Votre partenaire de confiance pour accompagner la transformation digitale des entreprises.
-                                </h2>
-
-                                <p>
-                                    EXOCOMS accompagne les professionnels dans le choix, le déploiement
-                                    et le suivi de solutions technologiques adaptées à leurs besoins.
-                                    Notre expertise couvre la monétique, les télécommunications,
-                                    l'encaissement, l'informatique, les réseaux, la sécurité et
-                                    bien d'autres domaines.
-                                </p>
-
-                                <p>
-                                    Grâce à une équipe expérimentée et à un accompagnement de proximité,
-                                    nous proposons des solutions fiables, performantes et évolutives
-                                    pour répondre aux enjeux de chaque activité.
-                                </p>
-
-                                <div class="exo-about-stats">
-
-                                    <div class="exo-stat-card">
-                                        <h3>9+</h3>
-                                        <span>Expertises</span>
-                                    </div>
-
-                                    <div class="exo-stat-card">
-                                        <h3>20+</h3>
-                                        <span>Ans d'expérience</span>
-                                    </div>
-
-                                    <div class="exo-stat-card">
-                                        <h3>1000+</h3>
-                                        <span>Clients accompagnés</span>
-                                    </div>
-
-                                </div>
-
                             </div>
 
+                            <div class="about-visual-main">
+                                <div class="about-number">15</div>
+                                <div class="about-number-label">
+                                    années à connecter<br/>
+                                    les entreprises
+                                </div>
+                            </div>
+
+                            <div class="about-visual-network">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+
+                            <div class="about-visual-bottom">
+                                <span>MONÉTIQUE</span>
+                                <span>RÉSEAUX</span>
+                                <span>SÉCURITÉ</span>
+                                <span>CLOUD</span>
+                            </div>
+                        </div>
+
+                        <div class="about-content">
+                            <div class="eyebrow">
+                                Qui est EXOCOMS ?
+                            </div>
+
+                            <h2 id="about-title">
+                                Un partenaire fiable au service de
+                                <em>votre réussite</em>.
+                            </h2>
+
+                            <p>
+                                Depuis 2009, EXOCOMS accompagne les entreprises dans leurs
+                                projets technologiques, de la monétique à l'infrastructure
+                                informatique complète.
+                            </p>
+
+                            <p>
+                                Notre rôle est simple : comprendre votre activité, vous
+                                conseiller les bonnes solutions et rester à vos côtés dans
+                                la durée.
+                            </p>
+
+                            <a href="#pourquoi" class="btn btn-dark">
+                                En savoir plus sur Exocoms
+
+                                <svg class="ic ic-sm" aria-hidden="true">
+                                    <use href="#i-arrow-right"/>
+                                </svg>
+                            </a>
                         </div>
 
                     </div>
-                </section>
+
+                    <div class="statbar about-statbar">
+                        <div class="statgrid">
+
+                            <div>
+                                <svg class="ic ic-lg" aria-hidden="true">
+                                    <use href="#i-badge-check"/>
+                                </svg>
+                                <div>
+                                    <div class="num">15+</div>
+                                    <div class="lab">Années d'expérience</div>
+                                    <div class="note">À vos côtés depuis 2009</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <svg class="ic ic-lg" aria-hidden="true">
+                                    <use href="#i-informatique"/>
+                                </svg>
+                                <div>
+                                    <div class="num">3000+</div>
+                                    <div class="lab">Équipements installés</div>
+                                    <div class="note">Sur tout le territoire</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <svg class="ic ic-lg" aria-hidden="true">
+                                    <use href="#i-user-circle"/>
+                                </svg>
+                                <div>
+                                    <div class="num">98%</div>
+                                    <div class="lab">De clients satisfaits</div>
+                                    <div class="note">Notre meilleure fierté</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <svg class="ic ic-lg" aria-hidden="true">
+                                    <use href="#i-headset"/>
+                                </svg>
+                                <div>
+                                    <div class="num">24/7</div>
+                                    <div class="lab">Support technique</div>
+                                    <div class="note">Une équipe toujours disponible</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </section>
 
 
                 <!-- Expertises -->
-                <section class="exo-expertises">
+                 <section class="section" id="solutions" aria-labelledby="solutions-title">
+                    <div class="wrap">
 
-                    <div class="exo-container">
+                        <div class="section-head">
+                            <div class="eyebrow">Nos expertises</div>
 
-                        <div class="exo-section-heading">
-
-                            <span class="exo-section-subtitle">
-                                NOS EXPERTISES
-                            </span>
-
-                            <h2 class="exo-section-title">
-                                Des solutions adaptées à chaque besoin professionnel
+                            <h2 id="solutions-title">
+                                9 pôles d'expertise au service de votre performance
                             </h2>
 
-                            <p class="exo-section-description">
-                                EXOCOMS accompagne les entreprises grâce à un ensemble de solutions
-                                technologiques couvrant tous les besoins de votre activité.
+                            <p>
+                                Un interlocuteur unique pour équiper, connecter et sécuriser
+                                votre entreprise.
                             </p>
-
                         </div>
 
-                        <div class="exo-expertises-grid">
+                        <div class="exp-grid">
 
-                            <a href="/monetique" class="exo-expertise-card">
-                                <div class="exo-expertise-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/monetique.svg"
-                                        alt="Monétique"/>
+                            <article class="exp-card">
+                                <div class="ic-wrap">
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-monetique"/>
+                                    </svg>
                                 </div>
-
                                 <h3>Monétique</h3>
-
-                                <p>
-                                    Solutions de paiement et contrats monétiques adaptés aux professionnels.
-                                </p>
-
-                                <span class="exo-card-link">
-                                    Découvrir →
-                                </span>
-                            </a>
-
-                            <a href="/telecom" class="exo-expertise-card">
-                                <div class="exo-expertise-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/telecom.svg"
-                                        alt="Télécom"/>
+                                <ul>
+                                    <li>Terminaux de paiement fixes et mobiles</li>
+                                    <li>Solutions d'encaissement complètes</li>
+                                    <li>SoftPOS &amp; paiement mobile</li>
+                                </ul>
+                                <div class="go">
+                                    En savoir plus
+                                    <svg class="ic ic-sm" aria-hidden="true">
+                                        <use href="#i-arrow-right"/>
+                                    </svg>
                                 </div>
+                            </article>
 
-                                <h3>Télécom</h3>
-
-                                <p>
-                                    Internet, fibre, téléphonie fixe et mobile pour les entreprises.
-                                </p>
-
-                                <span class="exo-card-link">
-                                    Découvrir →
-                                </span>
-                            </a>
-
-                            <a href="/encaissement" class="exo-expertise-card">
-                                <div class="exo-expertise-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/encaissement.svg"
-                                        alt="Encaissement"/>
+                            <article class="exp-card">
+                                <div class="ic-wrap">
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-informatique"/>
+                                    </svg>
                                 </div>
-
-                                <h3>Encaissement</h3>
-
-                                <p>
-                                    Caisses, logiciels et matériels pour gérer votre point de vente.
-                                </p>
-
-                                <span class="exo-card-link">
-                                    Découvrir →
-                                </span>
-                            </a>
-
-                            <a href="/informatique" class="exo-expertise-card">
-                                <div class="exo-expertise-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/informatique.svg"
-                                        alt="Informatique"/>
-                                </div>
-
                                 <h3>Informatique</h3>
-
-                                <p>
-                                    Matériel informatique, maintenance et solutions professionnelles.
-                                </p>
-
-                                <span class="exo-card-link">
-                                    Découvrir →
-                                </span>
-                            </a>
-
-                            <a href="/reseaux" class="exo-expertise-card">
-                                <div class="exo-expertise-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/reseau.svg"
-                                        alt="Réseau &amp; Wi-Fi"/>
+                                <ul>
+                                    <li>Matériel &amp; logiciels</li>
+                                    <li>Infogérance &amp; maintenance</li>
+                                    <li>Cloud &amp; virtualisation</li>
+                                </ul>
+                                <div class="go">
+                                    En savoir plus
+                                    <svg class="ic ic-sm" aria-hidden="true">
+                                        <use href="#i-arrow-right"/>
+                                    </svg>
                                 </div>
+                            </article>
 
-                                <h3>Réseau &amp; Wi-Fi</h3>
-
-                                <p>
-                                    Installation et sécurisation de vos infrastructures réseau.
-                                </p>
-
-                                <span class="exo-card-link">
-                                    Découvrir →
-                                </span>
-                            </a>
-
-                            <a href="/securite" class="exo-expertise-card">
-                                <div class="exo-expertise-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/security.svg"
-                                        alt="Sécurité"/>
+                            <article class="exp-card">
+                                <div class="ic-wrap">
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-reseaux"/>
+                                    </svg>
                                 </div>
+                                <h3>Réseaux</h3>
+                                <ul>
+                                    <li>Câblage &amp; WiFi</li>
+                                    <li>Réseaux d'entreprise</li>
+                                    <li>Supervision &amp; sécurité</li>
+                                </ul>
+                                <div class="go">
+                                    En savoir plus
+                                    <svg class="ic ic-sm" aria-hidden="true">
+                                        <use href="#i-arrow-right"/>
+                                    </svg>
+                                </div>
+                            </article>
 
+                            <article class="exp-card">
+                                <div class="ic-wrap">
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-telecoms"/>
+                                    </svg>
+                                </div>
+                                <h3>Télécoms</h3>
+                                <ul>
+                                    <li>Fibre optique</li>
+                                    <li>Téléphonie VoIP</li>
+                                    <li>Forfaits &amp; opérateurs</li>
+                                </ul>
+                                <div class="go">
+                                    En savoir plus
+                                    <svg class="ic ic-sm" aria-hidden="true">
+                                        <use href="#i-arrow-right"/>
+                                    </svg>
+                                </div>
+                            </article>
+
+                            <article class="exp-card">
+                                <div class="ic-wrap">
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-securite"/>
+                                    </svg>
+                                </div>
                                 <h3>Sécurité</h3>
-
-                                <p>
-                                    Vidéosurveillance, contrôle d'accès et protection de vos locaux.
-                                </p>
-
-                                <span class="exo-card-link">
-                                    Découvrir →
-                                </span>
-                            </a>
-
-                            <a href="/affichage-dynamique" class="exo-expertise-card">
-                                <div class="exo-expertise-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/display.svg"
-                                        alt="Affichage dynamique"/>
+                                <ul>
+                                    <li>Vidéosurveillance</li>
+                                    <li>Contrôle d'accès</li>
+                                    <li>Alarmes &amp; intrusion</li>
+                                </ul>
+                                <div class="go">
+                                    En savoir plus
+                                    <svg class="ic ic-sm" aria-hidden="true">
+                                        <use href="#i-arrow-right"/>
+                                    </svg>
                                 </div>
+                            </article>
 
-                                <h3>Affichage dynamique</h3>
-
-                                <p>
-                                    Valorisez votre communication grâce à des écrans professionnels.
-                                </p>
-
-                                <span class="exo-card-link">
-                                    Découvrir →
-                                </span>
-                            </a>
-
-                            <a href="/distribution-automatique" class="exo-expertise-card">
-                                <div class="exo-expertise-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/vending.svg"
-                                        alt="Distribution automatique"/>
+                            <article class="exp-card">
+                                <div class="ic-wrap">
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-wifi"/>
+                                    </svg>
                                 </div>
-
-                                <h3>Distribution automatique</h3>
-
-                                <p>
-                                    Des solutions modernes pour la distribution et le libre-service.
-                                </p>
-
-                                <span class="exo-card-link">
-                                    Découvrir →
-                                </span>
-                            </a>
-
-                            <a href="/autres-solutions" class="exo-expertise-card">
-                                <div class="exo-expertise-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/services.svg"
-                                        alt="Autres solutions"/>
+                                <h3>WiFi</h3>
+                                <ul>
+                                    <li>WiFi professionnel</li>
+                                    <li>WiFi sécurisé</li>
+                                    <li>Portail captif</li>
+                                </ul>
+                                <div class="go">
+                                    En savoir plus
+                                    <svg class="ic ic-sm" aria-hidden="true">
+                                        <use href="#i-arrow-right"/>
+                                    </svg>
                                 </div>
+                            </article>
 
-                                <h3>Autres solutions</h3>
+                            <article class="exp-card">
+                                <div class="ic-wrap">
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-cloud"/>
+                                    </svg>
+                                </div>
+                                <h3>Cloud</h3>
+                                <ul>
+                                    <li>Hébergement</li>
+                                    <li>Sauvegarde &amp; PRA</li>
+                                    <li>Solutions SaaS</li>
+                                </ul>
+                                <div class="go">
+                                    En savoir plus
+                                    <svg class="ic ic-sm" aria-hidden="true">
+                                        <use href="#i-arrow-right"/>
+                                    </svg>
+                                </div>
+                            </article>
 
-                                <p>
-                                    Découvrez l'ensemble de nos services complémentaires.
-                                </p>
+                            <article class="exp-card">
+                                <div class="ic-wrap">
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-maintenance"/>
+                                    </svg>
+                                </div>
+                                <h3>Maintenance</h3>
+                                <ul>
+                                    <li>Support technique 24/7</li>
+                                    <li>Maintenance préventive</li>
+                                    <li>Intervention rapide</li>
+                                </ul>
+                                <div class="go">
+                                    En savoir plus
+                                    <svg class="ic ic-sm" aria-hidden="true">
+                                        <use href="#i-arrow-right"/>
+                                    </svg>
+                                </div>
+                            </article>
 
-                                <span class="exo-card-link">
-                                    Découvrir →
-                                </span>
-                            </a>
+                            <article class="exp-card">
+                                <div class="ic-wrap">
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-video"/>
+                                    </svg>
+                                </div>
+                                <h3>Vidéosurveillance</h3>
+                                <ul>
+                                    <li>Caméras IP</li>
+                                    <li>Enregistrement &amp; stockage</li>
+                                    <li>Supervision à distance</li>
+                                </ul>
+                                <div class="go">
+                                    En savoir plus
+                                    <svg class="ic ic-sm" aria-hidden="true">
+                                        <use href="#i-arrow-right"/>
+                                    </svg>
+                                </div>
+                            </article>
 
                         </div>
-
                     </div>
-
                 </section>
 
 
                 <!-- Secteurs -->
-                <section class="exo-sectors">
+                 <section class="section section-sectors"
+                    id="secteurs"
+                    aria-labelledby="sectors-title">
 
-                    <div class="exo-container">
+                <div class="wrap">
 
-                        <div class="exo-section-heading">
+                    <div class="section-head">
+                        <div class="eyebrow">Nos secteurs d'activité</div>
 
-                            <span class="exo-section-subtitle">
-                                NOS SECTEURS
-                            </span>
+                        <h2 id="sectors-title">
+                            Des solutions adaptées à votre métier
+                        </h2>
 
-                            <h2 class="exo-section-title">
-                                Des solutions adaptées à votre activité
-                            </h2>
+                        <p>
+                            Chaque secteur a ses contraintes. Nous configurons nos solutions
+                            selon votre réalité de terrain.
+                        </p>
+                    </div>
 
-                            <p class="exo-section-description">
-                                Quel que soit votre secteur d'activité, EXOCOMS vous accompagne avec
-                                des solutions pensées pour répondre à vos besoins métiers.
+                    <div class="sector-grid">
+
+                        <article class="sector-card">
+                            <div class="art art-restaurant">
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-restaurant"/>
+                                </svg>
+                            </div>
+                            <h4>Restaurants</h4>
+                            <p>
+                                Encaissement en salle et en terrasse, commande à table,
+                                addition partagée.
                             </p>
+                            <ul>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    TPE portables longue autonomie
+                                </li>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    Caisse tactile et imprimante cuisine
+                                </li>
+                            </ul>
+                        </article>
 
+                        <article class="sector-card">
+                            <div class="art art-commerce">
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-shop"/>
+                                </svg>
+                            </div>
+                            <h4>Commerces</h4>
+                            <p>
+                                Caisse, gestion de stock et vidéoprotection pour votre
+                                point de vente.
+                            </p>
+                            <ul>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    Douchettes et étiquetage
+                                </li>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    Vidéosurveillance de la surface de vente
+                                </li>
+                            </ul>
+                        </article>
+
+                        <article class="sector-card">
+                            <div class="art art-hotel">
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-hotel"/>
+                                </svg>
+                            </div>
+                            <h4>Hôtels</h4>
+                            <p>
+                                WiFi clients, téléphonie de chambre et encaissement à la
+                                réception.
+                            </p>
+                            <ul>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    Portail captif et WiFi par étage
+                                </li>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    Contrôle d'accès des zones privées
+                                </li>
+                            </ul>
+                        </article>
+
+                        <article class="sector-card">
+                            <div class="art art-pharmacy">
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-pharmacy"/>
+                                </svg>
+                            </div>
+                            <h4>Pharmacies</h4>
+                            <p>
+                                Postes de comptoir fiables, lecture Vitale et sauvegarde
+                                des données.
+                            </p>
+                            <ul>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    Matériel compatible logiciels officinaux
+                                </li>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    Sauvegarde et plan de reprise
+                                </li>
+                            </ul>
+                        </article>
+
+                        <article class="sector-card">
+                            <div class="art art-collectivite">
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-collectivite"/>
+                                </svg>
+                            </div>
+                            <h4>Collectivités</h4>
+                            <p>
+                                Réseaux multi-sites, vidéoprotection urbaine et marchés
+                                publics.
+                            </p>
+                            <ul>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    Réponse aux appels d'offres
+                                </li>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    Supervision centralisée
+                                </li>
+                            </ul>
+                        </article>
+
+                        <article class="sector-card">
+                            <div class="art art-pme">
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-pme"/>
+                                </svg>
+                            </div>
+                            <h4>PME / PMI</h4>
+                            <p>
+                                Infogérance, téléphonie et sécurité pour vos bureaux et
+                                ateliers.
+                            </p>
+                            <ul>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    Parc informatique infogéré
+                                </li>
+                                <li>
+                                    <svg class="ic" aria-hidden="true">
+                                        <use href="#i-check"/>
+                                    </svg>
+                                    Téléphonie VoIP et fibre
+                                </li>
+                            </ul>
+                        </article>
+
+                    </div>
+                </div>
+            </section>
+
+
+                <!-- Testimonials -->
+                <section class="section section-testimonials"
+                    id="confiance"
+                    aria-labelledby="testimonials-title">
+
+                <div class="wrap">
+
+                    <div class="section-head">
+                        <div class="eyebrow">
+                            Ils nous font confiance
                         </div>
 
-                        <div class="exo-sectors-grid">
+                        <h2 id="testimonials-title">
+                            Découvrez les avis de nos clients
+                        </h2>
+                    </div>
 
-                            <div class="exo-sector-card">
+                    <div class="test-grid">
 
-                                <img
-                                    src="/monetique_theme/static/src/img/sectors/commerce.jpg"
-                                    alt="Commerce"
-                                />
+                        <article class="test-card">
+                            <svg class="qmark" aria-hidden="true">
+                                <use href="#i-quote"/>
+                            </svg>
 
-                                <div class="exo-sector-content">
-                                    <h3>Commerce</h3>
-                                    <p>
-                                        Paiement, encaissement et solutions digitales pour les commerces.
-                                    </p>
-                                </div>
-
+                            <div class="stars" aria-label="5 étoiles sur 5">
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
                             </div>
 
-                            <div class="exo-sector-card">
+                            <p>
+                                « Installation rapide et SAV exceptionnel. Une équipe à
+                                l'écoute et des solutions parfaitement adaptées à nos besoins. »
+                            </p>
 
-                                <img
-                                    src="/monetique_theme/static/src/img/sectors/restaurant.jpg"
-                                    alt="Restauration"
-                                />
+                            <div class="test-who">
+                                <div class="avatar">JM</div>
 
-                                <div class="exo-sector-content">
-                                    <h3>Restauration</h3>
-                                    <p>
-                                        Des outils performants pour simplifier la gestion de votre établissement.
-                                    </p>
+                                <div>
+                                    <div class="who-name">Julien M.</div>
+                                    <div class="who-role">Gérant de restaurant</div>
                                 </div>
+                            </div>
+                        </article>
 
+                        <article class="test-card">
+                            <svg class="qmark" aria-hidden="true">
+                                <use href="#i-quote"/>
+                            </svg>
+
+                            <div class="stars" aria-label="5 étoiles sur 5">
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
                             </div>
 
-                            <div class="exo-sector-card">
+                            <p>
+                                « Nous avons remplacé tout notre système d'encaissement
+                                avec EXOCOMS. Résultat : plus de fiabilité et un vrai gain
+                                de temps au quotidien. »
+                            </p>
 
-                                <img
-                                    src="/monetique_theme/static/src/img/sectors/pme.jpg"
-                                    alt="PME"
-                                />
+                            <div class="test-who">
+                                <div class="avatar">SL</div>
 
-                                <div class="exo-sector-content">
-                                    <h3>PME</h3>
-                                    <p>
-                                        Des solutions évolutives pour accompagner la croissance de votre entreprise.
-                                    </p>
+                                <div>
+                                    <div class="who-name">Sophie L.</div>
+                                    <div class="who-role">Pharmacie Centrale</div>
                                 </div>
+                            </div>
+                        </article>
 
+                        <article class="test-card">
+                            <svg class="qmark" aria-hidden="true">
+                                <use href="#i-quote"/>
+                            </svg>
+
+                            <div class="stars" aria-label="5 étoiles sur 5">
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
+                                <svg class="ic" aria-hidden="true">
+                                    <use href="#i-star"/>
+                                </svg>
                             </div>
 
-                            <div class="exo-sector-card">
+                            <p>
+                                « Partenaire de confiance depuis plusieurs années. Réactifs,
+                                pros et toujours force de proposition. »
+                            </p>
 
-                                <img
-                                    src="/monetique_theme/static/src/img/sectors/franchise.jpg"
-                                    alt="Franchise"
-                                />
+                            <div class="test-who">
+                                <div class="avatar">KD</div>
 
-                                <div class="exo-sector-content">
-                                    <h3>Franchise</h3>
-                                    <p>
-                                        Uniformisez vos équipements et optimisez la gestion de vos points de vente.
-                                    </p>
+                                <div>
+                                    <div class="who-name">Karim D.</div>
+                                    <div class="who-role">Responsable IT</div>
                                 </div>
+                            </div>
+                        </article>
 
+                    </div>
+
+                </div>
+            </section>
+
+
+                <!-- Pourquoi nous choisir -->
+                 <section class="section section-why"
+                    id="pourquoi"
+                    aria-labelledby="why-title">
+
+                <div class="wrap">
+
+                    <div class="why">
+
+                        <div class="why-top">
+                            <div class="eyebrow">
+                                Pourquoi choisir EXOCOMS ?
                             </div>
 
-                            <div class="exo-sector-card">
+                            <h2 id="why-title">
+                                Un partenaire fiable au service de
+                                <em>votre réussite</em>.
+                            </h2>
 
-                                <img
-                                    src="/monetique_theme/static/src/img/sectors/sante.jpg"
-                                    alt="Santé"
-                                />
+                            <p>
+                                Notre expertise, notre réactivité et la qualité de nos
+                                équipements font d'EXOCOMS un acteur de confiance pour les
+                                entreprises de toutes tailles.
+                            </p>
 
-                                <div class="exo-sector-content">
-                                    <h3>Santé</h3>
-                                    <p>
-                                        Des solutions fiables et sécurisées adaptées aux professionnels de santé.
-                                    </p>
-                                </div>
+                            <a href="#contact" class="btn btn-dark">
+                                En savoir plus sur Exocoms
 
+                                <svg class="ic ic-sm" aria-hidden="true">
+                                    <use href="#i-arrow-right"/>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <div class="why-list">
+
+                            <div class="why-item">
+                                <svg class="ic ic-lg" aria-hidden="true">
+                                    <use href="#i-user-circle"/>
+                                </svg>
+
+                                <h4>Accompagnement personnalisé</h4>
+                                <p>Un interlocuteur dédié à chaque projet</p>
                             </div>
 
-                            <div class="exo-sector-card">
+                            <div class="why-item">
+                                <svg class="ic ic-lg" aria-hidden="true">
+                                    <use href="#i-map-pin"/>
+                                </svg>
 
-                                <img
-                                    src="/monetique_theme/static/src/img/sectors/collectivite.jpg"
-                                    alt="Collectivités"
-                                />
+                                <h4>Installation partout en France</h4>
+                                <p>Une présence nationale pour vous servir</p>
+                            </div>
 
-                                <div class="exo-sector-content">
-                                    <h3>Collectivités</h3>
-                                    <p>
-                                        Accompagner les organismes publics avec des solutions performantes.
-                                    </p>
-                                </div>
+                            <div class="why-item">
+                                <svg class="ic ic-lg" aria-hidden="true">
+                                    <use href="#i-bolt"/>
+                                </svg>
 
+                                <h4>Réactivité &amp; proximité</h4>
+                                <p>Intervention rapide et efficace</p>
+                            </div>
+
+                            <div class="why-item">
+                                <svg class="ic ic-lg" aria-hidden="true">
+                                    <use href="#i-badge-check"/>
+                                </svg>
+
+                                <h4>Matériel professionnel &amp; certifié</h4>
+                                <p>Des marques reconnues et fiables</p>
+                            </div>
+
+                            <div class="why-item">
+                                <svg class="ic ic-lg" aria-hidden="true">
+                                    <use href="#i-chart-up"/>
+                                </svg>
+
+                                <h4>Solutions évolutives</h4>
+                                <p>Des solutions adaptées à votre croissance</p>
                             </div>
 
                         </div>
 
                     </div>
 
-                </section>
-
-
-                <!-- Témoignages -->
-                <section class="exo-testimonials">
-
-                    <div class="exo-container">
-
-                        <div class="exo-section-heading">
-
-                            <span class="exo-section-subtitle">
-                                ILS NOUS FONT CONFIANCE
-                            </span>
-
-                            <h2 class="exo-section-title">
-                                Ce que nos clients disent de nous
-                            </h2>
-
-                            <p class="exo-section-description">
-                                Chaque projet est une collaboration. Découvrez l'expérience de nos clients.
-                            </p>
-
-                        </div>
-
-                        <div class="exo-testimonials-wrapper">
-
-                            <button class="exo-testimonial-btn exo-testimonial-prev">
-                                &#10094;
-                            </button>
-
-                            <div class="exo-testimonials-slider">
-
-                                <div class="exo-testimonial-card">
-
-                                    <div class="exo-testimonial-rating">
-                                        ★★★★★
-                                    </div>
-
-                                    <p class="exo-testimonial-text">
-                                        EXOCOMS nous a accompagnés dans le déploiement de notre solution
-                                        d'encaissement et de paiement. L'équipe a été réactive et très
-                                        professionnelle.
-                                    </p>
-
-                                    <div class="exo-testimonial-author">
-
-                                        <img
-                                            src="/monetique_theme/static/src/img/testimonials/client-1.jpg"
-                                            alt="Client"
-                                        />
-
-                                        <div>
-
-                                            <h4>Jean Dupont</h4>
-
-                                            <span>
-                                                Directeur • Commerce
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="exo-testimonial-card">
-
-                                    <div class="exo-testimonial-rating">
-                                        ★★★★★
-                                    </div>
-
-                                    <p class="exo-testimonial-text">
-                                        Une équipe disponible et compétente. Notre installation télécom
-                                        s'est déroulée sans aucune difficulté.
-                                    </p>
-
-                                    <div class="exo-testimonial-author">
-
-                                        <img
-                                            src="/monetique_theme/static/src/img/testimonials/client-2.jpg"
-                                            alt="Client"
-                                        />
-
-                                        <div>
-
-                                            <h4>Sophie Martin</h4>
-
-                                            <span>
-                                                Gérante • Restaurant
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="exo-testimonial-card">
-
-                                    <div class="exo-testimonial-rating">
-                                        ★★★★★
-                                    </div>
-
-                                    <p class="exo-testimonial-text">
-                                        Nous faisons confiance à EXOCOMS depuis plusieurs années pour
-                                        l'ensemble de notre infrastructure informatique.
-                                    </p>
-
-                                    <div class="exo-testimonial-author">
-
-                                        <img
-                                            src="/monetique_theme/static/src/img/testimonials/client-3.jpg"
-                                            alt="Client"
-                                        />
-
-                                        <div>
-
-                                            <h4>Marc Bernard</h4>
-
-                                            <span>
-                                                Responsable IT • PME
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <button class="exo-testimonial-btn exo-testimonial-next">
-                                &#10095;
-                            </button>
-
-                        </div>
-
-                        <div class="exo-testimonial-dots">
-
-                            <span class="active"></span>
-                            <span></span>
-                            <span></span>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- Pourquoi choisir exocoms -->
-                <section class="exo-why">
-
-                    <div class="exo-container">
-
-                        <div class="exo-section-heading">
-
-                            <span class="exo-section-subtitle">
-                                POURQUOI EXOCOMS ?
-                            </span>
-
-                            <h2 class="exo-section-title">
-                                Pourquoi choisir EXOCOMS comme partenaire ?
-                            </h2>
-
-                            <p class="exo-section-description">
-                                Notre engagement est d'accompagner les professionnels avec des
-                                solutions fiables, innovantes et un service de proximité.
-                            </p>
-
-                        </div>
-
-                        <div class="exo-why-grid">
-
-                            <div class="exo-why-card">
-
-                                <div class="exo-why-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/expertise.svg"
-                                        alt="Expertise"/>
-                                </div>
-
-                                <h3>Une expertise reconnue</h3>
-
-                                <p>
-                                    Plus de 20 ans d'expérience dans les solutions technologiques
-                                    dédiées aux professionnels.
-                                </p>
-
-                            </div>
-
-                            <div class="exo-why-card">
-
-                                <div class="exo-why-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/support.svg"
-                                        alt="Support"/>
-                                </div>
-
-                                <h3>Accompagnement personnalisé</h3>
-
-                                <p>
-                                    Un interlocuteur unique pour vous conseiller et suivre votre
-                                    projet de A à Z.
-                                </p>
-
-                            </div>
-
-                            <div class="exo-why-card">
-
-                                <div class="exo-why-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/solution.svg"
-                                        alt="Solutions"/>
-                                </div>
-
-                                <h3>Solutions sur mesure</h3>
-
-                                <p>
-                                    Des offres adaptées à votre activité et aux besoins spécifiques
-                                    de votre entreprise.
-                                </p>
-
-                            </div>
-
-                            <div class="exo-why-card">
-
-                                <div class="exo-why-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/security.svg"
-                                        alt="Sécurité"/>
-                                </div>
-
-                                <h3>Fiabilité &amp; Sécurité</h3>
-
-                                <p>
-                                    Des équipements performants et des partenaires reconnus pour
-                                    garantir la continuité de vos services.
-                                </p>
-
-                            </div>
-
-                            <div class="exo-why-card">
-
-                                <div class="exo-why-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/innovation.svg"
-                                        alt="Innovation"/>
-                                </div>
-
-                                <h3>Innovation continue</h3>
-
-                                <p>
-                                    Nous sélectionnons les technologies les plus récentes pour
-                                    accompagner votre transformation digitale.
-                                </p>
-
-                            </div>
-
-                            <div class="exo-why-card">
-
-                                <div class="exo-why-icon">
-                                    <img src="/monetique_theme/static/src/img/icons/service.svg"
-                                        alt="Réactivité"/>
-                                </div>
-
-                                <h3>Réactivité</h3>
-
-                                <p>
-                                    Nos équipes interviennent rapidement afin d'assurer le bon
-                                    fonctionnement de vos solutions.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </section>
+                </div>
+            </section>
 
 
                 <!-- Notre Méthode -->
-                <section class="exo-method">
+                 <section class="section section-method"
+                    id="methode"
+                    aria-labelledby="method-title">
 
-                    <div class="exo-container">
+                <div class="wrap">
 
-                        <div class="exo-section-heading">
-
-                            <span class="exo-section-subtitle">
-                                NOTRE MÉTHODE
-                            </span>
-
-                            <h2 class="exo-section-title">
-                                Une méthode simple et efficace
-                            </h2>
-
-                            <p class="exo-section-description">
-                                Nous accompagnons chaque client à travers un processus structuré,
-                                garantissant des solutions adaptées et un suivi de qualité.
-                            </p>
-
+                    <div class="section-head">
+                        <div class="eyebrow">
+                            Notre méthode
                         </div>
 
-                        <div class="exo-method-timeline">
+                        <h2 id="method-title">
+                            Une approche simple, du conseil au déploiement
+                        </h2>
 
-                            <div class="exo-method-step">
+                        <p>
+                            Chaque projet avance avec une méthode claire et un interlocuteur
+                            dédié à vos côtés.
+                        </p>
+                    </div>
 
-                                <div class="exo-method-number">
-                                    01
-                                </div>
+                    <div class="method-timeline">
 
-                                <h3>Écoute</h3>
+                        <div class="method-item">
+                            <div class="method-number">01</div>
+                            <h3>Écoute</h3>
+                            <p>
+                                Nous commençons par comprendre votre activité, vos usages
+                                et vos contraintes.
+                            </p>
+                        </div>
 
-                                <p>
-                                    Comprendre vos besoins, vos contraintes et vos objectifs.
-                                </p>
+                        <div class="method-item">
+                            <div class="method-number">02</div>
+                            <h3>Analyse</h3>
+                            <p>
+                                Nous réalisons un diagnostic précis de votre environnement
+                                existant.
+                            </p>
+                        </div>
 
-                            </div>
+                        <div class="method-item">
+                            <div class="method-number">03</div>
+                            <h3>Conseil</h3>
+                            <p>
+                                Nous vous proposons une solution adaptée à votre activité
+                                et à votre budget.
+                            </p>
+                        </div>
 
-                            <div class="exo-method-line"></div>
+                        <div class="method-item">
+                            <div class="method-number">04</div>
+                            <h3>Déploiement</h3>
+                            <p>
+                                Nos équipes installent et configurent vos équipements avec
+                                un minimum d'interruption.
+                            </p>
+                        </div>
 
-                            <div class="exo-method-step">
-
-                                <div class="exo-method-number">
-                                    02
-                                </div>
-
-                                <h3>Analyse</h3>
-
-                                <p>
-                                    Étudier votre environnement afin de proposer la meilleure solution.
-                                </p>
-
-                            </div>
-
-                            <div class="exo-method-line"></div>
-
-                            <div class="exo-method-step">
-
-                                <div class="exo-method-number">
-                                    03
-                                </div>
-
-                                <h3>Conseil</h3>
-
-                                <p>
-                                    Vous orienter vers des solutions performantes et adaptées à votre activité.
-                                </p>
-
-                            </div>
-
-                            <div class="exo-method-line"></div>
-
-                            <div class="exo-method-step">
-
-                                <div class="exo-method-number">
-                                    04
-                                </div>
-
-                                <h3>Déploiement</h3>
-
-                                <p>
-                                    Installer, configurer et mettre en service vos équipements.
-                                </p>
-
-                            </div>
-
-                            <div class="exo-method-line"></div>
-
-                            <div class="exo-method-step">
-
-                                <div class="exo-method-number">
-                                    05
-                                </div>
-
-                                <h3>Accompagnement</h3>
-
-                                <p>
-                                    Assurer un suivi durable et une assistance réactive après le déploiement.
-                                </p>
-
-                            </div>
-
+                        <div class="method-item">
+                            <div class="method-number">05</div>
+                            <h3>Accompagnement</h3>
+                            <p>
+                                Nous restons disponibles pour la maintenance, le support et
+                                l'évolution de vos solutions.
+                            </p>
                         </div>
 
                     </div>
 
-                </section>
+                </div>
+            </section>
 
 
                 <!-- Revendeurs -->
-                <section class="exo-reseller">
+                 <section class="section section-resellers"
+                    id="revendeurs"
+                    aria-labelledby="reseller-title">
 
-                    <div class="exo-container">
+                <div class="wrap">
 
-                        <div class="exo-reseller-content">
+                    <div class="reseller-band">
 
-                            <div class="exo-reseller-image">
-
-                                <img
-                                    src="/monetique_theme/static/src/img/reseller/reseller.jpg"
-                                    alt="Espace Revendeurs EXOCOMS"
-                                />
-
+                        <div class="reseller-content">
+                            <div class="eyebrow">
+                                Devenez revendeur
                             </div>
 
-                            <div class="exo-reseller-text">
+                            <h2 id="reseller-title">
+                                Développez votre activité avec EXOCOMS
+                            </h2>
 
-                                <span class="exo-section-subtitle">
-                                    ESPACE REVENDEURS
-                                </span>
+                            <p>
+                                Rejoignez notre réseau de partenaires et proposez à vos
+                                clients des solutions technologiques fiables, évolutives
+                                et accompagnées par une équipe spécialisée.
+                            </p>
 
-                                <h2 class="exo-section-title">
-                                    Rejoignez notre réseau de partenaires
-                                </h2>
+                            <a href="#contact" class="btn btn-outline-light">
+                                Découvrir l'espace revendeurs
 
-                                <p class="exo-section-description">
-                                    Développez votre activité en proposant les solutions EXOCOMS à vos
-                                    clients. Nous mettons à votre disposition des offres compétitives,
-                                    un accompagnement personnalisé et des outils pour faciliter votre
-                                    développement commercial.
-                                </p>
+                                <svg class="ic ic-sm" aria-hidden="true">
+                                    <use href="#i-arrow-right"/>
+                                </svg>
+                            </a>
+                        </div>
 
-                                <ul class="exo-reseller-list">
+                        <div class="reseller-benefits">
+                            <h3>Les avantages partenaires</h3>
 
-                                    <li>
-                                        <i class="fa fa-check"></i>
-                                        Offres exclusives réservées aux partenaires
-                                    </li>
-
-                                    <li>
-                                        <i class="fa fa-check"></i>
-                                        Accompagnement commercial et technique
-                                    </li>
-
-                                    <li>
-                                        <i class="fa fa-check"></i>
-                                        Formations sur nos solutions
-                                    </li>
-
-                                    <li>
-                                        <i class="fa fa-check"></i>
-                                        Assistance dédiée et support prioritaire
-                                    </li>
-
-                                </ul>
-
-                                <div class="exo-reseller-actions">
-
-                                    <a href="/revendeurs" class="exo-btn exo-btn-primary">
-                                        Découvrir l'espace revendeurs
-                                    </a>
-
-                                    <a href="/contact" class="exo-btn exo-btn-secondary">
-                                        Devenir partenaire
-                                    </a>
-
-                                </div>
-
+                            <div class="reseller-benefit">
+                                <svg class="ic ic-sm" aria-hidden="true">
+                                    <use href="#i-check-circle"/>
+                                </svg>
+                                <span>Une offre technologique complète</span>
                             </div>
 
+                            <div class="reseller-benefit">
+                                <svg class="ic ic-sm" aria-hidden="true">
+                                    <use href="#i-check-circle"/>
+                                </svg>
+                                <span>Des conditions commerciales adaptées</span>
+                            </div>
+
+                            <div class="reseller-benefit">
+                                <svg class="ic ic-sm" aria-hidden="true">
+                                    <use href="#i-check-circle"/>
+                                </svg>
+                                <span>Un support avant-vente et après-vente</span>
+                            </div>
+
+                            <div class="reseller-benefit">
+                                <svg class="ic ic-sm" aria-hidden="true">
+                                    <use href="#i-check-circle"/>
+                                </svg>
+                                <span>Un accompagnement commercial personnalisé</span>
+                            </div>
                         </div>
 
                     </div>
 
-                </section>
+                </div>
+            </section>
 
 
                 <!-- CTA -->
-                <section class="exo-cta">
+                 <section class="section section-final-cta"
+                    id="contact"
+                    aria-labelledby="cta-title">
 
-                    <div class="exo-container">
+                <div class="wrap">
 
-                        <div class="exo-cta-content">
+                    <div class="cta-band">
 
-                            <span class="exo-section-subtitle">
-                                PARLONS DE VOTRE PROJET
-                            </span>
-
-                            <h2 class="exo-cta-title">
-                                Accélérez votre transformation digitale avec EXOCOMS
-                            </h2>
-
-                            <p class="exo-cta-description">
-                                Vous recherchez une solution en monétique, télécommunications,
-                                informatique, réseaux ou sécurité ? Nos experts sont à votre écoute
-                                pour vous accompagner dans la réussite de votre projet.
-                            </p>
-
-                            <div class="exo-cta-actions">
-
-                                <a href="/contact" class="exo-btn exo-btn-primary">
-                                    Demander un devis
-                                </a>
-
-                                <a href="/contact" class="exo-btn exo-btn-secondary">
-                                    Nous contacter
-                                </a>
-
+                        <div>
+                            <div class="eyebrow">
+                                Un projet ?
                             </div>
 
+                            <h2 id="cta-title">
+                                Construisons ensemble la solution adaptée à votre activité.
+                            </h2>
+
+                            <p>
+                                Décrivez-nous votre besoin. Notre équipe vous répond sous
+                                24 heures ouvrées avec une proposition adaptée.
+                            </p>
+                        </div>
+
+                        <div class="cta-actions">
+                            <a href="/contact" class="btn btn-dark">
+                                Demander un devis
+
+                                <svg class="ic ic-sm" aria-hidden="true">
+                                    <use href="#i-arrow-right"/>
+                                </svg>
+                            </a>
+
+                            <a href="mailto:contact@exocoms.fr"
+                            class="btn btn-outline-light">
+                                Nous contacter
+
+                                <svg class="ic ic-sm" aria-hidden="true">
+                                    <use href="#i-arrow-right"/>
+                                </svg>
+                            </a>
                         </div>
 
                     </div>
 
-                </section>
+                </div>
+            </section>
+
 
             </main>
 
