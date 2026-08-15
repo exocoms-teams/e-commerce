@@ -27,7 +27,7 @@
                         <div class="row g-4">
                             <!-- Soins de la Peau Category -->
                             <div class="col-md-6">
-                                <a href="/shop/category/skincare" class="text-decoration-none">
+                                <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_skincare')) }}" class="text-decoration-none">
                                     <div class="oa-gallery-card text-center h-100 position-relative overflow-hidden">
                                         <!-- Note: Real deployment would use an uploaded image via website builder -->
                                         <div class="oa-gallery-img oa-gallery-img--1"></div>
@@ -40,7 +40,7 @@
                             </div>
                             <!-- Maquillage Category -->
                             <div class="col-md-6">
-                                <a href="/shop/category/makeup" class="text-decoration-none">
+                                <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_makeup')) }}" class="text-decoration-none">
                                     <div class="oa-gallery-card text-center h-100 position-relative overflow-hidden">
                                         <div class="oa-gallery-img oa-gallery-img--2"></div>
                                         <div class="p-4" style="background: white;">
@@ -64,7 +64,7 @@
                             <t t-set="best_sellers" t-value="request.env['product.template'].sudo().search([('is_published', '=', True), ('website_id', '=', website.id)], limit=3, order='list_price desc')"/>
                             <t t-if="best_sellers">
                                 <t t-foreach="best_sellers" t-as="product">
-                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                    <a t-att-href="product.website_url" class="oa-product-card">
                                         <div class="oa-product-img">
                                             <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
                                         </div>
@@ -97,7 +97,7 @@
                             <t t-set="new_arrivals" t-value="request.env['product.template'].sudo().search([('is_published', '=', True), ('website_id', '=', website.id)], limit=3, order='create_date desc')"/>
                             <t t-if="new_arrivals">
                                 <t t-foreach="new_arrivals" t-as="product">
-                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                    <a t-att-href="product.website_url" class="oa-product-card">
                                         <div class="oa-product-img">
                                             <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
                                             <div class="position-absolute top-0 end-0 m-2">
@@ -151,7 +151,7 @@
                             <div class="col-lg-8">
                                 <h1 class="oa-hero-h1 mb-4">Une Belle Peau Commence Ici</h1>
                                 <p class="oa-hero-tagline fs-5 mb-5">Un rituel luxueux adapté aux besoins uniques de votre peau. Découvrez nos nettoyants, sérums, hydratants et traitements conçus par des experts.</p>
-                                <a href="/shop/category/skincare" class="oa-btn-primary">Shop All Soins de la Peau</a>
+                                <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_skincare')) }}" class="oa-btn-primary">Shop All Soins de la Peau</a>
                             </div>
                         </div>
                     </div>
@@ -165,7 +165,7 @@
                                 <div class="p-4">
                                     <h2 class="oa-section-heading">Nettoyants</h2>
                                     <p class="oa-about-text">Purifiez et préparez votre peau avec nos formules douces et efficaces. La première étape pour un teint parfait.</p>
-                                    <a href="/shop/category/skincare-cleansers" class="oa-btn-primary mt-3">Explore Nettoyants</a>
+                                    <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_skincare')) }}" class="oa-btn-primary mt-3">Explore Nettoyants</a>
                                 </div>
                             </div>
                             <div class="col-md-6 order-md-1">
@@ -180,7 +180,7 @@
                                 <div class="p-4">
                                     <h2 class="oa-section-heading">Sérums</h2>
                                     <p class="oa-about-text">Des soins ciblés riches en actifs puissants pour illuminer, raffermir et rajeunir.</p>
-                                    <a href="/shop/category/skincare-serums" class="oa-btn-primary mt-3">Explore Sérums</a>
+                                    <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_skincare')) }}" class="oa-btn-primary mt-3">Explore Sérums</a>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -195,7 +195,7 @@
                                 <div class="p-4">
                                     <h2 class="oa-section-heading">Hydratants</h2>
                                     <p class="oa-about-text">Scellez l'hydratation et protégez la barrière de votre peau avec nos crèmes riches et nourrissantes.</p>
-                                    <a href="/shop/category/skincare-moisturizers" class="oa-btn-primary mt-3">Explore Hydratants</a>
+                                    <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_skincare')) }}" class="oa-btn-primary mt-3">Explore Hydratants</a>
                                 </div>
                             </div>
                             <div class="col-md-6 order-md-1">
@@ -210,7 +210,7 @@
                                 <div class="p-4">
                                     <h2 class="oa-section-heading">Traitements</h2>
                                     <p class="oa-about-text">Sublimez votre routine avec des masques spécialisés et des soins ciblés pour un éclat absolu.</p>
-                                    <a href="/shop/category/skincare-treatments" class="oa-btn-primary mt-3">Explore Traitements</a>
+                                    <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_skincare')) }}" class="oa-btn-primary mt-3">Explore Traitements</a>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -262,7 +262,7 @@
                             <div class="col-lg-8">
                                 <h1 class="oa-hero-h1 mb-4">La Beauté qui Sublime,<br/>Sans Jamais Cacher</h1>
                                 <p class="oa-hero-tagline fs-5 mb-5">Élevez votre quotidien avec notre collection de maquillage premium. Des formules clean et longue tenue conçues pour une élégance sans effort.</p>
-                                <a href="/shop/category/makeup" class="oa-btn-primary">Shop All Maquillage</a>
+                                <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_makeup')) }}" class="oa-btn-primary">Shop All Maquillage</a>
                             </div>
                         </div>
                     </div>
@@ -276,7 +276,7 @@
                                 <div class="p-4">
                                     <h2 class="oa-section-heading">Teint</h2>
                                     <p class="oa-about-text">Une couvrance impeccable et respirante. Découvrez nos fonds de teint, anti-cernes et poudres fixatrices pour un teint lumineux.</p>
-                                    <a href="/shop/category/makeup-face" class="oa-btn-primary mt-3">Shop Teint</a>
+                                    <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_makeup')) }}" class="oa-btn-primary mt-3">Shop Teint</a>
                                 </div>
                             </div>
                             <div class="col-md-6 order-md-1">
@@ -291,7 +291,7 @@
                                 <div class="p-4">
                                     <h2 class="oa-section-heading">Yeux</h2>
                                     <p class="oa-about-text">Captivez avec une précision saisissante. Explorez des palettes riches, des mascaras volumateurs et des eyeliners longue tenue.</p>
-                                    <a href="/shop/category/makeup-eyes" class="oa-btn-primary mt-3">Shop Yeux</a>
+                                    <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_makeup')) }}" class="oa-btn-primary mt-3">Shop Yeux</a>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -306,7 +306,7 @@
                                 <div class="p-4">
                                     <h2 class="oa-section-heading">Lèvres</h2>
                                     <p class="oa-about-text">Une couleur audacieuse alliée à une hydratation intense. Trouvez votre teinte parfaite dans nos luxueuses collections de rouges à lèvres et gloss.</p>
-                                    <a href="/shop/category/makeup-lips" class="oa-btn-primary mt-3">Shop Lèvres</a>
+                                    <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_makeup')) }}" class="oa-btn-primary mt-3">Shop Lèvres</a>
                                 </div>
                             </div>
                             <div class="col-md-6 order-md-1">
@@ -329,7 +329,7 @@
                             <t t-set="makeup_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True), ('website_id', '=', website.id)], limit=3, order='create_date desc')"/>
                             <t t-if="makeup_products">
                                 <t t-foreach="makeup_products" t-as="product">
-                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                    <a t-att-href="product.website_url" class="oa-product-card">
                                         <div class="oa-product-img">
                                             <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
                                         </div>
@@ -347,7 +347,7 @@
                         </div>
                         
                         <div class="text-center mt-5">
-                            <a href="/shop/category/makeup" class="oa-btn-accent">Shop All Maquillage</a>
+                            <a t-attf-href="/shop/category/{{ slug(request.env.ref('oa_beauty_theme.public_category_makeup')) }}" class="oa-btn-accent">Shop All Maquillage</a>
                         </div>
                     </div>
                 </section>
@@ -396,7 +396,7 @@
                             <t t-set="most_loved" t-value="request.env['product.template'].sudo().search([('is_published', '=', True), ('website_id', '=', website.id)], limit=6, order='list_price desc')"/>
                             <t t-if="most_loved">
                                 <t t-foreach="most_loved" t-as="product">
-                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                    <a t-att-href="product.website_url" class="oa-product-card">
                                         <div class="oa-product-img">
                                             <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
                                             <div class="position-absolute top-0 end-0 m-2">
@@ -428,7 +428,7 @@
                             <t t-set="trending" t-value="request.env['product.template'].sudo().search([('is_published', '=', True), ('website_id', '=', website.id)], offset=6, limit=3, order='list_price desc')"/>
                             <t t-if="trending">
                                 <t t-foreach="trending" t-as="product">
-                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                    <a t-att-href="product.website_url" class="oa-product-card">
                                         <div class="oa-product-img">
                                             <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
                                             <div class="position-absolute top-0 end-0 m-2">
@@ -494,7 +494,7 @@
                             <t t-set="latest_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True), ('website_id', '=', website.id)], limit=6, order='create_date desc')"/>
                             <t t-if="latest_products">
                                 <t t-foreach="latest_products" t-as="product">
-                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                    <a t-att-href="product.website_url" class="oa-product-card">
                                         <div class="oa-product-img">
                                             <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
                                             <div class="position-absolute top-0 end-0 m-2">
@@ -526,7 +526,7 @@
                             <t t-set="seasonal" t-value="request.env['product.template'].sudo().search([('is_published', '=', True), ('website_id', '=', website.id)], offset=6, limit=3, order='create_date desc')"/>
                             <t t-if="seasonal">
                                 <t t-foreach="seasonal" t-as="product">
-                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                    <a t-att-href="product.website_url" class="oa-product-card">
                                         <div class="oa-product-img">
                                             <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
                                             <div class="position-absolute top-0 end-0 m-2">
