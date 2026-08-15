@@ -1,7 +1,4 @@
-import base64
-
 from odoo import fields, models, api
-from odoo.modules.module import get_module_resource
 
 
 class ProductTemplate(models.Model):
@@ -48,75 +45,6 @@ class ProductTemplate(models.Model):
         products = self.search(domain)
         if products:
             products.write({'active': False, 'is_published': False})
-
-    @api.model
-    def _oa_apply_production_catalog_defaults(self):
-        """Fill only missing production fields for existing O&A catalog records."""
-        defaults = {
-            'product_serum_signature': {
-                'image': 'static/src/img/product_placeholders/serum_signature.jpg',
-                'website_meta_title': 'Serum Signature | Rituel Eclat | O&A Atelier',
-                'website_meta_description': "Decouvrez Serum Signature, le soin eclat O&A Atelier a l'acide hyaluronique et rose de Damas pour une peau hydratee et lumineuse.",
-            },
-            'product_fond_de_teint_lumiere': {
-                'image': 'static/src/img/oa_foundation.png',
-                'website_meta_title': 'Fond de Teint Lumiere | Maquillage Soin | O&A Atelier',
-                'website_meta_description': 'Un fond de teint lumiere a couvrance naturelle, pense pour unifier le teint sans masquer la peau.',
-            },
-            'product_baume_levres': {
-                'image': 'static/src/img/product_placeholders/baume_levres.jpg',
-                'website_meta_title': 'Baume Levres | Soin Couleur | O&A Atelier',
-                'website_meta_description': 'Un baume levres nourrissant entre soin et couleur, formule avec beurre de karite et pigments naturels.',
-            },
-            'product_palette_regard': {
-                'image': 'static/src/img/product_placeholders/palette_regard.jpg',
-                'website_meta_title': 'Palette Regard | Ombres Nude Premium | O&A Atelier',
-                'website_meta_description': 'Palette Regard O&A Atelier: douze teintes signature aux finis mats et satines pour des looks naturels ou intenses.',
-            },
-            'product_huile_corps': {
-                'image': 'static/src/img/product_placeholders/huile_corps.jpg',
-                'website_meta_title': 'Huile Corps | Soin Botanique | O&A Atelier',
-                'website_meta_description': 'Huile Corps O&A Atelier, melange botanique de neuf huiles vegetales pour nourrir la peau et laisser un voile lumineux.',
-            },
-            'product_parfum_trinite': {
-                'image': 'static/src/img/product_placeholders/parfum_trinite.jpg',
-                'website_meta_title': 'Eau de Parfum Trinite | Fragrance O&A Atelier',
-                'website_meta_description': 'Eau de Parfum Trinite, fragrance florale, boisee et musquee signee O&A Atelier.',
-            },
-            'product_oa_hydrating_serum': {'image': 'static/src/img/oa_serum_glow.png'},
-            'product_oa_vitc_serum': {'image': 'static/src/img/product_placeholders/oa_vitc_serum.jpg'},
-            'product_oa_daily_moisturizer': {'image': 'static/src/img/product_placeholders/oa_daily_moisturizer.jpg'},
-            'product_oa_cleansing_foam': {'image': 'static/src/img/product_placeholders/oa_cleansing_foam.jpg'},
-            'product_oa_night_repair': {'image': 'static/src/img/product_placeholders/oa_night_repair.jpg'},
-            'product_oa_eye_recovery': {'image': 'static/src/img/product_placeholders/oa_eye_recovery.jpg'},
-            'product_oa_velvet_foundation': {'image': 'static/src/img/oa_foundation.png'},
-            'product_oa_matte_lipstick': {'image': 'static/src/img/product_placeholders/oa_matte_lipstick.jpg'},
-            'product_oa_radiance_blush': {'image': 'static/src/img/product_placeholders/oa_radiance_blush.jpg'},
-            'product_oa_glow_highlighter': {'image': 'static/src/img/product_placeholders/oa_glow_highlighter.jpg'},
-            'product_oa_precision_mascara': {'image': 'static/src/img/product_placeholders/oa_precision_mascara.jpg'},
-            'product_oa_nude_palette': {'image': 'static/src/img/product_placeholders/oa_nude_palette.jpg'},
-        }
-
-        for xmlid, vals in defaults.items():
-            product = self.env.ref(f'oa_beauty_theme.{xmlid}', raise_if_not_found=False)
-            if not product:
-                continue
-            write_vals = {}
-            if not product.is_published:
-                write_vals['is_published'] = True
-            if not product.sale_ok:
-                write_vals['sale_ok'] = True
-            if vals.get('website_meta_title') and not product.website_meta_title:
-                write_vals['website_meta_title'] = vals['website_meta_title']
-            if vals.get('website_meta_description') and not product.website_meta_description:
-                write_vals['website_meta_description'] = vals['website_meta_description']
-            if vals.get('image') and not product.image_1920:
-                image_path = get_module_resource('oa_beauty_theme', *vals['image'].split('/'))
-                if image_path:
-                    with open(image_path, 'rb') as image_file:
-                        write_vals['image_1920'] = base64.b64encode(image_file.read())
-            if write_vals:
-                product.write(write_vals)
 
     @api.model
     def cron_sync_ingram_catalog(self):

@@ -35,7 +35,6 @@
         'data/product_data.xml',
         'data/oa_products.xml',
         'data/fragrance_data.xml',
-        'data/catalog_production_defaults.xml',
         'data/blog_data.xml',
         'data/ingram_cron.xml',
         'data/website_languages.xml',
