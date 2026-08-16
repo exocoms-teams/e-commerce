@@ -63,10 +63,11 @@ class OASearchService(models.AbstractModel):
         groups = [[self.normalize_query(item) for item in group] for group in self._synonym_groups()]
         vocabulary = {item for group in groups for item in group}
         for token in list(terms):
-            for match in get_close_matches(token, vocabulary, n=2, cutoff=0.84):
+            matched_terms = set(get_close_matches(token, vocabulary, n=3, cutoff=0.78))
+            for match in matched_terms:
                 terms.add(match)
             for group in groups:
-                if token in group or any(token in phrase.split() for phrase in group):
+                if token in group or matched_terms.intersection(group) or any(token in phrase.split() for phrase in group):
                     terms.update(group)
         return [term for term in terms if term]
 

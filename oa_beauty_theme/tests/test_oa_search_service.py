@@ -63,6 +63,7 @@ class TestOASearchService(TransactionCase):
     def test_multilingual_accent_and_typo_tolerance(self):
         self.assertIn(self.serum.id, self._ids_for('serum for dry skin'))
         self.assertIn(self.serum.id, self._ids_for('سيروم'))
+        self.assertIn('hydratation', self.service.expand_terms('hydratnt'))
         self.assertIn(self.serum.id, self._ids_for('hydratnt'))
         self.assertEqual(self.service.normalize_query('SÉRUM   peau sèche'), 'serum peau seche')
 
