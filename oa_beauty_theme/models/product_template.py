@@ -8,6 +8,16 @@ class ProductTemplate(models.Model):
     oa_finish = fields.Char(string='Finish')
     oa_best_for = fields.Char(string='Best For')
     oa_key_ingredients = fields.Char(string='Key Ingredients')
+    oa_is_demo_product = fields.Boolean(
+        string='Demo / Temporary Product',
+        default=False,
+        help='Marks temporary merchandising products that can be archived when the official supplier catalogue arrives.',
+    )
+    oa_skin_type = fields.Char(string='Skin Type')
+    oa_concern = fields.Char(string='Beauty Concern')
+    oa_routine_step = fields.Char(string='Routine Step')
+    oa_fragrance_family = fields.Char(string='Fragrance Family')
+    oa_occasion = fields.Char(string='Occasion')
     
     # Fragrance & Expansion Fields
     oa_is_coming_soon = fields.Boolean(string='Coming Soon', default=False, help='If checked, the add to cart button will be replaced with a Coming Soon badge.')

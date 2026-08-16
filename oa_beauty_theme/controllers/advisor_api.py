@@ -35,13 +35,17 @@ class AdvisorController(http.Controller):
                 score = 0
                 name_lower = (f.name or '').lower()
                 mood_field = (f.oa_mood or '').lower()
+                family = (f.oa_fragrance_family or '').lower()
+                occasion_field = (f.oa_occasion or '').lower()
                 top = (f.oa_fragrance_top_notes or '').lower()
                 heart = (f.oa_fragrance_heart_notes or '').lower()
                 base = (f.oa_fragrance_base_notes or '').lower()
     
                 # Scent family matching
                 if scent_family:
-                    if scent_family == 'floral' and any(k in heart for k in ['rose', 'jasmine', 'peony', 'lily', 'blossom']):
+                    if scent_family in family:
+                        score += 4
+                    elif scent_family == 'floral' and any(k in heart for k in ['rose', 'jasmine', 'peony', 'lily', 'blossom']):
                         score += 3
                     elif scent_family == 'woody' and any(k in base for k in ['sandalwood', 'cedar', 'oud', 'vetiver']):
                         score += 3
@@ -58,6 +62,8 @@ class AdvisorController(http.Controller):
 
                 # Occasion matching
                 if occasion:
+                    if occasion in occasion_field:
+                        score += 3
                     if occasion in ['evening', 'night', 'soiree'] and any(k in name_lower for k in ['noire', 'noir', 'midnight', 'orchid']):
                         score += 2
                     if occasion in ['day', 'work', 'fresh'] and any(k in name_lower for k in ['lumiere', 'eclat', 'bloom']):
@@ -93,7 +99,7 @@ class AdvisorController(http.Controller):
             ])
 
             # Cleanser
-            cleanser = products.filtered(lambda p: 'cleans' in (p.name or '').lower())
+            cleanser = products.filtered(lambda p: 'cleanse' in (p.oa_routine_step or '').lower() or 'cleans' in (p.name or '').lower())
             if cleanser:
                 recommended_ids.append(cleanser[0].id)
                 routine_steps.append({'step': 'Étape 1 — Nettoyer', 'product': cleanser[0].name, 'desc': 'Éliminez les impuretés et préparez la peau.'})
@@ -101,15 +107,18 @@ class AdvisorController(http.Controller):
             # Serum / Treatment
             serum = False
             if concern in ['aging', 'anti-age', 'dullness', 'hyperpigmentation', 'taches']:
-                serum = products.filtered(lambda p: 'vitamin c' in (p.name or '').lower())
+                serum = products.filtered(lambda p: 'brightening' in (p.oa_concern or '').lower() or 'vitamin c' in (p.name or '').lower())
             if not serum:
-                serum = products.filtered(lambda p: 'hydrat' in (p.name or '').lower() and 'serum' in (p.name or '').lower())
+                serum = products.filtered(lambda p: (
+                    ('hydrat' in (p.oa_concern or '').lower() or 'hydrat' in (p.name or '').lower())
+                    and ('serum' in (p.oa_type or '').lower() or 'serum' in (p.name or '').lower())
+                ))
             if serum:
                 recommended_ids.append(serum[0].id)
                 routine_steps.append({'step': 'Étape 2 — Traiter', 'product': serum[0].name, 'desc': 'Ciblez vos préoccupations cutanées principales.'})
 
             # Moisturizer
-            moisturizer = products.filtered(lambda p: 'moisturizer' in (p.name or '').lower() or 'cream' in (p.name or '').lower())
+            moisturizer = products.filtered(lambda p: 'moisturize' in (p.oa_routine_step or '').lower() or 'moisturizer' in (p.name or '').lower() or 'cream' in (p.name or '').lower())
             if moisturizer:
                 recommended_ids.append(moisturizer[0].id)
                 routine_steps.append({'step': 'Étape 3 — Hydrater', 'product': moisturizer[0].name, 'desc': 'Verrouillez l\'hydratation et protégez la barrière cutanée.'})
