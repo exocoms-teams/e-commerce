@@ -6,11 +6,23 @@
 
             <t t-set="additional_title">O&amp;A Atelier — Clean Luxury Cosmetics</t>
 
-            <t t-set="hp_products"
-               t-value="request.env['product.template'].sudo().search([
+              <t t-set="hp_products"
+                t-value="request.env['product.template'].sudo().search([
                     ('is_published','=',True),
                     ('sale_ok','=',True)
-               ], order='website_sequence asc, id asc', limit=6)"/>
+                ], order='website_sequence asc, id asc', limit=6)"/>
+
+                                <t t-set="featured_brand_products"
+                                t-value="[
+                                    {'name': 'Revolution Reloaded Eyeshadow Palette', 'brand': 'Revolution', 'price': 32.00, 'image': '/oa_beauty_theme/static/src/img/product_catalog/palette_regard.jpg', 'link': '/shop'},
+                                    {'name': 'Clarins Double Serum', 'brand': 'Clarins', 'price': 98.00, 'image': '/oa_beauty_theme/static/src/img/product_catalog/serum_signature.jpg', 'link': '/shop'},
+                                    {'name': 'Clarins Lip Comfort Oil', 'brand': 'Clarins', 'price': 29.00, 'image': '/oa_beauty_theme/static/src/img/product_catalog/baume_levres.jpg', 'link': '/shop'},
+                                    {'name': 'Revolution Glow Highlighter', 'brand': 'Revolution', 'price': 18.00, 'image': '/oa_beauty_theme/static/src/img/product_catalog/fond_de_teint_lumiere.jpg', 'link': '/shop'},
+                                    {'name': 'La Roche-Posay Toleriane Cleanser', 'brand': 'La Roche-Posay', 'price': 19.00, 'image': '/oa_beauty_theme/static/src/img/product_catalog/nettoyant_velours.jpg', 'link': '/shop'},
+                                    {'name': 'NARS Radiant Creamy Concealer', 'brand': 'NARS', 'price': 36.00, 'image': '/oa_beauty_theme/static/src/img/product_catalog/fond_de_teint_lumiere.jpg', 'link': '/shop'},
+                                    {'name': 'Caudalie Vinoperfect Serum', 'brand': 'Caudalie', 'price': 52.00, 'image': '/oa_beauty_theme/static/src/img/product_catalog/creme_hydra_boost.jpg', 'link': '/shop'},
+                                    {'name': 'Charlotte Tilbury Airbrush Powder', 'brand': 'Charlotte Tilbury', 'price': 49.00, 'image': '/oa_beauty_theme/static/src/img/product_catalog/parfum_trinite.jpg', 'link': '/shop'}
+                                ]"/>
 
             <div id="wrap" class="oe_structure oa-page overflow-hidden">
 
@@ -380,37 +392,31 @@
                         </div>
  
                         <div class="row g-4">
-                            <t t-if="hp_products">
-                                <t t-foreach="hp_products[:4]" t-as="hp_prod">
-                                    <div class="col-md-6 col-lg-3">
-                                        <div class="oa-product-card">
-                                            <!-- Taller editorial aspect ratio for product images -->
-                                            <a t-att-href="hp_prod.website_url" class="d-block text-decoration-none">
-                                                <div class="oa-product-img position-relative overflow-hidden mb-3" style="aspect-ratio: 3/4; background-color: white;">
-                                                    <span t-field="hp_prod.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100 object-fit-cover', 'loading': 'lazy'}"/>
-                                                    <button class="oa-quick-add">Quick View</button>
-                                                </div>
-                                            </a>
-                                            <div class="oa-product-info text-start">
-                                                <div class="oa-product-stars">
-                                                    <i class="fa fa-star filled"></i>
-                                                    <i class="fa fa-star filled"></i>
-                                                    <i class="fa fa-star filled"></i>
-                                                    <i class="fa fa-star filled"></i>
-                                                    <i class="fa fa-star filled"></i>
-                                                </div>
-                                                <span class="text-uppercase mb-1 d-block" style="font-size: 0.65rem; letter-spacing: 0.15em; color: var(--oa-mauve);" t-esc="hp_prod.public_categ_ids and hp_prod.public_categ_ids[0].name or 'O&amp;A Atelier'"/>
-                                                <a t-att-href="hp_prod.website_url" class="text-decoration-none">
-                                                    <h3 class="mb-2 fs-5 text-dark" style="font-family: var(--oa-font-display);" t-esc="hp_prod.name"/>
-                                                </a>
-                                                <div class="text-muted" style="font-size: 0.9rem;" t-esc="hp_prod.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                            <t t-foreach="featured_brand_products" t-as="featured_product">
+                                <div class="col-md-6 col-lg-3">
+                                    <div class="oa-product-card">
+                                        <a t-att-href="featured_product['link']" class="d-block text-decoration-none">
+                                            <div class="oa-product-img position-relative overflow-hidden mb-3" style="aspect-ratio: 3/4; background-color: white;">
+                                                <img t-att-src="featured_product['image']" class="w-100 h-100 object-fit-cover" alt="featured_product['name']" loading="lazy"/>
+                                                <button class="oa-quick-add">Quick View</button>
                                             </div>
+                                        </a>
+                                        <div class="oa-product-info text-start">
+                                            <div class="oa-product-stars">
+                                                <i class="fa fa-star filled"></i>
+                                                <i class="fa fa-star filled"></i>
+                                                <i class="fa fa-star filled"></i>
+                                                <i class="fa fa-star filled"></i>
+                                                <i class="fa fa-star filled"></i>
+                                            </div>
+                                            <span class="text-uppercase mb-1 d-block" style="font-size: 0.65rem; letter-spacing: 0.15em; color: var(--oa-mauve);" t-esc="featured_product['brand']"/>
+                                            <a t-att-href="featured_product['link']" class="text-decoration-none">
+                                                <h3 class="mb-2 fs-5 text-dark" style="font-family: var(--oa-font-display);" t-esc="featured_product['name']"/>
+                                            </a>
+                                            <div class="text-muted" style="font-size: 0.9rem;" t-esc="featured_product['price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
                                         </div>
                                     </div>
-                                </t>
-                            </t>
-                            <t t-else="">
-                                <p class="text-muted">Aucun produit à afficher.</p>
+                                </div>
                             </t>
                         </div>
                         
