@@ -4,7 +4,6 @@ from difflib import get_close_matches
 from urllib.parse import quote_plus
 
 from odoo import api, models
-from odoo.osv import expression
 from odoo.tools import html2plaintext
 
 
@@ -103,8 +102,29 @@ class OASearchService(models.AbstractModel):
         website = website or self.env['website'].get_current_website()
         domain = [('sale_ok', '=', True), ('is_published', '=', True)]
         if 'website_id' in self.env['product.template']._fields and website:
-            domain = expression.AND([domain, ['|', ('website_id', '=', False), ('website_id', '=', website.id)]])
+            domain = self._and_domain([domain, ['|', ('website_id', '=', False), ('website_id', '=', website.id)]])
         return domain
+
+    @api.model
+    def _and_domain(self, domains):
+        domains = [domain for domain in domains if domain]
+        if not domains:
+            return []
+        if len(domains) == 1:
+            return domains[0]
+        combined = ['&'] * (len(domains) - 1)
+        for domain in domains:
+            combined += domain
+        return combined
+
+    @api.model
+    def _or_domain(self, leaves):
+        leaves = [leaf for leaf in leaves if leaf]
+        if not leaves:
+            return []
+        if len(leaves) == 1:
+            return [leaves[0]]
+        return ['|'] * (len(leaves) - 1) + leaves
 
     @api.model
     def _candidate_domain(self, terms, website=None):
@@ -121,7 +141,7 @@ class OASearchService(models.AbstractModel):
                 search_parts.append((field + '.name', 'ilike', term))
         if not search_parts:
             return self._public_product_domain(website)
-        return expression.AND([self._public_product_domain(website), expression.OR([[part] for part in search_parts])])
+        return self._and_domain([self._public_product_domain(website), self._or_domain(search_parts)])
 
     @api.model
     def _field_text(self, product, field):
@@ -232,7 +252,7 @@ class OASearchService(models.AbstractModel):
         normalized = self.normalize_query(query)
         terms = terms or self.expand_terms(query)
         suggestions = []
-        category_domain = expression.OR([[('name', 'ilike', term)] for term in terms[:8]]) if terms else [('id', '=', 0)]
+        category_domain = self._or_domain([('name', 'ilike', term) for term in terms[:8]]) if terms else [('id', '=', 0)]
         categories = self.env['product.public.category'].sudo().search(category_domain, limit=3)
         for category in categories:
             suggestions.append({
