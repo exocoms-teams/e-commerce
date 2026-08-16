@@ -1,4 +1,6 @@
 from . import product_template
+from . import oa_search_analytics
+from . import oa_search_service
 from . import res_config_settings
 from . import advisor_analytics
 from . import delivery_carrier

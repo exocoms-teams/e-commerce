@@ -40,6 +40,7 @@
         'data/website_languages.xml',
 
         'views/website_templates.xml',
+        'views/oa_search_templates.xml',
         'views/website_navigation_templates.xml',
         'views/website_homepage.xml',
         'views/analytics_templates.xml',
@@ -67,6 +68,7 @@
             'oa_beauty_theme/static/src/js/advisor.js',
             'oa_beauty_theme/static/src/js/chatbot.js',
             'oa_beauty_theme/static/src/js/newsletter.js',
+            'oa_beauty_theme/static/src/js/oa_search.js',
         ],
     },
 
