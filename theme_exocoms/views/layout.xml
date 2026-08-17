@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Aucune surcharge de website.layout : elle s appliquerait a TOUT le site
+         (e-commerce, luxury_services, travel_agency...). L en-tete et le pied de
+         page natifs sont neutralises page par page via no_header / no_footer,
+         deux variables prevues par Odoo dans web.frontend_layout. -->
+
     <!-- Converti depuis partials/sidebar.html. Les liens sont desormais absolus
          et les attributs booleens HTML ont recu une valeur, XML l exigeant. -->
     <template id="sidebar" name="EXOCOMS - Barre laterale">
@@ -229,18 +234,5 @@
         </footer>
     </template>
 
-    <!-- Le header natif d Odoo est remplace par la topbar EXOCOMS,
-         la sidebar est injectee avant #wrapwrap. -->
-    <template id="layout" inherit_id="website.layout" name="EXOCOMS - Layout">
-        <xpath expr="//header" position="replace">
-            <t t-call="theme_exocoms.topbar"/>
-        </xpath>
-        <xpath expr="//div[@id=&apos;wrapwrap&apos;]" position="before">
-            <t t-call="theme_exocoms.sidebar"/>
-        </xpath>
-        <xpath expr="//footer" position="replace">
-            <t t-call="theme_exocoms.footer_exo"/>
-        </xpath>
-    </template>
 
 </odoo>

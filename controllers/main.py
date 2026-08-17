@@ -5,10 +5,29 @@ from odoo.http import request
 from odoo.addons.website.controllers.main import Website
 
 
+def _exocoms_page(url):
+    """Sert la website.page de cette URL pour le site courant, si elle existe.
+
+    Les routes Python de ce controleur sont globales : elles repondent sur TOUS
+    les sites web de la base. Sans ce garde-fou, elles masquent les pages du
+    site EXOCOMS publiees aux memes adresses. Retourne None si aucune page n est
+    rattachee au site courant, auquel cas le comportement monetiques est
+    inchange.
+    """
+    page = request.env['website.page'].sudo().search([
+        ('url', '=', url),
+        ('website_id', '=', request.website.id),
+    ], limit=1)
+    return request.render(page.view_id.key) if page and page.view_id else None
+
+
 class MonetiqueWebsite(Website):
 
     @http.route('/', type='http', auth='public', website=True)
     def homepage(self, **kwargs):
+        _exo = _exocoms_page('/')
+        if _exo:
+            return _exo
         Product = request.env['product.template'].sudo()
         featured = Product.search([
             ('is_published', '=', True),
@@ -27,12 +46,18 @@ class MonetiqueWebsite(Website):
 
     @http.route('/a-propos', type='http', auth='public', website=True)
     def a_propos(self, **kwargs):
+        _exo = _exocoms_page('/a-propos')
+        if _exo:
+            return _exo
         return request.render('monetique_theme.page_a_propos', {
             'year': datetime.datetime.now().year,
         })
 
     @http.route('/contact', type='http', auth='public', website=True)
     def contact(self, **kwargs):
+        _exo = _exocoms_page('/contact')
+        if _exo:
+            return _exo
         return request.render('monetique_theme.page_contact', {
             'year': datetime.datetime.now().year,
             'error': False,
