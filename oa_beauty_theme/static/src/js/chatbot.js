@@ -1,6 +1,8 @@
 // O&A Beauty Chatbot — Floating AI Customer Assistant
 // Communicates with /api/chat/message (Odoo JSON-RPC endpoint)
 
+import { _t } from "@web/core/l10n/translation";
+
 const OaChatbot = {
     isOpen: false,
     isTyping: false,
@@ -109,7 +111,7 @@ const OaChatbot = {
                 body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { message, history: this.conversationHistory } })
             });
             const data = await res.json();
-            const reply = data?.result?.reply || "I'm sorry, I couldn't process your request. Please try again.";
+            const reply = data?.result?.reply || _t("I'm sorry, I couldn't process your request. Please try again.");
 
             // Simulate a natural typing delay
             await new Promise(r => setTimeout(r, 600 + Math.random() * 400));
@@ -119,7 +121,7 @@ const OaChatbot = {
             this.conversationHistory.push({ role: 'bot', text: reply });
         } catch (e) {
             this.showTyping(false);
-            this.appendMessage("Sorry, I'm having trouble connecting. Please try again shortly.", 'bot');
+            this.appendMessage(_t("Sorry, I'm having trouble connecting. Please try again shortly."), 'bot');
             console.error('[OA Chatbot]', e);
         } finally {
             this.isTyping = false;

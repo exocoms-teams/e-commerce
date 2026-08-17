@@ -27,8 +27,8 @@ class ProductTemplate(models.Model):
     oa_mood = fields.Char(string='Mood / Feeling', translate=True, help='e.g., Elegant, Sensual, Fresh')
 
     # SEO & Editorial Fields
-    oa_benefits = fields.Html(string='Benefits', translate=True, help='Long description of the product benefits.')
-    oa_how_to_use = fields.Html(string='How to Use', translate=True, help='Instructions on how to use the product.')
+    oa_benefits = fields.Html(string='Benefits', translate="html_translate", help='Long description of the product benefits.')
+    oa_how_to_use = fields.Html(string='How to Use', translate="html_translate", help='Instructions on how to use the product.')
     oa_seo_keywords = fields.Char(string='SEO Keywords', translate=True, help='Comma-separated keywords for meta tags.')
 
     # Ingram Micro Fields
