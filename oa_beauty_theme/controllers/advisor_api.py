@@ -1,164 +1,267 @@
-from odoo import http
-from odoo.http import request
 import uuid
 
-class AdvisorController(http.Controller):
+from odoo import _, http
+from odoo.http import request
 
-    @http.route('/api/advisor/recommend', type='jsonrpc', auth='public', website=True, csrf=False)
+
+class AdvisorController(http.Controller):
+    _ALLOWED_SKIN_TYPES = {'normal', 'dry', 'oily', 'combination', 'sensitive'}
+    _ALLOWED_CONCERNS = {
+        'acne', 'hyperpigmentation', 'redness', 'dehydration', 'aging',
+        'dullness', 'pores', 'sensitivity',
+    }
+    _ALLOWED_BUDGETS = {'essential', 'standard', 'premium'}
+    _ALLOWED_MAKEUP = {'natural', 'everyday', 'glamorous', 'skip'}
+    _ALLOWED_AGE = {'18-25', '25-35', '35-45', '45+', 'skip'}
+    _BUDGET_MAX = {
+        'essential': 45.0,
+        'standard': 80.0,
+        'premium': 999999.0,
+    }
+
+    def _clean_choice(self, value, allowed, default=''):
+        value = (value or '').strip().lower()[:40]
+        return value if value in allowed else default
+
+    def _product_domain(self):
+        service = request.env['oa.search.service'].sudo()
+        domain = service._public_product_domain(website=request.website)
+        return service._and_domain([domain, [('sale_ok', '=', True), ('oa_is_coming_soon', '=', False)]])
+
+    def _format_money(self, amount):
+        website = request.website
+        if website and website.currency_id:
+            return request.env['ir.qweb.field.monetary'].value_to_html(
+                amount,
+                {'display_currency': website.currency_id},
+            )
+        return "%.2f" % amount
+
+    def _text(self, product):
+        values = [
+            product.name,
+            product.description_sale,
+            product.oa_type,
+            product.oa_product_type,
+            product.oa_finish,
+            product.oa_best_for,
+            product.oa_ideal_for,
+            product.oa_key_ingredients,
+            product.oa_skin_type,
+            product.oa_concern,
+            product.oa_routine_step,
+            product.oa_fragrance_family,
+            product.oa_occasion,
+            product.oa_mood,
+            product.oa_fragrance_top_notes,
+            product.oa_fragrance_heart_notes,
+            product.oa_fragrance_base_notes,
+        ]
+        values += product.public_categ_ids.mapped('name')
+        return ' '.join([v for v in values if v]).lower()
+
+    def _role_score(self, text, role):
+        role_terms = {
+            'cleanse': ('cleanse', 'cleanser', 'cleansing', 'nettoy', 'mousse'),
+            'treat': ('serum', 'sérum', 'vitamin', 'trait', 'repair', 'essence'),
+            'hydrate': ('moistur', 'hydrate', 'hydrating', 'crème', 'cream', 'hydra'),
+            'protect': ('spf', 'solaire', 'sun', 'protect'),
+            'makeup': ('makeup', 'maquillage', 'foundation', 'teint', 'blush', 'lipstick', 'mascara'),
+            'fragrance': ('fragrance', 'parfum', 'eau de parfum', 'scent'),
+        }
+        return sum(10 for term in role_terms.get(role, ()) if term in text)
+
+    def _profile_score(self, product, profile, role):
+        text = self._text(product)
+        score = 44 + self._role_score(text, role)
+        reasons = []
+
+        skin_type = profile.get('skin_type')
+        concern = profile.get('main_concern')
+        makeup = profile.get('makeup_preference')
+        budget = profile.get('budget')
+        age_range = profile.get('age_range')
+        budget_max = self._BUDGET_MAX.get(budget)
+
+        skin_terms = {
+            'dry': ('dry', 'sèche', 'seche', 'dehydrat', 'hydrat'),
+            'oily': ('oily', 'grasse', 'mat', 'pores'),
+            'combination': ('combination', 'mixte', 'balance', 'équilibr'),
+            'normal': ('normal', 'daily', 'quotidien'),
+            'sensitive': ('sensitive', 'sensible', 'soothing', 'apais'),
+        }
+        concern_terms = {
+            'acne': ('acne', 'acné', 'imperfection', 'pores', 'purif'),
+            'hyperpigmentation': ('pigment', 'tache', 'spot', 'vitamin c', 'glow'),
+            'redness': ('redness', 'rougeur', 'soothing', 'apais'),
+            'dehydration': ('dehydrat', 'déshydrat', 'hydrat', 'hyaluronic'),
+            'aging': ('aging', 'anti-age', 'rides', 'repair', 'peptide'),
+            'dullness': ('dull', 'terne', 'glow', 'éclat', 'radiance', 'vitamin c'),
+            'pores': ('pores', 'mat', 'smooth', 'lisse'),
+        }
+        makeup_terms = {
+            'natural': ('natural', 'naturel', 'nude', 'bare'),
+            'everyday': ('everyday', 'daily', 'quotidien', 'soft'),
+            'glamorous': ('glam', 'intense', 'velvet', 'precision', 'highlight'),
+        }
+        age_terms = {
+            '35-45': ('firm', 'repair', 'peptide', 'rides', 'anti-age'),
+            '45+': ('firm', 'repair', 'peptide', 'rides', 'anti-age', 'night'),
+        }
+
+        if skin_type and any(term in text for term in skin_terms.get(skin_type, ())):
+            score += 14
+            reasons.append(_("Suitable for your skin type"))
+        if concern and any(term in text for term in concern_terms.get(concern, ())):
+            score += 16
+            reasons.append(_("Targets your main concern"))
+        if makeup and any(term in text for term in makeup_terms.get(makeup, ())):
+            score += 10
+            reasons.append(_("Matches your makeup style"))
+        if age_range and any(term in text for term in age_terms.get(age_range, ())):
+            score += 8
+            reasons.append(_("Adapted to your age range"))
+        if budget_max and product.list_price <= budget_max:
+            score += 8
+            reasons.append(_("Within your selected budget"))
+        elif budget == 'essential':
+            score -= 8
+
+        if product.oa_key_ingredients:
+            score += 4
+            reasons.append(_("Key ingredients available"))
+        if role != 'fragrance' and product.oa_routine_step:
+            score += 5
+            reasons.append(_("Fits this routine step"))
+        if role == 'fragrance' and (
+            product.oa_fragrance_top_notes or product.oa_fragrance_heart_notes or product.oa_fragrance_base_notes
+        ):
+            score += 10
+            reasons.append(_("Fragrance pyramid documented"))
+
+        if not reasons:
+            reasons.append(_("Closest catalog match for this step"))
+
+        return max(50, min(98, score)), reasons[:4]
+
+    def _pick_product(self, products, profile, role, used_ids):
+        scored = []
+        for product in products:
+            if product.id in used_ids:
+                continue
+            match_score, reasons = self._profile_score(product, profile, role)
+            role_score = self._role_score(self._text(product), role)
+            if role_score <= 0 and role in ('cleanse', 'protect'):
+                continue
+            scored.append((match_score + role_score, product.list_price, product, match_score, reasons))
+        scored.sort(key=lambda item: (-item[0], item[1], item[2].website_sequence or 9999, item[2].name or ''))
+        if not scored:
+            return False, 0, []
+        _, _, product, match_score, reasons = scored[0]
+        return product, match_score, reasons
+
+    def _serialize_product(self, product, match_score, reasons, routine_step=''):
+        variant = product.product_variant_id
+        return {
+            'id': product.id,
+            'variant_id': variant.id if variant else False,
+            'name': product.name,
+            'price': product.list_price,
+            'price_formatted': self._format_money(product.list_price),
+            'url': product.website_url,
+            'cart_url': '/shop/cart/update?product_id=%s&add_qty=1' % variant.id if variant else product.website_url,
+            'image_url': '/web/image/product.template/%s/image_256' % product.id,
+            'is_coming_soon': product.oa_is_coming_soon,
+            'match_score': match_score,
+            'match_reasons': reasons,
+            'routine_step': routine_step,
+        }
+
+    @http.route('/api/advisor/recommend', type='jsonrpc', auth='public', website=True, csrf=False, methods=['POST'])
     def get_recommendation(self, **kw):
-        # Extract data from the JSON-RPC params
-        skin_type   = kw.get('skin_type', '').lower()
-        concern     = kw.get('main_concern', '').lower()
-        budget      = kw.get('budget', '').lower()
-        # Fragrance fields
-        mood        = kw.get('mood', '').lower()
-        occasion    = kw.get('occasion', '').lower()
-        scent_family = kw.get('scent_family', '').lower()
-        advisor_mode = kw.get('mode', 'skincare').lower()  # 'skincare', 'makeup', or 'fragrance'
+        skin_type = self._clean_choice(kw.get('skin_type'), self._ALLOWED_SKIN_TYPES)
+        concern = self._clean_choice(kw.get('main_concern'), self._ALLOWED_CONCERNS)
+        budget = self._clean_choice(kw.get('budget'), self._ALLOWED_BUDGETS, default='standard')
+        makeup_preference = self._clean_choice(kw.get('makeup_preference'), self._ALLOWED_MAKEUP)
+        age_range = self._clean_choice(kw.get('age_range'), self._ALLOWED_AGE)
+        advisor_mode = self._clean_choice(kw.get('mode'), {'skincare', 'makeup', 'fragrance'}, default='skincare')
+        profile = {
+            'skin_type': skin_type,
+            'main_concern': concern,
+            'budget': budget,
+            'makeup_preference': makeup_preference,
+            'age_range': age_range,
+        }
 
         Product = request.env['product.template'].sudo()
         recommended_ids = []
+        recommended_products_data = []
         routine_steps = []
-        explanation = ''
+        used_ids = set()
+        total_price = 0.0
+        explanation = _(
+            "Your O&A routine is built from published products in the live catalog, "
+            "with each match scored against your profile."
+        )
 
-        # ────────────────────────────────────────────────────
-        # MODE: FRAGRANCE
-        # ────────────────────────────────────────────────────
         if advisor_mode == 'fragrance':
-            fragrances = Product.search([
-                ('is_published', '=', True),
-                ('oa_fragrance_top_notes', '!=', False),
-            ])
-
-            scored = []
-            for f in fragrances:
-                score = 0
-                name_lower = (f.name or '').lower()
-                mood_field = (f.oa_mood or '').lower()
-                family = (f.oa_fragrance_family or '').lower()
-                occasion_field = (f.oa_occasion or '').lower()
-                top = (f.oa_fragrance_top_notes or '').lower()
-                heart = (f.oa_fragrance_heart_notes or '').lower()
-                base = (f.oa_fragrance_base_notes or '').lower()
-    
-                # Scent family matching
-                if scent_family:
-                    if scent_family in family:
-                        score += 4
-                    elif scent_family == 'floral' and any(k in heart for k in ['rose', 'jasmine', 'peony', 'lily', 'blossom']):
-                        score += 3
-                    elif scent_family == 'woody' and any(k in base for k in ['sandalwood', 'cedar', 'oud', 'vetiver']):
-                        score += 3
-                    elif scent_family == 'oriental' and any(k in base for k in ['amber', 'vanilla', 'musk', 'benzoin']):
-                        score += 3
-                    elif scent_family == 'fresh' and any(k in top for k in ['bergamot', 'mandarin', 'lemon', 'pear']):
-                        score += 3
-                    elif scent_family == 'gourmand' and any(k in base for k in ['vanilla', 'praline', 'tonka', 'caramel']):
-                        score += 3
-
-                # Mood matching
-                if mood and mood in mood_field:
-                    score += 2
-
-                # Occasion matching
-                if occasion:
-                    if occasion in occasion_field:
-                        score += 3
-                    if occasion in ['evening', 'night', 'soiree'] and any(k in name_lower for k in ['noire', 'noir', 'midnight', 'orchid']):
-                        score += 2
-                    if occasion in ['day', 'work', 'fresh'] and any(k in name_lower for k in ['lumiere', 'eclat', 'bloom']):
-                        score += 2
-
-                scored.append((score, f))
-
-            scored.sort(key=lambda x: x[0], reverse=True)
-            top3 = [f for _, f in scored[:3]]
-
-            for i, f in enumerate(top3, 1):
-                recommended_ids.append(f.id)
+            fragrances = Product.search(self._product_domain() + [('oa_fragrance_top_notes', '!=', False)])
+            for index, product in enumerate(fragrances[:3], 1):
+                match_score, reasons = self._profile_score(product, profile, 'fragrance')
+                step_label = _("Scent option %s") % index
+                recommended_ids.append(product.id)
+                total_price += product.list_price
+                recommended_products_data.append(self._serialize_product(product, match_score, reasons, step_label))
                 routine_steps.append({
-                    'step': f'Suggestion {i}',
-                    'product': f.name,
-                    'desc': f.oa_mood or 'Une création olfactive d\'exception.'
+                    'step': step_label,
+                    'product': product.name,
+                    'desc': product.oa_mood or _("A documented fragrance profile from the O&A catalog."),
+                    'match_score': match_score,
                 })
-
-            explanation = (
-                f"Basé sur votre profil olfactif (Famille: {scent_family or 'polyvalente'}, "
-                f"Humeur: {mood or 'équilibrée'}), nous avons sélectionné ces créations de notre "
-                f"collection à venir O&A Beauty."
-            )
-
-        # ────────────────────────────────────────────────────
-        # MODE: SKINCARE (default)
-        # ────────────────────────────────────────────────────
         else:
-            products = Product.search([
-                ('is_published', '=', True),
-                ('sale_ok', '=', True),
-                ('oa_is_coming_soon', '=', False),
-            ])
+            products = Product.search(self._product_domain(), order='website_sequence asc, list_price asc, name asc')
+            routine_plan = [
+                ('cleanse', _("Step 1 - Cleanse"), _("Remove impurities and prepare the skin.")),
+                ('treat', _("Step 2 - Treat"), _("Target the priority concern with an active formula.")),
+                ('hydrate', _("Step 3 - Hydrate"), _("Seal hydration and support the skin barrier.")),
+                ('protect', _("Step 4 - Protect"), _("Finish the morning routine with daily protection.")),
+            ]
+            if makeup_preference and makeup_preference != 'skip':
+                routine_plan.append(('makeup', _("Optional finish"), _("Complete the ritual with a complexion or color step.")))
 
-            # Cleanser
-            cleanser = products.filtered(lambda p: 'cleanse' in (p.oa_routine_step or '').lower() or 'cleans' in (p.name or '').lower())
-            if cleanser:
-                recommended_ids.append(cleanser[0].id)
-                routine_steps.append({'step': 'Étape 1 — Nettoyer', 'product': cleanser[0].name, 'desc': 'Éliminez les impuretés et préparez la peau.'})
+            for role, step_label, description in routine_plan:
+                product, match_score, reasons = self._pick_product(products, profile, role, used_ids)
+                if not product:
+                    continue
+                used_ids.add(product.id)
+                recommended_ids.append(product.id)
+                total_price += product.list_price
+                routine_steps.append({
+                    'step': step_label,
+                    'product': product.name,
+                    'desc': description,
+                    'match_score': match_score,
+                })
+                recommended_products_data.append(self._serialize_product(product, match_score, reasons, step_label))
 
-            # Serum / Treatment
-            serum = False
-            if concern in ['aging', 'anti-age', 'dullness', 'hyperpigmentation', 'taches']:
-                serum = products.filtered(lambda p: 'brightening' in (p.oa_concern or '').lower() or 'vitamin c' in (p.name or '').lower())
-            if not serum:
-                serum = products.filtered(lambda p: (
-                    ('hydrat' in (p.oa_concern or '').lower() or 'hydrat' in (p.name or '').lower())
-                    and ('serum' in (p.oa_type or '').lower() or 'serum' in (p.name or '').lower())
-                ))
-            if serum:
-                recommended_ids.append(serum[0].id)
-                routine_steps.append({'step': 'Étape 2 — Traiter', 'product': serum[0].name, 'desc': 'Ciblez vos préoccupations cutanées principales.'})
-
-            # Moisturizer
-            moisturizer = products.filtered(lambda p: 'moisturize' in (p.oa_routine_step or '').lower() or 'moisturizer' in (p.name or '').lower() or 'cream' in (p.name or '').lower())
-            if moisturizer:
-                recommended_ids.append(moisturizer[0].id)
-                routine_steps.append({'step': 'Étape 3 — Hydrater', 'product': moisturizer[0].name, 'desc': 'Verrouillez l\'hydratation et protégez la barrière cutanée.'})
-
-            explanation = (
-                f"Basé sur votre profil (Type de peau: {skin_type}, Préoccupation: {concern}), "
-                f"nous avons élaboré une routine pour équilibrer et nourrir votre peau."
-            )
-
-        # ────────────────────────────────────────────────────
-        # SAVE TO ANALYTICS
-        # ────────────────────────────────────────────────────
-        session_id = str(uuid.uuid4())
         request.env['oa.advisor.session'].sudo().create({
-            'session_id': session_id,
+            'session_id': str(uuid.uuid4()),
             'skin_type': skin_type or advisor_mode,
-            'main_concern': concern or scent_family,
+            'main_concern': concern,
+            'makeup_preference': makeup_preference,
             'budget': budget,
-            'recommended_product_ids': [(6, 0, recommended_ids)]
+            'recommended_product_ids': [(6, 0, recommended_ids)],
         })
 
-        # ────────────────────────────────────────────────────
-        # RETURN
-        # ────────────────────────────────────────────────────
-        recommended_products_data = []
-        for p_id in recommended_ids:
-            p = Product.browse(p_id)
-            recommended_products_data.append({
-                'id': p.id,
-                'name': p.name,
-                'price': p.list_price,
-                'url': p.website_url,
-                'image_url': f'/web/image/product.template/{p.id}/image_128',
-                'is_coming_soon': p.oa_is_coming_soon,
-            })
+        if not recommended_products_data:
+            explanation = _("No published products currently match this profile. Please explore the catalog or try a broader profile.")
 
         return {
             'status': 'success',
-            'session_id': session_id,
             'explanation': explanation,
             'routine': routine_steps,
             'products': recommended_products_data,
+            'routine_total': total_price,
+            'routine_total_formatted': self._format_money(total_price),
+            'profile': profile,
         }
