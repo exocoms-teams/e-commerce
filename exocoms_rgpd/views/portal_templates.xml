@@ -129,10 +129,16 @@
                         </thead>
                         <tbody>
                             <tr t-foreach="requests" t-as="req">
-                                <td t-field="req.name"/>
+                                <td>
+                                    <span t-field="req.name"/>
+                                </td>
                                 <td><span t-field="req.date_request" t-options='{"widget": "date"}'/></td>
-                                <td t-field="req.request_type"/>
-                                <td><span t-field="req.date_deadline" t-options='{"widget": "date"}'/></td>
+                                <td>
+                                    <span t-field="req.request_type"/>
+                                </td>
+                                <td>
+                                    <span t-field="req.date_deadline" t-options='{"widget": "date"}'/>
+                                </td>
                                 <td>
                                     <span class="badge"
                                           t-attf-class="badge #{'text-bg-success' if req.state == 'done' else ('text-bg-danger' if req.state == 'refused' else 'text-bg-info')}"
