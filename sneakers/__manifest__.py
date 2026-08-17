@@ -1,6 +1,6 @@
 {
     'name': 'monetiques.fr — Infrastructure de Paiement',
-    'version': '19.0.1.0.3',
+    'version': '19.0.1.0.4',
     'category': 'Website',
     'author': 'monetiques.fr',
     'license': 'LGPL-3',
