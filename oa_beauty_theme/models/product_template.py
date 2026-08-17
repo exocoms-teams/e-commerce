@@ -5,7 +5,7 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     oa_type = fields.Char(string='Cosmetic Type', translate=True)
-    oa_product_type = fields.Char(string='Product Type', translate=True)
+    oa_product_type = fields.Char(string='O&A Product Type', translate=True)
     oa_finish = fields.Char(string='Finish', translate=True)
     oa_best_for = fields.Char(string='Best For', translate=True)
     oa_ideal_for = fields.Char(string='Ideal For', translate=True)
