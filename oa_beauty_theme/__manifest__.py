@@ -72,9 +72,6 @@
         ],
     },
 
-    # ---------------------------
-    # OPTIONAL BUT USEFUL
-    # ---------------------------
     'installable': True,
     'application': False,
 
