@@ -302,14 +302,14 @@ class RgpdEngine(models.AbstractModel):
                             payload[fname] = self._anonymize_value(
                                 field, rec[fname], strategy
                             )
-                    rec.with_context(rgpd_anonymizing=True).write(payload)
+                    rec.with_context(rgpd_anonymizing=True,mail_notrack=True).write(payload)
                 except Exception as exc:
                     _logger.exception("RGPD: anonymisation impossible")
                     report["errors"].append(
                         {"model": dmap.model_name, "id": rec.id, "error": str(exc)}
                     )
         if not dry_run:
-            partner.with_context(rgpd_anonymizing=True).write(
+            partner.with_context(rgpd_anonymizing=True,mail_notrack=True).write(
                 {"rgpd_anonymized": True, "rgpd_anonymized_date": fields.Datetime.now()}
             )
         return report
@@ -346,6 +346,6 @@ class RgpdEngine(models.AbstractModel):
                 )
             payload = {k: v for k, v in payload.items() if v is not None}
             if payload:
-                rec.with_context(rgpd_anonymizing=True).write(payload)
+                rec.with_context(rgpd_anonymizing=True,mail_notrack=True).write(payload)
                 count += 1
         return count

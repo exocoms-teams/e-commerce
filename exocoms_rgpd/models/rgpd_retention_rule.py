@@ -234,7 +234,7 @@ class RgpdRetentionRule(models.Model):
                         raise UserError(
                             _("Le modèle %s ne gère pas l'archivage.") % rec.model_name
                         )
-                    records.with_context(rgpd_anonymizing=True).write({"active": False})
+                    records.with_context(rgpd_anonymizing=True,mail_notrack=True).write({"active": False})
                     count = len(records)
                 elif rec.action_type == "delete":
                     count = len(records)
