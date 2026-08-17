@@ -330,32 +330,31 @@
 
 /* PRODUCT — États boutons wishlist et taille */
 
-.sn-wishlist-btn--active,
-.sn-btn-heart--active {
-    color: var(--white) !important;
-}
+/* SVG heart toggle: filled by default, outline when active */
+.sn-heart-filled { display: block; }
+.sn-heart-outline { display: none; }
 
-.sn-wishlist-btn--active:hover,
-.sn-btn-heart--active:hover {
-    background: var(--primary-color) !important;
-    color: var(--white) !important;
-}
+/* Active (favorited): swap to outline */
+.sn-wishlist-btn--active .sn-heart-filled,
+.sn-btn-heart--active .sn-heart-filled { display: none; }
+.sn-wishlist-btn--active .sn-heart-outline,
+.sn-btn-heart--active .sn-heart-outline { display: block; }
 
-/* Show outline heart on hover when favorited (click to remove) */
-.sn-wishlist-btn--active:hover i::before,
-.sn-btn-heart--active:hover i::before {
-    content: "\f004" !important; /* same heart glyph */
-    font-family: "Font Awesome 5 Free" !important;
-    font-weight: 400 !important; /* 400 = outline, 900 = solid */
-}
+/* Hover on favorited: swap back to filled (indicates remove) */
+.sn-wishlist-btn--active:hover .sn-heart-filled,
+.sn-btn-heart--active:hover .sn-heart-filled { display: block; }
+.sn-wishlist-btn--active:hover .sn-heart-outline,
+.sn-btn-heart--active:hover .sn-heart-outline { display: none; }
 
-/* Filled heart (default active state) */
-.sn-wishlist-btn--active i::before,
-.sn-btn-heart--active i::before {
-    content: "\f004" !important; /* FA5 fa-heart solid */
-    font-family: "Font Awesome 5 Free" !important;
-    font-weight: 900 !important;
-}
+/* SVG fill colors */
+.sn-btn-heart svg,
+.sn-product-wishlist svg { fill: var(--black); }
+.sn-btn-heart:hover svg,
+.sn-product-wishlist:hover svg { fill: var(--white); }
+.sn-btn-heart--active svg,
+.sn-wishlist-btn--active svg { fill: var(--white); }
+.sn-btn-heart--active:hover svg,
+.sn-wishlist-btn--active:hover svg { fill: var(--white); }
 
 .sn-size-options button.active {
     background: var(--primary-color);
