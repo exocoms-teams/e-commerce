@@ -5,8 +5,10 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     oa_type = fields.Char(string='Cosmetic Type', translate=True)
+    oa_product_type = fields.Char(string='Product Type', translate=True)
     oa_finish = fields.Char(string='Finish', translate=True)
     oa_best_for = fields.Char(string='Best For', translate=True)
+    oa_ideal_for = fields.Char(string='Ideal For', translate=True)
     oa_key_ingredients = fields.Char(string='Key Ingredients', translate=True)
     oa_is_demo_product = fields.Boolean(
         string='Demo / Temporary Product',
@@ -25,11 +27,14 @@ class ProductTemplate(models.Model):
     oa_fragrance_heart_notes = fields.Char(string='Heart Notes', translate=True, help='e.g., Rose, Jasmine, Orange Blossom')
     oa_fragrance_base_notes = fields.Char(string='Base Notes', translate=True, help='e.g., Vanilla, Musk, Sandalwood')
     oa_mood = fields.Char(string='Mood / Feeling', translate=True, help='e.g., Elegant, Sensual, Fresh')
+    oa_fragrance_mood = fields.Char(string='Fragrance Mood', translate=True)
 
     # SEO & Editorial Fields
     oa_benefits = fields.Html(string='Benefits', translate="html_translate", help='Long description of the product benefits.')
     oa_how_to_use = fields.Html(string='How to Use', translate="html_translate", help='Instructions on how to use the product.')
     oa_seo_keywords = fields.Char(string='SEO Keywords', translate=True, help='Comma-separated keywords for meta tags.')
+    oa_seo_title = fields.Char(string='SEO Title', translate=True)
+    oa_seo_description = fields.Text(string='SEO Description', translate=True)
 
     # Ingram Micro Fields
     oa_is_ingram_product = fields.Boolean(string='Is Ingram Product', default=False, readonly=True)

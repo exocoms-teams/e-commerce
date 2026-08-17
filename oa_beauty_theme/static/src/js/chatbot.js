@@ -1,4 +1,4 @@
-// O&A Beauty Chatbot — Floating AI Customer Assistant
+// O&A Beauty Chatbot - Floating AI Customer Assistant
 // Communicates with /api/chat/message (Odoo JSON-RPC endpoint)
 
 import { _t } from "@web/core/l10n/translation";
@@ -10,7 +10,6 @@ const OaChatbot = {
 
     init() {
         this.bindEvents();
-        // Show welcome pulse after 3 seconds
         setTimeout(() => {
             const toggle = document.getElementById('oa_chat_toggle');
             if (toggle) toggle.classList.add('oa-chat-pulse');
@@ -31,13 +30,11 @@ const OaChatbot = {
             }
         });
 
-        // Quick Reply Chips
         document.querySelectorAll('.oa-chat-chip').forEach(chip => {
             chip.addEventListener('click', e => {
                 const input = document.getElementById('oa_chat_input');
                 if (input) input.value = e.currentTarget.dataset.msg;
                 this.sendMessage();
-                // Remove quick replies after first use
                 const qr = document.getElementById('oa_chat_quick_replies');
                 if (qr) qr.style.display = 'none';
             });
@@ -52,7 +49,10 @@ const OaChatbot = {
         this.isOpen = true;
         const win = document.getElementById('oa_chat_window');
         const toggle = document.getElementById('oa_chat_toggle');
-        if (win) { win.style.display = 'flex'; win.classList.add('oa-chat-open'); }
+        if (win) {
+            win.style.display = 'flex';
+            win.classList.add('oa-chat-open');
+        }
         if (toggle) {
             toggle.querySelector('.oa-chat-icon-open').style.display = 'none';
             toggle.querySelector('.oa-chat-icon-close').style.display = 'inline';
@@ -64,7 +64,12 @@ const OaChatbot = {
         this.isOpen = false;
         const win = document.getElementById('oa_chat_window');
         const toggle = document.getElementById('oa_chat_toggle');
-        if (win) { win.classList.remove('oa-chat-open'); setTimeout(() => { win.style.display = 'none'; }, 300); }
+        if (win) {
+            win.classList.remove('oa-chat-open');
+            setTimeout(() => {
+                win.style.display = 'none';
+            }, 300);
+        }
         if (toggle) {
             toggle.querySelector('.oa-chat-icon-open').style.display = 'inline';
             toggle.querySelector('.oa-chat-icon-close').style.display = 'none';
@@ -101,7 +106,6 @@ const OaChatbot = {
         this.isTyping = true;
         this.showTyping(true);
 
-        // Open chat if it was closed
         if (!this.isOpen) this.openChat();
 
         try {
@@ -111,9 +115,8 @@ const OaChatbot = {
                 body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { message, history: this.conversationHistory } })
             });
             const data = await res.json();
-            const reply = data?.result?.reply || _t("I'm sorry, I couldn't process your request. Please try again.");
+            const reply = data?.result?.reply || _t("Je suis désolé, je n'ai pas pu traiter votre demande. Veuillez réessayer.");
 
-            // Simulate a natural typing delay
             await new Promise(r => setTimeout(r, 600 + Math.random() * 400));
 
             this.showTyping(false);
@@ -121,7 +124,7 @@ const OaChatbot = {
             this.conversationHistory.push({ role: 'bot', text: reply });
         } catch (e) {
             this.showTyping(false);
-            this.appendMessage(_t("Sorry, I'm having trouble connecting. Please try again shortly."), 'bot');
+            this.appendMessage(_t("Désolé, j'ai du mal à me connecter. Veuillez réessayer dans un instant."), 'bot');
             console.error('[OA Chatbot]', e);
         } finally {
             this.isTyping = false;
