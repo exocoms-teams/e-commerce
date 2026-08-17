@@ -41,9 +41,12 @@ Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gamme
     ],
     'data': [
         'security/ir.model.access.csv',
+        'data/categories.xml',
+        'data/products.xml',
         'data/website_data.xml',
         'data/seo_data.xml',
         'data/cron.xml',
+        'data/website_settings.xml',
         'views/templates/header.xml',
         'views/templates/footer.xml',
         'views/templates/layout.xml',

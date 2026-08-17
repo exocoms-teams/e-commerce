@@ -173,10 +173,15 @@ SHOP_SUBCATEGORIES = {
 # nos modèles doit disparaître sur mon code"), la constante n'a donc
 # plus aucun consommateur.
 
-# product.attribute utilisé comme simple filtre boutique (pas de vraies
-# variantes) : nom -> liste de valeurs.
 SHOP_FILTER_ATTRIBUTES = {
+    # Attributs initiaux
     'Surface (m²)': ['15-20 m²', '20-30 m²', '30-45 m²'],
+    'Delais (jours)': ['1 ou 2 jours', '3 à 6 jours', '7 jours ou plus'],
+    'Materiaux': ['Bois', 'Verre', 'Fer'],
+    # Nouveaux attributs
+    'Usage': ['Bureau', 'Atelier', 'Habitation', 'Loisir', 'Accessoire'],
+    'Garantie': ['2 ans', '5 ans', '10 ans'],
+    "Niveau d'isolation": ['Standard', 'Haute performance', 'Non applicable'],
 }
 
 # Gammes de produits (page /nos-gammes, v19.0.1.0.71) — contenu à titre
