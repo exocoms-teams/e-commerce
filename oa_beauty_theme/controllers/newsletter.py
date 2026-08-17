@@ -10,12 +10,6 @@ from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 
-# ⚠️ Ne jamais mettre les clés API en dur dans le code.
-# Configurez-les dans Odoo : Paramètres → Technique → Paramètres système
-# Clés à créer :
-#   brevo.api_key     → votre clé API Brevo
-#   brevo.list_id     → ID numérique de votre liste Brevo (ex: 3)
-
 
 class NewsletterController(http.Controller):
 
