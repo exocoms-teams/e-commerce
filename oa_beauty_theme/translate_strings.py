@@ -31,7 +31,7 @@ def translate_individual(strings, translator, target_dict):
             except Exception as e:
                 time.sleep(1)
         else:
-            target_dict[s] = s # Fallback to original on complete failure
+            target_dict[s] = s
 
 batch_size = 50
 print("Translating in batches with fallback...", flush=True)
