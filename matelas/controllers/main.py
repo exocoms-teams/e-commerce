@@ -8,6 +8,7 @@ EMAIL_REGEX = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
 
 
 class MatelasVente(http.Controller):
+    """Controleur du site principal, Matelas."""
 
     @http.route('/', auth='public', website=True)
     def index(self, **kwargs):
@@ -15,7 +16,6 @@ class MatelasVente(http.Controller):
             ('is_published', '=', True)
         ], limit=4)
 
-        
         nouveaute_tag = request.env.ref(
             'matelas.product_tag_nouveaute', raise_if_not_found=False)
 
@@ -27,7 +27,6 @@ class MatelasVente(http.Controller):
             ], limit=4)
 
         if not nouveautes:
-
             nouveautes = request.env['product.template'].sudo().search([
                 ('is_published', '=', True),
             ], order='create_date desc', limit=4)

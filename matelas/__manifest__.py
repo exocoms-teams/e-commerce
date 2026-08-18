@@ -24,12 +24,12 @@
         'security/ir.model.access.csv',
         'data/product_tags_data.xml',
         'data/livechat_data.xml',
+        'data/website_config.xml',
         'data/languages_data.xml',
         'data/payment_data.xml',
         'data/newsletter_data.xml',
         'data/footer.xml',
         'data/header_templates.xml',
-        'data/res_config_settings.xml',
         'data/mail_template.xml',
         'data/branding_data.xml',
         'views/website_layout_head.xml',
@@ -44,7 +44,6 @@
         'views/templates/fiche_technique.xml',
         'views/templates/email_confirm.xml',
         'data/seo_data.xml',
-
     ],
     'assets': {
         'web.assets_frontend': [
@@ -61,5 +60,4 @@
     },
     'application': True,
     'post_init_hook': '_assign_nouveaute_tag',
-
 }

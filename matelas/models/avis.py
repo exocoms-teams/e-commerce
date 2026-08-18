@@ -4,8 +4,7 @@ from odoo.exceptions import ValidationError
 
 
 class MatelasAvis(models.Model):
-    """Avis clients laissés sur le site (page /avis).
-    """
+    """Avis clients laissés sur le site (page /avis)."""
     _name = 'matelas.avis'
     _description = "Avis client"
     _order = 'create_date desc'
