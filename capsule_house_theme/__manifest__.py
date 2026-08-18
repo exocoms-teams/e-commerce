@@ -45,8 +45,6 @@ Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gamme
         'data/website_data.xml',
         'data/seo_data.xml',
         'data/cron.xml',
-        'data/attributs.xml',
-        'data/categories.xml',
         'data/products.xml',
         
         'views/templates/header.xml',
