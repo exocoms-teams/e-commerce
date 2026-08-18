@@ -205,7 +205,11 @@ class AdvisorController(http.Controller):
         )
 
         if advisor_mode == 'fragrance':
-            fragrances = Product.search(self._product_domain() + [('oa_fragrance_top_notes', '!=', False)])
+            domain = request.env['oa.search.service'].sudo()._and_domain([
+                self._product_domain(),
+                [('oa_fragrance_top_notes', '!=', False)],
+            ])
+            fragrances = Product.search(domain, order='website_sequence asc, list_price asc, name asc')
             for index, product in enumerate(fragrances[:3], 1):
                 match_score, reasons = self._profile_score(product, profile, 'fragrance')
                 step_label = _("Scent option %s") % index

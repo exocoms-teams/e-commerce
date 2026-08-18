@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 // O&A Beauty Chatbot - Floating AI Customer Assistant
 // Communicates with /api/chat/message (Odoo JSON-RPC endpoint)
 
