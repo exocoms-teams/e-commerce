@@ -1,10 +1,12 @@
+/** @odoo-module **/
+
+import { _t } from "@web/core/l10n/translation";
+
 /**
  * O&A Beauty intelligent search overlay.
  */
 (function () {
     'use strict';
-
-    const _t = (key) => (window.odoo && window.odoo._t) ? window.odoo._t(key) : key;
 
     const state = {
         timer: null,

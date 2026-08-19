@@ -1,3 +1,7 @@
+/** @odoo-module **/
+
+import { _t } from "@web/core/l10n/translation";
+
 /**
  * oa_beauty_theme — Floating AI Chatbot
  * Communicates with /api/chat/message (Odoo JSON-RPC endpoint)
@@ -8,11 +12,6 @@
 
 (function () {
     'use strict';
-
-    // Fallback _t compatible Odoo 19 (même pattern que newsletter.js)
-    var _t = function (key) {
-        return (window.odoo && window.odoo._t) ? window.odoo._t(key) : key;
-    };
 
     var OaChatbot = {
         isOpen: false,
@@ -164,7 +163,7 @@
             .then(function (data) {
                 var reply = (data && data.result && data.result.reply)
                     ? data.result.reply
-                    : _t("Je suis desole, je n'ai pas pu traiter votre demande. Veuillez reessayer.");
+                    : _t("Je suis désolé, je n'ai pas pu traiter votre demande. Veuillez réessayer.");
                 return new Promise(function (resolve) {
                     setTimeout(function () { resolve(reply); }, 600 + Math.random() * 400);
                 });
@@ -176,7 +175,7 @@
             })
             .catch(function (e) {
                 self.showTyping(false);
-                self.appendMessage(_t("Desole, j'ai du mal a me connecter. Veuillez reessayer dans un instant."), 'bot');
+                self.appendMessage(_t("Désolé, j'ai du mal à me connecter. Veuillez réessayer dans un instant."), 'bot');
                 console.error('[OA Chatbot]', e);
             })
             .finally(function () {

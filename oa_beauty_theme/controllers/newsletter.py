@@ -5,7 +5,7 @@ import json
 import logging
 import requests
 
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 _logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class NewsletterController(http.Controller):
         email = (kwargs.get('email') or '').strip()
 
         if not email or '@' not in email:
-            return {'success': False, 'message': 'Adresse e-mail invalide.'}
+            return {'success': False, 'message': _('Adresse e-mail invalide.')}
 
         params = request.env['ir.config_parameter'].sudo()
         api_key = params.get_param('brevo.api_key')
@@ -30,11 +30,11 @@ class NewsletterController(http.Controller):
 
         if not api_key:
             _logger.error("[Newsletter] Brevo API Key non configurée !")
-            return {'success': False, 'message': 'Configuration manquante. Contactez l\'administrateur.'}
+            return {'success': False, 'message': _("Configuration manquante. Contactez l'administrateur.")}
 
         if not list_id:
             _logger.error("[Newsletter] Brevo List ID non configuré !")
-            return {'success': False, 'message': 'Configuration manquante. Contactez l\'administrateur.'}
+            return {'success': False, 'message': _("Configuration manquante. Contactez l'administrateur.")}
 
         try:
             # API Brevo : créer/mettre à jour un contact
@@ -57,32 +57,32 @@ class NewsletterController(http.Controller):
             if resp.status_code in (200, 201):
                 _logger.info(f"[Newsletter] ✅ {email} abonné avec succès à Brevo.")
                 self._trigger_n8n_webhook(email)
-                return {'success': True, 'message': 'Merci ! Vérifiez votre boîte mail pour votre code –10 %.'}
+                return {'success': True, 'message': _('Merci ! Vérifiez votre boîte mail pour votre code –10 %.')}
 
             elif resp.status_code == 204:
                 # Contact existant mis à jour
                 _logger.info(f"[Newsletter] 🔄 {email} déjà existant, mis à jour dans Brevo.")
                 self._trigger_n8n_webhook(email)
-                return {'success': True, 'message': 'Votre inscription a été mise à jour !'}
+                return {'success': True, 'message': _('Votre inscription a été mise à jour !')}
 
             elif resp.status_code == 400:
                 data = resp.json()
                 code = data.get('code', '')
                 if code == 'duplicate_parameter':
-                    return {'success': False, 'message': 'Cette adresse est déjà abonnée.'}
+                    return {'success': False, 'message': _('Cette adresse est déjà abonnée.')}
                 _logger.warning(f"[Newsletter] Brevo 400: {data}")
-                return {'success': False, 'message': 'Erreur lors de l\'inscription. Réessayez.'}
+                return {'success': False, 'message': _("Erreur lors de l'inscription. Réessayez.")}
 
             else:
                 _logger.error(f"[Newsletter] Brevo erreur {resp.status_code}: {resp.text}")
-                return {'success': False, 'message': 'Une erreur est survenue. Réessayez plus tard.'}
+                return {'success': False, 'message': _('Une erreur est survenue. Réessayez plus tard.')}
 
         except requests.exceptions.Timeout:
             _logger.error("[Newsletter] Timeout lors de l'appel Brevo.")
-            return {'success': False, 'message': 'Délai dépassé. Réessayez plus tard.'}
+            return {'success': False, 'message': _('Délai dépassé. Réessayez plus tard.')}
         except Exception as e:
             _logger.exception(f"[Newsletter] Erreur inattendue: {e}")
-            return {'success': False, 'message': 'Une erreur est survenue.'}
+            return {'success': False, 'message': _('Une erreur est survenue.')}
 
     def _trigger_n8n_webhook(self, email):
         """

@@ -1,3 +1,7 @@
+/** @odoo-module **/
+
+import { _t } from "@web/core/l10n/translation";
+
 /**
  * oa_beauty_theme — Newsletter Subscription Handler
  * 1) Envoie l'email au controller Odoo (/newsletter/subscribe)
@@ -8,8 +12,6 @@
 
 (function () {
     'use strict';
-
-    const _t = (key) => (window.odoo && window.odoo._t) ? window.odoo._t(key) : key;
 
     // ── Configuration ──────────────────────────────────────────────────────────
     // URL du webhook n8n (utilisé en fallback uniquement)
@@ -103,7 +105,7 @@
         })
         .then(function(response) {
             if (!response.ok) throw new Error('n8n HTTP ' + response.status);
-            return { success: true, message: _t('Bienvenue dans le Cercle O&A Beauty ! Vous recevrez bientot nos exclusivites.') };
+            return { success: true, message: _t('Bienvenue dans le Cercle O&A Beauty ! Vous recevrez bientôt nos exclusivités.') };
         });
     }
 
@@ -129,7 +131,7 @@
                     return;
                 }
                 if (!isValidEmail(email)) {
-                    showFeedback(wrapper, 'error', _t('Adresse e-mail invalide. Veuillez la verifier.'));
+                    showFeedback(wrapper, 'error', _t('Adresse e-mail invalide. Veuillez la vérifier.'));
                     emailInput.focus();
                     return;
                 }
@@ -145,7 +147,7 @@
                     })
                     .then(function(result) {
                         if (result.success) {
-                            showFeedback(wrapper, 'success', result.message || _t('Inscription reussie !'));
+                            showFeedback(wrapper, 'success', result.message || _t('Inscription réussie !'));
                             emailInput.value = '';
                         } else {
                             showFeedback(wrapper, 'error', result.message || _t('Une erreur est survenue.'));
@@ -153,7 +155,7 @@
                     })
                     .catch(function(err) {
                         console.error('[OA Newsletter] Toutes les methodes ont echoue:', err);
-                        showFeedback(wrapper, 'error', _t('Une erreur est survenue. Veuillez reessayer ou nous contacter directement.'));
+                        showFeedback(wrapper, 'error', _t('Une erreur est survenue. Veuillez réessayer ou nous contacter directement.'));
                     })
                     .finally(function() {
                         setLoading(submitBtn, emailInput, false);

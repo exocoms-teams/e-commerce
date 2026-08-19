@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 from ..utils.packlink_api import PacklinkAPIConnector
 import logging
@@ -25,7 +25,7 @@ class TrackingController(http.Controller):
             tracking_data = connector.get_tracking(tracking_number)
 
             if not tracking_data:
-                error_message = "Nous n'avons pas pu trouver de colis avec ce numéro de suivi."
+                error_message = _("Nous n'avons pas pu trouver de colis avec ce numéro de suivi.")
 
         values = {
             'tracking_number': tracking_number,
