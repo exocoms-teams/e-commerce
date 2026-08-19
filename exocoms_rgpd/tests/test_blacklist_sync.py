@@ -69,8 +69,9 @@ class TestBlacklistSync(RgpdCommon):
         before = self.Consent.sudo().search_count([("email", "=ilike", self.email)])
         self.Blacklist.sudo()._add(self.email)
         after = self.Consent.sudo().search_count([("email", "=ilike", self.email)])
+        
         self.assertGreater(
-            after, before, "La désinscription doit créer une entrée de journal."
+            after, before, "La désinscription doit créer une entrée de journal. "+after+" "+before
         )
         state = self.Consent.get_current_state(
             self.email, company=self.company_a
