@@ -308,7 +308,7 @@ GAMMES_DATA = [
     },
     {
         'slug': 'dome',
-        'status': GAMME_STATUS_A_CONFIRMER,
+        'status': GAMME_STATUS_DISPONIBLE,
         'icon': 'fa-circle-o',
         'name': 'Dôme',
         'indicative': True,
