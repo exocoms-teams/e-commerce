@@ -6,10 +6,10 @@
  * 2) Fallback : si Odoo échoue, essaie le webhook n8n directement
  */
 
-/** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
-
+(function () {
     'use strict';
+
+    const _t = (key) => (window.odoo && window.odoo._t) ? window.odoo._t(key) : key;
 
     // ── Configuration ──────────────────────────────────────────────────────────
     // URL du webhook n8n (utilisé en fallback uniquement)
@@ -48,18 +48,12 @@ import { _t } from "@web/core/l10n/translation";
         div.textContent = (isSuccess ? '\u2713  ' : '\u26A0  ') + message;
         container.appendChild(div);
 
-        requestAnimationFrame/** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
- div.style.opacity = '1'; });
+        requestAnimationFrame(function() { div.style.opacity = '1'; });
 
         if (isSuccess) {
-            setTimeout/** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
-
+            setTimeout(function() {
                 div.style.opacity = '0';
-                setTimeout/** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
- div.remove(); }, 400);
+                setTimeout(function() { div.remove(); }, 400);
             }, 7000);
         }
     }
@@ -109,7 +103,7 @@ import { _t } from "@web/core/l10n/translation";
         })
         .then(function(response) {
             if (!response.ok) throw new Error('n8n HTTP ' + response.status);
-            return { success: true, message: _t('Bienvenue dans le Cercle O&A Beauty ! Vous recevrez bientôt nos exclusivités.') };
+            return { success: true, message: _t('Bienvenue dans le Cercle O&A Beauty ! Vous recevrez bientot nos exclusivites.') };
         });
     }
 
@@ -135,7 +129,7 @@ import { _t } from "@web/core/l10n/translation";
                     return;
                 }
                 if (!isValidEmail(email)) {
-                    showFeedback(wrapper, 'error', _t('Adresse e-mail invalide. Veuillez la vérifier.'));
+                    showFeedback(wrapper, 'error', _t('Adresse e-mail invalide. Veuillez la verifier.'));
                     emailInput.focus();
                     return;
                 }
@@ -151,7 +145,7 @@ import { _t } from "@web/core/l10n/translation";
                     })
                     .then(function(result) {
                         if (result.success) {
-                            showFeedback(wrapper, 'success', result.message || _t('Inscription réussie !'));
+                            showFeedback(wrapper, 'success', result.message || _t('Inscription reussie !'));
                             emailInput.value = '';
                         } else {
                             showFeedback(wrapper, 'error', result.message || _t('Une erreur est survenue.'));
@@ -159,11 +153,9 @@ import { _t } from "@web/core/l10n/translation";
                     })
                     .catch(function(err) {
                         console.error('[OA Newsletter] Toutes les methodes ont echoue:', err);
-                        showFeedback(wrapper, 'error', _t('Une erreur est survenue. Veuillez réessayer ou nous contacter directement.'));
+                        showFeedback(wrapper, 'error', _t('Une erreur est survenue. Veuillez reessayer ou nous contacter directement.'));
                     })
-                    .finally/** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
-
+                    .finally(function() {
                         setLoading(submitBtn, emailInput, false);
                     });
             });
@@ -182,3 +174,4 @@ import { _t } from "@web/core/l10n/translation";
         initNewsletterForm();
     }
 
+})();

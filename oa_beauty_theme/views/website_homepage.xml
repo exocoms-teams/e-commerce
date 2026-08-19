@@ -307,6 +307,27 @@
 
                 <div class="oe_structure oe_empty" id="oa_home_after_content"/>
 
+                <!-- SCROLL-REVEAL JAVASCRIPT -->
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const revealElements = document.querySelectorAll('.oa-reveal, .oa-reveal-stagger');
+                        
+                        const checkReveal = () => {
+                            const triggerBottom = window.innerHeight * 0.85;
+                            revealElements.forEach(el => {
+                                const rect = el.getBoundingClientRect();
+                                if (rect.top &lt; triggerBottom) {
+                                    el.classList.add('oa-revealed');
+                                }
+                            });
+                        };
+                        
+                        window.addEventListener('scroll', checkReveal);
+                        // Trigger once on load
+                        setTimeout(checkReveal, 200);
+                    });
+                </script>
+
             </div>
         </t>
     </template>

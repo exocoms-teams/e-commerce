@@ -1,10 +1,10 @@
 /**
  * O&A Beauty intelligent search overlay.
  */
-/** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
-
+(function () {
     'use strict';
+
+    const _t = (key) => (window.odoo && window.odoo._t) ? window.odoo._t(key) : key;
 
     const state = {
         timer: null,
@@ -54,9 +54,7 @@ import { _t } from "@web/core/l10n/translation";
         overlay.classList.add('is-open');
         overlay.setAttribute('aria-hidden', 'false');
         document.body.classList.add('oa-search-lock');
-        window.setTimeout/** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
- input.focus(); }, 80);
+        window.setTimeout(function () { input.focus(); }, 80);
     }
 
     function closeSearch() {
@@ -150,9 +148,7 @@ import { _t } from "@web/core/l10n/translation";
     function search(query) {
         state.query = query;
         window.clearTimeout(state.timer);
-        state.timer = window.setTimeout/** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
-
+        state.timer = window.setTimeout(function () {
             if (query.length < 2) {
                 renderResults({ query: query, results: [], suggestions: [], count: 0 });
                 return;
@@ -160,9 +156,7 @@ import { _t } from "@web/core/l10n/translation";
             $('.oa-search-status').textContent = _t('Recherche...');
             jsonRpc('/api/oa/search', { query: query, limit: 8 })
                 .then(renderResults)
-                .catch/** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
-
+                .catch(function () {
                     $('.oa-search-status').textContent = _t('La recherche est momentanément indisponible.');
                 });
         }, 260);
@@ -188,3 +182,4 @@ import { _t } from "@web/core/l10n/translation";
             }
         });
     });
+})();

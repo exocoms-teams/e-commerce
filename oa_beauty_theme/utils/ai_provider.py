@@ -55,7 +55,7 @@ class BaseAIProvider:
         raise NotImplementedError("Subclasses must implement generate_response")
 
 class GeminiProvider(BaseAIProvider):
-    def __init__(self, api_key, model='gemini-3.5-flash'):
+    def __init__(self, api_key, model='gemini-1.5-flash'):
         self.api_key = api_key
         self.model = model
         self.endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
