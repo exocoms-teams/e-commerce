@@ -6,7 +6,10 @@ class ProductTemplate(models.Model):
 
     is_vegan = fields.Boolean(string='100% Vegan', default=False)
     nutritional_info = fields.Html(string='Valeurs nutritionnelles')
-    allergen_ids = fields.Many2many('allergen', string='Allergènes')
+    
+    # Attention: Vérifie que ton modèle s'appelle bien 'allergen' et pas 'custom_supplements.allergen'
+    allergen_ids = fields.Many2many('allergen', string='Allergènes') 
+    
     is_supplement = fields.Boolean(string='Complément alimentaire', default=False)
     dosage = fields.Char(string='Dosage recommandé', help='Exemple : 2 gélules par jour')
     ingredients = fields.Text(string='Ingrédients actifs')
@@ -18,18 +21,18 @@ class ProductTemplate(models.Model):
                 vals.setdefault('tracking', 'lot')
                 vals.setdefault('use_expiration_date', True)
                 vals.setdefault('expiration_time', 365)
-                vals["is_storable"] = True
-                vals["alert_time"] = 30
+                vals.setdefault('is_storable', True)
+                vals.setdefault('alert_time', 30)
         return super().create(vals_list)
 
     def write(self, vals):
+        # On n'applique ces valeurs par défaut que si on est en train de passer le produit en "Complément"
         if vals.get("is_supplement"):
-            vals["is_storable"] = True
             vals.setdefault('tracking', 'lot')
             vals.setdefault('use_expiration_date', True)
             vals.setdefault('expiration_time', 365)
-            vals["is_storable"] = True
-            vals["alert_time"] = 30
+            vals.setdefault('is_storable', True)
+            vals.setdefault('alert_time', 30)
         return super().write(vals)
 
     def _search_get_detail(self, website, order, options):
@@ -45,5 +48,5 @@ class ProductTemplate(models.Model):
 
     @api.onchange("is_supplement")
     def _onchange_is_supplement(self):
-        if self.is_supplement == True:
+        if self.is_supplement:
             self.is_storable = True

@@ -1,5 +1,5 @@
 {
-   'name': 'Boutique Compléments Alimentaires',
+    'name': 'Boutique Compléments Alimentaires',
     'author': 'Yassine Tartor',
     'license': 'LGPL-3',
     'version': '1.0',
@@ -13,13 +13,20 @@
         'exocoms_rgpd'
     ],
 
-        #bloc 'assets' pour charger votre futur design :
-        'assets': {
+    # Bloc 'assets' mis à jour pour respecter le builder Odoo 19 :
+    'assets': {
+        # 1. Variables globales (couleurs, typos) prioritaires sur Bootstrap
+        'web._assets_primary_variables': [
+            ('prepend', 'custom_supplements/static/src/scss/primary_variables.scss'),
+        ],
+        
+        # 2. Ton design spécifique
         'web.assets_frontend': [
             'custom_supplements/static/src/scss/style.scss',
         ],
     },
-'data': [
+    
+    'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
         'data/ir_cron.xml',

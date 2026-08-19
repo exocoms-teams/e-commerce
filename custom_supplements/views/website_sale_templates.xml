@@ -7,9 +7,9 @@
     </template>
 
     <template id="filter_vegan_sidebar" inherit_id="website_sale.products" name="Compléments — filtres boutique">
-        <!-- Modification de l'XPath ici pour cibler l'intérieur de la grille -->
-        <xpath expr="//div[@id='products_grid']/*[1]" position="before">
-            <div class="cs-filter-strip" role="region" aria-label="Filtres complémentaires">
+        <!-- Modification de l'XPath : Ciblage plus sécurisé de l'enveloppe de la grille pour éviter les plantages si la grille est vide -->
+        <xpath expr="//div[hasclass('o_wsale_products_grid_table_wrapper')]" position="before">
+            <div class="cs-filter-strip mb-3" role="region" aria-label="Filtres complémentaires">
                 <a t-att-href="keep('/shop', vegan=('' if supplement_vegan else '1'))" t-attf-class="cs-filter-pill #{'is-active' if supplement_vegan else ''}"><i class="fa fa-leaf me-2" aria-hidden="true"/>100% vegan</a>
                 <t t-foreach="allergens" t-as="allergen"><a t-att-href="keep('/shop', allergens_exclude=allergen.id)" class="cs-filter-pill"><i class="fa fa-slash me-1" aria-hidden="true"/>Sans <t t-esc="allergen.name"/></a></t>
             </div>
@@ -37,6 +37,9 @@
                         <h3 class="h6">Valeurs nutritionnelles</h3>
                         <div t-out="product.nutritional_info"/>
                     </div>
+                    
+                    <!-- Ajout de la zone dynamique modifiable par l'éditeur web, unique à chaque produit -->
+                    <div class="oe_structure oe_empty mt-3" t-attf-id="oe_structure_supplement_info_#{product.id}"/>
                 </section>
             </t>
         </xpath>
