@@ -9,6 +9,8 @@ from .common import RgpdCommon
 @tagged("post_install", "-at_install", "rgpd")
 class TestRetention(RgpdCommon):
 
+    
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -18,6 +20,11 @@ class TestRetention(RgpdCommon):
         )
 
     def _rule(self, company=None, action_type="anonymize"):
+        self.field_email = self.env["ir.model.fields"].search([
+            ("model", "=", "res.partner"),
+            ("name", "=", "email"),
+        ], limit=1)
+
         vals = {
             "name": "Purge de test",
             "model_id": self.model_partner.id,
