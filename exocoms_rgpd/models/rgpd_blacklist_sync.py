@@ -188,39 +188,51 @@ class MailBlacklist(models.Model):
         purposes = Purpose.sudo().search([("category", "=", "marketing")])
         if not purposes:
             return
+            
+        # Pré-charger toutes les sociétés pour les objectifs globaux
+        all_companies = self.env['res.company'].sudo().search([])
+
         for record in self:
             email = tools.email_normalize(record.email)
             if not email:
                 continue
+                
             for purpose in purposes:
-                company = purpose.company_id or self.env.company
-                if not Consent._blacklist_enabled(company):
-                    continue
-                current = Consent.sudo().get_current_state(
-                    email, company=company
-                ).get(purpose.code)
-                is_granted = bool(current and current.state == "granted")
-                if is_granted == granted:
-                    continue
-                try:
-                    Consent.sudo().with_context(**{SKIP: True}).register(
-                        purpose.code,
-                        email,
-                        granted=granted,
-                        state=None if granted else "withdrawn",
-                        company=company,
-                        method="manual",
-                        note=_(
-                            "Synchronisation depuis la liste noire de messagerie "
-                            "d'Odoo (désinscription, saisie manuelle ou import)."
-                        ) if not granted else _(
-                            "Retrait de la liste noire de messagerie d'Odoo."
-                        ),
-                    )
-                except Exception:  # pragma: no cover
-                    _logger.exception(
-                        "RGPD: journalisation du retrait impossible pour %s", email
-                    )
+                # Si l'objectif est lié à une société, on la cible. 
+                # Sinon, l'objectif est global : on doit répercuter le retrait sur toutes les sociétés.
+                companies_to_check = purpose.company_id or all_companies
+                
+                for company in companies_to_check:
+                    if not Consent._blacklist_enabled(company):
+                        continue
+                        
+                    current = Consent.sudo().get_current_state(
+                        email, company=company
+                    ).get(purpose.code)
+                    
+                    is_granted = bool(current and current.state == "granted")
+                    if is_granted == granted:
+                        continue
+                        
+                    try:
+                        Consent.sudo().with_context(**{SKIP: True}).register(
+                            purpose.code,
+                            email,
+                            granted=granted,
+                            state=None if granted else "withdrawn",
+                            company=company,
+                            method="manual",
+                            note=_(
+                                "Synchronisation depuis la liste noire de messagerie "
+                                "d'Odoo (désinscription, saisie manuelle ou import)."
+                            ) if not granted else _(
+                                "Retrait de la liste noire de messagerie d'Odoo."
+                            ),
+                        )
+                    except Exception:  # pragma: no cover
+                        _logger.exception(
+                            "RGPD: journalisation du retrait impossible pour %s", email
+                        )
 
     @api.model_create_multi
     def create(self, vals_list):

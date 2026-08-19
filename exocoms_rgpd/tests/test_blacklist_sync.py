@@ -67,11 +67,17 @@ class TestBlacklistSync(RgpdCommon):
         """Sens inverse : un clic sur « se désinscrire » doit laisser une preuve."""
         self._consent(self.company_a, granted=True)
         before = self.Consent.sudo().search_count([("email", "=ilike", self.email)])
+        
+        # Action : ajout à la liste noire
         self.Blacklist.sudo()._add(self.email)
+        
+        # FORCER L'ÉCRITURE EN BASE AVANT LE COMPTAGE
+        self.env.flush_all()
+        
         after = self.Consent.sudo().search_count([("email", "=ilike", self.email)])
         
         self.assertGreater(
-            after, before, "La désinscription doit créer une entrée de journal. "+str(after)+" "+str(before)
+            after, before, f"La désinscription doit créer une entrée de journal. {after} {before}"
         )
         state = self.Consent.get_current_state(
             self.email, company=self.company_a
