@@ -8,3 +8,4 @@ from . import res_partner
 
 from . import ingram_config
 from . import sale_order
+from . import ir_http

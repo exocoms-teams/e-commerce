@@ -37,8 +37,11 @@
     --oa-grad-end:      #c1a9d0;
 }
 
-// ── GLOBAL RESETS (scoped to #wrapwrap to avoid breaking Odoo) ──
-#wrapwrap {
+// ── GLOBAL RESETS (scoped to O&A site only via .oa-atelier-theme on <body>) ──
+// .oa-atelier-theme is injected only on the O&A Atelier website (website_id scoped via
+// oa_beauty_body_class view which has website_id set in website_views_scope.xml).
+// The travel agency site does NOT have this class, so its #wrapwrap is unaffected.
+.oa-atelier-theme #wrapwrap {
     background: var(--oa-ivory);
     color: var(--oa-text);
     font-family: var(--oa-font-body);

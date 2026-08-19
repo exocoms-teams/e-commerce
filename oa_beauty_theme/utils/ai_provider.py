@@ -25,7 +25,10 @@ class AIProviderFactory:
             return MockAIProvider()
 
         if provider_name == 'gemini':
-            model = config.get_param('oa_beauty_theme.gemini_model', default='gemini-3.5-flash')
+            # Default model: gemini-1.5-flash (stable, widely available).
+            # Override via Odoo system parameter oa_beauty_theme.gemini_model.
+            # Other valid values: gemini-2.0-flash, gemini-1.5-pro, gemini-2.0-flash-exp
+            model = config.get_param('oa_beauty_theme.gemini_model', default='gemini-1.5-flash')
             return GeminiProvider(api_key, model=model)
         elif provider_name == 'openai':
             return OpenAIProvider(api_key)

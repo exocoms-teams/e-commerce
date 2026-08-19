@@ -1,7 +1,9 @@
 /**
  * O&A Beauty intelligent search overlay.
  */
-(function () {
+/** @odoo-module **/
+import { _t } from "@web/core/l10n/translation";
+
     'use strict';
 
     const state = {
@@ -52,7 +54,9 @@
         overlay.classList.add('is-open');
         overlay.setAttribute('aria-hidden', 'false');
         document.body.classList.add('oa-search-lock');
-        window.setTimeout(function () { input.focus(); }, 80);
+        window.setTimeout/** @odoo-module **/
+import { _t } from "@web/core/l10n/translation";
+ input.focus(); }, 80);
     }
 
     function closeSearch() {
@@ -110,17 +114,17 @@
         allEl.hidden = !query;
 
         if (query.length < 2) {
-            statusEl.textContent = 'Tapez au moins 2 caractères.';
+            statusEl.textContent = _t('Tapez au moins 2 caractères.');
             emptyEl.hidden = true;
             allEl.hidden = true;
             renderSuggestions([], query);
             return;
         }
 
-        statusEl.textContent = results.length ? (payload.count + ' résultat(s) pertinent(s)') : '';
+        statusEl.textContent = results.length ? (payload.count + _t(' résultat(s) pertinent(s)')) : '';
         emptyEl.hidden = results.length > 0;
         if (!results.length) {
-            emptyEl.querySelector('.oa-search-empty-title').textContent = 'No results found for "' + query + '".';
+            emptyEl.querySelector('.oa-search-empty-title').textContent = _t('No results found for "') + query + '".';
         }
 
         results.forEach(function (product) {
@@ -146,16 +150,20 @@
     function search(query) {
         state.query = query;
         window.clearTimeout(state.timer);
-        state.timer = window.setTimeout(function () {
+        state.timer = window.setTimeout/** @odoo-module **/
+import { _t } from "@web/core/l10n/translation";
+
             if (query.length < 2) {
                 renderResults({ query: query, results: [], suggestions: [], count: 0 });
                 return;
             }
-            $('.oa-search-status').textContent = 'Recherche...';
+            $('.oa-search-status').textContent = _t('Recherche...');
             jsonRpc('/api/oa/search', { query: query, limit: 8 })
                 .then(renderResults)
-                .catch(function () {
-                    $('.oa-search-status').textContent = 'La recherche est momentanément indisponible.';
+                .catch/** @odoo-module **/
+import { _t } from "@web/core/l10n/translation";
+
+                    $('.oa-search-status').textContent = _t('La recherche est momentanément indisponible.');
                 });
         }, 260);
     }
@@ -180,4 +188,3 @@
             }
         });
     });
-})();

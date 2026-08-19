@@ -6,7 +6,9 @@
  * 2) Fallback : si Odoo échoue, essaie le webhook n8n directement
  */
 
-(function () {
+/** @odoo-module **/
+import { _t } from "@web/core/l10n/translation";
+
     'use strict';
 
     // ── Configuration ──────────────────────────────────────────────────────────
@@ -46,12 +48,18 @@
         div.textContent = (isSuccess ? '\u2713  ' : '\u26A0  ') + message;
         container.appendChild(div);
 
-        requestAnimationFrame(function() { div.style.opacity = '1'; });
+        requestAnimationFrame/** @odoo-module **/
+import { _t } from "@web/core/l10n/translation";
+ div.style.opacity = '1'; });
 
         if (isSuccess) {
-            setTimeout(function() {
+            setTimeout/** @odoo-module **/
+import { _t } from "@web/core/l10n/translation";
+
                 div.style.opacity = '0';
-                setTimeout(function() { div.remove(); }, 400);
+                setTimeout/** @odoo-module **/
+import { _t } from "@web/core/l10n/translation";
+ div.remove(); }, 400);
             }, 7000);
         }
     }
@@ -59,7 +67,7 @@
     function setLoading(btn, emailInput, loading) {
         btn.disabled = loading;
         emailInput.disabled = loading;
-        btn.textContent = loading ? 'Envoi...' : "S'abonner";
+        btn.textContent = loading ? _t('Envoi...') : _t("S'abonner");
         btn.style.opacity = loading ? '0.7' : '1';
     }
 
@@ -101,7 +109,7 @@
         })
         .then(function(response) {
             if (!response.ok) throw new Error('n8n HTTP ' + response.status);
-            return { success: true, message: 'Bienvenue dans le Cercle O&A Beauty ! Vous recevrez bientot nos exclusivites.' };
+            return { success: true, message: _t('Bienvenue dans le Cercle O&A Beauty ! Vous recevrez bientôt nos exclusivités.') };
         });
     }
 
@@ -122,12 +130,12 @@
                 var email = emailInput.value.trim();
 
                 if (!email) {
-                    showFeedback(wrapper, 'error', 'Veuillez saisir votre adresse e-mail.');
+                    showFeedback(wrapper, 'error', _t('Veuillez saisir votre adresse e-mail.'));
                     emailInput.focus();
                     return;
                 }
                 if (!isValidEmail(email)) {
-                    showFeedback(wrapper, 'error', 'Adresse e-mail invalide. Veuillez la verifier.');
+                    showFeedback(wrapper, 'error', _t('Adresse e-mail invalide. Veuillez la vérifier.'));
                     emailInput.focus();
                     return;
                 }
@@ -143,17 +151,19 @@
                     })
                     .then(function(result) {
                         if (result.success) {
-                            showFeedback(wrapper, 'success', result.message || 'Inscription reussie !');
+                            showFeedback(wrapper, 'success', result.message || _t('Inscription réussie !'));
                             emailInput.value = '';
                         } else {
-                            showFeedback(wrapper, 'error', result.message || 'Une erreur est survenue.');
+                            showFeedback(wrapper, 'error', result.message || _t('Une erreur est survenue.'));
                         }
                     })
                     .catch(function(err) {
                         console.error('[OA Newsletter] Toutes les methodes ont echoue:', err);
-                        showFeedback(wrapper, 'error', 'Une erreur est survenue. Veuillez reessayer ou nous contacter directement.');
+                        showFeedback(wrapper, 'error', _t('Une erreur est survenue. Veuillez réessayer ou nous contacter directement.'));
                     })
-                    .finally(function() {
+                    .finally/** @odoo-module **/
+import { _t } from "@web/core/l10n/translation";
+
                         setLoading(submitBtn, emailInput, false);
                     });
             });
@@ -172,4 +182,3 @@
         initNewsletterForm();
     }
 
-})();
