@@ -177,7 +177,7 @@ class AdvisorController(http.Controller):
             'routine_step': routine_step,
         }
 
-    @http.route('/api/advisor/recommend', type='json', auth='public', website=True, csrf=False, methods=['POST'])
+    @http.route('/api/advisor/recommend', type='jsonrpc', auth='public', website=True, csrf=False, methods=['POST'])
     def get_recommendation(self, **kw):
         skin_type = self._clean_choice(kw.get('skin_type'), self._ALLOWED_SKIN_TYPES)
         concern = self._clean_choice(kw.get('main_concern'), self._ALLOWED_CONCERNS)

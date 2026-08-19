@@ -4,7 +4,7 @@ from ..utils.ai_provider import AIProviderFactory
 
 class ChatbotController(http.Controller):
 
-    @http.route('/api/chat/message', type='json', auth='public', website=True, csrf=False)
+    @http.route('/api/chat/message', type='jsonrpc', auth='public', website=True, csrf=False)
     def handle_message(self, **kw):
         user_message = kw.get('message', '').lower()
         
