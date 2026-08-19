@@ -18,17 +18,25 @@ class TestRetention(RgpdCommon):
         )
 
     def _rule(self, company=None, action_type="anonymize"):
-        return self.Rule.create(
-            {
-                "name": "Purge de test",
-                "model_id": self.model_partner.id,
-                "date_field_id": self.field_create_date.id,
-                "retention_value": 1,
-                "retention_unit": "day",
-                "action_type": action_type,
-                "company_id": company.id if company else False,
-            }
-        )
+        vals = {
+            "name": "Purge de test",
+            "model_id": self.model_partner.id,
+            "date_field_id": self.field_create_date.id,
+            "retention_value": 1,
+            "retention_unit": "day",
+            "action_type": action_type,
+            "company_id": company.id if company else False,
+        }
+
+        if action_type == "anonymize":
+            vals["field_ids"] = [
+                (0, 0, {
+                    "field_id": self.field_email.id,
+                    "strategy": "clear",
+                }),
+            ]
+
+        return self.Rule.create(vals)
 
     def test_domain_is_scoped_to_rule_company(self):
         """Régression critique : une règle ne doit jamais purger une autre société.
