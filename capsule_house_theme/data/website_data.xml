@@ -16,5 +16,22 @@
         _setup_menus), qui pose website_id explicitement à chaque étape.
         Voir __init__.py pour le détail.
     -->
-    <data noupdate="1"/>
+    <data noupdate="1">
+        <record id="sale_order_demo" model="sale.order">
+            <field name="partner_id" ref="base.partner_admin"/>
+            <!-- La société de la commande doit être cohérente avec le partner -->
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="base.partner_admin" model="res.partner">
+            <!-- Remplace la société par 'False' (aucune société = partagé par toutes) -->
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="partner_client_exocoms" model="res.partner">
+            <field name="name">Client Exocoms</field>
+            <!-- Référence vers la société principale du système -->
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+    </data>
 </odoo>
