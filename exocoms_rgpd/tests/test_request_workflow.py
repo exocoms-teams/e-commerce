@@ -69,7 +69,6 @@ class TestRequestWorkflow(RgpdCommon):
     def test_late_flag_and_search(self):
         request = self._request()
         request.date_request = fields.Datetime.now() - relativedelta(months=3)
-        request.invalidate_recordset()
         self.assertTrue(request.is_late)
         self.assertIn(request, self.Request.search([("is_late", "=", True)]))
 
