@@ -69,14 +69,14 @@ class TestRequestWorkflow(RgpdCommon):
         request = self._request()
         self.assertEqual(request.partner_id, self.partner)
 
-def test_late_flag_and_search(self):
-    request = self._request()
-    request.date_request = (
-        fields.Datetime.now() - relativedelta(months=3)
-    )
-    self.assertTrue(request.is_late)
-    domain = request._search_is_late("=", True)
-    self.assertIn(request, self.Request.search(domain))
+    def test_late_flag_and_search(self):
+        request = self._request()
+        request.date_request = (
+            fields.Datetime.now() - relativedelta(months=3)
+        )
+        self.assertTrue(request.is_late)
+        domain = request._search_is_late("=", True)
+        self.assertIn(request, self.Request.search(domain))
 
     def test_export_generation_produces_json(self):
         request = self._request(request_type="portability")
