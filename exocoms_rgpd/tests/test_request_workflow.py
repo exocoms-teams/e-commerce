@@ -70,7 +70,7 @@ class TestRequestWorkflow(RgpdCommon):
         request = self._request()
         request.date_request = fields.Datetime.now() - relativedelta(months=3)
         self.assertTrue(request.is_late)
-        self.assertIn(request, self.Request.search([("is_late", "=", True)]))
+        self.assertIn(request, self.Request.search([("is_late", "=", True)]),"{ request}")
 
     def test_export_generation_produces_json(self):
         request = self._request(request_type="portability")
