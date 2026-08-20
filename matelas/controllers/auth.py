@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
 import secrets
 
-from odoo import http
+from odoo import fields, http
 from odoo.http import request
 from odoo.addons.auth_signup.controllers.main import AuthSignupHome
 
@@ -14,28 +15,47 @@ class MatelasAuthSignupHome(AuthSignupHome):
         login, password = request.env['res.users'].sudo().signup(values, token)
 
         if not token:
-            # confirmation par email avant que le compte soit utilisable.
-            user = request.env['res.users'].sudo().with_context(active_test=False).search(
-                [('login', '=', login)], limit=1)
+            # Confirmation par email avant que le compte soit utilisable.
+            user = (
+                request.env['res.users']
+                .sudo()
+                .with_context(active_test=False)
+                .search([('login', '=', login)], limit=1)
+            )
+
             if user and user.active:
                 confirm_token = secrets.token_urlsafe(32)
+                confirm_expiry = fields.Datetime.now() + timedelta(hours=48)
+
                 user.write({
                     'active': False,
                     'matelas_email_confirm_token': confirm_token,
+                    'matelas_email_confirm_expiry': confirm_expiry,
                 })
+
                 self._send_matelas_confirmation_email(user, confirm_token)
                 return
 
-        credential = {'login': login, 'password': password, 'type': 'password'}
+        credential = {
+            'login': login,
+            'password': password,
+            'type': 'password',
+        }
+
         if do_login:
             request.session.authenticate(request.env, credential)
 
     def _send_matelas_confirmation_email(self, user, token):
-        base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url') or ''
+        base_url = (
+            request.env['ir.config_parameter']
+            .sudo()
+            .get_param('web.base.url') or ''
+        )
         confirm_url = '%s/account/confirm/%s' % (base_url, token)
 
         body_html = '''
-        <table width="100%%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;font-family:Arial,sans-serif;">
+        <table width="100%%" cellpadding="0" cellspacing="0"
+               style="max-width:520px;margin:0 auto;font-family:Arial,sans-serif;">
           <tr><td style="text-align:center;padding:32px 24px;">
             <h1 style="color:#0D3B8C;margin-bottom:8px;">MATELAS</h1>
             <p style="color:#3a3a3a;font-size:15px;line-height:1.5;">
@@ -51,6 +71,9 @@ class MatelasAuthSignupHome(AuthSignupHome):
               Confirmer mon adresse email
             </a>
             <p style="color:#9a9a9a;font-size:12px;margin-top:24px;">
+              Ce lien est valable pendant 48 heures.
+            </p>
+            <p style="color:#9a9a9a;font-size:12px;margin-top:12px;">
               Si le bouton ne fonctionne pas, copiez ce lien dans votre
               navigateur :<br/>%(confirm_url)s
             </p>
@@ -69,16 +92,44 @@ class MatelasAuthSignupHome(AuthSignupHome):
             'auto_delete': True,
         }).send()
 
-    @http.route('/account/confirm/<string:token>', type='http', auth='public', website=True, sitemap=False)
+    @http.route(
+        '/account/confirm/<string:token>',
+        type='http',
+        auth='public',
+        website=True,
+        sitemap=False,
+    )
     def matelas_confirm_email(self, token, **kwargs):
-        user = request.env['res.users'].sudo().with_context(active_test=False).search(
-            [('matelas_email_confirm_token', '=', token)], limit=1)
+        user = (
+            request.env['res.users']
+            .sudo()
+            .with_context(active_test=False)
+            .search(
+                [('matelas_email_confirm_token', '=', token)],
+                limit=1,
+            )
+        )
 
         if not user:
             return request.render('matelas.email_confirm_invalid', {})
 
+        expiry = user.matelas_email_confirm_expiry
+
+        # Refuse les anciens jetons sans expiration ainsi que les jetons expirés.
+        if not expiry or expiry <= fields.Datetime.now():
+            user.write({
+                'matelas_email_confirm_token': False,
+                'matelas_email_confirm_expiry': False,
+            })
+
+            return request.render('matelas.email_confirm_invalid', {
+                'expired': True,
+            })
+
         user.write({
             'active': True,
             'matelas_email_confirm_token': False,
+            'matelas_email_confirm_expiry': False,
         })
+
         return request.render('matelas.email_confirm_success', {})
