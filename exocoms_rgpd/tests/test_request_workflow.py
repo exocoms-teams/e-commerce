@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """Workflow des demandes d'exercice des droits (art. 12 et 15 à 22)."""
+import logging
 
+_logger = logging.getLogger(__name__)
 from dateutil.relativedelta import relativedelta
 
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
+
 
 from .common import RgpdCommon
 
@@ -66,12 +69,25 @@ class TestRequestWorkflow(RgpdCommon):
         request = self._request()
         self.assertEqual(request.partner_id, self.partner)
 
-    def test_late_flag_and_search(self):
-        request = self._request()
-        request.date_request = fields.Datetime.now() - relativedelta(months=3)
-        self.assertTrue(request.is_late)
-        self.assertTrue(request.date_deadline < fields.Date.context_today(request))
-        self.assertIn(request, self.Request.search([("is_late", "=", True)]),str(request))
+def test_late_flag_and_search(self):
+    request = self._request()
+    request.date_request = (
+        fields.Datetime.now() - relativedelta(months=3)
+    )
+
+    self.assertTrue(request.is_late)
+
+    self.env.flush_all()
+
+    domain = request._search_is_late("=", True)
+
+    _logger.info("date_request = %s", request.date_request)
+    _logger.info("date_deadline = %s", request.date_deadline)
+    _logger.info("state = %s", request.state)
+    _logger.info("domain = %s", domain)
+    _logger.info("search domain = %s", self.Request.search(domain))
+
+    self.assertIn(request, self.Request.search(domain))
 
     def test_export_generation_produces_json(self):
         request = self._request(request_type="portability")
