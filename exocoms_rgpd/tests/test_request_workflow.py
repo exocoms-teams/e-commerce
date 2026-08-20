@@ -70,6 +70,7 @@ class TestRequestWorkflow(RgpdCommon):
         request = self._request()
         request.date_request = fields.Datetime.now() - relativedelta(months=3)
         self.assertTrue(request.is_late)
+        self.assertTrue(request.date_deadline < fields.Date.context_today(request))
         self.assertIn(request, self.Request.search([("is_late", "=", True)]),str(request))
 
     def test_export_generation_produces_json(self):
