@@ -223,13 +223,6 @@ GAMMES_DATA = [
         'indicative': True,
         'tagline_fr': '3 tailles disponibles · 18 à 40 m²',
         'tagline_en': '3 sizes available · 18 to 40 sqm',
-        # Section "Performances" (v19.0.1.0.80, demande client : "tu as
-        # oublié performances") — points forts en tête de page détail,
-        # AVANT les formats. Contenu repris de la structure vue sur
-        # capsule-home.fr/1-capsule.html (déjà notre référence de
-        # valeurs indicatives depuis la 19.0.1.0.77), avec les normes
-        # réelles déjà utilisées ailleurs sur cette page (NF EN 1279,
-        # NF C 15-100) reprises ici pour rester cohérent.
         'performances': [
             {'icon': 'fa-square-o', 'title_fr': 'Vitrage isolant', 'title_en': 'Insulating glazing',
              'desc_fr': 'Double vitrage, isolation optimale (NF EN 1279)', 'desc_en': 'Double glazing, optimal insulation (NF EN 1279)'},
@@ -250,14 +243,6 @@ GAMMES_DATA = [
             {'icon': 'fa-building-o', 'title_fr': 'Structure solide', 'title_en': 'Solid structure',
              'desc_fr': 'Anneau de levage + support galvanisé', 'desc_en': 'Lifting ring + galvanised support'},
         ],
-        # Surfaces en INTERVALLE plutôt qu'en valeur unique (v19.0.1.0.77,
-        # demande client : "pour les différents formats c'est mieux
-        # d'avoir des intervalles en ce qui concerne les mètres [carrés]").
-        # Bornes choisies pour englober les vraies valeurs déjà publiées
-        # ailleurs sur le site (Studio 18 m² et Panorama jusqu'à 40 m²,
-        # voir aide_faq.xml chFaq1) plutôt que des chiffres isolés — reste
-        # sous le bandeau 'indicative' tant que le fournisseur réel n'est
-        # pas confirmé.
         'formats': [
             {'name': 'Studio', 'surface_fr': '18-20 m²', 'surface_en': '18-20 sqm',
              'note_fr': 'Compact', 'note_en': 'Compact'},
@@ -299,12 +284,93 @@ GAMMES_DATA = [
         'usages': ['Logement', 'Bureau', 'Résidence secondaire', 'Location & Airbnb'],
     },
     {
-        'slug': 'cabine', 'status': GAMME_STATUS_A_CONFIRMER,
-        'icon': 'fa-th-large', 'name': 'Cabine', 'indicative': False,
-        'tagline_fr': 'Formats à définir', 'tagline_en': 'Formats to be defined',
-        'performances': [], 'formats': [], 'specs_ext': [], 'specs_int': [],
-        'equipements_fr': [], 'equipements_en': [], 'options_fr': [], 'options_en': [],
-        'usages': [],
+        'slug': 'cabine',
+        'status': GAMME_STATUS_DISPONIBLE,
+        'icon': 'fa-th-large',
+        'name': 'Cabine',
+        'indicative': True,
+        'tagline_fr': '3 tailles disponibles · 10 à 25 m²',
+        'tagline_en': '3 sizes available · 10 to 25 sqm',
+        'performances': [
+            {'icon': 'fa-tree', 'title_fr': 'Structure bois & acier', 'title_en': 'Wood & steel structure',
+             'desc_fr': 'Châssis robuste et bardage haute résistance', 'desc_en': 'Robust chassis and high-resistance cladding'},
+            {'icon': 'fa-sun-o', 'title_fr': 'Lumière naturelle', 'title_en': 'Natural light',
+             'desc_fr': 'Grande baie vitrée panoramique', 'desc_en': 'Large panoramic glass window'},
+            {'icon': 'fa-shield', 'title_fr': 'Isolation thermique', 'title_en': 'Thermal insulation',
+             'desc_fr': 'Isolation 4 saisons (mousse haute densité / laine de roche)', 'desc_en': '4-season insulation (high-density foam / rock wool)'},
+            {'icon': 'fa-plug', 'title_fr': 'Plug & Play', 'title_en': 'Plug & Play',
+             'desc_fr': 'Prête à raccorder (électricité + eau)', 'desc_en': 'Ready to connect (electricity + water)'},
+            {'icon': 'fa-volume-off', 'title_fr': 'Isolation acoustique', 'title_en': 'Acoustic insulation',
+             'desc_fr': 'Confort phonique optimisé pour le travail', 'desc_en': 'Optimised sound comfort for work'},
+            {'icon': 'fa-compress', 'title_fr': 'Emprise optimisée', 'title_en': 'Optimised footprint',
+             'desc_fr': "S'intègre facilement dans tous les jardins", 'desc_en': 'Easily integrates into any garden'},
+            {'icon': 'fa-bolt', 'title_fr': 'Électricité intégrée', 'title_en': 'Integrated electricity',
+             'desc_fr': 'Prises, interrupteurs et tableau pré-câblé NF C 15-100', 'desc_en': 'Outlets, switches and pre-wired NF C 15-100 panel'},
+            {'icon': 'fa-paint-brush', 'title_fr': 'Finition moderne', 'title_en': 'Modern finish',
+             'desc_fr': 'Habillage intérieur bois chaleureux ou design contemporain', 'desc_en': 'Warm interior wood panelling or contemporary design'},
+        ],
+        'formats': [
+            {'name': 'Solo / Bureau', 'surface_fr': '10-12 m²', 'surface_en': '10-12 sqm',
+             'note_fr': 'Idéal télétravail / Micro-office', 'note_en': 'Ideal for home office'},
+            {'name': 'Comfort', 'surface_fr': '15-18 m²', 'surface_en': '15-18 sqm',
+             'note_fr': "Chambre d'amis / Studio", 'note_en': 'Guest room / Studio'},
+            {'name': 'Lodge', 'surface_fr': '20-25 m²', 'surface_en': '20-25 sqm',
+             'note_fr': 'Hébergement équipé (2 à 4 pers.)', 'note_en': 'Equipped accommodation (2 to 4 people)'},
+        ],
+        'specs_ext': [
+            {'label_fr': 'Bardage', 'label_en': 'Cladding',
+             'value_fr': 'Bois composite / Acier traité', 'value_en': 'Composite wood / Treated steel'},
+            {'label_fr': 'Baies & Ouvertures', 'label_en': 'Openings',
+             'value_fr': 'Châssis aluminium rupture de pont thermique', 'value_en': 'Thermal break aluminium frames'},
+            {'label_fr': 'Toiture', 'label_en': 'Roofing',
+             'value_fr': 'Étanchéité EPDM / Bac acier isolé', 'value_en': 'EPDM waterproofing / Insulated steel deck'},
+            {'label_fr': 'Vitrage', 'label_en': 'Glazing',
+             'value_fr': 'Double vitrage feuilleté sécurit', 'value_en': 'Double-glazed laminated safety glass'},
+        ],
+        'specs_int': [
+            {'label_fr': 'Revêtement sol', 'label_en': 'Flooring',
+             'value_fr': 'Parquet stratifié ou vinyle haut passage', 'value_en': 'Laminate or heavy-duty vinyl flooring'},
+            {'label_fr': 'Murs & Plafond', 'label_en': 'Walls & Ceiling',
+             'value_fr': 'Panneaux bois PEFC / Placo peint', 'value_en': 'PEFC wood panels / Painted plasterboard'},
+            {'label_fr': 'Électricité', 'label_en': 'Electrical',
+             'value_fr': 'Installation conforme NF C 15-100', 'value_en': 'NF C 15-100 compliant installation'},
+        ],
+        'equipements_fr': [
+            'Châssis autoportant en acier',
+            'Isolation thermique et acoustique renforcée',
+            'Éclairage LED intérieur encastré',
+            'Tableau électrique pré-équipé',
+            "Ventilation mécanique / Grilles d'aération",
+            'Serrure de sécurité à clé ou digicode',
+        ],
+        'equipements_en': [
+            'Self-supporting steel frame',
+            'Reinforced thermal and acoustic insulation',
+            'Recessed interior LED lighting',
+            'Pre-equipped electrical panel',
+            'Mechanical ventilation / Air vents',
+            'Key or keypad security lock',
+        ],
+        'options_fr': [
+            'Climatisation réversible (Pompe à chaleur)',
+            'Panneaux solaires en toiture',
+            'Kitchinette équipée',
+            "Salle d'eau compacte (WC + douche)",
+            'Terrasse extérieure en bois',
+        ],
+        'options_en': [
+            'Reversible air conditioning (Heat pump)',
+            'Rooftop solar panels',
+            'Equipped kitchenette',
+            'Compact bathroom (toilet + shower)',
+            'Outdoor wooden deck',
+        ],
+        'usages': [
+            'Bureau de jardin / Télétravail',
+            "Chambre d'amis / Studio d'adolescent",
+            "Atelier d'artiste / Salle de sport",
+            'Gîte / Hébergement insolite',
+        ],
     },
     {
         'slug': 'dome',
@@ -336,6 +402,7 @@ GAMMES_DATA = [
         'usages': [],
     },
 ]
+    
 
 # Usages (section accueil "Trouvez l'usage qui vous correspond", v19.0.1.0.71)
 # — remplace l'ancienne idée de page "Application" séparée (demande client :
@@ -345,10 +412,12 @@ GAMMES_DATA = [
 # Capsule House — voir échange du 2026-08-13.
 USAGES_DATA = [
     {
-        'slug': 'logement', 'icon': 'fa-home',
-        'name_fr': 'Logement', 'name_en': 'Housing',
+        'slug': 'logement',
+        'icon': 'fa-home',
+        'name_fr': 'Logement',
+        'name_en': 'Housing',
         'bullets_fr': [
-            'Installation plus rapide qu\'une construction traditionnelle',
+            "Installation plus rapide qu'une construction traditionnelle",
             'Autonome sur un petit terrain',
             'Alternative à un achat immobilier classique',
         ],
@@ -359,8 +428,10 @@ USAGES_DATA = [
         ],
     },
     {
-        'slug': 'bureau', 'icon': 'fa-briefcase',
-        'name_fr': 'Bureau', 'name_en': 'Office',
+        'slug': 'bureau',
+        'icon': 'fa-briefcase',
+        'name_fr': 'Bureau',
+        'name_en': 'Office',
         'bullets_fr': [
             'Espace de travail séparé du logement',
             'Installation indépendante sur votre terrain',
@@ -373,8 +444,10 @@ USAGES_DATA = [
         ],
     },
     {
-        'slug': 'residence-secondaire', 'icon': 'fa-sun-o',
-        'name_fr': 'Résidence secondaire', 'name_en': 'Second home',
+        'slug': 'residence-secondaire',
+        'icon': 'fa-sun-o',
+        'name_fr': 'Résidence secondaire',
+        'name_en': 'Second home',
         'bullets_fr': [
             'Installation rapide sur un terrain existant',
             'Entretien réduit par rapport à une maison classique',
@@ -387,8 +460,10 @@ USAGES_DATA = [
         ],
     },
     {
-        'slug': 'location-airbnb', 'icon': 'fa-key',
-        'name_fr': 'Location & Airbnb', 'name_en': 'Rental & Airbnb',
+        'slug': 'location-airbnb',
+        'icon': 'fa-key',
+        'name_fr': 'Location & Airbnb',
+        'name_en': 'Rental & Airbnb',
         'bullets_fr': [
             'Structure autonome et indépendante',
             'Adaptée à la location courte durée',
@@ -401,8 +476,10 @@ USAGES_DATA = [
         ],
     },
     {
-        'slug': 'accessoires', 'icon': 'fa-wrench',
-        'name_fr': 'Accessoires', 'name_en': 'Accessories',
+        'slug': 'accessoires',
+        'icon': 'fa-wrench',
+        'name_fr': 'Accessoires',
+        'name_en': 'Accessories',
         'bullets_fr': [
             'Personnalisez votre pod selon vos besoins',
             'Ajout possible à la commande',
