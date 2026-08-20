@@ -74,19 +74,8 @@ def test_late_flag_and_search(self):
     request.date_request = (
         fields.Datetime.now() - relativedelta(months=3)
     )
-
     self.assertTrue(request.is_late)
-
-    self.env.flush_all()
-
     domain = request._search_is_late("=", True)
-
-    _logger.info("date_request = %s", request.date_request)
-    _logger.info("date_deadline = %s", request.date_deadline)
-    _logger.info("state = %s", request.state)
-    _logger.info("domain = %s", domain)
-    _logger.info("search domain = %s", self.Request.search(domain))
-
     self.assertIn(request, self.Request.search(domain))
 
     def test_export_generation_produces_json(self):
