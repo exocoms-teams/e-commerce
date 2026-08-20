@@ -55,7 +55,7 @@ class TestRequestWorkflow(RgpdCommon):
         request = self._request()
         request.action_confirm_identity()
         self.assertTrue(request.identity_verified)
-        request.response_note("OK")
+        request.response_note="OK"
         request.action_done()
         self.assertEqual(request.state, "done")
         self.assertTrue(request.date_response)
