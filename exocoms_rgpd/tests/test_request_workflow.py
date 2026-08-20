@@ -48,8 +48,12 @@ class TestRequestWorkflow(RgpdCommon):
         """
         request = self._request()
         self.assertFalse(request.identity_verified)
-        with self.assertRaises((UserError, ValidationError)):
-            request.action_done()
+        try:
+            request.action_close()
+        except (UserError, ValidationError):
+            pass
+        else:
+            self.fail("La fermeture aurait dû lever une exception")
 
     def test_close_succeeds_after_identity_verification(self):
         request = self._request()
