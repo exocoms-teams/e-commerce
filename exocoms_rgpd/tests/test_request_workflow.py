@@ -49,7 +49,7 @@ class TestRequestWorkflow(RgpdCommon):
         request = self._request()
         self.assertFalse(request.identity_verified)
         try:
-            request.action_close()
+            request.action_done()
         except (UserError, ValidationError):
             pass
         else:
