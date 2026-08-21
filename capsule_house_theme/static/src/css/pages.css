@@ -934,6 +934,26 @@
     background: var(--ch-white);
 }
 
+/* CORRECTIF (v19.0.1.0.95) : sur l'accueil (classe .ch-gammes-home
+   ajoutée en plus de .ch-gammes-content), le client ne parvenait pas à
+   sélectionner le bloc Website Builder de la section "Nos gammes" —
+   testé en direct : contrairement à /livraison (encart .ch-aide-callout
+   en fond var(--ch-panel), bien visible), cette section était en
+   var(--ch-white), IDENTIQUE au fond de la page (body { background:
+   var(--ch-white) }) : aucune zone de fond n'était visuellement
+   distinguable du reste de la page, donc invisible/impossible à
+   repérer pour cliquer dessus, même si techniquement cliquable. Fond
+   changé en var(--ch-panel) (même beige que les encarts déjà
+   fonctionnels) et padding vertical augmenté pour garantir une bande
+   de fond clairement visible et cliquable au-dessus/en dessous du
+   contenu. N'affecte QUE la variante accueil (.ch-gammes-home) — la
+   page /nos-gammes elle-même (.ch-gammes-content seule, sans
+   .ch-gammes-home) garde son fond blanc d'origine. */
+.ch-gammes-content.ch-gammes-home {
+    padding: 64px 0 88px;
+    background: var(--ch-panel);
+}
+
 .ch-gammes-filmstrip {
     display: flex;
     gap: 16px;
