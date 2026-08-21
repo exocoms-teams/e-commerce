@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Le mot de passe n'est plus demandé sur /web/signup en inscription
+         libre : il sera défini via le lien reçu par email. Le parcours sur
+         invitation (avec jeton) conserve les champs mot de passe. -->
+    <template id="signup_no_password" inherit_id="auth_signup.signup"
+              name="Inscription : mot de passe défini après validation email">
+        <xpath expr="//t[@t-call='auth_signup.fields']" position="attributes">
+            <attribute name="t-if">token</attribute>
+        </xpath>
+        <xpath expr="//t[@t-call='auth_signup.fields']" position="after">
+            <p t-if="not token" class="text-muted small mb-0">
+                Vous recevrez un email pour confirmer votre adresse
+                et définir votre mot de passe.
+            </p>
+        </xpath>
+    </template>
+
+    <!-- Écran affiché après soumission du formulaire d'inscription -->
+    <template id="signup_email_sent" name="Inscription : email de confirmation envoyé">
+        <t t-call="web.login_layout">
+            <div class="text-center">
+                <i class="fa fa-envelope-o fa-3x text-primary mb-3"
+                   role="img" aria-label="Email"/>
+                <h5 class="mb-3">Vérifiez votre boîte mail</h5>
+                <p class="text-muted">
+                    Un lien de confirmation vient d'être envoyé à
+                    <strong t-esc="login"/>.
+                    Cliquez dessus pour activer votre compte et définir
+                    votre mot de passe.
+                </p>
+                <p class="text-muted small">
+                    Vous ne recevez rien ? Pensez à consulter vos courriers
+                    indésirables.
+                </p>
+                <div class="d-grid pt-2">
+                    <a href="/web/login" class="btn btn-primary">
+                        Retour à la connexion
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

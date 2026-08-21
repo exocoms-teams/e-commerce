@@ -1,0 +1,127 @@
+/* static/src/scss/dashboard.scss */
+/* Aucune couleur en dur : uniquement les variables de
+   _winners_variables.scss. Toute classe custom est préfixée o_winners_. */
+
+/* Encapsulation globale du Dashboard */
+.o_winners_dashboard {
+    font-family: $o-winners-font-family;
+    color: $o-winners-text-dark;
+
+    &__header {
+        h1 {
+            font-weight: 700;
+            color: $o-winners-primary;
+        }
+
+        &-subtitle {
+            color: $o-winners-text-muted;
+            font-size: 16px;
+        }
+    }
+}
+
+/* Panneau de filtres (catégorie, pays) */
+.o_winners_filter_panel {
+    background-color: $o-winners-bg-light;
+    border: $o-winners-border-soft;
+    border-radius: $o-winners-radius;
+    padding: ($o-winners-spacing-unit * 2);
+
+    &__select {
+        font-family: $o-winners-font-family;
+    }
+
+    &__reset {
+        color: $o-winners-text-muted;
+        text-decoration: none;
+
+        &:hover {
+            color: $o-winners-primary;
+        }
+    }
+}
+
+/* Grille de cartes produit */
+.o_winners_product_grid {
+    min-height: 120px;
+    transition: opacity 0.15s ease;
+
+    &--loading {
+        opacity: 0.5;
+    }
+
+    &__empty {
+        color: $o-winners-text-muted;
+        text-align: center;
+        padding: ($o-winners-spacing-unit * 4) 0;
+    }
+}
+
+/* Carte produit (grille Top) */
+.o_winners_product_card {
+    display: block;
+    background-color: $o-winners-white;
+    border: $o-winners-border-soft;
+    border-radius: $o-winners-radius;
+    box-shadow: $o-winners-shadow-soft;
+    padding: ($o-winners-spacing-unit * 2);
+    height: 100%;
+    text-decoration: none;
+    color: $o-winners-text-dark;
+    font-family: $o-winners-font-family;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+        color: $o-winners-text-dark;
+    }
+
+    &__category {
+        display: inline-block;
+        background-color: $o-winners-bg-light;
+        color: $o-winners-primary;
+        border-radius: $o-winners-radius;
+        padding: ($o-winners-spacing-unit / 2) $o-winners-spacing-unit;
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        margin-bottom: $o-winners-spacing-unit;
+    }
+
+    &__name {
+        font-weight: 700;
+        font-size: 18px;
+        margin-bottom: ($o-winners-spacing-unit / 2);
+    }
+
+    &__meta {
+        color: $o-winners-text-muted;
+        font-size: 14px;
+        margin-bottom: $o-winners-spacing-unit;
+    }
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: $o-winners-spacing-unit;
+    }
+
+    &__score {
+        background-color: $o-winners-primary;
+        color: $o-winners-white;
+        border-radius: $o-winners-radius;
+        padding: ($o-winners-spacing-unit / 2) $o-winners-spacing-unit;
+        font-weight: 700;
+    }
+
+    &__country {
+        color: $o-winners-text-muted;
+        font-size: 14px;
+    }
+
+    .o_winners_score_badge {
+        height: auto;
+    }
+}
