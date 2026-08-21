@@ -7,8 +7,39 @@
         (_scope_layout_views dans __init__.py, external id
         capsule_house_theme.theme_layout), sinon ce xpath s'appliquerait au
         header/footer de TOUS les sites de la base, pas seulement au nôtre.
+
+        CORRECTIF (v19.0.1.0.93) : Validation Error au déploiement —
+        "Element '<xpath expr="//div[@id='footer']">' cannot be located
+        in parent view". Cause identifiée en inspectant Réglages >
+        Technique > Vues (filtrées sur Inherited View = website.layout) :
+        deux vues NATIVES du module website (pas de nous, pas d'un autre
+        site) modifient elles aussi le footer natif, à la priorité par
+        défaut 16 — la même que la nôtre puisqu'on n'en déclarait aucune
+        explicitement :
+          - website.footer_copyright_company_name (xpath sur
+            //footer//span[hasclass('o_footer_copyright_name')])
+          - website.footer_custom (xpath sur //div[@id='footer'],
+            l'EXACTE cible de l'erreur)
+        Ces deux vues attendent de trouver le footer natif D'ORIGINE
+        (avec son <div id="footer"> interne) pour pouvoir s'y greffer.
+        Notre <xpath expr="//footer" position="replace"> remplace tout
+        le footer natif par le nôtre — à priorité égale (16 partout),
+        l'ordre d'application entre vues n'est pas garanti dans notre
+        sens, donc notre remplacement pouvait s'exécuter AVANT que ces
+        vues natives aient fini de patcher le footer d'origine, leur
+        faisant perdre leur cible.
+
+        Fix : priority="99" ci-dessous force Odoo à appliquer notre
+        xpath en DERNIER, après TOUTES les vues à priorité par défaut
+        (16) — donc après footer_copyright_company_name et
+        footer_custom, qui peuvent alors patcher le footer natif
+        intact comme prévu. Comme notre xpath fait un position="replace"
+        sur tout le <footer>, peu importe ce que ces vues natives y ont
+        entre-temps inséré : on jette l'ensemble et on met notre propre
+        footer (theme_footer) à la place. Robuste et indépendant de tout
+        ordre d'id/priorité côté cœur Odoo.
     -->
-    <template id="theme_layout" name="Capsule House - Layout" inherit_id="website.layout">
+    <template id="theme_layout" name="Capsule House - Layout" inherit_id="website.layout" priority="99">
         <!--
             CORRECTIF (voir README, section "Header natif comme sur
             exocoms_theme") : ce module remplaçait auparavant tout le
