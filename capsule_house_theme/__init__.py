@@ -1147,6 +1147,48 @@ def _scope_layout_views(env, website):
     )
 
 
+# Vues dont l'arch a été retravaillée à plusieurs reprises entre les
+# versions 19.0.1.0.87 et .91 (structure des blocs oe_structure de
+# l'accueil, voir home_gammes.xml/home_usages.xml) — retour client :
+# "maintenant plus de block qui s'affiche comme au début, même le grand
+# block promis" après la 19.0.1.0.90. Cause probable : si le client a
+# ouvert (voire sauvegardé) le mode édition pendant qu'une version
+# intermédiaire cassée était en ligne, Odoo peut avoir figé cet état
+# dans arch_db (mécanisme de personnalisation de vue natif à Odoo,
+# indépendant des mises à jour de module suivantes). reset_arch('hard')
+# est l'API native Odoo pour ignorer toute personnalisation et revenir
+# strictement à l'arch définie dans le fichier XML du module — filet de
+# sécurité idempotent, sans effet si la vue n'a jamais été personnalisée.
+RESETTABLE_VIEW_XML_IDS = [
+    'capsule_house_theme.partial_home_gammes',
+    'capsule_house_theme.partial_home_usages',
+]
+
+
+def _reset_customized_views(env):
+    """Réaligne l'arch de certaines vues sur celle du module (voir
+    RESETTABLE_VIEW_XML_IDS), au cas où une personnalisation aurait été
+    enregistrée pendant une version intermédiaire cassée.
+    """
+    View = env['ir.ui.view'].sudo()
+    reset_count = 0
+    for xml_id in RESETTABLE_VIEW_XML_IDS:
+        view = env.ref(xml_id, raise_if_not_found=False)
+        if not view:
+            continue
+        try:
+            view.reset_arch(mode='hard')
+            reset_count += 1
+        except Exception:
+            _logger.exception(
+                "capsule_house_theme: échec du reset_arch sur %s", xml_id,
+            )
+    _logger.info(
+        "capsule_house_theme: %d vue(s) réalignée(s) sur l'arch du "
+        "module (reset_arch hard).", reset_count,
+    )
+
+
 def _clean_demo_data(env, website):
     """Supprime un éventuel site fantôme homonyme, seulement s'il est vide.
 
@@ -1743,6 +1785,7 @@ def run_theme_maintenance(env):
     _setup_theme_assets(env, website)
     _invalidate_frontend_assets(env, website)
     _scope_layout_views(env, website)
+    _reset_customized_views(env)
     _setup_livechat(env, website)
     _clean_demo_data(env, website)
     categories = _setup_shop_categories(env, website)

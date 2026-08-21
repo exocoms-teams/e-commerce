@@ -42,26 +42,24 @@
                  Le "quoi" (nos gammes de produits) avant le "pourquoi"
                  (section usages juste après).
 
-                 CORRECTIF (v19.0.1.0.89) : demande client — un bloc qui
-                 "englobe tout" (la section entière, titre + cartes),
-                 avec À L'INTÉRIEUR des blocs qui contiennent eux-mêmes
-                 des blocs (les cartes individuelles). Contrairement au
-                 hero/produits vedettes ci-dessus (restent volontairement
-                 hors oe_structure, voir note v19.0.1.0.48 plus haut —
-                 contenu fonctionnel qu'on ne veut pas exposer au
-                 Website Builder), les sections gammes/usages sont
-                 désormais enveloppées dans un oe_structure : le
-                 <section> de home_gammes.xml/home_usages.xml devient
-                 lui-même un bloc déplaçable/supprimable, et les cartes
-                 <section> qu'il contient restent sélectionnables
-                 individuellement à l'intérieur. -->
-            <div class="oe_structure" id="oe_structure_ch_home_gammes">
-                <t t-call="capsule_house_theme.partial_home_gammes"/>
-            </div>
+                 CORRECTIF (v19.0.1.0.89, RÉVERTI en .91) : une tentative
+                 avait mis ici un <div class="oe_structure"> englobant le
+                 <t t-call="..."/> depuis CETTE vue (page_home), alors
+                 que le <section> réellement édité vit dans une AUTRE vue
+                 (partial_home_gammes/partial_home_usages, déjà scopée
+                 séparément via SCOPED_VIEW_XML_IDS). Résultat : plus
+                 aucun bloc sélectionnable du tout (ni la section, ni son
+                 contenu) — l'oe_structure et le contenu qu'il est censé
+                 rendre éditable doivent vivre dans LA MÊME vue, jamais
+                 reliés par un t-call vers une vue tierce. L'oe_structure
+                 est donc redescendu À L'INTÉRIEUR de home_gammes.xml/
+                 home_usages.xml, autour de leur propre <section> racine
+                 — exactement le même schéma que les pages Aide/
+                 Entreprise/légales (oe_structure et <section> dans le
+                 même fichier), déjà confirmé fonctionnel. -->
+            <t t-call="capsule_house_theme.partial_home_gammes"/>
             <!-- Section usages (v19.0.1.0.71) — voir home_usages.xml. -->
-            <div class="oe_structure" id="oe_structure_ch_home_usages">
-                <t t-call="capsule_house_theme.partial_home_usages"/>
-            </div>
+            <t t-call="capsule_house_theme.partial_home_usages"/>
             <t t-call="capsule_house_theme.partial_featured_products"/>
             <div class="oe_structure oe_empty" id="oe_structure_ch_home_bottom"/>
         </t>

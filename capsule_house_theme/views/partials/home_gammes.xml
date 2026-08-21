@@ -40,17 +40,27 @@
         CORRECTIF (v19.0.1.0.90) : chaque carte est redevenue un simple
         <a class="ch-gamme-card"> (plus de <section> imbriqué). Toute la
         section (titre + 5 cartes) ne forme plus qu'UN SEUL bloc
-        Website Builder (le <section class="ch-gammes-content">,
-        enveloppé par l'oe_structure de home.xml) : déplaçable,
-        supprimable, avec panneau Background/Height/Visibility. Le texte
-        à l'intérieur (titre, noms de gammes, taglines) reste éditable
-        au clic, mais les cartes individuelles ne sont plus déplaçables/
-        supprimables séparément.
+        Website Builder : déplaçable, supprimable, avec panneau
+        Background/Height/Visibility. Le texte à l'intérieur (titre,
+        noms de gammes, taglines) reste éditable au clic, mais les
+        cartes individuelles ne sont plus déplaçables/supprimables
+        séparément.
+
+        CORRECTIF (v19.0.1.0.91) : en .89/.90, l'oe_structure vivait
+        dans home.xml (page_home) et enveloppait un <t t-call="..."/>
+        vers CETTE vue (partial_home_gammes) — résultat : plus AUCUN
+        bloc sélectionnable du tout, ni la section ni son contenu. Un
+        oe_structure et le contenu qu'il rend éditable doivent vivre
+        dans la MÊME vue. L'oe_structure est donc redescendu ICI,
+        directement autour du <section> racine — même schéma que les
+        pages Aide/Entreprise/légales (déjà confirmé fonctionnel).
+        home.xml t-call de nouveau ce template sans aucun wrapper.
 
         Scopée à notre site via _scope_layout_views() (external id
         capsule_house_theme.partial_home_gammes).
     -->
     <template id="partial_home_gammes" name="Capsule House - Accueil : gammes">
+        <div class="oe_structure" id="oe_structure_ch_home_gammes">
         <section class="ch-gammes-content ch-gammes-home">
             <div class="container">
                 <div class="ch-usages-head" t-if="request.env.lang == 'fr_FR'">
@@ -122,5 +132,6 @@
                 </div>
             </div>
         </section>
+        </div>
     </template>
 </odoo>
