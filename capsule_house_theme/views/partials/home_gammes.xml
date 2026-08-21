@@ -15,35 +15,37 @@
         section accueil en est désormais le SEUL point d'entrée.
 
         CORRECTIF (v19.0.1.0.87) : demande client — "il doit être
-        réparti en plusieurs blocs [...] c'est l'accumulation de ces
-        différents blocs qui forme la page". Les 5 cartes n'utilisent
-        plus un t-foreach sur GAMMES_DATA (Python) : chacune est
-        maintenant écrite en dur comme un <section> indépendant dans
-        .ch-gammes-filmstrip (devenue la zone oe_structure), éditable
-        individuellement dans le Website Builder — décision explicite
-        du client, qui accepte qu'on perde la garantie que les 5 cartes
-        restent automatiquement synchronisées avec GAMMES_DATA (page
-        détail /nos-gammes/<slug> non concernée, toujours dynamique).
-        Contenu repris à l'identique des valeurs GAMMES_DATA existantes
-        au moment de la conversion (statut, icône, tagline).
+        réparti en plusieurs blocs". Le contenu des 5 cartes n'utilise
+        plus un t-foreach sur GAMMES_DATA (Python) : chaque carte est
+        écrite en dur, avec le contenu repris à l'identique des valeurs
+        GAMMES_DATA existantes au moment de la conversion (statut,
+        icône, tagline) — décision explicite du client, qui accepte
+        qu'on perde la garantie que les 5 cartes restent automatiquement
+        synchronisées avec GAMMES_DATA (page détail /nos-gammes/<slug>
+        non concernée, toujours dynamique).
 
-        Chaque carte est un <a class="ch-gamme-card-link"> en
-        display:contents (voir pages.css) à l'intérieur d'un
-        <section class="ch-gamme-card"> : le <section> reste l'enfant
-        direct du flex .ch-gammes-filmstrip (nécessaire pour
-        flex: 0 0 220px), le <a> capte le clic sans ajouter de boîte.
+        CORRECTIF (v19.0.1.0.89, RÉVERTI en .90) : une première tentative
+        avait mis chaque carte dans un <section> imbriqué à l'intérieur
+        du <section class="ch-gammes-content"> englobant, pour essayer
+        d'avoir "un bloc qui englobe tout, avec des blocs à l'intérieur".
+        Ne fonctionne PAS dans Odoo — confirmé par la documentation
+        officielle (Building blocks, Odoo 19) : "Avoid adding a section
+        tag inside another section tag: this will trigger twice the
+        Website Builder's options." Le vrai mécanisme d'imbrication de
+        blocs nécessite un plugin JS dédié (builder_options,
+        so_content_addition_selector), pas juste du HTML. Le client a
+        choisi l'option la plus simple/fiable : UN SEUL bloc pour toute
+        la section (voir CORRECTIF v19.0.1.0.90 ci-dessous).
 
-        CORRECTIF (v19.0.1.0.89) : demande client — un bloc qui
-        "englobe tout" (toute la section), avec à l'intérieur des blocs
-        qui contiennent eux-mêmes des blocs. La zone oe_structure est
-        remontée au niveau de home.xml (elle enveloppe maintenant tout
-        le <t t-call="partial_home_gammes"/>, donc ce <section
-        class="ch-gammes-content"> entier devient LUI-MÊME un bloc
-        déplaçable/supprimable) ; le titre (.ch-usages-head) et chaque
-        carte (.ch-gamme-card) restent des <section> individuellement
-        sélectionnables à l'intérieur de ce bloc englobant — plus
-        besoin d'un oe_structure séparé ici pour ça, l'oe_structure de
-        home.xml suffit à rendre éditable tout ce qu'il contient.
+        CORRECTIF (v19.0.1.0.90) : chaque carte est redevenue un simple
+        <a class="ch-gamme-card"> (plus de <section> imbriqué). Toute la
+        section (titre + 5 cartes) ne forme plus qu'UN SEUL bloc
+        Website Builder (le <section class="ch-gammes-content">,
+        enveloppé par l'oe_structure de home.xml) : déplaçable,
+        supprimable, avec panneau Background/Height/Visibility. Le texte
+        à l'intérieur (titre, noms de gammes, taglines) reste éditable
+        au clic, mais les cartes individuelles ne sont plus déplaçables/
+        supprimables séparément.
 
         Scopée à notre site via _scope_layout_views() (external id
         capsule_house_theme.partial_home_gammes).
@@ -51,81 +53,71 @@
     <template id="partial_home_gammes" name="Capsule House - Accueil : gammes">
         <section class="ch-gammes-content ch-gammes-home">
             <div class="container">
-                <section class="ch-usages-head" t-if="request.env.lang == 'fr_FR'">
+                <div class="ch-usages-head" t-if="request.env.lang == 'fr_FR'">
                     <span class="ch-models-badge"><i class="fa fa-th-large"/> À titre informatif</span>
                     <h2 class="ch-usages-title">Nos gammes</h2>
-                </section>
-                <section class="ch-usages-head" t-if="request.env.lang != 'fr_FR'">
+                </div>
+                <div class="ch-usages-head" t-if="request.env.lang != 'fr_FR'">
                     <span class="ch-models-badge"><i class="fa fa-th-large"/> For information only</span>
                     <h2 class="ch-usages-title">Our ranges</h2>
-                </section>
+                </div>
 
                 <div class="ch-gammes-filmstrip">
 
-                    <section class="ch-gamme-card">
-                        <a class="ch-gamme-card-link" href="/nos-gammes/capsule">
-                            <div class="ch-gamme-card-icon"><i class="fa fa-home"/></div>
-                            <span class="ch-gamme-card-name">Capsule</span>
-                            <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang == 'fr_FR'">Détails disponibles</span>
-                            <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang != 'fr_FR'">Details available</span>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">3 tailles disponibles · 18 à 40 m²</span>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">3 sizes available · 18 to 40 sqm</span>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
-                        </a>
-                    </section>
+                    <a class="ch-gamme-card" href="/nos-gammes/capsule">
+                        <div class="ch-gamme-card-icon"><i class="fa fa-home"/></div>
+                        <span class="ch-gamme-card-name">Capsule</span>
+                        <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang == 'fr_FR'">Détails disponibles</span>
+                        <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang != 'fr_FR'">Details available</span>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">3 tailles disponibles · 18 à 40 m²</span>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">3 sizes available · 18 to 40 sqm</span>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                    </a>
 
-                    <section class="ch-gamme-card">
-                        <a class="ch-gamme-card-link" href="/nos-gammes/cabine">
-                            <div class="ch-gamme-card-icon"><i class="fa fa-th-large"/></div>
-                            <span class="ch-gamme-card-name">Cabine</span>
-                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
-                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang != 'fr_FR'">To be confirmed</span>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">Formats à définir</span>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">Formats to be defined</span>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
-                        </a>
-                    </section>
+                    <a class="ch-gamme-card" href="/nos-gammes/cabine">
+                        <div class="ch-gamme-card-icon"><i class="fa fa-th-large"/></div>
+                        <span class="ch-gamme-card-name">Cabine</span>
+                        <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
+                        <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang != 'fr_FR'">To be confirmed</span>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">Formats à définir</span>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">Formats to be defined</span>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                    </a>
 
-                    <section class="ch-gamme-card">
-                        <a class="ch-gamme-card-link" href="/nos-gammes/dome">
-                            <div class="ch-gamme-card-icon"><i class="fa fa-circle-o"/></div>
-                            <span class="ch-gamme-card-name">Dôme</span>
-                            <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang == 'fr_FR'">Détails disponibles</span>
-                            <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang != 'fr_FR'">Details available</span>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">3 tailles disponibles · 19 à 50 m²</span>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">3 sizes available · 19 to 50 sqm</span>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
-                        </a>
-                    </section>
+                    <a class="ch-gamme-card" href="/nos-gammes/dome">
+                        <div class="ch-gamme-card-icon"><i class="fa fa-circle-o"/></div>
+                        <span class="ch-gamme-card-name">Dôme</span>
+                        <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang == 'fr_FR'">Détails disponibles</span>
+                        <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang != 'fr_FR'">Details available</span>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">3 tailles disponibles · 19 à 50 m²</span>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">3 sizes available · 19 to 50 sqm</span>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                    </a>
 
-                    <section class="ch-gamme-card">
-                        <a class="ch-gamme-card-link" href="/nos-gammes/modulaire">
-                            <div class="ch-gamme-card-icon"><i class="fa fa-puzzle-piece"/></div>
-                            <span class="ch-gamme-card-name">Modulaire</span>
-                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
-                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang != 'fr_FR'">To be confirmed</span>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">Système extensible — formats à définir</span>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">Extensible system — formats to be defined</span>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
-                        </a>
-                    </section>
+                    <a class="ch-gamme-card" href="/nos-gammes/modulaire">
+                        <div class="ch-gamme-card-icon"><i class="fa fa-puzzle-piece"/></div>
+                        <span class="ch-gamme-card-name">Modulaire</span>
+                        <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
+                        <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang != 'fr_FR'">To be confirmed</span>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">Système extensible — formats à définir</span>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">Extensible system — formats to be defined</span>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                    </a>
 
-                    <section class="ch-gamme-card">
-                        <a class="ch-gamme-card-link" href="/nos-gammes/pliable">
-                            <div class="ch-gamme-card-icon"><i class="fa fa-inbox"/></div>
-                            <span class="ch-gamme-card-name">Pliable</span>
-                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
-                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang != 'fr_FR'">To be confirmed</span>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">Structure repliable — formats à définir</span>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">Foldable structure — formats to be defined</span>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
-                        </a>
-                    </section>
+                    <a class="ch-gamme-card" href="/nos-gammes/pliable">
+                        <div class="ch-gamme-card-icon"><i class="fa fa-inbox"/></div>
+                        <span class="ch-gamme-card-name">Pliable</span>
+                        <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
+                        <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang != 'fr_FR'">To be confirmed</span>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">Structure repliable — formats à définir</span>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">Foldable structure — formats to be defined</span>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                    </a>
 
                 </div>
             </div>
