@@ -17,17 +17,11 @@ class StockLot(models.Model):
             ('expiration_date', '!=', False),
             ('expiration_date', '<=', limit_date),
         ])
-        if not expiring_lots:
-            _logger.info('INVENTAIRE : aucun complément alimentaire n’expire à court terme.')
-            return
-        _logger.warning(
-            'ALERTE INVENTAIRE : %s lot(s) de compléments arrivent à péremption !',
-            len(expiring_lots),
-        )
-        for lot in expiring_lots:
-            _logger.info(
-                'Produit : %s | Lot : %s | Expire le : %s',
-                lot.product_id.display_name,
-                lot.name,
-                lot.expiration_date,
-            )
+        if expiring_lots:
+            for lot in expiring_lots:
+                _logger.info(
+                    'Produit : %s | Lot : %s | Expire le : %s',
+                    lot.product_id.display_name,
+                    lot.name,
+                    lot.expiration_date,
+                )
