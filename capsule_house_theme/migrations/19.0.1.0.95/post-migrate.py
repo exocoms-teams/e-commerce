@@ -3,31 +3,48 @@
 Rejoue run_theme_maintenance() après une mise à jour du module vers la
 version 19.0.1.0.95.
 
-CORRECTIF (v19.0.1.0.95) : suite du diagnostic sur "le style des blocs
-ne s'affiche pas" (sections "Nos gammes" et "À quoi servira votre pod ?"
-de l'accueil). Après confirmation live que le blocage de la .93
-(Validation Error footer) et l'imbrication <section> (.92) étaient
-résolus, un nouveau test en direct a montré que les éléments individuels
-(icônes, liens, titres) sélectionnaient bien leur propre panneau
-d'édition — comportement normal — mais que la section elle-même
-("Nos gammes"/"usages") ne pouvait pas être sélectionnée comme Block
-(panneau Background/Height/Visibility) via un clic sur son fond, alors
-que ce mécanisme fonctionne correctement sur /livraison (encart
-.ch-aide-callout, fond var(--ch-panel) bien visible).
+CORRECTION DE DIAGNOSTIC sur les "petits blocs" gammes/usages de
+l'accueil. Une première itération de cette version avait seulement
+changé le fond (blanc -> beige) des sections gammes/usages, en pensant
+que le seul problème était une zone de fond invisible à cliquer. Retour
+client : ce changement ne changeait rien au problème réel (pas de blocs
+sélectionnables) et a été ANNULÉ dans la même version, avant d'être
+remplacé par le vrai correctif ci-dessous.
 
-Cause identifiée : .ch-gammes-home et .ch-usages étaient en fond
-var(--ch-white), rigoureusement IDENTIQUE au fond de la page
-(body { background: var(--ch-white) }) — aucune zone de fond n'était
-donc visuellement distinguable du reste de la page pour repérer où
-cliquer, contrairement à /livraison dont l'encart se détache nettement
-en beige (var(--ch-panel)).
+Le client réclamait le comportement de la version 19.0.1.0.88 : à
+l'époque, chaque carte gammes/usages vivait dans une zone oe_structure
+qui la rendait individuellement sélectionnable ("petits blocs"). Ce
+comportement avait été perdu en 19.0.1.0.90/.94 (retour à UN SEUL bloc
+pour toute la section) après que les tentatives de réintroduction
+(19.0.1.0.89, .92 — <section> par carte imbriqué À L'INTÉRIEUR du
+<section> englobant) aient été confirmées cassées en test réel.
 
-Fix : fond de .ch-gammes-content.ch-gammes-home (pages.css) et .ch-usages
-(homepage.css) passé à var(--ch-panel), padding vertical augmenté, pour
-garantir une bande de fond clairement visible et cliquable au-dessus et
-en dessous du contenu de chaque section — sur le modèle de ce qui
-fonctionne déjà sur /livraison. Aucun changement structurel (pas de
-<section> imbriqué, schéma .90/.94 conservé).
+En relisant la règle Odoo au mot près (Building blocks, Odoo 19) :
+"Avoid adding a section tag inside another section tag" — l'interdit
+porte sur l'IMBRICATION, pas sur plusieurs <section> FRÈRES à
+l'intérieur d'une même zone oe_structure. Ce schéma "frères" est déjà
+celui utilisé et confirmé fonctionnel sur les pages Aide/Entreprise
+(voir pages.css : ".ch-aide-layout .oe_structure > section + section").
+Les tentatives .89/.92 n'avaient jamais testé ce schéma : le <section>
+englobant (.ch-gammes-content / .ch-usages) existait TOUJOURS
+au-dessus des cartes, donc les cartes-sections étaient réellement
+imbriquées, pas frères — d'où l'échec, à raison.
+
+Fix définitif : le <section> englobant est supprimé de
+home_gammes.xml/home_usages.xml (remplacé par de simples <div> de mise
+en page, jamais des <section>). Titre et chacune des 5 cartes
+deviennent des <section> FRÈRES directs à l'intérieur du même
+oe_structure — chacun indépendamment déplaçable/supprimable avec son
+propre panneau Background/Height/Visibility, comme en 19.0.1.0.88.
+Pour les cartes gammes (qui sont des liens), le lien de navigation est
+déplacé sur un <a class="ch-gamme-card-link"> en display:contents à
+l'intérieur de la section : le padding de la carte reste une zone de
+fond cliquable pour sélectionner le bloc, sans empêcher la navigation
+au clic sur son contenu visible.
+
+Fichiers modifiés : views/partials/home_gammes.xml,
+views/partials/home_usages.xml, static/src/css/pages.css,
+static/src/css/homepage.css.
 """
 import logging
 
@@ -41,9 +58,11 @@ def migrate(cr, version):
 
     env = api.Environment(cr, SUPERUSER_ID, {})
     _logger.info(
-        "capsule_house_theme: post-migrate 19.0.1.0.95 — fond des "
-        "sections gammes/usages de l'accueil passé de var(--ch-white) "
-        "à var(--ch-panel) pour rendre leur zone de fond visible et "
-        "cliquable (sélection Block Website Builder)."
+        "capsule_house_theme: post-migrate 19.0.1.0.95 — gammes/usages "
+        "de l'accueil restructurées en <section> frères (titre + 5 "
+        "cartes) dans une même zone oe_structure, au lieu d'un <section> "
+        "englobant unique. Restaure le comportement 'petits blocs' de "
+        "la 19.0.1.0.88 sans reproduire le bug d'imbrication <section> "
+        "dans <section> des versions .89/.92."
     )
     run_theme_maintenance(env)

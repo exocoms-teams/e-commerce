@@ -508,17 +508,19 @@
    séparée (demande client : "il ne faut plus de page application mais
    le faire directement sur accueil"). Volontairement léger : une carte
    par usage avec 3 points, pas de photo ni de statistique inventée. ── */
-/* CORRECTIF (v19.0.1.0.95) : fond initial identique à celui de la page
-   (var(--ch-white)) rendait la section invisible/impossible à repérer
-   pour la sélectionner comme bloc Website Builder — même correctif que
-   .ch-gammes-home dans pages.css, voir ce fichier pour le détail complet
-   du raisonnement (comparaison avec /livraison, dont l'encart
-   .ch-aide-callout en fond var(--ch-panel) est bien visible/cliquable).
-   Fond passé à var(--ch-panel) et padding vertical augmenté pour une
-   bande de fond clairement visible et cliquable. */
-.ch-usages {
-    padding: 64px 0;
-    background: var(--ch-panel);
+/* v19.0.1.0.95 : .ch-usages n'est plus utilisée comme <section>
+   englobante (voir home_usages.xml, correction du diagnostic .89/.92/
+   .94 — l'interdit Odoo porte sur <section> DANS <section>, pas sur
+   plusieurs <section> FRÈRES dans une même zone oe_structure). Remplacée
+   par ces deux blocs frères, chacun sa propre <section> indépendamment
+   sélectionnable dans le Website Builder. */
+.ch-usages-title-block {
+    padding: 48px 0 8px;
+    background: var(--ch-white);
+}
+.ch-usages-cards-wrap {
+    padding: 8px 0 48px;
+    background: var(--ch-white);
 }
 
 .ch-usages-head {

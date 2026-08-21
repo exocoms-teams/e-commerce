@@ -934,24 +934,18 @@
     background: var(--ch-white);
 }
 
-/* CORRECTIF (v19.0.1.0.95) : sur l'accueil (classe .ch-gammes-home
-   ajoutée en plus de .ch-gammes-content), le client ne parvenait pas à
-   sélectionner le bloc Website Builder de la section "Nos gammes" —
-   testé en direct : contrairement à /livraison (encart .ch-aide-callout
-   en fond var(--ch-panel), bien visible), cette section était en
-   var(--ch-white), IDENTIQUE au fond de la page (body { background:
-   var(--ch-white) }) : aucune zone de fond n'était visuellement
-   distinguable du reste de la page, donc invisible/impossible à
-   repérer pour cliquer dessus, même si techniquement cliquable. Fond
-   changé en var(--ch-panel) (même beige que les encarts déjà
-   fonctionnels) et padding vertical augmenté pour garantir une bande
-   de fond clairement visible et cliquable au-dessus/en dessous du
-   contenu. N'affecte QUE la variante accueil (.ch-gammes-home) — la
-   page /nos-gammes elle-même (.ch-gammes-content seule, sans
-   .ch-gammes-home) garde son fond blanc d'origine. */
-.ch-gammes-content.ch-gammes-home {
-    padding: 64px 0 88px;
-    background: var(--ch-panel);
+/* v19.0.1.0.95 : sur l'accueil, .ch-gammes-content n'est plus utilisée
+   comme <section> englobante (voir home_gammes.xml) — remplacée par ces
+   deux blocs frères, chacun sa propre <section> indépendamment
+   sélectionnable dans le Website Builder. .ch-gammes-content seule
+   (sans .ch-gammes-home) reste utilisée telle quelle sur /nos-gammes. */
+.ch-gammes-title-block {
+    padding: 40px 0 8px;
+    background: var(--ch-white);
+}
+.ch-gammes-cards-wrap {
+    padding: 8px 0 72px;
+    background: var(--ch-white);
 }
 
 .ch-gammes-filmstrip {
@@ -961,12 +955,19 @@
     padding-bottom: 8px;
 }
 
-/* v19.0.1.0.94 : imbrication <section> dans <section> testée en
-   conditions réelles (v19.0.1.0.92/.93) et CONFIRMÉE CASSÉE — les
-   petites cartes ne remplissent jamais le panneau Style au clic (voir
-   home_gammes.xml pour le détail du test). Retour définitif au schéma
-   .90 : .ch-gamme-card directement sur le <a>, enfant direct de
-   .ch-gammes-filmstrip (flex:0 0 220px). */
+/* v19.0.1.0.95 : CORRECTION DU DIAGNOSTIC .89/.92/.94. La règle Odoo
+   interdit <section> DANS <section> — pas plusieurs <section> FRÈRES
+   dans une même zone oe_structure (schéma déjà confirmé fonctionnel sur
+   les pages Aide, voir plus bas ".ch-aide-layout .oe_structure >
+   section + section"). En .89/.92, le <section class="ch-gammes-content">
+   englobant existait TOUJOURS au-dessus des cartes → vraie imbrication,
+   cassée à raison. Ici, cet englobant a été supprimé (voir
+   .ch-gammes-cards-wrap ci-dessus, un simple <div>) : chaque carte est
+   maintenant un <section> FRÈRE direct des autres, plus de nidification.
+   Le lien de navigation est déplacé sur .ch-gamme-card-link (<a> en
+   display:contents à l'intérieur de la section) : le padding de la
+   carte reste une zone de fond cliquable pour sélectionner le bloc,
+   sans empêcher le clic sur le contenu de naviguer vers la page détail. */
 .ch-gamme-card {
     flex: 0 0 220px;
     display: flex;
@@ -975,14 +976,18 @@
     border: 1px solid var(--ch-gray-border);
     border-radius: var(--r-lg);
     padding: 18px;
-    text-decoration: none;
     transition: all var(--transition);
 }
 .ch-gamme-card:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
-    text-decoration: none;
     border-color: var(--ch-terracotta);
+}
+
+.ch-gamme-card-link {
+    display: contents;
+    text-decoration: none;
+    color: inherit;
 }
 
 .ch-gamme-card-icon {
@@ -1003,6 +1008,7 @@
     font-size: 16px;
     font-weight: 800;
     color: var(--ch-ink);
+    text-decoration: none;
 }
 
 .ch-gamme-badge {
@@ -1033,6 +1039,7 @@
     font-weight: 700;
     color: var(--ch-terracotta);
     margin-top: 12px;
+    text-decoration: none;
 }
 
 /* Page détail d'une gamme */

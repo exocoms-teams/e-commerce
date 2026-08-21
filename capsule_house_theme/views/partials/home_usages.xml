@@ -11,65 +11,35 @@
         explicite : cette section parle des USAGES, pas des gammes —
         /nos-gammes est un concept distinct).
 
-        CORRECTIF (v19.0.1.0.87) : demande client — "il doit être
-        réparti en plusieurs blocs". Les 5 cartes n'utilisent plus un
-        t-foreach sur USAGES_DATA (Python) : chacune est écrite en dur,
-        avec le contenu repris à l'identique des valeurs USAGES_DATA
-        existantes au moment de la conversion.
-
-        CORRECTIF (v19.0.1.0.89, RÉVERTI en .90) : une première tentative
-        avait mis chaque carte dans un <section> imbriqué à l'intérieur
-        du <section class="ch-usages"> englobant. Ne fonctionne PAS dans
-        Odoo — confirmé par la documentation officielle (Building
-        blocks, Odoo 19) : "Avoid adding a section tag inside another
-        section tag: this will trigger twice the Website Builder's
-        options." Le client a choisi l'option la plus simple/fiable :
-        UN SEUL bloc pour toute la section (voir CORRECTIF v19.0.1.0.90
-        ci-dessous).
-
-        CORRECTIF (v19.0.1.0.90) : titre et cartes redeviennent de
-        simples <div> (plus de <section> imbriqué). Toute la section
-        (titre + 5 cartes) ne forme plus qu'UN SEUL bloc Website
-        Builder : déplaçable, supprimable, avec panneau Background/
-        Height/Visibility. Le texte à l'intérieur reste éditable au
-        clic, mais les cartes individuelles ne sont plus déplaçables/
-        supprimables séparément.
-
-        CORRECTIF (v19.0.1.0.91) : en .89/.90, l'oe_structure vivait
-        dans home.xml (page_home) et enveloppait un <t t-call="..."/>
-        vers CETTE vue (partial_home_usages) — résultat : plus AUCUN
-        bloc sélectionnable du tout. Un oe_structure et le contenu
-        qu'il rend éditable doivent vivre dans la MÊME vue.
-        L'oe_structure est donc redescendu ICI, directement autour du
-        <section> racine — même schéma que les pages Aide/Entreprise/
-        légales (déjà confirmé fonctionnel). home.xml t-call de nouveau
-        ce template sans aucun wrapper.
-
-        CORRECTIF (v19.0.1.0.92, RÉVERTI en .94) : tentative de
-        réintroduire l'imbrication SEULE (chaque carte en
-        <section class="ch-usage-card">), en pensant que l'échec de la
-        .89 pouvait venir uniquement du bug de placement corrigé en
-        .91. CONFIRMÉ CASSÉ en test réel (navigation directe sur le
-        site via Chrome, mode édition) : les petites cartes affichent
-        un contour de sélection au survol, mais un clic dessus ne
-        remplit jamais le panneau Style ("Select a block on your page
-        to style it." reste affiché en permanence). La documentation
-        officielle Odoo 19 avait raison : l'imbrication de <section>
-        casse la sélection du Website Builder, indépendamment de tout
-        autre bug. Définitivement abandonné — voir home_gammes.xml
-        pour le détail complet du test.
-
-        CORRECTIF (v19.0.1.0.94) : retour au schéma .90 — titre et
-        cartes redeviennent de simples <div> (plus de <section>
-        imbriqué). Toute la section ne forme plus qu'UN SEUL bloc
-        Website Builder, confirmé fonctionnel.
+        HISTORIQUE COMPLET (même saga que home_gammes.xml, voir ce
+        fichier pour le détail — résumé ici) :
+        - 19.0.1.0.87 : cartes écrites en dur.
+        - 19.0.1.0.88 : cartes déjà dans une zone oe_structure commune,
+          titre non éditable — c'est la version que le client réclame
+          ("j'avais encore des petits blocs qui apparaissaient").
+        - 19.0.1.0.89/.92 (RÉVERTI en .90/.94) : <section> par carte
+          imbriqué À L'INTÉRIEUR du <section class="ch-usages">
+          englobant — cassé, Odoo interdit <section> dans <section>.
+        - 19.0.1.0.94 : abandon (à tort) des cartes individuellement
+          sélectionnables.
+        - 19.0.1.0.95 : correction du diagnostic — l'interdit porte sur
+          l'IMBRICATION, pas sur plusieurs <section> FRÈRES dans la même
+          zone oe_structure (schéma déjà confirmé fonctionnel sur les
+          pages Aide, voir pages.css ".oe_structure > section +
+          section"). Le <section class="ch-usages"> englobant est
+          supprimé (remplacé par de simples <div> de mise en page) :
+          titre et chacune des 5 cartes deviennent des <section> FRÈRES
+          directs de l'oe_structure, chacun indépendamment
+          déplaçable/supprimable avec son propre panneau Background/
+          Height/Visibility.
 
         Scopée à notre site via _scope_layout_views() (external id
         capsule_house_theme.partial_home_usages).
     -->
     <template id="partial_home_usages" name="Capsule House - Accueil : usages">
         <div class="oe_structure" id="oe_structure_ch_home_usages">
-        <section class="ch-usages">
+
+        <section class="ch-usages-title-block">
             <div class="container">
                 <div class="ch-usages-head" t-if="request.env.lang == 'fr_FR'">
                     <span class="ch-models-badge"><i class="fa fa-compass"/> Selon votre besoin</span>
@@ -79,10 +49,14 @@
                     <span class="ch-models-badge"><i class="fa fa-compass"/> Based on your needs</span>
                     <h2 class="ch-usages-title">What will your pod be used for?</h2>
                 </div>
+            </div>
+        </section>
 
+        <div class="ch-usages-cards-wrap">
+            <div class="container">
                 <div class="ch-usages-grid">
 
-                    <div class="ch-usage-card">
+                    <section class="ch-usage-card">
                         <div class="ch-usage-icon"><i class="fa fa-home"/></div>
                         <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Logement</div>
                         <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Housing</div>
@@ -96,9 +70,9 @@
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Self-contained on a small plot</div>
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>An alternative to a traditional home purchase</div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="ch-usage-card">
+                    <section class="ch-usage-card">
                         <div class="ch-usage-icon"><i class="fa fa-briefcase"/></div>
                         <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Bureau</div>
                         <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Office</div>
@@ -112,9 +86,9 @@
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Standalone installation on your plot</div>
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Quiet and private for focused work</div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="ch-usage-card">
+                    <section class="ch-usage-card">
                         <div class="ch-usage-icon"><i class="fa fa-sun-o"/></div>
                         <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Résidence secondaire</div>
                         <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Second home</div>
@@ -128,9 +102,9 @@
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Less upkeep than a traditional house</div>
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Usable depending on the equipment chosen</div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="ch-usage-card">
+                    <section class="ch-usage-card">
                         <div class="ch-usage-icon"><i class="fa fa-key"/></div>
                         <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Location &amp; Airbnb</div>
                         <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Rental &amp; Airbnb</div>
@@ -144,9 +118,9 @@
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Suited to short-term rental</div>
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Flexible installation depending on the plot</div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="ch-usage-card">
+                    <section class="ch-usage-card">
                         <div class="ch-usage-icon"><i class="fa fa-wrench"/></div>
                         <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Accessoires</div>
                         <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Accessories</div>
@@ -160,11 +134,12 @@
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Can be added to your order</div>
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Compatible with every range</div>
                         </div>
-                    </div>
+                    </section>
 
                 </div>
             </div>
-        </section>
+        </div>
+
         </div>
     </template>
 </odoo>
