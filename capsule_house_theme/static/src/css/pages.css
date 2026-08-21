@@ -941,10 +941,13 @@
     padding-bottom: 8px;
 }
 
-/* v19.0.1.0.90 : revert de la tentative v19.0.1.0.87/.89 (section
-   imbriquée dans une section, contraire à la doc officielle Odoo —
-   voir home_gammes.xml). .ch-gamme-card est de nouveau directement sur
-   le <a>, enfant direct de .ch-gammes-filmstrip (flex:0 0 220px). */
+/* v19.0.1.0.92 : réintroduit l'imbrication <section> dans <section>
+   (voir home_gammes.xml, correctif .92 — test propre une fois le bug
+   de placement .91 isolé). .ch-gamme-card est de nouveau sur le
+   <section> (flex:0 0 220px, enfant direct de .ch-gammes-filmstrip) ;
+   .ch-gamme-card-link (le <a> à l'intérieur) passe en display:contents
+   pour rester le lien cliquable sans participer à la mise en page flex
+   — le <section> est le vrai flex item, pas le <a>. */
 .ch-gamme-card {
     flex: 0 0 220px;
     display: flex;
@@ -953,14 +956,16 @@
     border: 1px solid var(--ch-gray-border);
     border-radius: var(--r-lg);
     padding: 18px;
-    text-decoration: none;
     transition: all var(--transition);
 }
 .ch-gamme-card:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
-    text-decoration: none;
     border-color: var(--ch-terracotta);
+}
+.ch-gamme-card-link {
+    display: contents;
+    text-decoration: none;
 }
 
 .ch-gamme-card-icon {
