@@ -409,6 +409,17 @@
     align-items: start;
 }
 
+/* Espacement entre blocs éditables (v19.0.1.0.86) : chaque page Aide /
+   Entreprise a été découpée en plusieurs <section> indépendantes (une
+   par bloc du Website Builder : intro, encadré, tableau, etc.) au lieu
+   d'un seul bloc contenant tout. Combinateur de fratrie adjacente
+   (section + section), pas de dépendance à :first-child/:first-of-type
+   (piège déjà rencontré sur les pages gammes, v19.0.1.0.83). */
+.ch-aide-layout .oe_structure > section + section,
+.ch-entreprise-wrap .oe_structure > section + section {
+    margin-top: 40px;
+}
+
 /* ── SIDEBAR (aide_sidebar.xml, partagée sur les 4 pages) ── */
 .ch-aide-sidebar {
     background: var(--ch-ink);
@@ -930,6 +941,11 @@
     padding-bottom: 8px;
 }
 
+/* v19.0.1.0.87 : .ch-gamme-card est maintenant posée sur un <section>
+   (bloc éditable Website Builder), plus sur le <a> — voir
+   .ch-gamme-card-link ci-dessous (display:contents) pour le lien
+   cliquable sans casser le flex du filmstrip (.ch-gamme-card doit
+   rester l'enfant DIRECT de .ch-gammes-filmstrip pour flex:0 0 220px). */
 .ch-gamme-card {
     flex: 0 0 220px;
     display: flex;
@@ -938,14 +954,17 @@
     border: 1px solid var(--ch-gray-border);
     border-radius: var(--r-lg);
     padding: 18px;
-    text-decoration: none;
     transition: all var(--transition);
 }
 .ch-gamme-card:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
-    text-decoration: none;
     border-color: var(--ch-terracotta);
+}
+.ch-gamme-card-link {
+    display: contents;
+    text-decoration: none;
+    color: inherit;
 }
 
 .ch-gamme-card-icon {

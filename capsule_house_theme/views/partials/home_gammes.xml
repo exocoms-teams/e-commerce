@@ -9,16 +9,32 @@
 
         Chaque carte ("Voir la gamme") renvoie vers /nos-gammes/<slug>,
         la page détail de la gamme (formats, spécifications,
-        équipements, options — voir nos_gammes.xml). L'ancien index
-        /nos-gammes (bandeau + filmstrip pleine page) a été retiré en
-        19.0.1.0.73 : cette section accueil en est désormais le SEUL
-        point d'entrée (plus de doublon) — demande client : "la page
-        Our ranges ne doit plus s'afficher".
+        équipements, options — voir nos_gammes.xml, TOUJOURS pilotée par
+        GAMMES_DATA, inchangée). L'ancien index /nos-gammes (bandeau +
+        filmstrip pleine page) a été retiré en 19.0.1.0.73 : cette
+        section accueil en est désormais le SEUL point d'entrée.
 
-        Contenu = GAMMES_DATA (__init__.py), passé par
-        CapsuleHouseWebsite.index() (controllers/main.py) sous la clé
-        `gammes`. Scopée à notre site via _scope_layout_views()
-        (external id capsule_house_theme.partial_home_gammes).
+        CORRECTIF (v19.0.1.0.87) : demande client — "il doit être
+        réparti en plusieurs blocs [...] c'est l'accumulation de ces
+        différents blocs qui forme la page". Les 5 cartes n'utilisent
+        plus un t-foreach sur GAMMES_DATA (Python) : chacune est
+        maintenant écrite en dur comme un <section> indépendant dans
+        .ch-gammes-filmstrip (devenue la zone oe_structure), éditable
+        individuellement dans le Website Builder — décision explicite
+        du client, qui accepte qu'on perde la garantie que les 5 cartes
+        restent automatiquement synchronisées avec GAMMES_DATA (page
+        détail /nos-gammes/<slug> non concernée, toujours dynamique).
+        Contenu repris à l'identique des valeurs GAMMES_DATA existantes
+        au moment de la conversion (statut, icône, tagline).
+
+        Chaque carte est un <a class="ch-gamme-card-link"> en
+        display:contents (voir pages.css) à l'intérieur d'un
+        <section class="ch-gamme-card"> : le <section> reste l'enfant
+        direct du flex .ch-gammes-filmstrip (nécessaire pour
+        flex: 0 0 220px), le <a> capte le clic sans ajouter de boîte.
+
+        Scopée à notre site via _scope_layout_views() (external id
+        capsule_house_theme.partial_home_gammes).
     -->
     <template id="partial_home_gammes" name="Capsule House - Accueil : gammes">
         <section class="ch-gammes-content ch-gammes-home">
@@ -32,19 +48,73 @@
                     <h2 class="ch-usages-title">Our ranges</h2>
                 </div>
 
-                <div class="ch-gammes-filmstrip" t-if="gammes">
-                    <a t-foreach="gammes" t-as="gamme" t-attf-href="/nos-gammes/#{ gamme['slug'] }" class="ch-gamme-card">
-                        <div class="ch-gamme-card-icon"><i t-attf-class="fa #{ gamme['icon'] }"/></div>
-                        <span class="ch-gamme-card-name" t-esc="gamme['name']"/>
-                        <span t-if="gamme['status'] == 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Détails disponibles</span>
-                        <span t-if="gamme['status'] == 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Details available</span>
-                        <span t-if="gamme['status'] != 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">À confirmer</span>
-                        <span t-if="gamme['status'] != 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">To be confirmed</span>
-                        <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'" t-esc="gamme['tagline_fr']"/>
-                        <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'" t-esc="gamme['tagline_en']"/>
-                        <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
-                        <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
-                    </a>
+                <div class="ch-gammes-filmstrip oe_structure" id="oe_structure_ch_home_gammes_filmstrip">
+
+                    <section class="ch-gamme-card">
+                        <a class="ch-gamme-card-link" href="/nos-gammes/capsule">
+                            <div class="ch-gamme-card-icon"><i class="fa fa-home"/></div>
+                            <span class="ch-gamme-card-name">Capsule</span>
+                            <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang == 'fr_FR'">Détails disponibles</span>
+                            <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang != 'fr_FR'">Details available</span>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">3 tailles disponibles · 18 à 40 m²</span>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">3 sizes available · 18 to 40 sqm</span>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                        </a>
+                    </section>
+
+                    <section class="ch-gamme-card">
+                        <a class="ch-gamme-card-link" href="/nos-gammes/cabine">
+                            <div class="ch-gamme-card-icon"><i class="fa fa-th-large"/></div>
+                            <span class="ch-gamme-card-name">Cabine</span>
+                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
+                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang != 'fr_FR'">To be confirmed</span>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">Formats à définir</span>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">Formats to be defined</span>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                        </a>
+                    </section>
+
+                    <section class="ch-gamme-card">
+                        <a class="ch-gamme-card-link" href="/nos-gammes/dome">
+                            <div class="ch-gamme-card-icon"><i class="fa fa-circle-o"/></div>
+                            <span class="ch-gamme-card-name">Dôme</span>
+                            <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang == 'fr_FR'">Détails disponibles</span>
+                            <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang != 'fr_FR'">Details available</span>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">3 tailles disponibles · 19 à 50 m²</span>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">3 sizes available · 19 to 50 sqm</span>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                        </a>
+                    </section>
+
+                    <section class="ch-gamme-card">
+                        <a class="ch-gamme-card-link" href="/nos-gammes/modulaire">
+                            <div class="ch-gamme-card-icon"><i class="fa fa-puzzle-piece"/></div>
+                            <span class="ch-gamme-card-name">Modulaire</span>
+                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
+                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang != 'fr_FR'">To be confirmed</span>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">Système extensible — formats à définir</span>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">Extensible system — formats to be defined</span>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                        </a>
+                    </section>
+
+                    <section class="ch-gamme-card">
+                        <a class="ch-gamme-card-link" href="/nos-gammes/pliable">
+                            <div class="ch-gamme-card-icon"><i class="fa fa-inbox"/></div>
+                            <span class="ch-gamme-card-name">Pliable</span>
+                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
+                            <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang != 'fr_FR'">To be confirmed</span>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'">Structure repliable — formats à définir</span>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'">Foldable structure — formats to be defined</span>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                        </a>
+                    </section>
+
                 </div>
             </div>
         </section>

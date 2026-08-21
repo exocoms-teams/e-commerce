@@ -7,11 +7,19 @@
         accueil". T-called depuis home.xml juste après le hero, AVANT
         les produits vedettes.
 
-        Contenu = USAGES_DATA (__init__.py), passé par
-        CapsuleHouseWebsite.index() (controllers/main.py) sous la clé
-        `usages`. Titre volontairement rédigé sans le mot "gamme"
-        (retour client explicite : cette section parle des USAGES, pas
-        des gammes — /nos-gammes est un concept distinct).
+        Titre volontairement rédigé sans le mot "gamme" (retour client
+        explicite : cette section parle des USAGES, pas des gammes —
+        /nos-gammes est un concept distinct).
+
+        CORRECTIF (v19.0.1.0.87) : même conversion que home_gammes.xml
+        — demande client : "il doit être réparti en plusieurs blocs
+        [...] c'est l'accumulation de ces différents blocs qui forme la
+        page". Les 5 cartes n'utilisent plus un t-foreach sur
+        USAGES_DATA (Python) : chacune est écrite en dur comme un
+        <section> indépendant dans .ch-usages-grid (devenue la zone
+        oe_structure), éditable individuellement dans le Website
+        Builder. Contenu repris à l'identique des valeurs USAGES_DATA
+        existantes au moment de la conversion.
 
         Scopée à notre site via _scope_layout_views() (external id
         capsule_house_theme.partial_home_usages).
@@ -28,22 +36,88 @@
                     <h2 class="ch-usages-title">What will your pod be used for?</h2>
                 </div>
 
-                <div class="ch-usages-grid" t-if="usages">
-                    <div t-foreach="usages" t-as="usage" class="ch-usage-card">
-                        <div class="ch-usage-icon"><i t-attf-class="fa #{ usage['icon'] }"/></div>
-                        <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'" t-esc="usage['name_fr']"/>
-                        <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'" t-esc="usage['name_en']"/>
+                <div class="ch-usages-grid oe_structure" id="oe_structure_ch_home_usages_grid">
+
+                    <section class="ch-usage-card">
+                        <div class="ch-usage-icon"><i class="fa fa-home"/></div>
+                        <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Logement</div>
+                        <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Housing</div>
                         <div class="ch-usage-bullets" t-if="request.env.lang == 'fr_FR'">
-                            <div t-foreach="usage['bullets_fr']" t-as="bullet" class="ch-usage-bullet">
-                                <i class="fa fa-check"/><t t-esc="bullet"/>
-                            </div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation plus rapide qu'une construction traditionnelle</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Autonome sur un petit terrain</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Alternative à un achat immobilier classique</div>
                         </div>
                         <div class="ch-usage-bullets" t-if="request.env.lang != 'fr_FR'">
-                            <div t-foreach="usage['bullets_en']" t-as="bullet" class="ch-usage-bullet">
-                                <i class="fa fa-check"/><t t-esc="bullet"/>
-                            </div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Faster to install than traditional construction</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Self-contained on a small plot</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>An alternative to a traditional home purchase</div>
                         </div>
-                    </div>
+                    </section>
+
+                    <section class="ch-usage-card">
+                        <div class="ch-usage-icon"><i class="fa fa-briefcase"/></div>
+                        <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Bureau</div>
+                        <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Office</div>
+                        <div class="ch-usage-bullets" t-if="request.env.lang == 'fr_FR'">
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Espace de travail séparé du logement</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation indépendante sur votre terrain</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Calme et intimité pour se concentrer</div>
+                        </div>
+                        <div class="ch-usage-bullets" t-if="request.env.lang != 'fr_FR'">
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Work space separate from the home</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Standalone installation on your plot</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Quiet and private for focused work</div>
+                        </div>
+                    </section>
+
+                    <section class="ch-usage-card">
+                        <div class="ch-usage-icon"><i class="fa fa-sun-o"/></div>
+                        <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Résidence secondaire</div>
+                        <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Second home</div>
+                        <div class="ch-usage-bullets" t-if="request.env.lang == 'fr_FR'">
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation rapide sur un terrain existant</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Entretien réduit par rapport à une maison classique</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Utilisable selon l'équipement choisi</div>
+                        </div>
+                        <div class="ch-usage-bullets" t-if="request.env.lang != 'fr_FR'">
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Quick installation on an existing plot</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Less upkeep than a traditional house</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Usable depending on the equipment chosen</div>
+                        </div>
+                    </section>
+
+                    <section class="ch-usage-card">
+                        <div class="ch-usage-icon"><i class="fa fa-key"/></div>
+                        <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Location &amp; Airbnb</div>
+                        <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Rental &amp; Airbnb</div>
+                        <div class="ch-usage-bullets" t-if="request.env.lang == 'fr_FR'">
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Structure autonome et indépendante</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Adaptée à la location courte durée</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation flexible selon le terrain</div>
+                        </div>
+                        <div class="ch-usage-bullets" t-if="request.env.lang != 'fr_FR'">
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Self-contained, standalone structure</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Suited to short-term rental</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Flexible installation depending on the plot</div>
+                        </div>
+                    </section>
+
+                    <section class="ch-usage-card">
+                        <div class="ch-usage-icon"><i class="fa fa-wrench"/></div>
+                        <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Accessoires</div>
+                        <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Accessories</div>
+                        <div class="ch-usage-bullets" t-if="request.env.lang == 'fr_FR'">
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Personnalisez votre pod selon vos besoins</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Ajout possible à la commande</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Compatible avec toutes les gammes</div>
+                        </div>
+                        <div class="ch-usage-bullets" t-if="request.env.lang != 'fr_FR'">
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Customise your pod to your needs</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Can be added to your order</div>
+                            <div class="ch-usage-bullet"><i class="fa fa-check"/>Compatible with every range</div>
+                        </div>
+                    </section>
+
                 </div>
             </div>
         </section>
