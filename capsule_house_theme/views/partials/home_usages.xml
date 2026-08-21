@@ -45,22 +45,24 @@
         légales (déjà confirmé fonctionnel). home.xml t-call de nouveau
         ce template sans aucun wrapper.
 
-        CORRECTIF (v19.0.1.0.92) : même raisonnement que
-        home_gammes.xml — le test de la .89 mélangeait le bug de
-        placement (corrigé en .91) et l'imbrication de <section>, donc
-        aucune conclusion propre n'était possible sur l'imbrication
-        elle-même. Une fois .91 appliqué, on réintroduit SEULE
-        l'imbrication : chaque carte redevient un
-        <section class="ch-usage-card"> (pas de lien ici, contrairement
-        aux cartes gammes — pas besoin du trick display:contents),
-        imbriquée dans le <section class="ch-usages"> englobant.
+        CORRECTIF (v19.0.1.0.92, RÉVERTI en .94) : tentative de
+        réintroduire l'imbrication SEULE (chaque carte en
+        <section class="ch-usage-card">), en pensant que l'échec de la
+        .89 pouvait venir uniquement du bug de placement corrigé en
+        .91. CONFIRMÉ CASSÉ en test réel (navigation directe sur le
+        site via Chrome, mode édition) : les petites cartes affichent
+        un contour de sélection au survol, mais un clic dessus ne
+        remplit jamais le panneau Style ("Select a block on your page
+        to style it." reste affiché en permanence). La documentation
+        officielle Odoo 19 avait raison : l'imbrication de <section>
+        casse la sélection du Website Builder, indépendamment de tout
+        autre bug. Définitivement abandonné — voir home_gammes.xml
+        pour le détail complet du test.
 
-        Comme pour home_gammes.xml : la doc officielle Odoo déconseille
-        toujours cette imbrication en soi (options dupliquées au clic).
-        À vérifier en test réel une fois le blocage de déploiement
-        (validation error footer, sans rapport avec ce module) levé.
-        Si le panneau d'options apparaît dupliqué/incohérent sur les
-        petites cartes, revenir à l'option "un seul bloc" (v19.0.1.0.90).
+        CORRECTIF (v19.0.1.0.94) : retour au schéma .90 — titre et
+        cartes redeviennent de simples <div> (plus de <section>
+        imbriqué). Toute la section ne forme plus qu'UN SEUL bloc
+        Website Builder, confirmé fonctionnel.
 
         Scopée à notre site via _scope_layout_views() (external id
         capsule_house_theme.partial_home_usages).
@@ -80,7 +82,7 @@
 
                 <div class="ch-usages-grid">
 
-                    <section class="ch-usage-card">
+                    <div class="ch-usage-card">
                         <div class="ch-usage-icon"><i class="fa fa-home"/></div>
                         <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Logement</div>
                         <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Housing</div>
@@ -94,9 +96,9 @@
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Self-contained on a small plot</div>
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>An alternative to a traditional home purchase</div>
                         </div>
-                    </section>
+                    </div>
 
-                    <section class="ch-usage-card">
+                    <div class="ch-usage-card">
                         <div class="ch-usage-icon"><i class="fa fa-briefcase"/></div>
                         <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Bureau</div>
                         <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Office</div>
@@ -110,9 +112,9 @@
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Standalone installation on your plot</div>
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Quiet and private for focused work</div>
                         </div>
-                    </section>
+                    </div>
 
-                    <section class="ch-usage-card">
+                    <div class="ch-usage-card">
                         <div class="ch-usage-icon"><i class="fa fa-sun-o"/></div>
                         <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Résidence secondaire</div>
                         <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Second home</div>
@@ -126,9 +128,9 @@
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Less upkeep than a traditional house</div>
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Usable depending on the equipment chosen</div>
                         </div>
-                    </section>
+                    </div>
 
-                    <section class="ch-usage-card">
+                    <div class="ch-usage-card">
                         <div class="ch-usage-icon"><i class="fa fa-key"/></div>
                         <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Location &amp; Airbnb</div>
                         <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Rental &amp; Airbnb</div>
@@ -142,9 +144,9 @@
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Suited to short-term rental</div>
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Flexible installation depending on the plot</div>
                         </div>
-                    </section>
+                    </div>
 
-                    <section class="ch-usage-card">
+                    <div class="ch-usage-card">
                         <div class="ch-usage-icon"><i class="fa fa-wrench"/></div>
                         <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'">Accessoires</div>
                         <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'">Accessories</div>
@@ -158,7 +160,7 @@
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Can be added to your order</div>
                             <div class="ch-usage-bullet"><i class="fa fa-check"/>Compatible with every range</div>
                         </div>
-                    </section>
+                    </div>
 
                 </div>
             </div>

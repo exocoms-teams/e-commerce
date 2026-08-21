@@ -56,28 +56,29 @@
         pages Aide/Entreprise/légales (déjà confirmé fonctionnel).
         home.xml t-call de nouveau ce template sans aucun wrapper.
 
-        CORRECTIF (v19.0.1.0.92) : à la .89, la tentative de "grand
-        bloc + petits blocs à l'intérieur" avait été testée AVANT le
-        correctif .91 ci-dessus — le test était donc pollué par les
-        deux bugs à la fois (oe_structure mal placé ET imbrication de
-        <section>), impossible de savoir laquelle des deux causes
-        expliquait l'échec observé côté client. Maintenant que .91 a
-        isolé et corrigé le bug de placement, on réintroduit
-        l'imbrication SEULE pour avoir une mesure propre : chaque
-        carte redevient un <section class="ch-gamme-card"> (avec un
-        <a class="ch-gamme-card-link"> à l'intérieur, en
-        display:contents pour rester le lien cliquable sans participer
-        à la mise en page flex — voir pages.css), imbriqué dans le
-        <section class="ch-gammes-content"> englobant.
+        CORRECTIF (v19.0.1.0.92, RÉVERTI en .94) : tentative de
+        réintroduire l'imbrication <section> dans <section> seule
+        (chaque carte en <section class="ch-gamme-card">), en pensant
+        que l'échec observé à la .89 pouvait venir uniquement du bug
+        de placement corrigé en .91. CONFIRMÉ CASSÉ en test réel
+        (navigation directe sur le site via Chrome, mode édition) :
+        les petites cartes affichent bien un contour de sélection au
+        survol, mais un clic dessus ne remplit JAMAIS le panneau Style
+        ("Select a block on your page to style it." reste affiché en
+        permanence) — ni sur les cartes, ni sur le titre de la
+        section. La documentation officielle Odoo 19 avait raison :
+        l'imbrication de <section> casse la sélection du Website
+        Builder, indépendamment de tout autre bug. Définitivement
+        abandonné.
 
-        Important : la documentation officielle Odoo 19 (Building
-        blocks) déconseille toujours explicitement cette imbrication
-        ("this will trigger twice the Website Builder's options"),
-        indépendamment du bug .91. Il est donc possible que les blocs
-        soient bien sélectionnables cette fois-ci, mais avec un panneau
-        d'options dupliqué/incohérent au clic sur les petites cartes —
-        à vérifier en test réel. Si ce symptôme apparaît, revenir à
-        l'option "un seul bloc pour toute la section" (v19.0.1.0.90).
+        CORRECTIF (v19.0.1.0.94) : retour au schéma .90 — chaque carte
+        est un simple <a class="ch-gamme-card"> (plus de <section>
+        imbriqué). Toute la section (titre + 5 cartes) ne forme plus
+        qu'UN SEUL bloc Website Builder : déplaçable, supprimable,
+        avec panneau Background/Height/Visibility, confirmé
+        fonctionnel. Le texte à l'intérieur reste éditable au clic,
+        mais les cartes individuelles ne sont plus déplaçables/
+        supprimables séparément — c'est la limite acceptée du client.
 
         Scopée à notre site via _scope_layout_views() (external id
         capsule_house_theme.partial_home_gammes).
@@ -97,8 +98,7 @@
 
                 <div class="ch-gammes-filmstrip">
 
-                    <section class="ch-gamme-card">
-                    <a class="ch-gamme-card-link" href="/nos-gammes/capsule">
+                    <a class="ch-gamme-card" href="/nos-gammes/capsule">
                         <div class="ch-gamme-card-icon"><i class="fa fa-home"/></div>
                         <span class="ch-gamme-card-name">Capsule</span>
                         <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang == 'fr_FR'">Détails disponibles</span>
@@ -108,10 +108,8 @@
                         <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
                         <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
                     </a>
-                    </section>
 
-                    <section class="ch-gamme-card">
-                    <a class="ch-gamme-card-link" href="/nos-gammes/cabine">
+                    <a class="ch-gamme-card" href="/nos-gammes/cabine">
                         <div class="ch-gamme-card-icon"><i class="fa fa-th-large"/></div>
                         <span class="ch-gamme-card-name">Cabine</span>
                         <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
@@ -121,10 +119,8 @@
                         <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
                         <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
                     </a>
-                    </section>
 
-                    <section class="ch-gamme-card">
-                    <a class="ch-gamme-card-link" href="/nos-gammes/dome">
+                    <a class="ch-gamme-card" href="/nos-gammes/dome">
                         <div class="ch-gamme-card-icon"><i class="fa fa-circle-o"/></div>
                         <span class="ch-gamme-card-name">Dôme</span>
                         <span class="ch-gamme-badge ch-gamme-badge-ok" t-if="request.env.lang == 'fr_FR'">Détails disponibles</span>
@@ -134,10 +130,8 @@
                         <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
                         <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
                     </a>
-                    </section>
 
-                    <section class="ch-gamme-card">
-                    <a class="ch-gamme-card-link" href="/nos-gammes/modulaire">
+                    <a class="ch-gamme-card" href="/nos-gammes/modulaire">
                         <div class="ch-gamme-card-icon"><i class="fa fa-puzzle-piece"/></div>
                         <span class="ch-gamme-card-name">Modulaire</span>
                         <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
@@ -147,10 +141,8 @@
                         <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
                         <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
                     </a>
-                    </section>
 
-                    <section class="ch-gamme-card">
-                    <a class="ch-gamme-card-link" href="/nos-gammes/pliable">
+                    <a class="ch-gamme-card" href="/nos-gammes/pliable">
                         <div class="ch-gamme-card-icon"><i class="fa fa-inbox"/></div>
                         <span class="ch-gamme-card-name">Pliable</span>
                         <span class="ch-gamme-badge ch-gamme-badge-tbd" t-if="request.env.lang == 'fr_FR'">À confirmer</span>
@@ -160,7 +152,6 @@
                         <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
                         <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
                     </a>
-                    </section>
 
                 </div>
             </div>
