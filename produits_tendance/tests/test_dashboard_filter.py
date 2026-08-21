@@ -10,7 +10,7 @@ class TestDashboardFilterAPI(HttpCase):
         super().setUp()
         self.cat_electronique = self.env['trend.category'].create({'name': 'Électronique'})
         self.cat_maison = self.env['trend.category'].create({'name': 'Maison'})
-
+        self.authenticate('admin', 'admin')
         self.product_ma = self.env['trend.product'].create({
             'name': 'Lampe LED (test)',
             'product_ref': 'TEST-FILTER-0001',

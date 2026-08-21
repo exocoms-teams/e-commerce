@@ -16,8 +16,8 @@
                     <p>Vous avez une idée en tête ou par expérience ? Laissez notre algorithme analyser les tendances pour vous.</p>
                 </div>
                 
-                <div t-if="request.params.get('success')" class="alert alert-success mt-4" role="alert">
-                    <h4 class="alert-heading">Merci pour votre contribution ! 🎉</h4>
+                <div t-if="request.params.get('success')" class="o_winners_card o_winners_submission_form__success mt-4" role="alert">
+                    <h4 class="o_winners_submission_form__success_title">Merci pour votre contribution ! 🎉</h4>
                     <p>Votre suggestion a bien été enregistrée. Notre équipe de modération va l'étudier dans les plus brefs délais.</p>
                     <hr/>
                     <p class="mb-0">Vous recevrez un email de notre part dès que votre produit aura été examiné pour vous tenir informé du résultat.</p>
@@ -25,8 +25,11 @@
 
                 <div class="row justify-content-center">
                     <div class="col-md-8">
-                        <!-- Utilisation du BEM : double underscore pour la card -->
-                        <form action="/submit-trend/process" method="POST" class="o_winners_submission_form__card">
+                        <!-- o_winners_card : composant de base partage (section 5
+                             de la charte), en plus de la classe BEM du formulaire
+                             pour le layout/espacement propres a cette page. -->
+                        <form action="/submit-trend/process" method="POST"
+                              class="o_winners_card o_winners_submission_form__card">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                             
                             <div class="mb-4">

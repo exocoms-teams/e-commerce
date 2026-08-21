@@ -6,8 +6,8 @@
     'license': 'LGPL-3',
     'depends': [
         'website', 'website_sale', 'auth_signup',
-        'sale_subscription', 'website_sale_subscription',
-    ],   # WIN-66
+    ],#'sale_subscription', 'website_sale_subscription',
+    #],   # WIN-66
     'data': [
         'security/security_groups.xml',
         'security/ir.model.access.csv',
@@ -19,9 +19,9 @@
         'views/trend_submission_templates.xml',
         'views/auth_templates.xml',   # WIN-47
         'views/trend_product_detail_templates.xml',
-        'data/subscription_plans.xml',           # WIN-66
-        'data/subscription_products.xml',        # WIN-66
-        'views/subscription_templates.xml',      # WIN-66
+        #'data/subscription_plans.xml',           # WIN-66
+        #'data/subscription_products.xml',        # WIN-66
+        #'views/subscription_templates.xml',      # WIN-66
         'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
         'data/webhook_queue_cron.xml',      # WIN-67
     ],
@@ -42,10 +42,11 @@
             'web/static/lib/Chart/Chart.js',
             'web/static/lib/chartjs-adapter-luxon/chartjs-adapter-luxon.js',
             'produits_tendance/static/src/js/trend_chart.js',
-            'produits_tendance/static/src/scss/subscription_pricing.scss',
+            #'produits_tendance/static/src/scss/subscription_pricing.scss',
             'produits_tendance/static/src/scss/dashboard.scss',
             'produits_tendance/static/src/scss/header.scss',
             'produits_tendance/static/src/scss/footer.scss',
+            'produits_tendance/static/src/scss/product_card.scss',
             'produits_tendance/static/src/js/dashboard_filters.js',
         ],
     },
