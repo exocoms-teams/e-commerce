@@ -54,6 +54,7 @@ Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gamme
         'views/partials/featured_products.xml',
         'views/pages/home.xml',
         'views/pages/shop.xml',
+        'views/pages/devis_template.xml',
         # NB : 'views/pages/nos_modeles.xml' (page /nos-modeles, livrée en
         # 19.0.1.0.67) retirée de cette liste en 19.0.1.0.76 — demande
         # client : "la page nos modèles doit disparaître sur mon code".

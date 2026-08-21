@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="devis_sur_mesure_page" name="Devis Sur-Mesure">
+        <t t-call="website.layout">
+            <div class="container py-5">
+                <h1>Demande de Devis Sur-Mesure</h1>
+                <p class="lead"><t t-esc="devis_data['subtitle_fr']"/></p>
+                
+                <form action="/devis-sur-mesure/submit" method="post" class="mt-4">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    
+                    <!-- Choix de la gamme -->
+                    <div class="mb-4">
+                        <h3>1. Choisissez votre gamme</h3>
+                        <select name="gamme" class="form-select">
+                            <t t-foreach="devis_data['step_gammes']" t-as="g">
+                                <option t-att-value="g['slug']"><t t-esc="g['name_fr']"/></option>
+                            </t>
+                        </select>
+                    </div>
+
+                    <!-- Coordonnées -->
+                    <div class="row g-3 mb-4">
+                        <h3>2. Vos coordonnées</h3>
+                        <div class="col-md-6">
+                            <input type="text" name="contact_name" class="form-control" placeholder="Nom complet" required="1"/>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="email" name="email" class="form-control" placeholder="Email" required="1"/>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg">Envoyer ma demande</button>
+                </form>
+            </div>
+        </t>
+    </template>
+</odoo>
