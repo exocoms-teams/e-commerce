@@ -16,10 +16,19 @@
         [...] c'est l'accumulation de ces différents blocs qui forme la
         page". Les 5 cartes n'utilisent plus un t-foreach sur
         USAGES_DATA (Python) : chacune est écrite en dur comme un
-        <section> indépendant dans .ch-usages-grid (devenue la zone
-        oe_structure), éditable individuellement dans le Website
-        Builder. Contenu repris à l'identique des valeurs USAGES_DATA
-        existantes au moment de la conversion.
+        <section> indépendant, éditable individuellement dans le
+        Website Builder. Contenu repris à l'identique des valeurs
+        USAGES_DATA existantes au moment de la conversion.
+
+        CORRECTIF (v19.0.1.0.89) : demande client — un bloc qui
+        "englobe tout" la section, avec à l'intérieur des blocs qui
+        contiennent eux-mêmes des blocs. La zone oe_structure est
+        remontée au niveau de home.xml (elle enveloppe tout le
+        <t t-call="partial_home_usages"/>) : ce <section class=
+        "ch-usages"> entier devient LUI-MÊME un bloc déplaçable/
+        supprimable, le titre et chaque carte restant des <section>
+        individuellement sélectionnables à l'intérieur — plus besoin
+        d'oe_structure séparé ici.
 
         Scopée à notre site via _scope_layout_views() (external id
         capsule_house_theme.partial_home_usages).
@@ -27,18 +36,16 @@
     <template id="partial_home_usages" name="Capsule House - Accueil : usages">
         <section class="ch-usages">
             <div class="container">
-                <div class="oe_structure" id="oe_structure_ch_home_usages_head">
-                    <section class="ch-usages-head" t-if="request.env.lang == 'fr_FR'">
-                        <span class="ch-models-badge"><i class="fa fa-compass"/> Selon votre besoin</span>
-                        <h2 class="ch-usages-title">À quoi servira votre pod ?</h2>
-                    </section>
-                    <section class="ch-usages-head" t-if="request.env.lang != 'fr_FR'">
-                        <span class="ch-models-badge"><i class="fa fa-compass"/> Based on your needs</span>
-                        <h2 class="ch-usages-title">What will your pod be used for?</h2>
-                    </section>
-                </div>
+                <section class="ch-usages-head" t-if="request.env.lang == 'fr_FR'">
+                    <span class="ch-models-badge"><i class="fa fa-compass"/> Selon votre besoin</span>
+                    <h2 class="ch-usages-title">À quoi servira votre pod ?</h2>
+                </section>
+                <section class="ch-usages-head" t-if="request.env.lang != 'fr_FR'">
+                    <span class="ch-models-badge"><i class="fa fa-compass"/> Based on your needs</span>
+                    <h2 class="ch-usages-title">What will your pod be used for?</h2>
+                </section>
 
-                <div class="ch-usages-grid oe_structure" id="oe_structure_ch_home_usages_grid">
+                <div class="ch-usages-grid">
 
                     <section class="ch-usage-card">
                         <div class="ch-usage-icon"><i class="fa fa-home"/></div>

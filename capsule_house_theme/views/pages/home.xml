@@ -40,10 +40,28 @@
             <div class="oe_structure oe_empty" id="oe_structure_ch_home_after_hero"/>
             <!-- Section gammes (v19.0.1.0.72) — voir home_gammes.xml.
                  Le "quoi" (nos gammes de produits) avant le "pourquoi"
-                 (section usages juste après). -->
-            <t t-call="capsule_house_theme.partial_home_gammes"/>
+                 (section usages juste après).
+
+                 CORRECTIF (v19.0.1.0.89) : demande client — un bloc qui
+                 "englobe tout" (la section entière, titre + cartes),
+                 avec À L'INTÉRIEUR des blocs qui contiennent eux-mêmes
+                 des blocs (les cartes individuelles). Contrairement au
+                 hero/produits vedettes ci-dessus (restent volontairement
+                 hors oe_structure, voir note v19.0.1.0.48 plus haut —
+                 contenu fonctionnel qu'on ne veut pas exposer au
+                 Website Builder), les sections gammes/usages sont
+                 désormais enveloppées dans un oe_structure : le
+                 <section> de home_gammes.xml/home_usages.xml devient
+                 lui-même un bloc déplaçable/supprimable, et les cartes
+                 <section> qu'il contient restent sélectionnables
+                 individuellement à l'intérieur. -->
+            <div class="oe_structure" id="oe_structure_ch_home_gammes">
+                <t t-call="capsule_house_theme.partial_home_gammes"/>
+            </div>
             <!-- Section usages (v19.0.1.0.71) — voir home_usages.xml. -->
-            <t t-call="capsule_house_theme.partial_home_usages"/>
+            <div class="oe_structure" id="oe_structure_ch_home_usages">
+                <t t-call="capsule_house_theme.partial_home_usages"/>
+            </div>
             <t t-call="capsule_house_theme.partial_featured_products"/>
             <div class="oe_structure oe_empty" id="oe_structure_ch_home_bottom"/>
         </t>
