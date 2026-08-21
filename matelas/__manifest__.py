@@ -57,6 +57,7 @@
             'matelas/static/src/css/FicheTechnique.css',
             'matelas/static/src/css/PortalAccount.css',
             'matelas/static/src/js/main.js',
+            'matelas/static/src/js/fiche_technique.js',
         ],
     },
     'application': True,

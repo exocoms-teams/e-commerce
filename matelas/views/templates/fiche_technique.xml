@@ -96,41 +96,6 @@
 
       </div>
 
-      <script type="text/javascript">
-        (function () {
-          var printBtn = document.getElementById('btn-fiche-imprimer');
-          if (printBtn) {
-            printBtn.addEventListener('click', function () {
-              window.print();
-            });
-          }
-
-          var shareBtn = document.getElementById('btn-fiche-partager');
-          var confirmation = document.getElementById('fiche-partage-confirmation');
-          if (shareBtn) {
-            shareBtn.addEventListener('click', function () {
-              var url = window.location.href;
-              var title = document.title;
-
-              if (navigator.share) {
-                navigator.share({ title: title, url: url }).catch(function () {});
-                return;
-              }
-
-              if (navigator.clipboard &amp;&amp; navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(function () {
-                  if (confirmation) {
-                    confirmation.classList.add('visible');
-                    setTimeout(function () {
-                      confirmation.classList.remove('visible');
-                    }, 2500);
-                  }
-                });
-              }
-            });
-          }
-        })();
-      </script>
     </t>
   </template>
 
