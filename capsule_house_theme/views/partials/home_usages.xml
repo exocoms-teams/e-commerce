@@ -20,165 +20,155 @@
           DANS le <section> englobant — cassé.
         - .94 : abandon (à tort) des cartes individuellement
           sélectionnables.
-        - .95 (1ère itération, ANNULÉE) : <section> frères mais langue
-          gérée par des t-if épars À L'INTÉRIEUR d'une zone oe_structure
-          partagée FR/EN. Retour client : comparer avec hero.xml, qui
-          sépare FR/EN sans que ça empêche l'apparition du bloc en edit.
+        - .95 : titre + cartes en <section> frères, mais (1ère
+          itération) langue gérée par des t-if internes à une SEULE
+          zone oe_structure partagée — corrigé en cours de .96 (2 zones
+          oe_structure complètes _fr/_en, alignées sur hero.xml/
+          aide_livraison.xml).
+        - .96 (1ère itération, ANNULÉE) : les 2 zones oe_structure
+          _fr/_en existaient, mais les 5 cartes restaient nichées sous
+          <div class="ch-usages-cards-wrap"><div class="container">
+          <div class="ch-usages-grid"> — 3 niveaux de <div> entre la
+          zone oe_structure et chaque <section class="ch-usage-card">.
+          Retour client, capture à l'appui : le bloc du TITRE apparaît
+          (lui était déjà enfant direct), mais AUCUNE carte n'est
+          sélectionnable, et pas de grand bloc englobant non plus.
 
-        CORRECTIF DÉFINITIF (v19.0.1.0.96) : alignement sur la
-        convention déjà utilisée et confirmée fonctionnelle ailleurs sur
-        ce site — hero.xml (deux templates complets fr/en, aiguillés par
-        t-call) ET aide_livraison.xml (deux zones oe_structure complètes
-        _fr/_en, t-if porté par le <div class="oe_structure"> lui-même,
-        jamais par ses enfants). Reproduit ici : deux
-        <div class="oe_structure" id="..._fr"/"_en"> frères, chacun
-        contenant tout le texte en dur pour sa langue, sans aucun t-if
-        interne.
+        CORRECTIF DÉFINITIF (v19.0.1.0.96) : en comparant avec TOUTES
+        les zones confirmées fonctionnelles ailleurs sur ce site (pages
+        Aide/Entreprise, /livraison), le point commun est que chaque
+        <section> éditable est un ENFANT DIRECT de la zone oe_structure
+        — jamais niché sous des <div> intermédiaires, même sans
+        imbrication <section>-dans-<section>. Le titre ET chacune des 5
+        cartes sont donc maintenant des <section> FRÈRES DIRECTS de la
+        zone oe_structure elle-même. La mise en page (grille + centrage
+        type ".container") est désormais portée directement par la zone
+        oe_structure via la classe .ch-usages-zone (voir homepage.css).
 
         Scopée à notre site via _scope_layout_views() (external id
         capsule_house_theme.partial_home_usages).
     -->
     <template id="partial_home_usages" name="Capsule House - Accueil : usages">
 
-        <div class="oe_structure" id="oe_structure_ch_home_usages_fr" t-if="request.env.lang == 'fr_FR'">
+        <div class="oe_structure ch-usages-zone" id="oe_structure_ch_home_usages_fr" t-if="request.env.lang == 'fr_FR'">
 
             <section class="ch-usages-title-block">
-                <div class="container">
-                    <div class="ch-usages-head">
-                        <span class="ch-models-badge"><i class="fa fa-compass"/> Selon votre besoin</span>
-                        <h2 class="ch-usages-title">À quoi servira votre pod ?</h2>
-                    </div>
+                <div class="ch-usages-head">
+                    <span class="ch-models-badge"><i class="fa fa-compass"/> Selon votre besoin</span>
+                    <h2 class="ch-usages-title">À quoi servira votre pod ?</h2>
                 </div>
             </section>
 
-            <div class="ch-usages-cards-wrap">
-                <div class="container">
-                    <div class="ch-usages-grid">
-
-                        <section class="ch-usage-card">
-                            <div class="ch-usage-icon"><i class="fa fa-home"/></div>
-                            <div class="ch-usage-name">Logement</div>
-                            <div class="ch-usage-bullets">
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation plus rapide qu'une construction traditionnelle</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Autonome sur un petit terrain</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Alternative à un achat immobilier classique</div>
-                            </div>
-                        </section>
-
-                        <section class="ch-usage-card">
-                            <div class="ch-usage-icon"><i class="fa fa-briefcase"/></div>
-                            <div class="ch-usage-name">Bureau</div>
-                            <div class="ch-usage-bullets">
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Espace de travail séparé du logement</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation indépendante sur votre terrain</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Calme et intimité pour se concentrer</div>
-                            </div>
-                        </section>
-
-                        <section class="ch-usage-card">
-                            <div class="ch-usage-icon"><i class="fa fa-sun-o"/></div>
-                            <div class="ch-usage-name">Résidence secondaire</div>
-                            <div class="ch-usage-bullets">
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation rapide sur un terrain existant</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Entretien réduit par rapport à une maison classique</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Utilisable selon l'équipement choisi</div>
-                            </div>
-                        </section>
-
-                        <section class="ch-usage-card">
-                            <div class="ch-usage-icon"><i class="fa fa-key"/></div>
-                            <div class="ch-usage-name">Location &amp; Airbnb</div>
-                            <div class="ch-usage-bullets">
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Structure autonome et indépendante</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Adaptée à la location courte durée</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation flexible selon le terrain</div>
-                            </div>
-                        </section>
-
-                        <section class="ch-usage-card">
-                            <div class="ch-usage-icon"><i class="fa fa-wrench"/></div>
-                            <div class="ch-usage-name">Accessoires</div>
-                            <div class="ch-usage-bullets">
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Personnalisez votre pod selon vos besoins</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Ajout possible à la commande</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Compatible avec toutes les gammes</div>
-                            </div>
-                        </section>
-
-                    </div>
+            <section class="ch-usage-card">
+                <div class="ch-usage-icon"><i class="fa fa-home"/></div>
+                <div class="ch-usage-name">Logement</div>
+                <div class="ch-usage-bullets">
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation plus rapide qu'une construction traditionnelle</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Autonome sur un petit terrain</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Alternative à un achat immobilier classique</div>
                 </div>
-            </div>
+            </section>
+
+            <section class="ch-usage-card">
+                <div class="ch-usage-icon"><i class="fa fa-briefcase"/></div>
+                <div class="ch-usage-name">Bureau</div>
+                <div class="ch-usage-bullets">
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Espace de travail séparé du logement</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation indépendante sur votre terrain</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Calme et intimité pour se concentrer</div>
+                </div>
+            </section>
+
+            <section class="ch-usage-card">
+                <div class="ch-usage-icon"><i class="fa fa-sun-o"/></div>
+                <div class="ch-usage-name">Résidence secondaire</div>
+                <div class="ch-usage-bullets">
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation rapide sur un terrain existant</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Entretien réduit par rapport à une maison classique</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Utilisable selon l'équipement choisi</div>
+                </div>
+            </section>
+
+            <section class="ch-usage-card">
+                <div class="ch-usage-icon"><i class="fa fa-key"/></div>
+                <div class="ch-usage-name">Location &amp; Airbnb</div>
+                <div class="ch-usage-bullets">
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Structure autonome et indépendante</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Adaptée à la location courte durée</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Installation flexible selon le terrain</div>
+                </div>
+            </section>
+
+            <section class="ch-usage-card">
+                <div class="ch-usage-icon"><i class="fa fa-wrench"/></div>
+                <div class="ch-usage-name">Accessoires</div>
+                <div class="ch-usage-bullets">
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Personnalisez votre pod selon vos besoins</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Ajout possible à la commande</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Compatible avec toutes les gammes</div>
+                </div>
+            </section>
 
         </div>
 
-        <div class="oe_structure" id="oe_structure_ch_home_usages_en" t-if="request.env.lang != 'fr_FR'">
+        <div class="oe_structure ch-usages-zone" id="oe_structure_ch_home_usages_en" t-if="request.env.lang != 'fr_FR'">
 
             <section class="ch-usages-title-block">
-                <div class="container">
-                    <div class="ch-usages-head">
-                        <span class="ch-models-badge"><i class="fa fa-compass"/> Based on your needs</span>
-                        <h2 class="ch-usages-title">What will your pod be used for?</h2>
-                    </div>
+                <div class="ch-usages-head">
+                    <span class="ch-models-badge"><i class="fa fa-compass"/> Based on your needs</span>
+                    <h2 class="ch-usages-title">What will your pod be used for?</h2>
                 </div>
             </section>
 
-            <div class="ch-usages-cards-wrap">
-                <div class="container">
-                    <div class="ch-usages-grid">
-
-                        <section class="ch-usage-card">
-                            <div class="ch-usage-icon"><i class="fa fa-home"/></div>
-                            <div class="ch-usage-name">Housing</div>
-                            <div class="ch-usage-bullets">
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Faster to install than traditional construction</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Self-contained on a small plot</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>An alternative to a traditional home purchase</div>
-                            </div>
-                        </section>
-
-                        <section class="ch-usage-card">
-                            <div class="ch-usage-icon"><i class="fa fa-briefcase"/></div>
-                            <div class="ch-usage-name">Office</div>
-                            <div class="ch-usage-bullets">
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Work space separate from the home</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Standalone installation on your plot</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Quiet and private for focused work</div>
-                            </div>
-                        </section>
-
-                        <section class="ch-usage-card">
-                            <div class="ch-usage-icon"><i class="fa fa-sun-o"/></div>
-                            <div class="ch-usage-name">Second home</div>
-                            <div class="ch-usage-bullets">
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Quick installation on an existing plot</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Less upkeep than a traditional house</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Usable depending on the equipment chosen</div>
-                            </div>
-                        </section>
-
-                        <section class="ch-usage-card">
-                            <div class="ch-usage-icon"><i class="fa fa-key"/></div>
-                            <div class="ch-usage-name">Rental &amp; Airbnb</div>
-                            <div class="ch-usage-bullets">
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Self-contained, standalone structure</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Suited to short-term rental</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Flexible installation depending on the plot</div>
-                            </div>
-                        </section>
-
-                        <section class="ch-usage-card">
-                            <div class="ch-usage-icon"><i class="fa fa-wrench"/></div>
-                            <div class="ch-usage-name">Accessories</div>
-                            <div class="ch-usage-bullets">
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Customise your pod to your needs</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Can be added to your order</div>
-                                <div class="ch-usage-bullet"><i class="fa fa-check"/>Compatible with every range</div>
-                            </div>
-                        </section>
-
-                    </div>
+            <section class="ch-usage-card">
+                <div class="ch-usage-icon"><i class="fa fa-home"/></div>
+                <div class="ch-usage-name">Housing</div>
+                <div class="ch-usage-bullets">
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Faster to install than traditional construction</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Self-contained on a small plot</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>An alternative to a traditional home purchase</div>
                 </div>
-            </div>
+            </section>
+
+            <section class="ch-usage-card">
+                <div class="ch-usage-icon"><i class="fa fa-briefcase"/></div>
+                <div class="ch-usage-name">Office</div>
+                <div class="ch-usage-bullets">
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Work space separate from the home</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Standalone installation on your plot</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Quiet and private for focused work</div>
+                </div>
+            </section>
+
+            <section class="ch-usage-card">
+                <div class="ch-usage-icon"><i class="fa fa-sun-o"/></div>
+                <div class="ch-usage-name">Second home</div>
+                <div class="ch-usage-bullets">
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Quick installation on an existing plot</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Less upkeep than a traditional house</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Usable depending on the equipment chosen</div>
+                </div>
+            </section>
+
+            <section class="ch-usage-card">
+                <div class="ch-usage-icon"><i class="fa fa-key"/></div>
+                <div class="ch-usage-name">Rental &amp; Airbnb</div>
+                <div class="ch-usage-bullets">
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Self-contained, standalone structure</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Suited to short-term rental</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Flexible installation depending on the plot</div>
+                </div>
+            </section>
+
+            <section class="ch-usage-card">
+                <div class="ch-usage-icon"><i class="fa fa-wrench"/></div>
+                <div class="ch-usage-name">Accessories</div>
+                <div class="ch-usage-bullets">
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Customise your pod to your needs</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Can be added to your order</div>
+                    <div class="ch-usage-bullet"><i class="fa fa-check"/>Compatible with every range</div>
+                </div>
+            </section>
 
         </div>
 

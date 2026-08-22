@@ -508,19 +508,34 @@
    séparée (demande client : "il ne faut plus de page application mais
    le faire directement sur accueil"). Volontairement léger : une carte
    par usage avec 3 points, pas de photo ni de statistique inventée. ── */
-/* v19.0.1.0.95 : .ch-usages n'est plus utilisée comme <section>
-   englobante (voir home_usages.xml, correction du diagnostic .89/.92/
-   .94 — l'interdit Odoo porte sur <section> DANS <section>, pas sur
-   plusieurs <section> FRÈRES dans une même zone oe_structure). Remplacée
-   par ces deux blocs frères, chacun sa propre <section> indépendamment
-   sélectionnable dans le Website Builder. */
-.ch-usages-title-block {
-    padding: 48px 0 8px;
-    background: var(--ch-white);
+/* v19.0.1.0.96 : CORRECTIF — en .95, .ch-usages-title-block était bien
+   un <section> FRÈRE direct de oe_structure (donc sélectionnable), mais
+   les 5 cartes étaient encore enterrées 3 niveaux plus bas
+   (oe_structure > .ch-usages-cards-wrap > .container > .ch-usages-grid
+   > section.ch-usage-card) — retour client, capture à l'appui : le
+   bloc du titre apparaît, mais ni les cartes individuellement, ni un
+   grand bloc englobant. Constat confirmé sur TOUTES les zones
+   confirmées fonctionnelles ailleurs sur ce site (Aide/Entreprise,
+   /livraison) : le panneau Block n'apparaît QUE pour les <section> qui
+   sont des ENFANTS DIRECTS de la zone oe_structure, jamais pour un
+   <section> niché sous des <div> intermédiaires, même sans imbrication
+   <section>-dans-<section>. Fix : .ch-usages-title-block et chaque
+   .ch-usage-card sont maintenant des <section> FRÈRES DIRECTS de la
+   même zone oe_structure (voir home_usages.xml) — la mise en page
+   (grille + centrage type ".container") est portée directement par la
+   zone oe_structure elle-même via .ch-usages-zone. */
+.ch-usages-zone {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 48px 24px;
 }
-.ch-usages-cards-wrap {
-    padding: 8px 0 48px;
-    background: var(--ch-white);
+
+.ch-usages-title-block {
+    grid-column: 1 / -1;
+    padding-bottom: 8px;
 }
 
 .ch-usages-head {
@@ -534,12 +549,6 @@
     font-weight: 800;
     color: var(--ch-ink);
     margin-top: 8px;
-}
-
-.ch-usages-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    gap: 16px;
 }
 
 .ch-usage-card {
@@ -601,8 +610,8 @@
     .ch-hero-search { flex-direction: column; }
     .ch-bestsellers-grid { grid-template-columns: 1fr; }
     .ch-bestsellers-head { flex-direction: column; align-items: flex-start; gap: 8px; }
-    .ch-usages-grid { grid-template-columns: 1fr 1fr; }
+    .ch-usages-zone { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 480px) {
-    .ch-usages-grid { grid-template-columns: 1fr; }
+    .ch-usages-zone { grid-template-columns: 1fr; }
 }

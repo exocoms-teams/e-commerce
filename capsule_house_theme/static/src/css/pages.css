@@ -934,18 +934,38 @@
     background: var(--ch-white);
 }
 
-/* v19.0.1.0.95 : sur l'accueil, .ch-gammes-content n'est plus utilisée
-   comme <section> englobante (voir home_gammes.xml) — remplacée par ces
-   deux blocs frères, chacun sa propre <section> indépendamment
-   sélectionnable dans le Website Builder. .ch-gammes-content seule
-   (sans .ch-gammes-home) reste utilisée telle quelle sur /nos-gammes. */
-.ch-gammes-title-block {
-    padding: 40px 0 8px;
-    background: var(--ch-white);
+/* v19.0.1.0.96 : CORRECTIF — en .95, .ch-gammes-title-block/-cards-wrap
+   étaient des blocs FRÈRES directs de la zone oe_structure (donc le
+   titre était sélectionnable), mais les 5 cartes restaient enterrées
+   3 niveaux plus bas (oe_structure > .ch-gammes-cards-wrap > .container
+   > .ch-gammes-filmstrip > section.ch-gamme-card) — retour client,
+   capture à l'appui : le bloc du titre apparaît, mais ni les cartes
+   individuellement, ni un grand bloc englobant. Constat confirmé sur
+   TOUTES les zones fonctionnelles ailleurs sur ce site (Aide/
+   Entreprise, /livraison) : le panneau Block n'apparaît QUE pour les
+   <section> qui sont des ENFANTS DIRECTS de la zone oe_structure,
+   jamais pour un <section> niché sous des <div> intermédiaires, même
+   sans imbrication <section>-dans-<section>. Fix : .ch-gammes-title-
+   block et chaque .ch-gamme-card sont maintenant des <section> FRÈRES
+   DIRECTS de la même zone oe_structure (voir home_gammes.xml) — la
+   mise en page (grille + centrage type ".container") est portée
+   directement par la zone oe_structure elle-même via .ch-gammes-zone.
+   Le filmstrip à défilement horizontal (.ch-gammes-filmstrip, toujours
+   utilisée par /nos-gammes) est abandonné pour la variante accueil au
+   profit d'une grille qui se réorganise nativement sur petit écran
+   (repeat(auto-fit, minmax(...))), cohérent avec .ch-usages-zone. */
+.ch-gammes-zone {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 40px 24px 72px;
 }
-.ch-gammes-cards-wrap {
-    padding: 8px 0 72px;
-    background: var(--ch-white);
+
+.ch-gammes-title-block {
+    grid-column: 1 / -1;
+    padding-bottom: 8px;
 }
 
 .ch-gammes-filmstrip {
@@ -955,21 +975,7 @@
     padding-bottom: 8px;
 }
 
-/* v19.0.1.0.95 : CORRECTION DU DIAGNOSTIC .89/.92/.94. La règle Odoo
-   interdit <section> DANS <section> — pas plusieurs <section> FRÈRES
-   dans une même zone oe_structure (schéma déjà confirmé fonctionnel sur
-   les pages Aide, voir plus bas ".ch-aide-layout .oe_structure >
-   section + section"). En .89/.92, le <section class="ch-gammes-content">
-   englobant existait TOUJOURS au-dessus des cartes → vraie imbrication,
-   cassée à raison. Ici, cet englobant a été supprimé (voir
-   .ch-gammes-cards-wrap ci-dessus, un simple <div>) : chaque carte est
-   maintenant un <section> FRÈRE direct des autres, plus de nidification.
-   Le lien de navigation est déplacé sur .ch-gamme-card-link (<a> en
-   display:contents à l'intérieur de la section) : le padding de la
-   carte reste une zone de fond cliquable pour sélectionner le bloc,
-   sans empêcher le clic sur le contenu de naviguer vers la page détail. */
 .ch-gamme-card {
-    flex: 0 0 220px;
     display: flex;
     flex-direction: column;
     background: var(--ch-white);
