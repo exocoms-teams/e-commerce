@@ -685,7 +685,8 @@ document.addEventListener(
 
         // TOGGLE: if already active → remove
         if(heartBtn.classList.contains("sn-btn-heart--active")){
-            fetch("/shop/wishlist/remove/" + productId, {
+            // Fetch wishlist to find the wishId for this product
+            fetch("/shop/wishlist/get_wishlist", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -696,6 +697,35 @@ document.addEventListener(
                     method: "call",
                     params: {}
                 })
+            })
+            .then(function(r){ return r.json(); })
+            .then(function(data){
+                var wishId = null;
+                if(data.result){
+                    var wishes = Array.isArray(data.result) ? data.result : [];
+                    for(var i=0; i<wishes.length; i++){
+                        if(String(wishes[i].product_id) === String(productId)){
+                            wishId = wishes[i].id;
+                            break;
+                        }
+                    }
+                }
+                if(!wishId){
+                    // Fallback: remove by product_id
+                    wishId = productId;
+                }
+                return fetch("/shop/wishlist/remove/" + wishId, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": odoo.csrf_token
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: "2.0",
+                        method: "call",
+                        params: {}
+                    })
+                });
             })
             .then(function(r){ return r.json(); })
             .then(function(data){
