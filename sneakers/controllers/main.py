@@ -783,6 +783,7 @@ class SneakersController(CustomerPortal):
         if not request.env.user.sudo().partner_id:
             return {'error': 'Please log in'}
         partner = request.env.user.partner_id
+        website = request.website
         ProductWishlist = request.env['product.wishlist'].sudo()
         existing = ProductWishlist.search([
             ('partner_id', '=', partner.id),
@@ -795,6 +796,7 @@ class SneakersController(CustomerPortal):
             wish = ProductWishlist.create({
                 'partner_id': partner.id,
                 'product_id': int(product_id),
+                'website_id': website.id,
             })
             return {'action': 'added', 'wish_id': wish.id}
 
