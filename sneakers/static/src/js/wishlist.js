@@ -683,6 +683,40 @@ document.addEventListener(
 
         }
 
+        // TOGGLE: if already active → remove
+        if(heartBtn.classList.contains("sn-btn-heart--active")){
+            fetch("/shop/wishlist/remove/" + productId, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": odoo.csrf_token
+                },
+                body: JSON.stringify({
+                    jsonrpc: "2.0",
+                    method: "call",
+                    params: {}
+                })
+            })
+            .then(function(r){ return r.json(); })
+            .then(function(data){
+                if(data.error){
+                    console.error(data.error);
+                    return;
+                }
+                heartBtn.classList.remove("active", "sn-btn-heart--active");
+                heartBtn.setAttribute("aria-pressed", "false");
+                if(window.snShowToast) window.snShowToast("Retiré de la wishlist");
+                // sync localStorage
+                var wl = JSON.parse(localStorage.getItem("sn_wishlist") || "[]");
+                var idx = wl.indexOf(String(productId));
+                if(idx !== -1) wl.splice(idx, 1);
+                localStorage.setItem("sn_wishlist", JSON.stringify(wl));
+                updateWishlistBadge();
+            })
+            .catch(function(err){ console.error("WISHLIST REMOVE ERROR:", err); });
+            return;
+        }
+
 
 
 
