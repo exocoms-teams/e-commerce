@@ -778,6 +778,26 @@ class SneakersController(CustomerPortal):
             }
         )
 
+    @http.route('/shop/wishlist/toggle', type='json', auth='public', website=True, csrf=True)
+    def wishlist_toggle(self, product_id, **kwargs):
+        if not request.env.user.sudo().partner_id:
+            return {'error': 'Please log in'}
+        partner = request.env.user.partner_id
+        ProductWishlist = request.env['product.wishlist'].sudo()
+        existing = ProductWishlist.search([
+            ('partner_id', '=', partner.id),
+            ('product_id', '=', int(product_id)),
+        ], limit=1)
+        if existing:
+            existing.unlink()
+            return {'action': 'removed', 'wish_id': False}
+        else:
+            wish = ProductWishlist.create({
+                'partner_id': partner.id,
+                'product_id': int(product_id),
+            })
+            return {'action': 'added', 'wish_id': wish.id}
+
     @http.route('/contact', type='http', auth='public', website=True)
     def contact(self, **kwargs):
         company = request.website.company_id
