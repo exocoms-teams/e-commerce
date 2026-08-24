@@ -18,11 +18,12 @@ class StockLot(models.Model):
         ])
 
         expiring_lots = lots.filtered(is_lot_expiring_soon)
-        _logger.warning('Lots : %s | Expired Lots : %s',lots,expiring_lots)
+
         if expiring_lots:
             for lot in expiring_lots:
                 if lot.expiration_notification_sent:
                     user = lot.product_id.responsible_id
+                    _logger.warning('alert sent to user %s for lot %s.', user.name,lot.name)
                     lot.message_post(
                         body=(            
                             f'Le lot <b>{lot.name}</b> du produit '
