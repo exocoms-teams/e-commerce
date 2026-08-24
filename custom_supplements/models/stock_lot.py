@@ -28,7 +28,7 @@ class StockLot(models.Model):
                         body=(            
                             f'Le lot {lot.name} du produit '
                             f'{lot.product_id.display_name} '
-                            f'expire le {format_datetime(self.env,lot.expiration_date,date_format='dd/MM/yyyy')}.'
+                            f'expire le {format_datetime(self.env,lot.expiration_date)}.'
                         ),
                         message_type='notification',
                         subtype_xmlid='mail.mt_comment',
