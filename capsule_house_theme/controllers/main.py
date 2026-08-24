@@ -7,8 +7,9 @@ from odoo.http import request
 from odoo.addons.website.controllers.main import Website
 
 
-from ..__init__ import DEVIS_SUR_MESURE_DATA, GAMMES_DATA
-
+from ..data_definition.devis import DEVIS_SUR_MESURE_DATA
+from ..data_definition.__init__ import GAMMES_DATA, USAGES_DATA
+    
 class CapsuleDevisController(http.Controller):
 
     @http.route(['/devis-sur-mesure'], type='http', auth="public", website=True)
@@ -191,7 +192,6 @@ class CapsuleHouseWebsite(Website):
         # section "gammes" de l'accueil (19.0.1.0.72, voir
         # home_gammes.xml — demande client : "même nos gamme doit
         # apparaître sur accueil").
-        from odoo.addons.capsule_house_theme import USAGES_DATA, GAMMES_DATA
 
         return request.render('capsule_house_theme.page_home', {
             'featured_products': self._serialize_products(featured_products),
@@ -389,7 +389,7 @@ class CapsuleHouseWebsite(Website):
         contexte. 404 natif si le slug ne correspond à aucune entrée de
         GAMMES_DATA (jamais de page fabriquée pour un slug inconnu).
         """
-        from odoo.addons.capsule_house_theme import GAMMES_DATA
+        
         gamme = next((g for g in GAMMES_DATA if g['slug'] == slug), None)
         if not gamme:
             return request.not_found()
