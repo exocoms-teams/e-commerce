@@ -1,27 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-  <template id="website_layout_head_elfsight_fix" inherit_id="website.layout"
-    name="Matelas - Masquage badge Elfsight (avant chargement des autres scripts)">
+  <template id="website_layout_head_elfsight_fix"
+    inherit_id="website.layout"
+    name="Matelas - Masquage ciblé du badge Elfsight">
+
     <xpath expr="//head/*[1]" position="before">
       <script>
         (function () {
-          if (!window.Element || !Element.prototype.attachShadow) { return; }
+          if (!window.Element || !Element.prototype.attachShadow) {
+            return;
+          }
+
           var originalAttachShadow = Element.prototype.attachShadow;
+
           Element.prototype.attachShadow = function (init) {
-            var root = originalAttachShadow.call(this, Object.assign({}, init, { mode: 'open' }));
+            var className = typeof this.className === 'string' ? this.className : '';
+            var elementId = this.id || '';
+           var isElfsightHost =
+           className.indexOf('elfsight-app-') !== -1 ||
+           className.indexOf('eapps-') !== -1 ||
+           className.indexOf('es-embed-root') !== -1 ||
+           elementId.indexOf('elfsight') !== -1 ||elementId.indexOf('eapps') !== -1;
+
+            if (!isElfsightHost) {
+              return originalAttachShadow.call(this, init);
+            }
+
+            var root = originalAttachShadow.call(
+              this,
+              Object.assign({}, init, { mode: 'open' })
+            );
+
             function removeBadge() {
-              root.querySelectorAll('a[href*="testimonials-slider-widget"]').forEach(function (el) {
-                el.remove();
+              root.querySelectorAll(
+                'a[href*="elfsight.com/testimonials-slider-widget"], ' +
+                'a[href*="testimonials-slider-widget"]'
+              ).forEach(function (element) {
+                element.remove();
               });
             }
+
             removeBadge();
-            new MutationObserver(removeBadge).observe(root, { childList: true, subtree: true });
+
+            new MutationObserver(removeBadge).observe(root, {
+              childList: true,
+              subtree: true
+            });
+
             return root;
           };
         })();
       </script>
     </xpath>
+
   </template>
 
 </odoo>
