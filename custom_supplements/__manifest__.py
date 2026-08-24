@@ -24,6 +24,10 @@
         'web.assets_frontend': [
             'custom_supplements/static/src/scss/style.scss',
         ],
+
+        'web.assets_backend': [
+            'custom_supplements/static/src/scss/backend.scss',
+        ],
     },
     
     'data': [
