@@ -11,12 +11,19 @@ class StockLot(models.Model):
 
     @api.model
     def _cron_check_expiring_supplements(self):
-        limit_date = fields.Datetime.now() + timedelta(days=30)
-        expiring_lots = self.search([
+
+        now = fields.Datetime.now()
+        lots = self.search([
             ('product_id.is_supplement', '=', True),
             ('expiration_date', '!=', False),
-            ('expiration_date', '<=', limit_date),
         ])
+
+        expiring_lots = lots.filtered(
+            lambda lot: lot.expiration_date - timedelta(
+                days=lot.product_id.product_tmpl_id.alert_time
+            ) >= now
+        )
+        _logger.info(expiring_lots)
         if expiring_lots:
             for lot in expiring_lots:
                 _logger.info(
