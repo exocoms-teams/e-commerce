@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class StockLot(models.Model):
     _inherit = 'stock.lot'
-
+    expiration_notification_sent = fields.Boolean(default=False)
     @api.model
     def _cron_check_expiring_supplements(self):
 
@@ -21,13 +21,18 @@ class StockLot(models.Model):
         _logger.warning('Lots : %s | Expired Lots : %s',lots,expiring_lots)
         if expiring_lots:
             for lot in expiring_lots:
-                _logger.info(
-                    'Produit : %s | Lot : %s | Expire le : %s | Responsable : %s',
-                    lot.product_id.display_name,
-                    lot.name,
-                    lot.expiration_date,
-                    lot.product_id.responsible_id
-                )
+                if lot.expiration_notification_sent:
+                    user = lot.product_id.responsible_id
+                    lot.message_post(
+                        body=(            
+                            f'Le lot <b>{lot.name}</b> du produit '
+                            f'<b>{lot.product_id.display_name}</b> '
+                            f'expire le <b>{lot.expiration_date}</b>.'
+                        ),
+                        message_type='notification',
+                        subtype_xmlid='mail.mt_comment',
+                        partner_ids=[user.partner_id.id]
+                    )
 
 def is_lot_expiring_soon(lot):
     now = fields.Datetime.now()
@@ -37,16 +42,5 @@ def is_lot_expiring_soon(lot):
         return False
 
     alert_date = lot.expiration_date - timedelta(days=alert_time)
-
-    _logger.info(
-        "Lot %s | expiration=%s | délai=%s jours | "
-        "date alerte=%s | maintenant=%s | expire bientôt=%s",
-        lot.name,
-        lot.expiration_date,
-        alert_time,
-        alert_date,
-        now,
-        alert_date <= now,
-    )
 
     return alert_date <= now
