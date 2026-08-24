@@ -25,21 +25,24 @@
                 <meta property="og:title" content="Retours &amp; rétractation | Capsule House"/>
                 <meta property="og:url" content="https://capsule-house.fr/retours"/>
             </t>
-
             <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
-                    <a href="/">Accueil</a><span class="sep">/</span><span>Aide</span>
-                </div>
-                <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
-                    <a href="/">Home</a><span class="sep">/</span><span>Help</span>
-                </div>
-
-                <div class="ch-aide-layout">
-                    <t t-call="capsule_house_theme.aide_sidebar"/>
-
-                    <div class="ch-aide-content" t-if="request.env.lang == 'fr_FR'">
+                <a href="/">Accueil</a>
+                <span class="sep">/</span>
+                <span>Aide</span>
+            </div>
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                <a href="/">Home</a>
+                <span class="sep">/</span>
+                <span>Help</span>
+            </div>
+            <div class="ch-aide-layout">
+                <t t-call="capsule_house_theme.aide_sidebar"/>
+                <div class="oe_structure" id="oe_structure_ch_aide_retours_content_fr" t-if="request.env.lang == 'fr_FR'">
+                    <section class="ch-aide-content">
                         <h1 class="ch-aide-title">Retours &amp; rétractation</h1>
                         <p class="ch-aide-subtitle">Nos pods sont fabriqués sur mesure : les conditions de retour diffèrent d'un achat standard.</p>
-
+                    </section>
+                    <section class="ch-aide-content">
                         <div class="ch-aide-callout ch-aide-callout-alert">
                             <i class="fa fa-exclamation-triangle ch-aide-callout-icon"/>
                             <div>
@@ -47,7 +50,8 @@
                                 <div class="ch-aide-callout-text">Nos pods étant personnalisés à la commande, la rétractation n'est possible que dans la fenêtre décrite ci-dessous.</div>
                             </div>
                         </div>
-
+                    </section>
+                    <section class="ch-aide-content">
                         <div class="ch-aide-cards">
                             <div class="ch-aide-card">
                                 <div class="ch-aide-card-title">Avant fabrication</div>
@@ -62,14 +66,17 @@
                                 <div class="ch-aide-card-text">Contactez le service client avec votre numéro de commande ; un conseiller revient vers vous sous 48h ouvrées.</div>
                             </div>
                         </div>
-
+                    </section>
+                    <section class="ch-aide-content">
                         <a href="/contactus" class="ch-aide-btn-dark">Contacter le service client</a>
-                    </div>
-
-                    <div class="ch-aide-content" t-if="request.env.lang != 'fr_FR'">
+                    </section>
+                </div>
+                <div class="oe_structure" id="oe_structure_ch_aide_retours_content_en" t-if="request.env.lang != 'fr_FR'">
+                    <section class="ch-aide-content">
                         <h1 class="ch-aide-title">Returns &amp; withdrawal</h1>
                         <p class="ch-aide-subtitle">Our pods are custom-built to order: return conditions differ from a standard purchase.</p>
-
+                    </section>
+                    <section class="ch-aide-content">
                         <div class="ch-aide-callout ch-aide-callout-alert">
                             <i class="fa fa-exclamation-triangle ch-aide-callout-icon"/>
                             <div>
@@ -77,7 +84,8 @@
                                 <div class="ch-aide-callout-text">Since our pods are custom-made to order, withdrawal is only possible within the window described below.</div>
                             </div>
                         </div>
-
+                    </section>
+                    <section class="ch-aide-content">
                         <div class="ch-aide-cards">
                             <div class="ch-aide-card">
                                 <div class="ch-aide-card-title">Before manufacturing</div>
@@ -92,11 +100,12 @@
                                 <div class="ch-aide-card-text">Contact customer service with your order number; an advisor will get back to you within 48 business hours.</div>
                             </div>
                         </div>
-
+                    </section>
+                    <section class="ch-aide-content">
                         <a href="/contactus" class="ch-aide-btn-dark">Contact customer service</a>
-                    </div>
+                    </section>
                 </div>
-
+            </div>
             <div class="oe_structure oe_empty" id="oe_structure_ch_aide_retours_bottom"/>
         </t>
     </template>

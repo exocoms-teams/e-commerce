@@ -40,7 +40,23 @@
             <div class="oe_structure oe_empty" id="oe_structure_ch_home_after_hero"/>
             <!-- Section gammes (v19.0.1.0.72) — voir home_gammes.xml.
                  Le "quoi" (nos gammes de produits) avant le "pourquoi"
-                 (section usages juste après). -->
+                 (section usages juste après).
+
+                 CORRECTIF (v19.0.1.0.89, RÉVERTI en .91) : une tentative
+                 avait mis ici un <div class="oe_structure"> englobant le
+                 <t t-call="..."/> depuis CETTE vue (page_home), alors
+                 que le <section> réellement édité vit dans une AUTRE vue
+                 (partial_home_gammes/partial_home_usages, déjà scopée
+                 séparément via SCOPED_VIEW_XML_IDS). Résultat : plus
+                 aucun bloc sélectionnable du tout (ni la section, ni son
+                 contenu) — l'oe_structure et le contenu qu'il est censé
+                 rendre éditable doivent vivre dans LA MÊME vue, jamais
+                 reliés par un t-call vers une vue tierce. L'oe_structure
+                 est donc redescendu À L'INTÉRIEUR de home_gammes.xml/
+                 home_usages.xml, autour de leur propre <section> racine
+                 — exactement le même schéma que les pages Aide/
+                 Entreprise/légales (oe_structure et <section> dans le
+                 même fichier), déjà confirmé fonctionnel. -->
             <t t-call="capsule_house_theme.partial_home_gammes"/>
             <!-- Section usages (v19.0.1.0.71) — voir home_usages.xml. -->
             <t t-call="capsule_house_theme.partial_home_usages"/>

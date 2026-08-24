@@ -32,6 +32,16 @@
     padding: 32px 24px 96px;
 }
 
+/* Espacement entre blocs éditables (v19.0.1.0.86) : chaque page légale
+   est découpée en une section par article (h2), au lieu d'un seul bloc.
+   Le premier h2 de chaque section garde .ch-legal-body h2:first-of-type
+   (28px, voir plus bas) — variation de 8px négligeable par rapport à
+   l'ancien comportement (36px pour les h2 suivants), acceptée plutôt que
+   surcharger davantage la CSS pour un si petit écart. */
+.ch-legal-wrap .oe_structure > section + section {
+    margin-top: 32px;
+}
+
 .ch-legal-title {
     font-family: var(--font-head);
     font-size: clamp(28px, 3.5vw, 38px);

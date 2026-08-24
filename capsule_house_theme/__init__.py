@@ -374,12 +374,69 @@ GAMMES_DATA = [
     },
     {
         'slug': 'dome',
-        'status': GAMME_STATUS_A_CONFIRMER,
-        'icon': 'fa-circle-o', 'name': 'Dôme', 'indicative': False,
-        'tagline_fr': 'Formats à définir', 'tagline_en': 'Formats to be defined',
-        'performances': [], 'formats': [], 'specs_ext': [], 'specs_int': [],
-        'equipements_fr': [], 'equipements_en': [], 'options_fr': [], 'options_en': [],
-        'usages': [],
+        'status': GAMME_STATUS_DISPONIBLE,
+        'icon': 'fa-circle-o',
+        'name': 'Dôme',
+        'indicative': True,
+        'tagline_fr': '3 tailles disponibles · 19 à 50 m²',
+        'tagline_en': '3 sizes available · 19 to 50 sqm',
+        'performances': [
+            {'icon': 'fa-refresh', 'title_fr': 'Structure triangulée', 'title_en': 'Triangulated structure',
+            'desc_fr': 'Excellente résistance aux vents forts et à la neige', 'desc_en': 'Strong resistance to high winds and snow load'},
+            {'icon': 'fa-square-o', 'title_fr': 'Vitrage isolant', 'title_en': 'Insulating glazing',
+            'desc_fr': 'Double vitrage sécurit, isolation optimale (NF EN 1279)', 'desc_en': 'Tempered double glazing, optimal insulation (NF EN 1279)'},
+            {'icon': 'fa-thermometer-half', 'title_fr': 'Isolation renforcée', 'title_en': 'Enhanced insulation',
+            'desc_fr': 'Panneaux isolants, faibles déperditions grâce à la forme sans angles', 'desc_en': 'Insulated panels, low heat loss thanks to the angle-free shape'},
+            {'icon': 'fa-bath', 'title_fr': 'Salle de bain équipée', 'title_en': 'Equipped bathroom',
+            'desc_fr': 'Miroir, vasque, douche vitrée', 'desc_en': 'Mirror, sink, glass shower'},
+            {'icon': 'fa-lightbulb-o', 'title_fr': 'Éclairage LED encastré', 'title_en': 'Recessed LED lighting',
+            'desc_fr': 'Lumière chaude intérieure et extérieure', 'desc_en': 'Warm interior and exterior lighting'},
+            {'icon': 'fa-building-o', 'title_fr': 'Structure aluminium', 'title_en': 'Aluminium structure',
+            'desc_fr': 'Ossature légère et durable, laquée', 'desc_en': 'Lightweight, durable, lacquered frame'},
+            {'icon': 'fa-bolt', 'title_fr': 'Alimentation électrique', 'title_en': 'Electrical supply',
+            'desc_fr': 'Câblage cuivre, installation NF C 15-100', 'desc_en': 'Copper wiring, NF C 15-100 installation'},
+            {'icon': 'fa-tint', 'title_fr': 'Ventilation anti-humidité', 'title_en': 'Anti-humidity ventilation',
+            'desc_fr': 'Circulation d\'air optimisée par la forme sphérique', 'desc_en': 'Optimised air circulation thanks to the spherical shape'},
+        ],
+        'formats': [
+            {'name': 'Compact', 'surface_fr': '19-20 m²', 'surface_en': '19-20 sqm',
+            'note_fr': 'Jusqu\'à 2 pers.', 'note_en': 'Up to 2 people'},
+            {'name': 'Confort', 'surface_fr': '28-30 m²', 'surface_en': '28-30 sqm',
+            'note_fr': 'Jusqu\'à 4 pers.', 'note_en': 'Up to 4 people'},
+            {'name': 'Panoramique', 'surface_fr': '38-50 m²', 'surface_en': '38-50 sqm',
+            'note_fr': '4 à 6 pers.', 'note_en': '4 to 6 people'},
+        ],
+        'specs_ext': [
+            {'label_fr': 'Structure', 'label_en': 'Structure',
+            'value_fr': 'Aluminium laqué triangulé', 'value_en': 'Triangulated lacquered aluminium'},
+            {'label_fr': 'Vitrage', 'label_en': 'Glazing',
+            'value_fr': 'Double vitrage sécurit NF EN 1279', 'value_en': 'Tempered double glazing NF EN 1279'},
+            {'label_fr': 'Porte d\'entrée', 'label_en': 'Entrance door',
+            'value_fr': 'Aluminium + verre trempé', 'value_en': 'Aluminium + tempered glass'},
+            {'label_fr': 'Résistance au vent', 'label_en': 'Wind resistance',
+            'value_fr': 'Jusqu\'à 100 km/h', 'value_en': 'Up to 100 km/h'},
+        ],
+        'specs_int': [
+            {'label_fr': 'Sol principal', 'label_en': 'Main floor',
+            'value_fr': 'Revêtement SPC', 'value_en': 'SPC flooring'},
+            {'label_fr': 'Isolation', 'label_en': 'Insulation',
+            'value_fr': 'Panneaux isolants PIR', 'value_en': 'PIR insulation panels'},
+            {'label_fr': 'Électricité', 'label_en': 'Electrical',
+            'value_fr': 'Installation NF C 15-100', 'value_en': 'NF C 15-100 wiring'},
+        ],
+        'equipements_fr': [
+            'Structure aluminium triangulée', 'Vitrage double sécurit',
+            'Isolation thermique renforcée', 'Sanitaire équipé (WC, douche, lavabo)',
+            'Installation électrique NF C 15-100', 'Ventilation anti-humidité',
+        ],
+        'equipements_en': [
+            'Triangulated aluminium structure', 'Tempered double glazing',
+            'Enhanced thermal insulation', 'Equipped bathroom (toilet, shower, sink)',
+            'NF C 15-100 electrical wiring', 'Anti-humidity ventilation',
+        ],
+        'options_fr': ['Chauffage additionnel', 'Kit autonomie énergie (photovoltaïque)', 'Mezzanine (formats 38 m² et +)', 'Occultation extérieure'],
+        'options_en': ['Additional heating', 'Energy autonomy kit (solar)', 'Mezzanine (38 sqm+ formats)', 'Outdoor blackout cover'],
+        'usages': ['Logement', 'Bureau', 'Résidence secondaire', 'Location & Airbnb'],
     },
     {
         'slug': 'modulaire',
@@ -1242,6 +1299,48 @@ def _scope_layout_views(env, website):
     )
 
 
+# Vues dont l'arch a été retravaillée à plusieurs reprises entre les
+# versions 19.0.1.0.87 et .91 (structure des blocs oe_structure de
+# l'accueil, voir home_gammes.xml/home_usages.xml) — retour client :
+# "maintenant plus de block qui s'affiche comme au début, même le grand
+# block promis" après la 19.0.1.0.90. Cause probable : si le client a
+# ouvert (voire sauvegardé) le mode édition pendant qu'une version
+# intermédiaire cassée était en ligne, Odoo peut avoir figé cet état
+# dans arch_db (mécanisme de personnalisation de vue natif à Odoo,
+# indépendant des mises à jour de module suivantes). reset_arch('hard')
+# est l'API native Odoo pour ignorer toute personnalisation et revenir
+# strictement à l'arch définie dans le fichier XML du module — filet de
+# sécurité idempotent, sans effet si la vue n'a jamais été personnalisée.
+RESETTABLE_VIEW_XML_IDS = [
+    'capsule_house_theme.partial_home_gammes',
+    'capsule_house_theme.partial_home_usages',
+]
+
+
+def _reset_customized_views(env):
+    """Réaligne l'arch de certaines vues sur celle du module (voir
+    RESETTABLE_VIEW_XML_IDS), au cas où une personnalisation aurait été
+    enregistrée pendant une version intermédiaire cassée.
+    """
+    View = env['ir.ui.view'].sudo()
+    reset_count = 0
+    for xml_id in RESETTABLE_VIEW_XML_IDS:
+        view = env.ref(xml_id, raise_if_not_found=False)
+        if not view:
+            continue
+        try:
+            view.reset_arch(mode='hard')
+            reset_count += 1
+        except Exception:
+            _logger.exception(
+                "capsule_house_theme: échec du reset_arch sur %s", xml_id,
+            )
+    _logger.info(
+        "capsule_house_theme: %d vue(s) réalignée(s) sur l'arch du "
+        "module (reset_arch hard).", reset_count,
+    )
+
+
 def _clean_demo_data(env, website):
     """Supprime un éventuel site fantôme homonyme, seulement s'il est vide.
 
@@ -1838,6 +1937,7 @@ def run_theme_maintenance(env):
     _setup_theme_assets(env, website)
     _invalidate_frontend_assets(env, website)
     _scope_layout_views(env, website)
+    _reset_customized_views(env)
     _setup_livechat(env, website)
     _clean_demo_data(env, website)
     categories = _setup_shop_categories(env, website)

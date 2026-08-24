@@ -409,6 +409,17 @@
     align-items: start;
 }
 
+/* Espacement entre blocs éditables (v19.0.1.0.86) : chaque page Aide /
+   Entreprise a été découpée en plusieurs <section> indépendantes (une
+   par bloc du Website Builder : intro, encadré, tableau, etc.) au lieu
+   d'un seul bloc contenant tout. Combinateur de fratrie adjacente
+   (section + section), pas de dépendance à :first-child/:first-of-type
+   (piège déjà rencontré sur les pages gammes, v19.0.1.0.83). */
+.ch-aide-layout .oe_structure > section + section,
+.ch-entreprise-wrap .oe_structure > section + section {
+    margin-top: 40px;
+}
+
 /* ── SIDEBAR (aide_sidebar.xml, partagée sur les 4 pages) ── */
 .ch-aide-sidebar {
     background: var(--ch-ink);
@@ -914,13 +925,47 @@
    horizontal sur l'index (demande client), gabarit détaillé (formats,
    spécifications, équipements, options) sur la page détail par gamme. ── */
 .ch-gammes-hero {
-    padding: 40px 0 8px;
+    padding: 40px 0;
     background: var(--ch-panel);
 }
 
 .ch-gammes-content {
     padding: 40px 0 72px;
     background: var(--ch-white);
+}
+
+/* v19.0.1.0.96 : CORRECTIF — en .95, .ch-gammes-title-block/-cards-wrap
+   étaient des blocs FRÈRES directs de la zone oe_structure (donc le
+   titre était sélectionnable), mais les 5 cartes restaient enterrées
+   3 niveaux plus bas (oe_structure > .ch-gammes-cards-wrap > .container
+   > .ch-gammes-filmstrip > section.ch-gamme-card) — retour client,
+   capture à l'appui : le bloc du titre apparaît, mais ni les cartes
+   individuellement, ni un grand bloc englobant. Constat confirmé sur
+   TOUTES les zones fonctionnelles ailleurs sur ce site (Aide/
+   Entreprise, /livraison) : le panneau Block n'apparaît QUE pour les
+   <section> qui sont des ENFANTS DIRECTS de la zone oe_structure,
+   jamais pour un <section> niché sous des <div> intermédiaires, même
+   sans imbrication <section>-dans-<section>. Fix : .ch-gammes-title-
+   block et chaque .ch-gamme-card sont maintenant des <section> FRÈRES
+   DIRECTS de la même zone oe_structure (voir home_gammes.xml) — la
+   mise en page (grille + centrage type ".container") est portée
+   directement par la zone oe_structure elle-même via .ch-gammes-zone.
+   Le filmstrip à défilement horizontal (.ch-gammes-filmstrip, toujours
+   utilisée par /nos-gammes) est abandonné pour la variante accueil au
+   profit d'une grille qui se réorganise nativement sur petit écran
+   (repeat(auto-fit, minmax(...))), cohérent avec .ch-usages-zone. */
+.ch-gammes-zone {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 40px 24px 72px;
+}
+
+.ch-gammes-title-block {
+    grid-column: 1 / -1;
+    padding-bottom: 8px;
 }
 
 .ch-gammes-filmstrip {
@@ -931,21 +976,24 @@
 }
 
 .ch-gamme-card {
-    flex: 0 0 220px;
     display: flex;
     flex-direction: column;
     background: var(--ch-white);
     border: 1px solid var(--ch-gray-border);
     border-radius: var(--r-lg);
     padding: 18px;
-    text-decoration: none;
     transition: all var(--transition);
 }
 .ch-gamme-card:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
-    text-decoration: none;
     border-color: var(--ch-terracotta);
+}
+
+.ch-gamme-card-link {
+    display: contents;
+    text-decoration: none;
+    color: inherit;
 }
 
 .ch-gamme-card-icon {
@@ -966,6 +1014,7 @@
     font-size: 16px;
     font-weight: 800;
     color: var(--ch-ink);
+    text-decoration: none;
 }
 
 .ch-gamme-badge {
@@ -996,15 +1045,20 @@
     font-weight: 700;
     color: var(--ch-terracotta);
     margin-top: 12px;
+    text-decoration: none;
 }
 
 /* Page détail d'une gamme */
 .ch-gamme-detail-head {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 16px;
     flex-wrap: wrap;
+}
+
+.ch-gamme-breadcrumb {
+    padding-bottom: 16px;
 }
 
 .ch-gamme-section-title {
@@ -1027,9 +1081,8 @@
    général (~) cible alors correctement "toute section précédée d'au
    moins une autre section", quelle que soit la structure DOM interne
    de chacune. */
-.ch-gamme-section ~ .ch-gamme-section .ch-gamme-section-title {
-    padding-top: 64px;
-    border-top: 1px solid var(--ch-gray-border);
+.ch-gamme-section ~ .ch-gamme-section {
+    margin-top: 32px;
 }
 
 /* Section Performances (v19.0.1.0.80) — points forts en tête de page
