@@ -80,7 +80,8 @@
                     <div t-if="gamme.get('performances')" style="text-align:center;margin-bottom:32px;">
                         <span class="ch-models-badge" t-if="request.env.lang == 'fr_FR'">Performances</span>
                         <span class="ch-models-badge" t-if="request.env.lang != 'fr_FR'">Performance</span>
-                        <h2 class="ch-gamme-perf-title" t-if="request.env.lang == 'fr_FR'">Une <t t-esc="gamme['name'].lower()"/> pensée pour le confort absolu</h2>
+                        <h2 class="ch-gamme-perf-title" t-if="request.env.lang == 'fr_FR' and gamme.get('gender') == 'f'">Une <t t-esc="gamme['name'].lower()"/> pensée pour le confort absolu</h2>
+                        <h2 class="ch-gamme-perf-title" t-if="request.env.lang == 'fr_FR' and gamme.get('gender') != 'f'">Un <t t-esc="gamme['name'].lower()"/> pensé pour le confort absolu</h2>
                         <h2 class="ch-gamme-perf-title" t-if="request.env.lang != 'fr_FR'">A <t t-esc="gamme['name'].lower()"/> designed for absolute comfort</h2>
                         <div class="ch-gamme-perf-grid">
                             <div t-foreach="gamme['performances']" t-as="perf" class="ch-gamme-perf-card">
