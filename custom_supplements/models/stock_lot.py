@@ -23,7 +23,7 @@ class StockLot(models.Model):
                 days=lot.product_id.product_tmpl_id.alert_time
             ) >= now
         )
-        _logger.info(expiring_lots)
+        _logger.info(lots,expiring_lots)
         if expiring_lots:
             for lot in expiring_lots:
                 _logger.info(
