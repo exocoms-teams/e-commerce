@@ -1,6 +1,6 @@
 import logging
 from datetime import timedelta
-from markupsafe import Markup, escape
+from odoo.tools.misc import format_datetime
 
 from odoo import api, fields, models
 
@@ -25,13 +25,10 @@ class StockLot(models.Model):
                 if not lot.expiration_notification_sent:
                     user = lot.product_id.responsible_id
                     lot.message_post(
-                        body=Markup(
-                            'Le lot <b>{}</b> du produit '
-                            '<b>{}</b> expire le <b>{}</b>.'
-                        ).format(
-                            escape(lot.name),
-                            escape(lot.product_id.display_name),
-                            escape(lot.expiration_date),
+                        body=(            
+                            f'Le lot {lot.name} du produit '
+                            f'{lot.product_id.display_name} '
+                            f'expire le {format_datetime(self.env,lot.expiration_date,date_format='dd/MM/yyyy')}.'
                         ),
                         message_type='notification',
                         subtype_xmlid='mail.mt_comment',
