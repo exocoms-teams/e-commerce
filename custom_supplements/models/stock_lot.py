@@ -25,9 +25,9 @@ class StockLot(models.Model):
                     user = lot.product_id.responsible_id
                     lot.message_post(
                         body=(            
-                            f'Le lot <b>{lot.name}</b> du produit '
-                            f'<b>{lot.product_id.display_name}</b> '
-                            f'expire le <b>{lot.expiration_date}</b>.'
+                            f'Le lot {lot.name} du produit '
+                            f'{lot.product_id.display_name} '
+                            f'expire le {lot.expiration_date}.'
                         ),
                         message_type='notification',
                         subtype_xmlid='mail.mt_comment',
