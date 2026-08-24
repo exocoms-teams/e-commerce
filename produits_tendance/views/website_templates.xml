@@ -1,37 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <!-- ============================================================
-         WIN-45 : Landing Page SaaS - route "/"
-         Hérite de la homepage Odoo standard.
+         WIN-45 : Landing Page SaaS - route "/" (Autonome)
     ============================================================ -->
-    <template id="homepage" name="Landing Page - Détection Produits Tendance" inherit_id="website.homepage" priority="99">
-        <xpath expr="//div[hasclass('oe_structure')]" position="replace">
-            <div class="oe_structure" id="oe_structure_produits_tendance_homepage">
+    <template id="winners_home_page" name="Winners Landing Page">
+        <t t-call="website.layout">
+            <div id="wrap" class="winners-home-wrapper">
                 
-                <!-- Section Hero (Cover) -->
-                <section class="s_cover parallax s_parallax_is_fixed pt96 pb96 o_colored_level" data-scroll-background-ratio="0" data-snippet="s_cover">
-                    <div class="o_we_bg_filter bg-black-50"/>
-                    <div class="container">
-                        <div class="row s_nb_column_fixed">
-                            <div class="col-lg-12 pt16 pb16">
-                                <h1 class="text-white">Détectez les produits tendance avant vos concurrents</h1>
-                                <p class="lead text-white">
-                                    Notre plateforme analyse en continu les signaux e-commerce
-                                    (ventes, publicités, réseaux sociaux) pour repérer les
-                                    produits gagnants avant tout le monde.
-                                </p>
-                                <a href="/winners/dashboard" class="btn btn-primary">Découvrir la plateforme</a>
-                            </div>
+                <!-- SECTION HERO (Design SaaS Bleu Nuit) -->
+                <section class="winners-hero text-center text-white py-5">
+                    <div class="container-fluid mt-5 px-md-5" style="max-width: 1400px;">
+                        <h1 class="display-3 fw-bold mb-4">
+                            Découvrez les produits<br/>qui vont <span class="text-orange">exploser ↗</span>
+                        </h1>
+                        <p class="lead mb-5 mx-auto text-light" style="max-width: 600px; opacity: 0.85;">
+                            Accédez à vos données, suivez les tendances en temps réel et prenez des décisions gagnantes avant vos concurrents.
+                        </p>
+                        
+                        <!-- Boutons d'action conditionnels -->
+                        <div class="d-flex justify-content-center gap-3 mb-5">
+                            <!-- Si l'utilisateur est un simple visiteur (non connecté) -->
+                            <t t-if="request.env.user._is_public()">
+                                <a href="/web/signup" class="btn btn-orange btn-lg fw-bold px-4 rounded-pill shadow">Créer un compte</a>
+                                <a href="/web/login" class="btn btn-outline-light btn-lg fw-bold px-4 rounded-pill">Se connecter</a>
+                            </t>
+                            
+                            <!-- Si l'utilisateur est connecté (Admin ou Membre) -->
+                            <t t-else="">
+                                <a href="/dashboard" class="btn btn-orange btn-lg fw-bold px-4 rounded-pill shadow">Accéder au Dashboard ↗</a>
+                            </t>
+                        </div>
+
+                        <!-- Vidéo de démonstration du Dashboard -->
+                        <div class="hero-mockup mx-auto position-relative">
+                            <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline" class="img-fluid rounded-4 shadow-lg w-100">
+                                <source src="/produits_tendance/static/src/img/dashboard_demo.mp4" type="video/mp4"/>
+                                Votre navigateur ne supporte pas la lecture de vidéos.
+                            </video>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION INTÉGRATIONS (Logos) -->
+                <section class="winners-integrations py-5 bg-white text-center">
+                    <div class="container pt-4">
+                        <p class="text-muted fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">Connecté à vos plateformes préférées</p>
+                        <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 gap-md-5 opacity-75">
+                            <img src="/produits_tendance/static/src/img/shopify.png" height="30" alt="Shopify"/>
+                            <img src="/produits_tendance/static/src/img/woo.png" height="30" alt="WooCommerce"/>
+                            <img src="/produits_tendance/static/src/img/amazon.png" height="30" alt="Amazon"/>
+                            <img src="/produits_tendance/static/src/img/tiktok.png" height="30" alt="TikTok"/>
+                            <img src="/produits_tendance/static/src/img/meta.png" height="30" alt="Facebook"/>
+                            <img src="/produits_tendance/static/src/img/ebay.png" height="30" alt="eBay"/>
                         </div>
                     </div>
                 </section>
 
                 <!-- WIN-103 : "Comment ça marche" - 3 étapes juste sous le hero. -->
-                <t t-call="produits_tendance.template_how_it_works"/>
+                <div class="bg-light">
+                    <t t-call="produits_tendance.template_how_it_works"/>
+                </div>
 
             </div>
-        </xpath>
+        </t>
     </template>
 
     <!-- ============================================================

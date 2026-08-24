@@ -381,6 +381,11 @@ class TrendIngestController(http.Controller):
 class TrendStaticPagesController(http.Controller):
 
     # --- PAGES LEGALES (Lien depuis le Footer) ---
+    # Route de la Home Page
+    @http.route('/', type='http', auth='public', website=True)
+    def winners_home(self, **kwargs):
+        return request.render('produits_tendance.winners_home_page', {})
+    
     @http.route('/mentions-legales', type='http', auth='public', website=True)
     def mentions_legales(self, **kwargs):
         return request.render('produits_tendance.template_mentions_legales', {})
