@@ -23,7 +23,6 @@ class StockLot(models.Model):
             for lot in expiring_lots:
                 if not lot.expiration_notification_sent:
                     user = lot.product_id.responsible_id
-                    _logger.warning('alert sent to user %s for lot %s.', user.name,lot.name)
                     lot.message_post(
                         body=(            
                             f'Le lot <b>{lot.name}</b> du produit '
@@ -34,6 +33,8 @@ class StockLot(models.Model):
                         subtype_xmlid='mail.mt_comment',
                         partner_ids=[user.partner_id.id]
                     )
+                    lot.expiration_notification_sent=True
+                    
 
 def is_lot_expiring_soon(lot):
     now = fields.Datetime.now()
