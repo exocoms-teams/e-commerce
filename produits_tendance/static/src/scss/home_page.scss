@@ -1,0 +1,69 @@
+$winners-navy: #0B1727;
+$winners-orange: #FF6633;
+
+.winners-home-wrapper {
+    .text-orange {
+        color: $winners-orange !important;
+    }
+    
+    .bg-navy {
+        background-color: $winners-navy !important;
+    }
+
+    .btn-orange {
+        background-color: $winners-orange;
+        color: white;
+        border: 2px solid $winners-orange;
+        &:hover {
+            background-color: darken($winners-orange, 10%);
+            border-color: darken($winners-orange, 10%);
+            color: white;
+        }
+    }
+
+    .winners-hero {
+        position: relative;
+        background-color: $winners-navy;
+        background-image: linear-gradient(rgba(11, 23, 39, 0.75), rgba(11, 23, 39, 0.90)), url('/produits_tendance/static/src/img/hero_background.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        
+        /* 1. Remplir l'écran : On demande à la section de prendre au moins 85% de la hauteur de l'écran (85vh) */
+        min-height: 85vh; 
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Centre le contenu verticalement, peu importe le zoom */
+        padding-bottom: 2rem;
+        
+        /* 2. Textes fluides avec clamp(minimum, idéal, maximum) */
+        /* La taille du texte va s'adapter toute seule en fonction du niveau de zoom ! */
+        h1.display-3 {
+            font-size: clamp(2.5rem, 4vw, 4.5rem) !important;
+        }
+        p.lead {
+            font-size: clamp(1.1rem, 1.5vw, 1.4rem) !important;
+            max-width: clamp(600px, 50vw, 800px) !important; /* La largeur du texte s'adapte aussi */
+        }
+
+        .hero-mockup {
+            width: 100%;
+            max-width: 1000px;
+            margin: 3rem auto 0 auto;
+            
+            video {
+                border: 1px solid rgba(255,255,255,0.1);
+                width: 100%;
+                height: auto;
+                display: block;
+                border-radius: 12px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                background-color: $winners-navy;
+            }
+        }
+    }
+
+    .winners-integrations {
+        padding-top: 80px !important; // Compense le débordement de l'image
+    }
+}

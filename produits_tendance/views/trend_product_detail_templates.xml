@@ -1,144 +1,350 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Fiche produit détaillée : /product/<id>
-         Respecte la charte graphique Winners :
-         - uniquement les variables SCSS de _winners_variables.scss
-         - toute classe custom préfixée par o_winners
-         - le score de tendance (o_winners_score_badge) et l'indicateur
-           Google Trends (o_winners_gtrends) sont deux blocs visuellement
-           distincts : Google Trends est purement informatif et ne doit
-           jamais être confondu avec le score de classement. -->
-    <template id="template_product_detail" name="Fiche produit tendance">
+    <!-- ============================================================
+         TICKET 2 : FICHE PRODUIT - DESIGN FINAL (Maquette)
+    ============================================================ -->
+    <template id="template_product_detail" name="Détail Produit">
         <t t-call="website.layout">
-            <div id="wrap" class="o_winners_product_detail">
-                <div class="container mt-5 mb-5">
+            
+            <!-- Conteneur principal avec fond gris clair -->
+            <div class="o_winners_app_wrapper py-4" style="background-color: #F7F8FA; min-height: 100vh;">
+                <div class="container-fluid px-md-5">
+                    
+                    <!-- Ligne 1 : Navigation & Actions -->
+                    <!-- Ligne 1 : Navigation & Actions -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        
+                        <!-- Fil d'Ariane Dynamique -->
+                        <div class="text-muted small">
+                            <!-- Lien vers le Dashboard principal -->
+                            <a href="/dashboard" class="text-decoration-none text-muted">Dashboard</a> 
+                            <span class="mx-1">&gt;</span> 
+                            
+                            <!-- Catégorie dynamique cliquable (filtre le dashboard) -->
+                            <t t-if="product and product.category_id">
+                                <a t-attf-href="/dashboard?category_id=#{product.category_id.id}" class="text-decoration-none text-muted">
+                                    <t t-esc="product.category_id.name"/>
+                                </a>
+                                <span class="mx-1">&gt;</span> 
+                            </t>
+                            <t t-else="">
+                                <a href="/dashboard" class="text-decoration-none text-muted">Tous les produits</a>
+                                <span class="mx-1">&gt;</span> 
+                            </t>
+                            
+                            <!-- Nom du produit en cours -->
+                            <span class="text-dark fw-bold" t-esc="product.name if product else 'Produit'"/>
+                        </div>
 
-                    <div class="o_winners_product_detail__header">
-                        <img t-if="product.image_url" t-att-src="product.image_url"
-                             alt="" class="o_winners_product_detail__image"/>
-                        <span t-if="product.category_id"
-                              class="o_winners_product_detail__category">
-                            <t t-esc="product.category_id.name"/>
-                        </span>
-                        <span t-if="product.is_top_3" class="o_winners_product_detail__rank_badge o_winners_product_detail__rank_badge--top3">Top 3</span>
-                        <span t-elif="product.is_top_10" class="o_winners_product_detail__rank_badge">Top 10</span>
-                        <h1 t-esc="product.name"/>
-                        <div class="o_winners_product_detail__meta">
-                            <span t-if="product.product_ref">
-                                Réf. <t t-esc="product.product_ref"/>
-                            </span>
-                            <span t-if="product.country">
-                                · <t t-esc="product.country"/>
-                            </span>
-                            <span t-if="product.date">
-                                · <t t-esc="product.date"/>
-                            </span>
-                            <span t-if="product.source">
-                                · <t t-esc="dict(product._fields['source'].selection).get(product.source)"/>
-                            </span>
+                        <!-- Boutons d'actions préparés pour le Backend/JS -->
+                        <div class="d-flex gap-2">
+                            <!-- Préparation pour la route d'export Python (ex: /product/export/123) -->
+                            <a t-attf-href="/product/export/#{product.id if product else 0}" class="btn btn-light border shadow-sm" title="Fonctionnalité à venir">
+                                <i class="fa fa-download"/> Exporter
+                            </a>
+                            
+                            <!-- Préparation pour le clic JavaScript (ajout de l'attribut data-product-id) -->
+                            <button class="btn btn-light border shadow-sm o_winners_btn_favorite" t-att-data-product-id="product.id if product else 0" title="Fonctionnalité à venir">
+                                <i class="fa fa-star-o"/> Ajouter aux favoris
+                            </button>
+                            
+                            <button class="btn o_winners_btn_primary text-white" style="background-color: #1B3A6B;">
+                                <i class="fa fa-bell"/> Surveiller ce produit
+                            </button>
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <!-- Score de tendance principal : seul indicateur qui
-                             influence le classement des produits. -->
-                        <div class="col-md-4 mb-3">
-                            <div class="o_winners_score_badge">
-                                <div class="o_winners_score_badge__label">Score de tendance</div>
-                                <div class="o_winners_score_badge__value">
-                                    <t t-esc="'%.1f' % trend_score"/>
+                    <!-- Ligne 2 : Header Produit + Trend Score -->
+                    <div class="row mb-4">
+                        <!-- Carte Produit Principale (Gauche) -->
+                        <div class="col-lg-8 mb-4 mb-lg-0">
+                            <div class="o_winners_card p-4 h-100 d-flex flex-column flex-md-row gap-4">
+                                
+                                <!-- Image dynamique (ou placeholder) -->
+                                <t t-if="product and product.image_url">
+                                    <div class="bg-light rounded overflow-hidden" style="width: 300px; height: 200px; flex-shrink: 0;">
+                                        <img t-att-src="product.image_url" alt="Image du produit" class="w-100 h-100" style="object-fit: cover;"/>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 300px; height: 200px; flex-shrink: 0;">
+                                        <i class="fa fa-image fa-3x text-muted"/>
+                                    </div>
+                                </t>
+
+                                <div class="flex-grow-1">
+                                    <span class="o_winners_badge_tag mb-2 d-inline-block">Nouveau</span>
+                                    <h2 class="fw-bold mb-2" t-esc="product.name if product else 'Nom du produit'"/>
+                                    <p class="text-muted small mb-4">Catégorie : <span t-esc="product.category_id.name if product and product.category_id else 'Électronique'"/></p>
+                                    
+                                    <div class="d-flex gap-5 border-top pt-3 mt-auto">
+                                        <div>
+                                            <div class="text-muted small">Prix moyen</div>
+                                            <div class="fw-bold fs-5" t-esc="str(product.price) + ' €' if product and product.price else '199,99 €'"/>
+                                        </div>
+                                        <div>
+                                            <div class="text-muted small">Marché principal</div>
+                                            <div class="fw-bold fs-5" t-esc="product.country if product and product.country else 'France'"/>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Intérêt Google Trends : bloc totalement séparé,
-                             icône et style dédiés, jamais mélangé au score. -->
-                        <div class="col-md-4 mb-3" t-if="search_volume is not None">
-                            <div class="o_winners_gtrends">
-                                <div class="o_winners_gtrends__icon">📈</div>
-                                <div class="o_winners_gtrends__body">
-                                    <div class="o_winners_gtrends__label">Intérêt Google Trends</div>
-                                    <div class="o_winners_gtrends__value">
-                                        <t t-esc="search_volume"/>
-                                    </div>
-                                    <div class="o_winners_gtrends__disclaimer">
-                                        Indicateur informatif, n'influence pas le classement.
-                                    </div>
+                        <!-- Carte Trend Score (Droite) -->
+                        <div class="col-lg-4">
+                            <div class="o_winners_card p-4 h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="fw-bold mb-0">Trend Score</h6>
+                                    <i class="fa fa-info-circle text-muted" title="Le score est calculé sur 100 selon l'engagement et les ventes."/>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <div class="o_winners_product_detail__stat">
-                                <div class="o_winners_product_detail__stat_label">Ventes</div>
-                                <div class="o_winners_product_detail__stat_value">
-                                    <t t-esc="product.sales_count"/>
+                                
+                                <div class="d-flex align-items-baseline gap-2 mb-2">
+                                    <!-- Affichage dynamique du score -->
+                                    <t t-set="score_val" t-value="int(trend_score) if trend_score else 0"/>
+                                    
+                                    <!-- Changement de couleur dynamique du chiffre selon le score -->
+                                    <h1 t-attf-class="fw-bold mb-0 #{'text-success' if score_val &gt;= 80 else 'text-warning' if score_val &gt;= 50 else 'text-danger'}" style="font-size: 3rem;" t-esc="score_val"/>
+                                    <span class="text-muted">/100</span>
+                                    
+                                    <!-- Badge de texte dynamique -->
+                                    <span t-if="score_val &gt;= 80" class="badge bg-success text-white ms-2">Excellent</span>
+                                    <span t-elif="score_val &gt;= 50" class="badge bg-warning text-white ms-2">Bon</span>
+                                    <span t-else="" class="badge bg-danger text-white ms-2">Faible</span>
+                                </div>
+                                
+                                <!-- Variation dynamique (hausse ou baisse) -->
+                                <p t-if="score_variation is not None" t-attf-class="small fw-bold mb-4 #{'text-success' if float(score_variation) &gt;= 0 else 'text-danger'}">
+                                    <i t-attf-class="fa #{'fa-arrow-up' if float(score_variation) &gt;= 0 else 'fa-arrow-down'}"/> 
+                                    <t t-esc="score_variation &gt; 0 and '+' + str(score_variation) or score_variation"/> pts 
+                                    <span class="text-muted fw-normal">(vs 7 derniers jours)</span>
+                                </p>
+                                <p t-else="" class="text-muted small mb-4">Évolution non disponible</p>
+                                
+                                <!-- Statistiques Max, Min, Moyenne -->
+                                <div class="d-flex justify-content-between text-center border-top pt-3">
+                                    <div>
+                                        <div class="small text-muted">Score max</div>
+                                        <div class="fw-bold" t-esc="score_max if score_max else '-'"/>
+                                    </div>
+                                    <div>
+                                        <div class="small text-muted">Score min</div>
+                                        <div class="fw-bold" t-esc="score_min if score_min else '-'"/>
+                                    </div>
+                                    <div>
+                                        <div class="small text-muted">Moyenne</div>
+                                        <div class="fw-bold" t-esc="score_avg if score_avg else '-'"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Attributs complémentaires : n'affiche que ce qui est
-                         réellement disponible sur le produit (pas de valeur
-                         inventée quand l'attribut n'a pas encore de donnée). -->
+                    <!-- Ligne 3 : Les Onglets Stylisés -->
+                    <ul class="nav nav-tabs o_winners_tabs" id="productTabs" role="tablist">
+                        <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#apercu" type="button">Aperçu</button></li>
+                        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#evolution" type="button">Évolution</button></li>
+                        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#publicites" type="button">Publicités</button></li>
+                        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#plateformes" type="button">Plateformes</button></li>
+                        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#details" type="button">Données détaillées</button></li>
+                        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#historique" type="button">Historique</button></li>
+                    </ul>
+
+                    <!-- Contenu des onglets -->
+                    <div class="tab-content">
+                        <!-- ONGLET 1 : APERÇU -->
+                        <div class="tab-pane fade show active" id="apercu" role="tabpanel">
+                            
+                            <!-- Sous-Ligne 1 : Donut, Pays, Stats -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-4">
+                                    <div class="o_winners_card p-4 h-100">
+                                        <h6 class="fw-bold mb-4">Répartition par plateforme</h6>
+                                        <div class="text-center text-muted py-5 border border-dashed rounded">
+                                            [Graphique Donut à venir]
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="o_winners_card p-4 h-100">
+                                        <h6 class="fw-bold mb-4">Top pays</h6>
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <span class="fw-bold" t-esc="product.country if product and product.country else 'France'"/>
+                                            <span class="text-muted small">Donnée non disponible</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="o_winners_card p-4 h-100">
+                                        <h6 class="fw-bold mb-4">Statistiques clés</h6>
+                                        <div class="row g-3">
+                                            <div class="col-6">
+                                                <div class="p-3 bg-light rounded text-center">
+                                                    <i class="fa fa-bullhorn text-primary mb-2"/>
+                                                    <div class="fw-bold">Mentions</div>
+                                                    <div class="text-muted small">Non disponible</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="p-3 bg-light rounded text-center">
+                                                    <i class="fa fa-shopping-cart text-success mb-2"/>
+                                                    <div class="fw-bold">Ventes</div>
+                                                    <!-- Récupération dynamique des ventes si elles existent dans l'objet product -->
+                                                    <div class="text-muted small" t-esc="product.sales_count if product and product.sales_count else 'Non disponible'"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Autres onglets vides -->
+                        <!-- ONGLET 2 : ÉVOLUTION -->
+                        <div class="tab-pane fade" id="evolution" role="tabpanel">
+                            <!-- On affiche la carte graphique seulement si on a de l'historique -->
+                            <div class="o_winners_card p-4" t-if="score_history">
+                                <h5 class="fw-bold mb-4">Évolution du score de tendance</h5>
+                                
+                                <!-- C'est ici que ton fichier JS (trend_chart.js) vient s'accrocher -->
+                                <div class="o_winners_trend_chart">
+                                    <div class="o_winners_trend_chart__canvas_wrapper w-100" style="position: relative; height: 300px;" t-att-data-history="score_history_json">
+                                        <canvas class="o_winners_trend_chart__canvas"/>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- S'il n'y a pas encore de données d'historique -->
+                            <div class="o_winners_card p-4 text-muted text-center py-5" t-else="">
+                                <i class="fa fa-line-chart fa-3x mb-3 opacity-50"/>
+                                <p class="mb-0">L'historique des scores n'est pas encore disponible pour ce produit.</p>
+                            </div>
+                        </div>
+                        <!-- ONGLET 3 : PUBLICITÉS -->
+                        <div class="tab-pane fade" id="publicites" role="tabpanel">
+                            
+                            <!-- S'il y a des publicités, on les affiche sous forme de grille -->
+                            <t t-if="ads">
+                                <div class="row g-4">
+                                    <t t-foreach="ads" t-as="ad">
+                                        <div class="col-md-6 col-lg-4">
+                                            <div class="o_winners_card p-4 h-100 d-flex flex-column">
+                                                
+                                                <!-- En-tête de la carte pub (Plateforme + Pays) -->
+                                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                                    <span class="badge bg-light text-dark border border-secondary text-capitalize">
+                                                        <i class="fa fa-bullhorn me-1 text-primary"/> <t t-esc="ad.social_network if ad.social_network else 'Réseau'"/>
+                                                    </span>
+                                                    <span class="text-muted small fw-bold" t-esc="ad.country if ad.country else 'International'"/>
+                                                </div>
+                                                
+                                                <h6 class="fw-bold mb-4 text-truncate" t-att-title="ad.ad_ref" t-esc="ad.ad_ref if ad.ad_ref else 'Référence non disponible'"/>
+                                                
+                                                <!-- Statistiques d'engagement -->
+                                                <div class="d-flex justify-content-around text-muted small mb-4 bg-light rounded py-2">
+                                                    <div class="text-center">
+                                                        <div class="fw-bold text-dark fs-6" t-esc="ad.likes_count if ad.likes_count else 0"/>
+                                                        <div>Likes</div>
+                                                    </div>
+                                                    <div class="text-center border-start ps-4">
+                                                        <div class="fw-bold text-dark fs-6" t-esc="ad.shares_count if ad.shares_count else 0"/>
+                                                        <div>Partages</div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Bouton d'action vers la page détail (Ticket 2) -->
+                                                <div class="mt-auto pt-3 border-top">
+                                                    <a t-attf-href="/ad/#{ad.id}" class="btn btn-sm w-100 btn-light border fw-bold text-dark o_winners_btn_secondary">
+                                                        Analyser la publicité
+                                                    </a>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+
+                            <!-- État vide (Empty State) s'il n'y a pas de publicités -->
+                            <t t-else="">
+                                <div class="o_winners_card p-4 text-muted text-center py-5">
+                                    <i class="fa fa-bullhorn fa-3x mb-3 opacity-50"/>
+                                    <p class="mb-0">Aucune publicité détectée pour ce produit pour le moment.</p>
+                                </div>
+                            </t>
+                        </div>
+                        <div class="tab-pane fade" id="plateformes"><div class="o_winners_card p-4 text-muted text-center py-5">Détail des plateformes à venir...</div></div>
+                        <div class="tab-pane fade" id="details"><div class="o_winners_card p-4 text-muted text-center py-5">Données détaillées à venir...</div></div>
+                        <div class="tab-pane fade" id="historique"><div class="o_winners_card p-4 text-muted text-center py-5">Historique d'activité à venir...</div></div>
+                    </div>
+
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================
+         TICKET 2 : NOUVELLE PAGE DETAIL PUBLICITE
+    ============================================================ -->
+    <template id="template_ad_detail" name="Détail Publicité">
+        <t t-call="website.layout">
+            <div class="container py-5">
+                <a t-attf-href="/product/#{product.id}" class="text-muted text-decoration-none mb-3 d-inline-block">
+                    &amp;larr; Retour au produit
+                </a>
+                
+                <div class="o_winners_card p-4 mb-4">
+                    <h2 class="fw-bold mb-4">Détails de la publicité</h2>
+                    
                     <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <div class="o_winners_product_detail__stat">
-                                <div class="o_winners_product_detail__stat_label">Classement</div>
-                                <div class="o_winners_product_detail__stat_value">
-                                    #<t t-esc="product.rank_number"/>
-                                </div>
-                            </div>
+                        <!-- Champs réels -->
+                        <div class="col-md-6">
+                            <h5 class="fw-bold mb-3 text-primary">Informations réelles</h5>
+                            <ul class="list-group list-group-flush mb-4">
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-muted">Plateforme</span>
+                                    <span class="fw-bold" t-esc="ad.social_network"/>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-muted">Pays</span>
+                                    <span class="fw-bold" t-esc="ad.country"/>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-muted">Likes</span>
+                                    <span class="fw-bold" t-esc="ad.likes_count"/>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-muted">Référence</span>
+                                    <span class="fw-bold text-break" style="max-width: 60%; text-align: right;" t-esc="ad.ad_ref"/>
+                                </li>
+                            </ul>
                         </div>
-                        <div class="col-md-4 mb-3" t-if="product.score_site_x">
-                            <div class="o_winners_product_detail__stat">
-                                <div class="o_winners_product_detail__stat_label">Score site source</div>
-                                <div class="o_winners_product_detail__stat_value">
-                                    <t t-esc="'%.1f' % product.score_site_x"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3" t-if="ads">
-                            <div class="o_winners_product_detail__stat">
-                                <div class="o_winners_product_detail__stat_label">Publicités liées</div>
-                                <div class="o_winners_product_detail__stat_value">
-                                    <t t-esc="len(ads)"/>
-                                </div>
-                            </div>
+
+                        <!-- Champs non disponibles (Texte Brut) -->
+                        <div class="col-md-6">
+                            <h5 class="fw-bold mb-3 text-secondary">Performances (Non suivies)</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-muted">Vues</span>
+                                    <span class="fw-bold text-muted">Donnée non disponible</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-muted">Commentaires</span>
+                                    <span class="fw-bold text-muted">Donnée non disponible</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-muted">Budget estimé</span>
+                                    <span class="fw-bold text-muted">Donnée non disponible</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-muted">Évolution des performances</span>
+                                    <span class="fw-bold text-muted">Historique non disponible</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-
-                    <!-- Courbe de tendance (WIN-52) : historique du computed_score,
-                         un point par date (agrégé côté ORM, voir get_score_history)
-                         pour alléger le rendu DOM. Rendu via Chart.js (widget public
-                         o_winners_trend_chart, static/src/js/trend_chart.js). -->
-                    <div class="o_winners_trend_chart mt-4" t-if="score_history">
-                        <h3>Évolution du score de tendance</h3>
-                        <div class="o_winners_trend_chart__canvas_wrapper"
-                             t-att-data-history="score_history_json">
-                            <canvas class="o_winners_trend_chart__canvas"/>
-                        </div>
-                    </div>
-
-                    <div class="o_winners_product_detail__ads mt-4" t-if="ads">
-                        <h3>Publicités liées</h3>
-                        <div class="o_winners_product_detail__ads_summary">
-                            <span><t t-esc="total_likes"/> likes</span>
-                            ·
-                            <span><t t-esc="total_shares"/> partages</span>
-                            ·
-                            <span><t t-esc="len(ads)"/> publicité(s)</span>
-                        </div>
-                        <ul class="o_winners_product_detail__ads_list">
-                            <li t-foreach="ads" t-as="ad">
-                                <t t-esc="dict(ad._fields['social_network'].selection).get(ad.social_network)"/>
-                                — <t t-esc="ad.likes_count"/> likes, <t t-esc="ad.shares_count"/> partages
-                                <t t-if="ad.country"> · <t t-esc="ad.country"/></t>
-                                <t t-if="ad.collected_at"> · <t t-esc="ad.collected_at.date()"/></t>
-                            </li>
-                        </ul>
-                    </div>
-
                 </div>
             </div>
         </t>

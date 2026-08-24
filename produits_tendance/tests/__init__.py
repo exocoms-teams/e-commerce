@@ -14,3 +14,4 @@ from . import test_homepage
 from . import test_dashboard_pagination
 from . import test_temporal_traceability
 from . import test_score_ingestion
+from . import test_submission_form_ui
