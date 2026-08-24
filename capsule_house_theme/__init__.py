@@ -220,6 +220,7 @@ GAMMES_DATA = [
         'status': GAMME_STATUS_DISPONIBLE,
         'icon': 'fa-home',
         'name': 'Capsule',
+        'gender': 'f',  # une capsule
         'indicative': True,
         'tagline_fr': '3 tailles disponibles · 18 à 40 m²',
         'tagline_en': '3 sizes available · 18 to 40 sqm',
@@ -311,6 +312,7 @@ GAMMES_DATA = [
         'status': GAMME_STATUS_DISPONIBLE,
         'icon': 'fa-circle-o',
         'name': 'Dôme',
+        'gender': 'm',  # un dôme
         'indicative': True,
         'tagline_fr': '3 tailles disponibles · 19 à 50 m²',
         'tagline_en': '3 sizes available · 19 to 50 sqm',
@@ -375,6 +377,7 @@ GAMMES_DATA = [
     {
         'slug': 'modulaire',
         'status': GAMME_STATUS_A_CONFIRMER,
+        'gender': 'm',  # un modulaire (système)
         'icon': 'fa-puzzle-piece', 'name': 'Modulaire', 'indicative': False,
         'tagline_fr': 'Système extensible — formats à définir',
         'tagline_en': 'Extensible system — formats to be defined',
@@ -387,6 +390,7 @@ GAMMES_DATA = [
         'status': GAMME_STATUS_DISPONIBLE,  # à confirmer avec Marini avant de passer à disponible
         'icon': 'fa-inbox',
         'name': 'Pliable',
+        'gender': 'm',  # un pliable
         'indicative': True,
         'tagline_fr': '3 tailles disponibles · 14 à 38 m²',
         'tagline_en': '3 sizes available · 14 to 38 sqm',
