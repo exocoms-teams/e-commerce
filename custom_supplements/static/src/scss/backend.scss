@@ -1,19 +1,24 @@
-// Correction du contraste pour l'intérieur des formulaires en mode sombre
-.o_form_view {
-    // Les labels des cases à cocher (ex: Sales, Purchase)
-    .form-check-label,
-    .o_field_boolean {
-        color: #f8f9fa !important; /* Blanc / Gris très clair */
-    }
+/* custom_supplements/static/src/scss/backend.scss */
 
-    // Les titres de section (ex: INTERNAL NOTES)
-    .o_horizontal_separator {
-        color: #81c784 !important; /* Un vert clair pastel pour garder l'esprit, mais lisible */
-    }
+/* On cible l'interface d'administration pour réparer le contraste du mode sombre */
+.o_web_client {
+    .o_form_view {
+        /* Force une couleur claire sur tout le texte standard du formulaire */
+        color: #d1d5db !important;
+        
+        /* Cible spécifiquement les champs en lecture seule, labels et textes grisés */
+        .text-muted, 
+        .form-check-label, 
+        .form-check-inline,
+        .o_field_widget,
+        .o_field_widget.o_readonly_modifier,
+        .o_form_label_help {
+            color: #d1d5db !important; /* Gris clair */
+        }
 
-    // Le texte d'aide en bas (ex: "This note is only for internal purposes.")
-    .text-muted,
-    .o_form_label_help {
-        color: #b0bec5 !important; /* Gris clair */
+        /* Titres de sections (ex: INTERNAL NOTES) */
+        .o_horizontal_separator {
+            color: #81c784 !important; /* Vert pastel lisible */
+        }
     }
 }
