@@ -384,7 +384,7 @@ GAMMES_DATA = [
     },
     {
         'slug': 'pliable',
-        'status': GAMME_STATUS_A_CONFIRMER,  # à confirmer avec Marini avant de passer à disponible
+        'status': GAMME_STATUS_DISPONIBLE,  # à confirmer avec Marini avant de passer à disponible
         'icon': 'fa-inbox',
         'name': 'Pliable',
         'indicative': True,
