@@ -17,18 +17,19 @@ class StockLot(models.Model):
             ('expiration_date', '!=', False),
         ])
 
-        expiring_lots = lots.filtered(is_lot_expiring)
+        expiring_lots = lots.filtered(is_lot_expiring_soon)
         _logger.warning('Lots : %s | Expired Lots : %s',lots,expiring_lots)
         if expiring_lots:
             for lot in expiring_lots:
                 _logger.info(
-                    'Produit : %s | Lot : %s | Expire le : %s',
+                    'Produit : %s | Lot : %s | Expire le : %s | Responsable : %s',
                     lot.product_id.display_name,
                     lot.name,
                     lot.expiration_date,
+                    lot.product_id.responsible_id
                 )
 
-def is_lot_expiring(lot):
+def is_lot_expiring_soon(lot):
     now = fields.Datetime.now()
     alert_time = lot.product_id.product_tmpl_id.alert_time
 
