@@ -6,6 +6,7 @@
     'summary': 'Extension e-commerce pour la vente de compléments alimentaires',
     'category': 'eCommerce',
     'depends': [
+        'product',
         'base',
         'website_sale',
         'stock',
