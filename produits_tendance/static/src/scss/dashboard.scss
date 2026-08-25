@@ -20,6 +20,38 @@
     }
 }
 
+/* Tuiles de statistiques (charte graphique Winners) */
+.o_winners_stat_tile {
+    background-color: $o-winners-white;
+    border: $o-winners-border-soft;
+    border-radius: $o-winners-radius;
+    box-shadow: $o-winners-shadow-soft;
+    padding: ($o-winners-spacing-unit * 2);
+    display: flex;
+    flex-direction: column;
+    gap: ($o-winners-spacing-unit / 2);
+
+    &__label {
+        color: $o-winners-text-muted;
+        font-size: 13px;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    &__value {
+        color: $o-winners-primary;
+        font-size: 28px;
+        font-weight: 700;
+
+        small {
+            color: $o-winners-text-muted;
+            font-size: 16px;
+            font-weight: 400;
+        }
+    }
+}
+
 /* Panneau de filtres (catégorie, pays) */
 .o_winners_filter_panel {
     background-color: $o-winners-bg-light;
@@ -27,7 +59,8 @@
     border-radius: $o-winners-radius;
     padding: ($o-winners-spacing-unit * 2);
 
-    &__select {
+    &__select,
+    &__input {
         font-family: $o-winners-font-family;
     }
 
@@ -109,11 +142,24 @@
     }
 
     &__score {
-        background-color: $o-winners-primary;
         color: $o-winners-white;
         border-radius: $o-winners-radius;
         padding: ($o-winners-spacing-unit / 2) $o-winners-spacing-unit;
         font-weight: 700;
+
+        /* Tiers de score (charte graphique Winners, badges Excellent/Bon/
+           Moyen/Faible) : >=75 succès, 50-74 accent, <50 danger. */
+        &--high {
+            background-color: $o-winners-success;
+        }
+
+        &--mid {
+            background-color: $o-winners-accent;
+        }
+
+        &--low {
+            background-color: $o-winners-danger;
+        }
     }
 
     &__country {
@@ -124,4 +170,9 @@
     .o_winners_score_badge {
         height: auto;
     }
+}
+/* Bouton "Charger plus" (pagination WIN-45/77) */
+.o_winners_load_more_wrapper {
+    text-align: center;
+    margin-top: ($o-winners-spacing-unit * 4);
 }

@@ -16,8 +16,8 @@
                     <p>Vous avez une idée en tête ou par expérience ? Laissez notre algorithme analyser les tendances pour vous.</p>
                 </div>
                 
-                <div t-if="request.params.get('success')" class="alert alert-success mt-4" role="alert">
-                    <h4 class="alert-heading">Merci pour votre contribution ! 🎉</h4>
+                <div t-if="request.params.get('success')" class="o_winners_card o_winners_submission_form__success mt-4" role="alert">
+                    <h4 class="o_winners_submission_form__success_title">Merci pour votre contribution ! 🎉</h4>
                     <p>Votre suggestion a bien été enregistrée. Notre équipe de modération va l'étudier dans les plus brefs délais.</p>
                     <hr/>
                     <p class="mb-0">Vous recevrez un email de notre part dès que votre produit aura été examiné pour vous tenir informé du résultat.</p>
@@ -25,22 +25,25 @@
 
                 <div class="row justify-content-center">
                     <div class="col-md-8">
-                        <!-- Utilisation du BEM : double underscore pour la card -->
-                        <form action="/submit-trend/process" method="POST" class="o_winners_submission_form__card">
+                        <!-- o_winners_card : composant de base partage (section 5
+                             de la charte), en plus de la classe BEM du formulaire
+                             pour le layout/espacement propres a cette page. -->
+                        <form action="/submit-trend/process" method="POST"
+                              class="o_winners_card o_winners_submission_form__card">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                            
+
                             <div class="mb-4">
                                 <label class="form-label fw-bold">Dites-nous en plus sur ce produit :</label>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="submission_reason" id="reason1" value="intuition" checked="1"/>
+                                    <input class="form-check-input o_winners_submission_form__radio" type="radio" name="submission_reason" id="reason1" value="intuition" checked="1"/>
                                     <label class="form-check-label" for="reason1">C'est une intuition, j'ai ce produit en tête.</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="submission_reason" id="reason2" value="experience"/>
+                                    <input class="form-check-input o_winners_submission_form__radio" type="radio" name="submission_reason" id="reason2" value="experience"/>
                                     <label class="form-check-label" for="reason2">Par expérience, c'est une niche que je connais bien.</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="submission_reason" id="reason3" value="spotted"/>
+                                    <input class="form-check-input o_winners_submission_form__radio" type="radio" name="submission_reason" id="reason3" value="spotted"/>
                                     <label class="form-check-label" for="reason3">Je l'ai vu passer massivement sur les réseaux sociaux.</label>
                                 </div>
                             </div>
@@ -49,31 +52,33 @@
 
                             <div class="mb-3">
                                 <label for="name" class="form-label">Quel est le nom du produit ?<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="name" placeholder="Ex: Correcteur de posture intelligent" required="1"/>
+                                <input type="text" class="form-control o_winners_submission_form__input" name="name" placeholder="Ex: Correcteur de posture intelligent" required="1"/>
                             </div>
                             <div class="mb-3">
                                 <label for="link_or_desc" class="form-label">Lien ou Description du produit <span class="text-danger">*</span></label>
-                                <textarea class="form-control" name="link_or_desc" rows="2" placeholder="Collez l'URL du produit ou décrivez-le ici..." required="required"></textarea>
+                                <textarea class="form-control o_winners_submission_form__input" name="link_or_desc" rows="2" placeholder="Collez l'URL du produit ou décrivez-le ici..." required="required"></textarea>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="category" class="form-label">Catégorie cible <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="category" placeholder="Ex: Santé &amp; Bien-être" required="1"/>
+                                    <input type="text" class="form-control o_winners_submission_form__input" name="category" placeholder="Ex: Santé &amp; Bien-être" required="1"/>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="country" class="form-label">Pays ciblé (Code à 2 lettres) <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="country" placeholder="Ex: FR, US, MA" required="1" maxlength="2"/>
+                                    <input type="text" class="form-control o_winners_submission_form__input" name="country" placeholder="Ex: FR, US, MA" required="1" maxlength="2"/>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Votre adresse email (pour recevoir l'audit)</label>
-                                <input type="email" class="form-control" name="email" placeholder="exemple@email.com"/>
+                                <input type="email" class="form-control o_winners_submission_form__input" name="email" placeholder="exemple@email.com"/>
                             </div>
-                            
+
                             <div class="d-grid mt-4">
-                                <!-- Utilisation du BEM : double underscore pour le bouton -->
-                                <button type="submit" class="o_winners_submission_form__submit_btn">Lancer l'audit du produit</button>
+                                <!-- o_winners_btn_primary : composant de base
+                                     partage (section 5), au lieu d'un bouton
+                                     bespoke propre a cette page. -->
+                                <button type="submit" class="o_winners_btn_primary">Lancer l'audit du produit</button>
                             </div>
                         </form>
                     </div>

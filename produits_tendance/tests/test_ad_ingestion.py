@@ -4,7 +4,6 @@ from odoo.tests.common import HttpCase
 from odoo.tools import mute_logger
 from ..models.trend_ad import latest_ads_by_ref
 
-@mute_logger('odoo.sql_db', 'odoo.http')
 class TestAdIngestionHistorization(HttpCase):
     """WIN-XX ('Passer trend.ad en mode historique') : le handler 'ad' de
     /api/trend/ingest ne doit plus écraser likes_count/shares_count sur un
@@ -60,6 +59,7 @@ class TestAdIngestionHistorization(HttpCase):
         self.assertEqual(len(ads), 2)
         self.assertEqual(sorted(ads.mapped('likes_count')), [100, 250])
 
+    @mute_logger('odoo.sql_db', 'odoo.http')
     def test_current_metrics_count_each_ad_once_despite_history(self):
         """Sans latest_ads_by_ref, sum(ad_ids.mapped('likes_count')) sur un
         produit avec 2 collectes historisées de la MÊME publicité donnerait

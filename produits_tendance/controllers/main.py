@@ -1,3 +1,4 @@
+import hmac
 import json
 import os
 import re
@@ -23,7 +24,7 @@ class TrendSubmissionController(http.Controller):
             user_input = post.get('link_or_desc', '').strip()
             final_ref = False
             final_desc = False
-            
+
             if user_input.startswith('http') and ' ' not in user_input:
                 final_ref = user_input
             else:
@@ -46,42 +47,108 @@ class TrendSubmissionController(http.Controller):
 # -----------------------------------------------------------
 class TrendProductDetailController(http.Controller):
 
-    @http.route('/product/<int:id>', type='http', auth='public', website=True)
+    @http.route('/product/<int:id>', type='http', auth='user', website=True)
     def product_detail(self, id, **kwargs):
         api = TrendDashboardAPI(request.env)
         data = api.get_product_detail(id)
         return request.render('produits_tendance.template_product_detail', data)
 
 # -----------------------------------------------------------
+# 2ter. CONTROLEUR DETAIL PUBLICITE (Frontend)
+# -----------------------------------------------------------
+class TrendAdDetailController(http.Controller):
+
+    @http.route('/ad/<int:id>', type='http', auth='user', website=True)
+    def ad_detail(self, id, **kwargs):
+        # On cherche la publicité dans la base de données
+        ad = request.env['trend.ad'].sudo().browse(id)
+        
+        # Si elle n'existe pas, on renvoie une 404
+        if not ad.exists():
+            return request.not_found()
+            
+        # On envoie les données à notre futur template QWeb
+        return request.render('produits_tendance.template_ad_detail', {
+            'ad': ad,
+            'product': ad.product_id,
+        })
+# -----------------------------------------------------------
 # 2bis. CONTROLEUR DASHBOARD (Classement des produits & Ingestion)
 # -----------------------------------------------------------
 class TrendDashboardController(http.Controller):
 
-    @http.route('/dashboard', type='http', auth='public', website=True)
-    def dashboard(self, **kwargs):
-        """Affiche la page dashboard (classement produits) avec le panneau
-        de filtres et la limite Freemium (WIN-48).
-        """
+    @http.route('/dashboard', type='http', auth='user', website=True)
+    def dashboard(self, price_max=None, source=None, category_id=None, country=None, **kwargs):
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
-        
         api = TrendDashboardAPI(request.env)
-        
-        # On récupère les options pour les filtres ET les produits avec la limite
-        options = api.get_filter_options() if hasattr(api, 'get_filter_options') else {'categories': [], 'countries': []}
-        
-        return request.render('produits_tendance.winners_dashboard_template', {
-            'products': api.get_dashboard_products(limit=limit) if hasattr(api, 'get_dashboard_products') else api.get_product_list(),
+
+        offset = kwargs.get('offset', 0)
+        try:
+            requested_offset = int(offset)
+        except (TypeError, ValueError):
+            requested_offset = 0
+
+        limit, offset = api.get_pagination_limit(request.env, requested_offset)
+        products = api.get_product_list(
+            category_id=category_id or None,
+            country=country or None,
+            price_max=price_max or None,
+            source=source or None,
+            limit=limit,
+            offset=offset,
+        )
+        has_more = len(products) == limit and limit > 0
+        if TrendDashboardAPI.is_freemium_user(request.env) and offset + len(products) >= 5:
+             has_more = False
+        options = api.get_filter_options()
+        stats = api.get_dashboard_stats()
+
+        return request.render('produits_tendance.template_dashboard', {
+            'products': products,
             'categories': options.get('categories', []),
             'countries': options.get('countries', []),
+            'sources': options.get('sources', []),
+            'total_products': stats['total_products'],
+            'avg_score': stats['avg_score'],
+            'selected_category_id': category_id or '',
+            'selected_country': country or '',
+            'selected_price_max': price_max or '',
+            'selected_source': source or '',
+            'has_more': has_more,
+            'next_offset': offset + len(products),
         })
 
-    @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)
-    def dashboard_filter(self, category_id=None, country=None, **kwargs):
-        """Route JSON interne consommée en AJAX par dashboard_filters.js."""
+    @http.route('/api/dashboard/filter', type='http', auth='user', methods=['GET'], csrf=False)
+    def dashboard_filter(self, category_id=None, country=None, price_max=None, source=None, **kwargs):
+        limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
-        products = api.get_product_list(category_id=category_id or None, country=country or None)
+
+        offset = kwargs.get('offset', 0)
+        try:
+            requested_offset = int(offset)
+        except (TypeError, ValueError):
+            requested_offset = 0
+
+        limit, offset = api.get_pagination_limit(request.env, requested_offset)
+        products = api.get_product_list(
+            category_id=category_id or None,
+            country=country or None,
+            price_max=price_max or None,
+            source=source or None,
+            limit=limit,
+            offset=offset,
+        )
+        has_more = len(products) == limit and limit > 0
+        if TrendDashboardAPI.is_freemium_user(request.env) and offset + len(products) >= 5:
+                has_more = False
+
         return request.make_response(
-            json.dumps({'status': 'success', 'products': products}),
+            json.dumps({
+                'status': 'success',
+                'products': products,
+                'has_more': has_more,
+                'next_offset': offset + len(products),
+            }),
             headers=[('Content-Type', 'application/json')],
         )
 
@@ -89,13 +156,13 @@ class TrendDashboardController(http.Controller):
     @http.route('/winners/dashboard', type='http', auth='user', website=True)
     def show_dashboard(self, **kwargs):
         return request.render('produits_tendance.template_winners_dashboard', {})
-    
+
     # --- ROUTE EBAY ---
     @http.route('/dashboard/run_ebay_scan', type='jsonrpc', auth='user')
     def run_ebay_scan(self, keyword):
         is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
         is_admin = request.env.user.has_group('base.group_erp_manager')
-        
+
         if not (is_api_user or is_admin):
             return {"status": "error", "message": "Accès refusé : Vous n'avez pas les droits pour lancer le scan."}
 
@@ -106,10 +173,10 @@ class TrendDashboardController(http.Controller):
         ebay_app_id = Param.get_param('ebay.app_id')
         ebay_cert_id = Param.get_param('ebay.cert_id')
         odoo_api_key = Param.get_param('winners.api_key')
-        
+
         base_url = Param.get_param('web.base.url')
         odoo_url = f"{base_url}/api/trend/ingest"
-        
+
         result = run_ingestion_for_keyword(
             keyword=keyword,
             app_id=ebay_app_id,
@@ -117,7 +184,7 @@ class TrendDashboardController(http.Controller):
             odoo_url=odoo_url,
             odoo_api_key=odoo_api_key
         )
-        
+
         return result
 
     # --- ROUTE META ADS (MANUELLE) ---
@@ -125,7 +192,7 @@ class TrendDashboardController(http.Controller):
     def run_meta_scan(self, keyword):
         is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
         is_admin = request.env.user.has_group('base.group_erp_manager')
-        
+
         if not (is_api_user or is_admin):
             return {"status": "error", "message": "Accès refusé : Vous n'avez pas les droits pour lancer le scan."}
 
@@ -147,7 +214,7 @@ class TrendDashboardController(http.Controller):
             odoo_url=odoo_url,
             odoo_api_key=odoo_api_key
         )
-        
+
         return result
 
 # -----------------------------------------------------------
@@ -165,7 +232,7 @@ class TrendIngestController(http.Controller):
         api_key = data.get('api_key')
         if not api_key:
             return self._json_response({'status': 'error', 'code': 'missing_field', 'field': 'api_key'}, 401)
-            
+
         if not self.check_api_key(api_key):
             return self._json_response({'status': 'error', 'code': 'invalid_api_key'}, 403)
 
@@ -212,6 +279,7 @@ class TrendIngestController(http.Controller):
             'country': payload['country'],
             'source': payload['source'],
             'image_url': payload.get('image_url'),
+            'price': payload.get('price'),
         }
         vals = {k: v for k, v in vals.items() if v is not None}
 
@@ -233,12 +301,12 @@ class TrendIngestController(http.Controller):
 
         # Création / Recherche automatique du produit rattaché
         product = env['trend.product'].search([('product_ref', '=', payload['product_ref'])], limit=1)
-        
+
         if not product:
             category = env['trend.category'].search([('name', '=', 'Non classé')], limit=1)
             if not category:
                 category = env['trend.category'].create({'name': 'Non classé'})
-                
+
             product = env['trend.product'].create({
                 'name': payload.get('product_name', 'Produit Généré par Meta'),
                 'product_ref': payload['product_ref'],
@@ -264,11 +332,11 @@ class TrendIngestController(http.Controller):
             'likes_count': payload.get('likes_count', 0),
             'shares_count': payload.get('shares_count', 0),
         }
-        
+
         # Prise en compte de la date de collecte ajoutée par ton collègue
         if payload.get('collected_at'):
             vals['collected_at'] = payload['collected_at']
-            
+
         record = env['trend.ad'].create(vals)
 
         return self._json_response({'status': 'success', 'type': 'ad', 'id': record.id}, 200)
@@ -298,11 +366,65 @@ class TrendIngestController(http.Controller):
 
     def check_api_key(self, key):
         valid_key = request.env['ir.config_parameter'].sudo().get_param('winners.api_key')
-        return valid_key and key == valid_key
-    
+        # hmac.compare_digest() : comparaison en temps constant, plutot que
+        # == qui peut fuiter la longueur/le prefixe correct de la cle via
+        # une attaque temporelle (Epic 1.D, "Securiser l'endpoint (cle API)").
+        return bool(valid_key) and hmac.compare_digest(key, valid_key)
+
     def _json_response(self, payload, status):
         return request.make_response(
             json.dumps(payload),
             status=status,
             headers=[('Content-Type', 'application/json')]
         )
+    
+class TrendStaticPagesController(http.Controller):
+
+    # --- PAGES LEGALES & ACCUEIL ---
+    @http.route('/', type='http', auth='public', website=True)
+    def winners_home(self, **kwargs):
+        # Vérification Multi-site : Si le site courant n'est pas "Winners", 
+        # on laisse le gestionnaire standard d'Odoo afficher la page d'accueil de l'autre site.
+        current_website = request.website
+        if current_website and current_website.name != 'Winners':
+            # Optionnel : Vous pouvez rediriger ou laisser le comportement par défaut d'Odoo
+            return request.not_found() # Ou laisser l'autre site s'afficher
+            
+        return request.render('produits_tendance.winners_home_page', {})
+    
+    @http.route('/mentions-legales', type='http', auth='public', website=True)
+    def mentions_legales(self, **kwargs):
+        return request.render('produits_tendance.template_mentions_legales', {})
+
+    @http.route('/confidentialite', type='http', auth='public', website=True)
+    def confidentialite(self, **kwargs):
+        return request.render('produits_tendance.template_confidentialite', {})
+
+    @http.route('/cgu', type='http', auth='public', website=True)
+    def cgu(self, **kwargs):
+        return request.render('produits_tendance.template_cgu', {})
+
+    # --- PAGES DE NAVIGATION (Sidebar & Dashboard) ---
+    @http.route('/alertes', type='http', auth='user', website=True)
+    def page_alertes(self, **kwargs):
+        return request.render('produits_tendance.template_empty_alertes', {})
+
+    @http.route('/collections', type='http', auth='user', website=True)
+    def page_collections(self, **kwargs):
+        return request.render('produits_tendance.template_empty_collections', {})
+
+    @http.route('/favoris', type='http', auth='user', website=True)
+    def page_favoris(self, **kwargs):
+        return request.render('produits_tendance.template_empty_favoris', {})
+        
+    @http.route('/historique', type='http', auth='user', website=True)
+    def page_historique(self, **kwargs):
+        return request.render('produits_tendance.template_empty_historique', {})
+
+    @http.route('/comparaison', type='http', auth='user', website=True)
+    def page_comparaison(self, **kwargs):
+        return request.render('produits_tendance.template_empty_comparaison', {})
+
+    @http.route('/analytics', type='http', auth='user', website=True)
+    def page_analytics(self, **kwargs):
+        return request.render('produits_tendance.template_empty_analytics', {})   
