@@ -10,7 +10,7 @@ def demo_purge(env):
         ("is_supplement", "=", True),
     ])
     for product in non_supplements:
-        _logger.info(" unlisting %s",product.name)
+        _logger.info(" Product : %s | Supplement : %s",product.name, product.is_supplement)
         # product.write({
         #     "is_published": False,
         #     "active":False
