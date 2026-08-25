@@ -94,7 +94,7 @@ class ProductTemplate(models.Model):
         )
 
         for product in products:
-            if product.
+            
             _logger.info(
                 "Archivage : [%s] %s",
                 product.id,
