@@ -6,8 +6,8 @@
     'summary': 'Extension e-commerce pour la vente de compléments alimentaires',
     'category': 'eCommerce',
     'depends': [
-        'product',
         'base',
+        'product',
         'website_sale',
         'stock',
         'product_expiry', # Ajout du module de gestion des DLC/DLUO
