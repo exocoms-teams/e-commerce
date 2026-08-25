@@ -307,6 +307,13 @@ GAMMES_DATA = [
         'equipements_fr': [], 'equipements_en': [], 'options_fr': [], 'options_en': [],
         'usages': [],
     },
+    # Gamme Dôme (v.CH-122) — contenu basé sur des standards de marché
+    # réels pour ce type de structure (dôme géodésique/triangulé),
+    # croisés sur plusieurs fabricants (recherché le 2026-08-25), PAS
+    # des données fournisseur confirmées pour Capsule House — d'où
+    # 'indicative': True, même logique que Capsule. Normes citées
+    # (NF EN 1279, NF C 15-100) déjà utilisées ailleurs sur cette page,
+    # vérifiées réelles et applicables.
     {
         'slug': 'dome',
         'status': GAMME_STATUS_DISPONIBLE,
@@ -374,6 +381,15 @@ GAMMES_DATA = [
         'options_en': ['Additional heating', 'Energy autonomy kit (solar)', 'Mezzanine (38 sqm+ formats)', 'Outdoor blackout cover'],
         'usages': ['Logement', 'Bureau', 'Résidence secondaire', 'Location & Airbnb'],
     },
+    # Gamme Modulaire (v.CH-123) — statut encore 'a_confirmer', formats
+    # laissés vides intentionnellement : le principe de "modules
+    # combinables" (ex: module de base ~18m² assemblable en 2-3 unités)
+    # a été vérifié sur plusieurs fabricants indépendants (ecoModulHaus,
+    # Leidorf, Modulbois — recherché le 2026-08-25), mais les tailles
+    # précises varient fortement d'un fabricant à l'autre (10 à 25m²
+    # pour le module de base) : à remplir avec de vraies données
+    # produit une fois le fournisseur Capsule House confirmé, plutôt
+    # que d'imposer une fourchette arbitraire.
     {
         'slug': 'modulaire',
         'status': GAMME_STATUS_DISPONIBLE,
@@ -441,6 +457,14 @@ GAMMES_DATA = [
         'options_en': ['Heat pump', 'Solar panels', 'Triple glazing', 'Extra module (extension)'],
         'usages': ['Logement', 'Bureau', 'Résidence secondaire', 'Location & Airbnb'],
     },
+    # Gamme Pliable (v.CH-124) — contenu basé sur des fourchettes de
+    # marché croisées sur plusieurs fabricants de structures
+    # container/pliables (recherché le 2026-08-25), PAS des données
+    # fournisseur confirmées pour Capsule House — d'où 'indicative':
+    # True. RE2020 (réglementation environnementale, en vigueur depuis
+    # le 1er janvier 2022, source ecologie.gouv.fr, vérifiée le
+    # 2026-08-25) et NF C 15-100 sont de vraies normes applicables,
+    # pas des valeurs indicatives.
     {
         'slug': 'pliable',
         'status': GAMME_STATUS_DISPONIBLE,  # à confirmer avec Marini avant de passer à disponible
