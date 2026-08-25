@@ -3,7 +3,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-def post_init_hook(cr, registry):
+def demo_purge(cr, registry):
     _logger.warning("purging demo-data")
     env = api.Environment(cr, SUPERUSER_ID, {})
 

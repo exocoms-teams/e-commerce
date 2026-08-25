@@ -1,6 +1,6 @@
 from . import models
 from . import controllers
-from .hooks import post_init_hook
+from .hooks import demo_purge
 
 def post_init_hook(env):
     top_menu = env['website.menu'].search([
