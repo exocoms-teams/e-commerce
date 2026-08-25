@@ -67,29 +67,26 @@
          NOUVEAU HEADER GLOBAL (Design SaaS) - Protégé Multi-site
     ============================================================ -->
     <template id="header_winners" inherit_id="website.layout" name="Header Winners">
-        <xpath expr="//header" position="replace">
-            <!-- Sécurité Multi-site : s'affiche uniquement sur votre site Winners (Adaptez l'ID si besoin, ex: ID 1) -->
+        <!-- On utilise position="before" pour ne PAS casser le XML de My Website 2 -->
+        <xpath expr="//header" position="before">
             <t t-if="website and website.name == 'Winners'">
+                
+                <!-- 1. Le Header Winners -->
                 <header class="o_winners_header sticky-top">
                     <div class="winners-site-wrapper w-100">
                         <nav class="navbar navbar-expand-md">
                             <div class="container-fluid px-md-5">
                                 
-                                <!-- 1. Logo (Gauche) -->
                                 <a href="/" class="navbar-brand o_winners_header__logo d-flex align-items-center">
                                     <img src="/produits_tendance/static/src/img/logo_winners.png" alt="Logo Winners" class="o_winners_header__logo_img me-2" style="height: 40px;"/>
                                     <span class="o_winners_header__logo_text">winners</span>
                                 </a>
 
-                                <!-- Bouton Hamburger -->
                                 <button class="navbar-toggler o_winners_header__toggler" type="button" data-bs-toggle="collapse" data-bs-target="#winnersMenu" aria-controls="winnersMenu" aria-expanded="false" aria-label="Ouvrir le menu">
                                     <span class="navbar-toggler-icon"></span>
                                 </button>
 
-                                <!-- Conteneur Central & Droite -->
                                 <div class="collapse navbar-collapse" id="winnersMenu">
-                                    
-                                    <!-- 2. Menu Central -->
                                     <ul class="navbar-nav mx-auto o_winners_header__nav">
                                         <li class="nav-item"><a href="/" class="nav-link o_winners_header__nav_link">Accueil</a></li>
                                         <li class="nav-item"><a href="#" class="nav-link o_winners_header__nav_link">Fonctionnalités</a></li>
@@ -98,22 +95,15 @@
                                         <li class="nav-item"><a href="/submit-trend" class="nav-link o_winners_header__nav_link">Soumettre un produit</a></li>
                                     </ul>
 
-                                    <!-- 3. CTA (Droite) -->
                                     <ul class="navbar-nav o_winners_header__auth align-items-center">
                                         <t t-if="request.env.user._is_public()">
-                                            <li class="nav-item me-3">
-                                                <a href="/web/login" class="nav-link o_winners_header__login_text">Se connecter</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a href="/web/signup" class="btn o_winners_btn_accent shadow-sm">Essayer gratuitement</a>
-                                            </li>
+                                            <li class="nav-item me-3"><a href="/web/login" class="nav-link o_winners_header__login_text">Se connecter</a></li>
+                                            <li class="nav-item"><a href="/web/signup" class="btn o_winners_btn_accent shadow-sm">Essayer gratuitement</a></li>
                                         </t>
                                         <t t-else="">
                                             <li class="nav-item dropdown">
                                                 <a href="#" class="nav-link dropdown-toggle o_winners_header__user d-flex align-items-center" data-bs-toggle="dropdown">
-                                                    <img t-attf-src="/web/image?model=res.users&amp;field=avatar_128&amp;id=#{request.env.user.id}" 
-                                                         class="rounded-circle o_winners_header__avatar me-2" 
-                                                         alt="Avatar" style="width:32px; height:32px; object-fit:cover;" />
+                                                    <img t-attf-src="/web/image?model=res.users&amp;field=avatar_128&amp;id=#{request.env.user.id}" class="rounded-circle o_winners_header__avatar me-2" alt="Avatar" style="width:32px; height:32px; object-fit:cover;" />
                                                     <span class="o_winners_header__username fw-bold" t-esc="request.env.user.name[:15] + '...' if len(request.env.user.name) &gt; 15 else request.env.user.name"/>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end shadow-sm border-0">
@@ -128,12 +118,19 @@
                                             </li>
                                         </t>
                                     </ul>
-
                                 </div>
                             </div>
                         </nav>
                     </div>
                 </header>
+
+                <!-- 2. LA MAGIE CSS : On cache le header natif d'Odoo UNIQUEMENT sur Winners -->
+                <style>
+                    header#top, 
+                    header:not(.o_winners_header) { 
+                        display: none !important; 
+                    }
+                </style>
             </t>
         </xpath>
     </template>
