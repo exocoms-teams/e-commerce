@@ -62,9 +62,26 @@ class ProductTemplate(models.Model):
         if config.get_param("custom_supplements.demo_products_cleaned"):
             return
 
+        xmlids = [
+            # "stock_barcode.product_cable_management_box_2_product_template",  # Cable Management Box
+            # "stock_barcode.product_custom_cabinet_metric_product_template",  # Customized Cabinet (Metric)
+            # "stock_barcode.product_custom_cabinet_usa_product_template",  # Customized Cabinet (USA)
+            # # "sale.advance_product_0_product_template",  # Deposit
+            # "product.desk_pad_product_template",  # Desk Pad
+            # "product.product_product_20_product_template",  # Flipover
+            # "product.product_product_furniture_product_template",  # Furniture Assembly
+            # "product.expense_hotel_product_template",  # Hotel Accommodation
+            # "product.product_product_local_delivery_product_template",  # Local Delivery
+            # "product.monitor_stand_product_template",  # Monitor Stand
+            # "product.product_template_dining_table",  # Outdoor dining table
+            # "product.expense_product_product_template",  # Restaurant Expenses
+            # # "delivery.product_product_delivery_product_template",  # Standard delivery
+            # # "delivery.product_product_delivery_poste_product_template",  # The Poste
+            # "product.product_product_2_product_template",  # Virtual Home Staging
+            # "product.product_product_1_product_template",  # Virtual Interior Design
+        ]
         products = self.search([
-            ("is_supplement", "=", False),
-            ("is_published", "=", True),
+            ("is_supplement", "=", False)
         ])
 
         _logger.info(
@@ -72,7 +89,12 @@ class ProductTemplate(models.Model):
             len(products),
         )
 
+        products = products.filtered(
+             lambda p: p.get_external_id().get(p.id) in xmlids
+        )
+
         for product in products:
+            if product.
             _logger.info(
                 "Archivage : [%s] %s",
                 product.id,
