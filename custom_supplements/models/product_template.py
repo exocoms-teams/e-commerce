@@ -1,5 +1,8 @@
 from odoo import api, fields, models
 from odoo.fields import Domain
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -51,3 +54,36 @@ class ProductTemplate(models.Model):
     def _onchange_is_supplement(self):
         if self.is_supplement:
             self.is_storable = True
+
+
+    def _archive_demo_products(self):
+        products = self.search([
+            ("is_supplement", "=", False),
+            ("is_published", "=", True),
+        ])
+
+        _logger.info(
+            "Nettoyage des produits de démonstration : %s produits trouvés",
+            len(products),
+        )
+
+        for product in products:
+            _logger.info(
+                "Archivage du produit : [%s] %s",
+                product.id,
+                product.name,
+            )
+
+        products.write({
+            "active": False,
+            "is_published": False,
+        })
+
+        cron = self.env.ref(
+            "custom_supplements.ir_cron_archive_demo_products",
+            raise_if_not_found=False,
+        )
+
+        if cron:
+            cron.active = False
+            _logger.info("Cron de nettoyage désactivé.")

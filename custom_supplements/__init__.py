@@ -1,9 +1,7 @@
 from . import models
 from . import controllers
-from .hooks import demo_purge
 
 def post_init_hook(env):
-    demo_purge(env)
     top_menu = env['website.menu'].search([
         ('parent_id', '=', False),
         ('website_id', '!=', False),
