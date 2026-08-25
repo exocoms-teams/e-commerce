@@ -3,7 +3,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-def demo_purge(cr, registry):
+def demo_purge(cr):
     _logger.warning("purging demo-data")
     env = api.Environment(cr, SUPERUSER_ID, {})
 
