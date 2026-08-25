@@ -1,4 +1,25 @@
 # -*- coding: utf-8 -*-
+"""
+Post-init Hook d'Infrastructure Odoo & Configuration Web
+=========================================================
+Module      : capsule_house_theme (Thème & Configuration du site Odoo)
+Fichier     : hooks.py / setup.py
+Auteur      : Équipe Dev Odoo
+Dernière modif: 2026-08-25
+Contexte    : Fonctions d'initialisation et d'alignement exécutées lors de l'installation
+             ou de la mise à jour du module. Assure l'isolation multi-company,
+             l'activation i18n, la structure de la boutique (/shop) et la résilience du thème.
+
+Règles Métier & Demandes Client :
+- Multi-Société : La société 'Capsule House' et le site web associé doivent être scopés
+  pour éviter les fuites de données inter-entreprises.
+- Multi-Langue : Activation stricte du couple fr_FR (langue par défaut) / en_US (secondaire).
+- Correctifs 403 & Assets : Forçage des autorisations utilisateurs (admin), des grilles tarifaires
+  (pricelists) et purge du cache des assets pour éviter les blocages natifs d'Odoo.
+- UX Boutique : Configuration du layout d'affichage des produits (Chips design), arborescence
+  des catégories et rattachement des filtres dynamiques (product.attribute).
+"""
+
 import logging
 import os
 import base64
@@ -24,7 +45,16 @@ from .constants import (
 _logger = logging.getLogger(__name__)
 
 
+# -----------------------------------------------------------------------------
+# 1. GESTION DE LA SOCIÉTÉ ET DES SÉCURITÉS (Multi-company & 403 Fixes)
+# -----------------------------------------------------------------------------
+
 def _get_company(env):
+    """
+    SOURCE : Spécification Multi-Company Odoo
+    Récupère ou crée la société dédiée 'COMPANY_NAME'.
+    Gère la résolution de doublons en cas de bases répliquées.
+    """
     Company = env['res.company'].sudo()
     companies = Company.search([('name', '=', COMPANY_NAME)], order='id asc')
     if len(companies) > 1:
@@ -44,6 +74,11 @@ def _get_company(env):
 
 
 def _grant_company_access(env, company):
+    """
+    SOURCE : Patch de sécurité - Correctif d'accès 403 Backend/Frontend
+    Ajoute automatiquement la nouvelle société aux administrateurs système.
+    Évite l'erreur 'Access to unauthorized or invalid companies' lors de la navigation /shop.
+    """
     Users = env['res.users'].sudo()
     admin_group_xmlid = 'base.group_system'
     if not env.ref(admin_group_xmlid, raise_if_not_found=False):
@@ -71,7 +106,16 @@ def _grant_company_access(env, company):
         )
 
 
+# -----------------------------------------------------------------------------
+# 2. PROVISIONNING ET PARAMÉTRAGE DU SITE WEB (Instance & Pricelist)
+# -----------------------------------------------------------------------------
+
 def _get_website(env, company):
+    """
+    SOURCE : Architecture Web Multi-Site Odoo (ir.config_parameter)
+    Assure l'existence d'une instance `website` unique dédiée à la marque.
+    Stocke l'ID généré dans les paramètres système pour éviter la duplication au ré-up.
+    """
     ICP = env['ir.config_parameter'].sudo()
     Website = env['website'].sudo()
 
@@ -108,6 +152,11 @@ def _get_website(env, company):
 
 
 def _setup_pricelist(env, website, company):
+    """
+    SOURCE : Règles Métier Odoo eCommerce / Patch 403 /shop
+    Garantit l'existence d'une grille tarifaire (product.pricelist) rattachée à la société
+    et l'affecte directement au site web pour éviter le plantage d'affichage du catalogue.
+    """
     Pricelist = env['product.pricelist'].sudo()
     pricelist = Pricelist.search([('company_id', '=', company.id)], limit=1)
     if not pricelist:
@@ -133,7 +182,15 @@ def _setup_pricelist(env, website, company):
             break
 
 
+# -----------------------------------------------------------------------------
+# 3. CANAUX DE COMMUNICATION & INTERNATIONALISATION (Live Chat & i18n)
+# -----------------------------------------------------------------------------
+
 def _get_default_operator(env):
+    """
+    SOURCE : Utilitaire d'assignation d'opérateur LiveChat
+    Sélectionne le premier utilisateur interne actif non-système pour gérer le chat.
+    """
     return env['res.users'].search([
         ('active', '=', True),
         ('share', '=', False),
@@ -142,6 +199,11 @@ def _get_default_operator(env):
 
 
 def _setup_livechat(env, website):
+    """
+    SOURCE : Demande Charte Graphique & Engagement Client
+    Configure le canal `im_livechat.channel` aux couleurs de la charte (#1F2421, #C1694F),
+    injecte les règles d'affichage sur `/` et lui assigne un opérateur par défaut.
+    """
     if not website:
         return
     channel_name = '%s - Live Chat' % WEBSITE_NAME
@@ -153,6 +215,7 @@ def _setup_livechat(env, website):
     if website.channel_id.id != channel.id:
         website.write({'channel_id': channel.id})
 
+    # Application de la palette de couleurs officielle du thème
     channel.write({
         'header_background_color': '#1F2421',
         'title_color': '#FFFFFF',
@@ -186,6 +249,11 @@ def _setup_livechat(env, website):
 
 
 def _setup_languages(env, website):
+    """
+    SOURCE : Exigence Bilinguisme (FR principal / EN secondaire)
+    Active 'fr_FR' et 'en_US' au niveau système, définit 'fr_FR' comme langue par défaut
+    sur le site et active le commutateur de langue natif du Header.
+    """
     lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
     if not lang_fr:
         env['res.lang']._activate_lang('fr_FR')
@@ -214,6 +282,10 @@ def _setup_languages(env, website):
 
 
 def _reload_native_translations(env):
+    """
+    SOURCE : Correctif UI - Force le rechargement PO des modules natifs (portal, website_sale...)
+    Évite d'avoir des reliquats de chaînes non traduites en anglais sur l'espace client français.
+    """
     try:
         mods = env['ir.module.module'].search([
             ('name', 'in', [
@@ -234,7 +306,16 @@ def _reload_native_translations(env):
         )
 
 
+# -----------------------------------------------------------------------------
+# 4. GESTION DES ASSETS, DU LOGO ET DU DOMAINE DE ROUTAGE
+# -----------------------------------------------------------------------------
+
 def _set_logo(env, website):
+    """
+    SOURCE : Asset Brand Management
+    Encode en Base64 le logo local défini dans `LOGO_PATH` et l'applique au site Web.
+    Utilise une clé dans `ir.config_parameter` pour éviter la ré-exécution inutile.
+    """
     ICP = env['ir.config_parameter'].sudo()
     if ICP.get_param(CONFIG_LOGO_APPLIED_KEY) == '1':
         return
@@ -261,6 +342,10 @@ def _set_logo(env, website):
 
 
 def _setup_homepage(env, website):
+    """
+    SOURCE : Évolution Odoo v19+ (Routage natif)
+    Réinitialise `homepage_url` à False pour forcer la desserte de la page d'accueil directement sur `/`.
+    """
     if website.homepage_url:
         _logger.info(
             "capsule_house_theme: homepage_url du site id=%s vidée "
@@ -271,6 +356,11 @@ def _setup_homepage(env, website):
 
 
 def _setup_domain(env, website):
+    """
+    SOURCE : Gestion des DNS & Switch d'environnement (Dev/Prod)
+    Ne fixe le domaine canonique `WEBSITE_DOMAIN` que si la clé `CONFIG_DOMAIN_LIVE_KEY` vaut '1'.
+    Sinon, le retire pour permettre le test local ou la prévisualisation via IP.
+    """
     domain_live = env['ir.config_parameter'].sudo().get_param(CONFIG_DOMAIN_LIVE_KEY)
     if domain_live == '1':
         if website.domain != WEBSITE_DOMAIN:
@@ -293,6 +383,11 @@ def _setup_domain(env, website):
 
 
 def _setup_website_priority(env, website):
+    """
+    SOURCE : Résolution de route Odoo Controllers
+    Passe la séquence du site à 1 pour être prioritaire sur les sites de démo/génériques
+    lors des requêtes sans hôte explicite (ex: /web/login).
+    """
     if website.sequence >= 10:
         website.write({'sequence': 1})
         _logger.info(
@@ -305,6 +400,11 @@ def _setup_website_priority(env, website):
 
 
 def _setup_theme_assets(env, website):
+    """
+    SOURCE : Injection dynamique SCSS/JS (`ir.asset`)
+    Enregistre les fichiers d'assets définis dans `THEME_ASSETS` en les rattachant
+    uniquement à l'ID de notre site web (scoping pour éviter de casser les autres sites).
+    """
     IrAsset = env['ir.asset'].sudo()
     for label, path in THEME_ASSETS.items():
         name = 'capsule_house_theme: %s' % label
@@ -333,6 +433,11 @@ def _setup_theme_assets(env, website):
 
 
 def _invalidate_frontend_assets(env, website):
+    """
+    SOURCE : Correctif de Cache Odoo Asset Pipeline
+    Supprime les fichiers compilés d'assets (`ir.attachment`) corrompus ou obsolètes
+    afin de forcer Odoo à re-compiler le SCSS au chargement suivant.
+    """
     ICP = env['ir.config_parameter'].sudo()
     if ICP.get_param(CONFIG_ASSETS_FIX_KEY) == '1':
         return
@@ -360,7 +465,16 @@ def _invalidate_frontend_assets(env, website):
     ICP.set_param(CONFIG_ASSETS_FIX_KEY, '1')
 
 
+# -----------------------------------------------------------------------------
+# 5. RESTAURATION ET SCOPING DES VUES QWEB
+# -----------------------------------------------------------------------------
+
 def _scope_layout_views(env, website):
+    """
+    SOURCE : Scoping des surcharges de vues QWeb
+    Assigne explicitement `website_id` sur la liste des vues `SCOPED_VIEW_XML_IDS`
+    pour éviter qu'une modification QWeb n'impacte d'autres sites web de la base.
+    """
     View = env['ir.ui.view'].sudo()
     scoped, missing = 0, []
     for xml_id in SCOPED_VIEW_XML_IDS:
@@ -383,6 +497,11 @@ def _scope_layout_views(env, website):
 
 
 def _reset_customized_views(env):
+    """
+    SOURCE : Maintenance du thème (Reset dur de l'architecture XML)
+    Effectue un `reset_arch(mode='hard')` sur les vues listées dans `RESETTABLE_VIEW_XML_IDS`
+    pour annuler les éditions manuelles faites via l'éditeur HTML/Odoo Studio qui bloqueraient la mise à jour.
+    """
     View = env['ir.ui.view'].sudo()
     reset_count = 0
     for xml_id in RESETTABLE_VIEW_XML_IDS:
@@ -403,6 +522,11 @@ def _reset_customized_views(env):
 
 
 def _clean_demo_data(env, website):
+    """
+    SOURCE : Nettoyage d'instance Odoo
+    Supprime les sites web fantômes créés par l'installation de données de démo Odoo natives,
+    à condition qu'ils soient totalement vides de produits et de pages.
+    """
     Website = env['website'].sudo()
     candidates = Website.search([
         ('name', '=', WEBSITE_NAME),
@@ -434,7 +558,16 @@ def _clean_demo_data(env, website):
             )
 
 
+# -----------------------------------------------------------------------------
+# 6. CONFIGURATION DE LA BOUTIQUE E-COMMERCE (/shop)
+# -----------------------------------------------------------------------------
+
 def _setup_shop_categories(env, website):
+    """
+    SOURCE : Arborescence E-Commerce Produits (`product.public.category`)
+    Synchronise les catégories principales et sous-catégories de la boutique.
+    Gère la comptabilité descendante selon que `website_id` existe sur le modèle ou non.
+    """
     Category = env['product.public.category'].sudo()
     has_website_field = 'website_id' in Category._fields
     if not has_website_field:
@@ -505,6 +638,11 @@ def _setup_shop_categories(env, website):
 
 
 def _setup_shop_display(env, website):
+    """
+    SOURCE : Spécifications UI/UX de la grille produit
+    Configure le layout de la boutique : 21 produits par page, 3 colonnes,
+    espacement 16px, tri par séquence web et application des classes du design 'Chips'.
+    """
     Website = env['website']
     wanted = {
         'shop_ppg': 21,
@@ -527,6 +665,11 @@ def _setup_shop_display(env, website):
 
 
 def _setup_shop_grid_design(env, website):
+    """
+    SOURCE : Surcharge QWeb dynamique du catalogue produits
+    Injecte la classe CSS `o_wsale_products_opt_design_chips` dans l'architecture XML
+    de la vue `website_sale.products` du site si elle est présente.
+    """
     try:
         grid_views = env['ir.ui.view'].search([
             ('key', 'like', 'website_sale.products'),
@@ -577,6 +720,11 @@ def _setup_shop_grid_design(env, website):
 
 
 def _setup_menus(env, website, categories):
+    """
+    SOURCE : Menu de navigation principal du Header (`website.menu`)
+    Génère dynamiquement la barre de navigation (Accueil, Tous les pods, Accessoires, Promotions, Avis)
+    et applique les traductions bilingues FR/EN d'origine. Nettoie les menus résiduels non désirés.
+    """
     Menu = env['website.menu'].sudo()
     entries = [
         ('Accueil', '/', 10),
@@ -629,6 +777,7 @@ def _setup_menus(env, website, categories):
         website.id, len(entries),
     )
 
+    # Suppression des sous-menus natifs d'Odoo inutiles pour notre site
     stray_menus = website.menu_id.child_id.filtered(
         lambda m: m.id not in kept_menu_ids and m.url not in known_urls
     )
@@ -641,7 +790,16 @@ def _setup_menus(env, website, categories):
         stray_menus.unlink()
 
 
+# -----------------------------------------------------------------------------
+# 7. FILTRES DYNAMIQUES ET PUBLICATION DE PRODUITS
+# -----------------------------------------------------------------------------
+
 def _setup_shop_filters(env):
+    """
+    SOURCE : Attributs & Filtres E-Commerce (`product.attribute`)
+    Crée les attributs de recherche (ex: Tailles, Matériaux) en mode `no_variant`
+    pour permettre le filtrage latéral sur la boutique sans exploser la matrice des variantes de prix.
+    """
     Attribute = env['product.attribute'].sudo()
     for attr_name, values in SHOP_FILTER_ATTRIBUTES.items():
         try:
@@ -677,6 +835,11 @@ def _setup_shop_filters(env):
 
 
 def _attach_shop_filters_to_products(env, website):
+    """
+    SOURCE : Rattachement de la matrice de filtres aux Fiches Produits (`product.template`)
+    Lie les lignes d'attributs de filtrage (`attribute_line_ids`) à tous les produits
+    publiés sur le site web pour les rendre immédiatement sélectionnables en façade.
+    """
     Attribute = env['product.attribute'].sudo()
     Product = env['product.template'].sudo()
     for attr_name in SHOP_FILTER_ATTRIBUTES:
@@ -722,6 +885,11 @@ def _attach_shop_filters_to_products(env, website):
 
 
 def _publish_our_products(env, website, company):
+    """
+    SOURCE : Automatisation de mise en ligne Catalogue
+    Identifie tous les produits créés pour la société et bascule automatiquement
+    leur statut `is_published` à True tout en les associant au `website_id` du thème.
+    """
     Product = env['product.template'].sudo()
     products = Product.search([
         ('company_id', '=', company.id),

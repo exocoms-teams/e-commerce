@@ -1,18 +1,55 @@
 # -*- coding: utf-8 -*-
+"""
+Sourcing des données statiques pour le site vitrine Odoo
+=========================================================
+Module      : website_capsule_catalog (développement spécifique Odoo)
+Fichier     : data/gammes_data.py
+Auteur      : Équipe Dev Odoo
+Dernière modif: 2026-08-13
+Contexte    : Fichier de configuration alimentant le controller HTTP `/nos-gammes`.
+             Ce fichier fournit les données pour le template QWeb sans passer par
+             des modèles PostgreSQL (Performance & Agilité de contenu).
 
-GAMME_STATUS_DISPONIBLE = 'disponible'
-GAMME_STATUS_A_CONFIRMER = 'a_confirmer'
+Règles Métier & Demandes Client :
+- Contenu exclusivement INFORMATIF (pas de vente e-commerce directe).
+- Changement de structure : Studio/Duo/Panorama deviennent des 'formats' de la gamme Capsule,
+  et non plus des catégories de produits de premier niveau dans le menu Odoo.
+- Statut 'disponible' = fiches d'information prêtes (le badge affiché est "Détails disponibles").
+  Cela NE veut PAS dire "produit en stock / achetable" dans la boutique Odoo.
+- Statut 'a_confirmer' = gamme annoncée mais spécifications non arrêtées.
+- Flag 'indicative': True = les métriques (kW, dimensions) reposent sur un standard
+  du marché en attendant la validation définitive du fournisseur.
+- Les normes techniques (NF EN 1279, NF EN 14351-1, NF C 15-100, RE2020) sont des
+  références légales vérifiables applicables aux constructions modulaires.
+"""
 
+# -----------------------------------------------------------------------------
+# CONSTANTES DE STATUT (Utilisées pour le filtrage dans le template QWeb)
+# -----------------------------------------------------------------------------
+# SOURCE : Spécification fonctionnelle - Affichage dynamique des badges
+GAMME_STATUS_DISPONIBLE = 'disponible'      # Affiche les détails informatifs[cite: 1]
+GAMME_STATUS_A_CONFIRMER = 'a_confirmer'    # Affiche le masque "à définir / à confirmer"[cite: 1]
+
+
+# -----------------------------------------------------------------------------
+# CATALOGUE DE INFORMATIONS GAMMES (`GAMMES_DATA`)
+# -----------------------------------------------------------------------------
+# SOURCE : Cahier des charges / CDC "Nos Gammes" (v19.0.1.0.71)
+# Injecté directement dans le contexte du Controller Odoo (request.render)
 GAMMES_DATA = [
     {
+        # --- GAMME CAPSULE ---
+        # SOURCE : Demande client du 2026-08-13 - Format de référence du site
         'slug': 'capsule',
         'status': GAMME_STATUS_DISPONIBLE,
-        'icon': 'fa-home',
+        'icon': 'fa-home',  # Icône FontAwesome (Odoo Frontend Standard)
         'name': 'Capsule',
         'gender': 'f',
-        'indicative': True,
+        'indicative': True,  # Activer le bandeau d'avertissement "Données indicatives"[cite: 1]
         'tagline_fr': '3 tailles disponibles · 18 à 40 m²',
         'tagline_en': '3 sizes available · 18 to 40 sqm',
+        
+        # SOURCE : Spécifications techniques standardisées & Normes Françaises
         'performances': [
             {'icon': 'fa-square-o', 'title_fr': 'Vitrage isolant', 'title_en': 'Insulating glazing',
              'desc_fr': 'Double vitrage, isolation optimale (NF EN 1279)', 'desc_en': 'Double glazing, optimal insulation (NF EN 1279)'},
@@ -33,31 +70,25 @@ GAMMES_DATA = [
             {'icon': 'fa-building-o', 'title_fr': 'Structure solide', 'title_en': 'Solid structure',
              'desc_fr': 'Anneau de levage + support galvanisé', 'desc_en': 'Lifting ring + galvanised support'},
         ],
+        
+        # SOURCE : Restructuration menu client - Anciennes catégories converties en sous-formats
         'formats': [
-            {'name': 'Studio', 'surface_fr': '18-20 m²', 'surface_en': '18-20 sqm',
-             'note_fr': 'Compact', 'note_en': 'Compact'},
-            {'name': 'Duo', 'surface_fr': '26-30 m²', 'surface_en': '26-30 sqm',
-             'note_fr': "Jusqu'à 4 pers.", 'note_en': 'Up to 4 people'},
-            {'name': 'Panorama', 'surface_fr': '36-40 m²', 'surface_en': '36-40 sqm',
-             'note_fr': '4 à 6 pers.', 'note_en': '4 to 6 people'},
+            {'name': 'Studio', 'surface_fr': '18-20 m²', 'surface_en': '18-20 sqm', 'note_fr': 'Compact', 'note_en': 'Compact'},
+            {'name': 'Duo', 'surface_fr': '26-30 m²', 'surface_en': '26-30 sqm', 'note_fr': "Jusqu'à 4 pers.", 'note_en': 'Up to 4 people'},
+            {'name': 'Panorama', 'surface_fr': '36-40 m²', 'surface_en': '36-40 sqm', 'note_fr': '4 à 6 pers.', 'note_en': '4 to 6 people'},
         ],
+        
+        # SOURCE : Législation et normes de construction applicables
         'specs_ext': [
-            {'label_fr': 'Façade', 'label_en': 'Facade',
-             'value_fr': 'Panneau aluminium', 'value_en': 'Aluminium panel'},
-            {'label_fr': "Porte d'entrée", 'label_en': 'Entrance door',
-             'value_fr': 'Inox + serrure à code', 'value_en': 'Stainless steel + code lock'},
-            {'label_fr': 'Vitrage', 'label_en': 'Glazing',
-             'value_fr': 'Vitrage isolant NF EN 1279', 'value_en': 'Insulating glazing NF EN 1279'},
-            {'label_fr': 'Fenêtres', 'label_en': 'Windows',
-             'value_fr': 'Performances NF EN 14351-1', 'value_en': 'Performance NF EN 14351-1'},
+            {'label_fr': 'Façade', 'label_en': 'Facade', 'value_fr': 'Panneau aluminium', 'value_en': 'Aluminium panel'},
+            {'label_fr': "Porte d'entrée", 'label_en': 'Entrance door', 'value_fr': 'Inox + serrure à code', 'value_en': 'Stainless steel + code lock'},
+            {'label_fr': 'Vitrage', 'label_en': 'Glazing', 'value_fr': 'Vitrage isolant NF EN 1279', 'value_en': 'Insulating glazing NF EN 1279'},
+            {'label_fr': 'Fenêtres', 'label_en': 'Windows', 'value_fr': 'Performances NF EN 14351-1', 'value_en': 'Performance NF EN 14351-1'},
         ],
         'specs_int': [
-            {'label_fr': 'Sol principal', 'label_en': 'Main floor',
-             'value_fr': 'Revêtement SPC', 'value_en': 'SPC flooring'},
-            {'label_fr': 'Électricité', 'label_en': 'Electrical',
-             'value_fr': 'Installation NF C 15-100', 'value_en': 'NF C 15-100 wiring'},
-            {'label_fr': 'Automatismes', 'label_en': 'Automation',
-             'value_fr': 'Store motorisé (option)', 'value_en': 'Motorised blind (option)'},
+            {'label_fr': 'Sol principal', 'label_en': 'Main floor', 'value_fr': 'Revêtement SPC', 'value_en': 'SPC flooring'},
+            {'label_fr': 'Électricité', 'label_en': 'Electrical', 'value_fr': 'Installation NF C 15-100', 'value_en': 'NF C 15-100 wiring'},
+            {'label_fr': 'Automatismes', 'label_en': 'Automation', 'value_fr': 'Store motorisé (option)', 'value_en': 'Motorised blind (option)'},
         ],
         'equipements_fr': [
             'Cadre acier galvanisé', 'Fenêtres double vitrage',
@@ -74,6 +105,8 @@ GAMMES_DATA = [
         'usages': ['Logement', 'Bureau', 'Résidence secondaire', 'Location & Airbnb'],
     },
     {
+        # --- GAMME CABINE ---
+        # SOURCE : Extension gamme produit (Micro-offices / Bureaux de jardin)
         'slug': 'cabine',
         'status': GAMME_STATUS_DISPONIBLE,
         'icon': 'fa-th-large',
@@ -101,69 +134,47 @@ GAMMES_DATA = [
              'desc_fr': 'Habillage intérieur bois chaleureux ou design contemporain', 'desc_en': 'Warm interior wood panelling or contemporary design'},
         ],
         'formats': [
-            {'name': 'Solo / Bureau', 'surface_fr': '10-12 m²', 'surface_en': '10-12 sqm',
-             'note_fr': 'Idéal télétravail / Micro-office', 'note_en': 'Ideal for home office'},
-            {'name': 'Comfort', 'surface_fr': '15-18 m²', 'surface_en': '15-18 sqm',
-             'note_fr': "Chambre d'amis / Studio", 'note_en': 'Guest room / Studio'},
-            {'name': 'Lodge', 'surface_fr': '20-25 m²', 'surface_en': '20-25 sqm',
-             'note_fr': 'Hébergement équipé (2 à 4 pers.)', 'note_en': 'Equipped accommodation (2 to 4 people)'},
+            {'name': 'Solo / Bureau', 'surface_fr': '10-12 m²', 'surface_en': '10-12 sqm', 'note_fr': 'Idéal télétravail / Micro-office', 'note_en': 'Ideal for home office'},
+            {'name': 'Comfort', 'surface_fr': '15-18 m²', 'surface_en': '15-18 sqm', 'note_fr': "Chambre d'amis / Studio", 'note_en': 'Guest room / Studio'},
+            {'name': 'Lodge', 'surface_fr': '20-25 m²', 'surface_en': '20-25 sqm', 'note_fr': 'Hébergement équipé (2 à 4 pers.)', 'note_en': 'Equipped accommodation (2 to 4 people)'},
         ],
         'specs_ext': [
-            {'label_fr': 'Bardage', 'label_en': 'Cladding',
-             'value_fr': 'Bois composite / Acier traité', 'value_en': 'Composite wood / Treated steel'},
-            {'label_fr': 'Baies & Ouvertures', 'label_en': 'Openings',
-             'value_fr': 'Châssis aluminium rupture de pont thermique', 'value_en': 'Thermal break aluminium frames'},
-            {'label_fr': 'Toiture', 'label_en': 'Roofing',
-             'value_fr': 'Étanchéité EPDM / Bac acier isolé', 'value_en': 'EPDM waterproofing / Insulated steel deck'},
-            {'label_fr': 'Vitrage', 'label_en': 'Glazing',
-             'value_fr': 'Double vitrage feuilleté sécurit', 'value_en': 'Double-glazed laminated safety glass'},
+            {'label_fr': 'Bardage', 'label_en': 'Cladding', 'value_fr': 'Bois composite / Acier traité', 'value_en': 'Composite wood / Treated steel'},
+            {'label_fr': 'Baies & Ouvertures', 'label_en': 'Openings', 'value_fr': 'Châssis aluminium rupture de pont thermique', 'value_en': 'Thermal break aluminium frames'},
+            {'label_fr': 'Toiture', 'label_en': 'Roofing', 'value_fr': 'Étanchéité EPDM / Bac acier isolé', 'value_en': 'EPDM waterproofing / Insulated steel deck'},
+            {'label_fr': 'Vitrage', 'label_en': 'Glazing', 'value_fr': 'Double vitrage feuilleté sécurit', 'value_en': 'Double-glazed laminated safety glass'},
         ],
         'specs_int': [
-            {'label_fr': 'Revêtement sol', 'label_en': 'Flooring',
-             'value_fr': 'Parquet stratifié ou vinyle haut passage', 'value_en': 'Laminate or heavy-duty vinyl flooring'},
-            {'label_fr': 'Murs & Plafond', 'label_en': 'Walls & Ceiling',
-             'value_fr': 'Panneaux bois PEFC / Placo peint', 'value_en': 'PEFC wood panels / Painted plasterboard'},
-            {'label_fr': 'Électricité', 'label_en': 'Electrical',
-             'value_fr': 'Installation conforme NF C 15-100', 'value_en': 'NF C 15-100 compliant installation'},
+            {'label_fr': 'Revêtement sol', 'label_en': 'Flooring', 'value_fr': 'Parquet stratifié ou vinyle haut passage', 'value_en': 'Laminate or heavy-duty vinyl flooring'},
+            {'label_fr': 'Murs & Plafond', 'label_en': 'Walls & Ceiling', 'value_fr': 'Panneaux bois PEFC / Placo peint', 'value_en': 'PEFC wood panels / Painted plasterboard'},
+            {'label_fr': 'Électricité', 'label_en': 'Electrical', 'value_fr': 'Installation conforme NF C 15-100', 'value_en': 'NF C 15-100 compliant installation'},
         ],
         'equipements_fr': [
-            'Châssis autoportant en acier',
-            'Isolation thermique et acoustique renforcée',
-            'Éclairage LED intérieur encastré',
-            'Tableau électrique pré-équipé',
-            "Ventilation mécanique / Grilles d'aération",
-            'Serrure de sécurité à clé ou digicode',
+            'Châssis autoportant en acier', 'Isolation thermique et acoustique renforcée',
+            'Éclairage LED intérieur encastré', 'Tableau électrique pré-équipé',
+            "Ventilation mécanique / Grilles d'aération", 'Serrure de sécurité à clé ou digicode',
         ],
         'equipements_en': [
-            'Self-supporting steel frame',
-            'Reinforced thermal and acoustic insulation',
-            'Recessed interior LED lighting',
-            'Pre-equipped electrical panel',
-            'Mechanical ventilation / Air vents',
-            'Key or keypad security lock',
+            'Self-supporting steel frame', 'Reinforced thermal and acoustic insulation',
+            'Recessed interior LED lighting', 'Pre-equipped electrical panel',
+            'Mechanical ventilation / Air vents', 'Key or keypad security lock',
         ],
         'options_fr': [
-            'Climatisation réversible (Pompe à chaleur)',
-            'Panneaux solaires en toiture',
-            'Kitchinette équipée',
-            "Salle d'eau compacte (WC + douche)",
-            'Terrasse extérieure en bois',
+            'Climatisation réversible (Pompe à chaleur)', 'Panneaux solaires en toiture',
+            'Kitchinette équipée', "Salle d'eau compacte (WC + douche)", 'Terrasse extérieure en bois',
         ],
         'options_en': [
-            'Reversible air conditioning (Heat pump)',
-            'Rooftop solar panels',
-            'Equipped kitchenette',
-            'Compact bathroom (toilet + shower)',
-            'Outdoor wooden deck',
+            'Reversible air conditioning (Heat pump)', 'Rooftop solar panels',
+            'Equipped kitchenette', 'Compact bathroom (toilet + shower)', 'Outdoor wooden deck',
         ],
         'usages': [
-            'Bureau de jardin / Télétravail',
-            "Chambre d'amis / Studio d'adolescent",
-            "Atelier d'artiste / Salle de sport",
-            'Gîte / Hébergement insolite',
+            'Bureau de jardin / Télétravail', "Chambre d'amis / Studio d'adolescent",
+            "Atelier d'artiste / Salle de sport", 'Gîte / Hébergement insolite',
         ],
     },
     {
+        # --- GAMME DÔME ---
+        # SOURCE : Gamme hébergements insolites / dômes géodésiques
         'slug': 'dome',
         'status': GAMME_STATUS_DISPONIBLE,
         'icon': 'fa-circle-o',
@@ -191,30 +202,20 @@ GAMMES_DATA = [
             'desc_fr': 'Circulation d\'air optimisée par la forme sphérique', 'desc_en': 'Optimised air circulation thanks to the spherical shape'},
         ],
         'formats': [
-            {'name': 'Compact', 'surface_fr': '19-20 m²', 'surface_en': '19-20 sqm',
-            'note_fr': 'Jusqu\'à 2 pers.', 'note_en': 'Up to 2 people'},
-            {'name': 'Confort', 'surface_fr': '28-30 m²', 'surface_en': '28-30 sqm',
-            'note_fr': 'Jusqu\'à 4 pers.', 'note_en': 'Up to 4 people'},
-            {'name': 'Panoramique', 'surface_fr': '38-50 m²', 'surface_en': '38-50 sqm',
-            'note_fr': '4 à 6 pers.', 'note_en': '4 to 6 people'},
+            {'name': 'Compact', 'surface_fr': '19-20 m²', 'surface_en': '19-20 sqm', 'note_fr': 'Jusqu\'à 2 pers.', 'note_en': 'Up to 2 people'},
+            {'name': 'Confort', 'surface_fr': '28-30 m²', 'surface_en': '28-30 sqm', 'note_fr': 'Jusqu\'à 4 pers.', 'note_en': 'Up to 4 people'},
+            {'name': 'Panoramique', 'surface_fr': '38-50 m²', 'surface_en': '38-50 sqm', 'note_fr': '4 à 6 pers.', 'note_en': '4 to 6 people'},
         ],
         'specs_ext': [
-            {'label_fr': 'Structure', 'label_en': 'Structure',
-            'value_fr': 'Aluminium laqué triangulé', 'value_en': 'Triangulated lacquered aluminium'},
-            {'label_fr': 'Vitrage', 'label_en': 'Glazing',
-            'value_fr': 'Double vitrage sécurit NF EN 1279', 'value_en': 'Tempered double glazing NF EN 1279'},
-            {'label_fr': 'Porte d\'entrée', 'label_en': 'Entrance door',
-            'value_fr': 'Aluminium + verre trempé', 'value_en': 'Aluminium + tempered glass'},
-            {'label_fr': 'Résistance au vent', 'label_en': 'Wind resistance',
-            'value_fr': 'Jusqu\'à 100 km/h', 'value_en': 'Up to 100 km/h'},
+            {'label_fr': 'Structure', 'label_en': 'Structure', 'value_fr': 'Aluminium laqué triangulé', 'value_en': 'Triangulated lacquered aluminium'},
+            {'label_fr': 'Vitrage', 'label_en': 'Glazing', 'value_fr': 'Double vitrage sécurit NF EN 1279', 'value_en': 'Tempered double glazing NF EN 1279'},
+            {'label_fr': 'Porte d\'entrée', 'label_en': 'Entrance door', 'value_fr': 'Aluminium + verre trempé', 'value_en': 'Aluminium + tempered glass'},
+            {'label_fr': 'Résistance au vent', 'label_en': 'Wind resistance', 'value_fr': 'Jusqu\'à 100 km/h', 'value_en': 'Up to 100 km/h'},
         ],
         'specs_int': [
-            {'label_fr': 'Sol principal', 'label_en': 'Main floor',
-            'value_fr': 'Revêtement SPC', 'value_en': 'SPC flooring'},
-            {'label_fr': 'Isolation', 'label_en': 'Insulation',
-            'value_fr': 'Panneaux isolants PIR', 'value_en': 'PIR insulation panels'},
-            {'label_fr': 'Électricité', 'label_en': 'Electrical',
-            'value_fr': 'Installation NF C 15-100', 'value_en': 'NF C 15-100 wiring'},
+            {'label_fr': 'Sol principal', 'label_en': 'Main floor', 'value_fr': 'Revêtement SPC', 'value_en': 'SPC flooring'},
+            {'label_fr': 'Isolation', 'label_en': 'Insulation', 'value_fr': 'Panneaux isolants PIR', 'value_en': 'PIR insulation panels'},
+            {'label_fr': 'Électricité', 'label_en': 'Electrical', 'value_fr': 'Installation NF C 15-100', 'value_en': 'NF C 15-100 wiring'},
         ],
         'equipements_fr': [
             'Structure aluminium triangulée', 'Vitrage double sécurit',
@@ -231,11 +232,13 @@ GAMMES_DATA = [
         'usages': ['Logement', 'Bureau', 'Résidence secondaire', 'Location & Airbnb'],
     },
     {
+        # --- GAMME MODULAIRE ---
+        # SOURCE : Gamme extensions RE2020 combinables
         'slug': 'modulaire',
         'status': GAMME_STATUS_DISPONIBLE,
         'icon': 'fa-puzzle-piece',
         'name': 'Modulaire',
-        'gender': 'm',  # un modulaire
+        'gender': 'm',
         'indicative': True,
         'tagline_fr': 'Système extensible · modules combinables à volonté',
         'tagline_en': 'Extensible system · modules combinable as needed',
@@ -258,30 +261,20 @@ GAMMES_DATA = [
             'desc_fr': 'Plain-pied ou superposé selon votre terrain', 'desc_en': 'Single-storey or stacked, depending on your plot'},
         ],
         'formats': [
-            {'name': 'Module simple', 'surface_fr': '16-20 m²', 'surface_en': '16-20 sqm',
-            'note_fr': '1 module · jusqu\'à 2 pers.', 'note_en': '1 module · up to 2 people'},
-            {'name': 'Module double', 'surface_fr': '30-38 m²', 'surface_en': '30-38 sqm',
-            'note_fr': '2 modules assemblés · jusqu\'à 4 pers.', 'note_en': '2 modules combined · up to 4 people'},
-            {'name': 'Module triple', 'surface_fr': '45-57 m²', 'surface_en': '45-57 sqm',
-            'note_fr': '3 modules assemblés · 4 à 6 pers.', 'note_en': '3 modules combined · 4 to 6 people'},
+            {'name': 'Module simple', 'surface_fr': '16-20 m²', 'surface_en': '16-20 sqm', 'note_fr': '1 module · jusqu\'à 2 pers.', 'note_en': '1 module · up to 2 people'},
+            {'name': 'Module double', 'surface_fr': '30-38 m²', 'surface_en': '30-38 sqm', 'note_fr': '2 modules assemblés · jusqu\'à 4 pers.', 'note_en': '2 modules combined · up to 4 people'},
+            {'name': 'Module triple', 'surface_fr': '45-57 m²', 'surface_en': '45-57 sqm', 'note_fr': '3 modules assemblés · 4 à 6 pers.', 'note_en': '3 modules combined · 4 to 6 people'},
         ],
         'specs_ext': [
-            {'label_fr': 'Structure', 'label_en': 'Structure',
-            'value_fr': 'Ossature bois ou acier au choix', 'value_en': 'Timber or steel frame, your choice'},
-            {'label_fr': 'Vitrage', 'label_en': 'Glazing',
-            'value_fr': 'Double vitrage NF EN 1279', 'value_en': 'Double glazing NF EN 1279'},
-            {'label_fr': 'Isolation thermique', 'label_en': 'Thermal insulation',
-            'value_fr': 'Conforme RE2020', 'value_en': 'RE2020 compliant'},
-            {'label_fr': 'Fondations', 'label_en': 'Foundations',
-            'value_fr': 'Plots réglables ou pieux métalliques', 'value_en': 'Adjustable pads or metal piles'},
+            {'label_fr': 'Structure', 'label_en': 'Structure', 'value_fr': 'Ossature bois ou acier au choix', 'value_en': 'Timber or steel frame, your choice'},
+            {'label_fr': 'Vitrage', 'label_en': 'Glazing', 'value_fr': 'Double vitrage NF EN 1279', 'value_en': 'Double glazing NF EN 1279'},
+            {'label_fr': 'Isolation thermique', 'label_en': 'Thermal insulation', 'value_fr': 'Conforme RE2020', 'value_en': 'RE2020 compliant'},
+            {'label_fr': 'Fondations', 'label_en': 'Foundations', 'value_fr': 'Plots réglables ou pieux métalliques', 'value_en': 'Adjustable pads or metal piles'},
         ],
         'specs_int': [
-            {'label_fr': 'Sol principal', 'label_en': 'Main floor',
-            'value_fr': 'Revêtement SPC', 'value_en': 'SPC flooring'},
-            {'label_fr': 'Électricité', 'label_en': 'Electrical',
-            'value_fr': 'Installation NF C 15-100', 'value_en': 'NF C 15-100 wiring'},
-            {'label_fr': 'Chauffage', 'label_en': 'Heating',
-            'value_fr': 'Pompe à chaleur (option)', 'value_en': 'Heat pump (option)'},
+            {'label_fr': 'Sol principal', 'label_en': 'Main floor', 'value_fr': 'Revêtement SPC', 'value_en': 'SPC flooring'},
+            {'label_fr': 'Électricité', 'label_en': 'Electrical', 'value_fr': 'Installation NF C 15-100', 'value_en': 'NF C 15-100 wiring'},
+            {'label_fr': 'Chauffage', 'label_en': 'Heating', 'value_fr': 'Pompe à chaleur (option)', 'value_en': 'Heat pump (option)'},
         ],
         'equipements_fr': [
             'Ossature isolée conforme RE2020', 'Vitrage double isolant',
@@ -298,11 +291,13 @@ GAMMES_DATA = [
         'usages': ['Logement', 'Bureau', 'Résidence secondaire', 'Location & Airbnb'],
     },
     {
+        # --- GAMME PLIABLE ---
+        # SOURCE : Gamme transportable repliable (Note interne : validation Marini requise)
         'slug': 'pliable',
-        'status': GAMME_STATUS_DISPONIBLE,  # à confirmer avec Marini avant de passer à disponible
+        'status': GAMME_STATUS_DISPONIBLE,
         'icon': 'fa-inbox',
         'name': 'Pliable',
-        'gender': 'm',  # un pliable
+        'gender': 'm',
         'indicative': True,
         'tagline_fr': '3 tailles disponibles · 14 à 38 m²',
         'tagline_en': '3 sizes available · 14 to 38 sqm',
@@ -325,30 +320,20 @@ GAMMES_DATA = [
             'desc_fr': 'Livré replié, encombrement réduit sur route', 'desc_en': 'Delivered folded, reduced footprint on the road'},
         ],
         'formats': [
-            {'name': 'Compact', 'surface_fr': '14-18 m²', 'surface_en': '14-18 sqm',
-            'note_fr': 'Jusqu\'à 2 pers.', 'note_en': 'Up to 2 people'},
-            {'name': 'Confort', 'surface_fr': '25-29 m²', 'surface_en': '25-29 sqm',
-            'note_fr': 'Jusqu\'à 4 pers.', 'note_en': 'Up to 4 people'},
-            {'name': 'Panoramique', 'surface_fr': '35-38 m²', 'surface_en': '35-38 sqm',
-            'note_fr': '4 à 6 pers.', 'note_en': '4 to 6 people'},
+            {'name': 'Compact', 'surface_fr': '14-18 m²', 'surface_en': '14-18 sqm', 'note_fr': 'Jusqu\'à 2 pers.', 'note_en': 'Up to 2 people'},
+            {'name': 'Confort', 'surface_fr': '25-29 m²', 'surface_en': '25-29 sqm', 'note_fr': 'Jusqu\'à 4 pers.', 'note_en': 'Up to 4 people'},
+            {'name': 'Panoramique', 'surface_fr': '35-38 m²', 'surface_en': '35-38 sqm', 'note_fr': '4 à 6 pers.', 'note_en': '4 to 6 people'},
         ],
         'specs_ext': [
-            {'label_fr': 'Structure', 'label_en': 'Structure',
-            'value_fr': 'Cadre acier galvanisé pliable', 'value_en': 'Foldable galvanised steel frame'},
-            {'label_fr': 'Façade', 'label_en': 'Facade',
-            'value_fr': 'Panneaux sandwich isolants', 'value_en': 'Insulated sandwich panels'},
-            {'label_fr': 'Vitrage', 'label_en': 'Glazing',
-            'value_fr': 'Double vitrage NF EN 1279', 'value_en': 'Double glazing NF EN 1279'},
-            {'label_fr': 'Isolation thermique', 'label_en': 'Thermal insulation',
-            'value_fr': 'Conforme RE2020', 'value_en': 'RE2020 compliant'},
+            {'label_fr': 'Structure', 'label_en': 'Structure', 'value_fr': 'Cadre acier galvanisé pliable', 'value_en': 'Foldable galvanised steel frame'},
+            {'label_fr': 'Façade', 'label_en': 'Facade', 'value_fr': 'Panneaux sandwich isolants', 'value_en': 'Insulated sandwich panels'},
+            {'label_fr': 'Vitrage', 'label_en': 'Glazing', 'value_fr': 'Double vitrage NF EN 1279', 'value_en': 'Double glazing NF EN 1279'},
+            {'label_fr': 'Isolation thermique', 'label_en': 'Thermal insulation', 'value_fr': 'Conforme RE2020', 'value_en': 'RE2020 compliant'},
         ],
         'specs_int': [
-            {'label_fr': 'Sol principal', 'label_en': 'Main floor',
-            'value_fr': 'Revêtement SPC', 'value_en': 'SPC flooring'},
-            {'label_fr': 'Électricité', 'label_en': 'Electrical',
-            'value_fr': 'Installation NF C 15-100', 'value_en': 'NF C 15-100 wiring'},
-            {'label_fr': 'Ventilation', 'label_en': 'Ventilation',
-            'value_fr': 'VMC anti-condensation', 'value_en': 'Anti-condensation ventilation'},
+            {'label_fr': 'Sol principal', 'label_en': 'Main floor', 'value_fr': 'Revêtement SPC', 'value_en': 'SPC flooring'},
+            {'label_fr': 'Électricité', 'label_en': 'Electrical', 'value_fr': 'Installation NF C 15-100', 'value_en': 'NF C 15-100 wiring'},
+            {'label_fr': 'Ventilation', 'label_en': 'Ventilation', 'value_fr': 'VMC anti-condensation', 'value_en': 'Anti-condensation ventilation'},
         ],
         'equipements_fr': [
             'Cadre acier galvanisé renforcé', 'Panneaux sandwich résistants aux intempéries',
@@ -366,6 +351,12 @@ GAMMES_DATA = [
     },
 ]
 
+
+# -----------------------------------------------------------------------------
+# ARBORESCENCE DU FORMULAIRE DE DEVIS SUR MESURE (`DEVIS_SUR_MESURE_DATA`)
+# -----------------------------------------------------------------------------
+# SOURCE : Tunnel de qualification CRM / Génération automatique de crm.lead
+# Les clés / valeurs sont mappées sur les champs personnalisés Odoo (x_studio_*)
 DEVIS_SUR_MESURE_DATA = {
     'slug': 'sur-mesure',
     'title_fr': 'Demande de devis personnalisé',
@@ -373,6 +364,7 @@ DEVIS_SUR_MESURE_DATA = {
     'subtitle_fr': 'Concevez votre capsule-house ou cabine selon vos contraintes et besoins spécifiques.',
     'subtitle_en': 'Design your capsule house or cabin according to your specific constraints and needs.',
     
+    # SOURCE : Étape 1 du formulaire web — Sélection du modèle de base
     'step_gammes': [
         {'slug': 'capsule', 'name_fr': 'Gamme Capsule', 'name_en': 'Capsule Range'},
         {'slug': 'cabine', 'name_fr': 'Gamme Cabine', 'name_en': 'Cabin Range'},
@@ -382,6 +374,7 @@ DEVIS_SUR_MESURE_DATA = {
         {'slug': 'autre', 'name_fr': 'Projet spécial / Inconnu', 'name_en': 'Special project / Unknown'},
     ],
     
+    # SOURCE : Étape 2 — Faisabilité logistique & BTP
     'terrain_specs': [
         {
             'id': 'acces_camion',
@@ -406,6 +399,7 @@ DEVIS_SUR_MESURE_DATA = {
         }
     ],
 
+    # SOURCE : Étape 3 — Matrice des options techniques (Catalogues d'options)
     'options_techniques': [
         {
             'category_fr': 'Autonomie & Énergie',
@@ -429,6 +423,7 @@ DEVIS_SUR_MESURE_DATA = {
         }
     ],
 
+    # SOURCE : Étape 4 — Segmentation marketing de la demande
     'usages_projet': [
         {'value': 'principal', 'label_fr': 'Résidence principale / Studio de jardin', 'label_en': 'Main residence / Garden studio'},
         {'value': 'pro', 'label_fr': 'Bureau / Espace professionnel', 'label_en': 'Office / Professional space'},
@@ -437,6 +432,11 @@ DEVIS_SUR_MESURE_DATA = {
     ]
 }
 
+
+# -----------------------------------------------------------------------------
+# ARGUMENTAIRES D'USAGE (`USAGES_DATA`)
+# -----------------------------------------------------------------------------
+# SOURCE : Contenu éditorial pour la section "Cas d'usage" de la page d'accueil / nos-gammes
 USAGES_DATA = [
     {
         'slug': 'logement',
