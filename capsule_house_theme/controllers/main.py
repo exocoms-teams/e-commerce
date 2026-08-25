@@ -7,8 +7,7 @@ from odoo.http import request
 from odoo.addons.website.controllers.main import Website
 
 
-from ..data_definition.devis import DEVIS_SUR_MESURE_DATA
-from ..data_definition.__init__ import GAMMES_DATA, USAGES_DATA
+from ..data_definition.__init__ import GAMMES_DATA, USAGES_DATA, DEVIS_SUR_MESURE_DATA
     
 class CapsuleDevisController(http.Controller):
 
