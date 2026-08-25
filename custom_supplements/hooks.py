@@ -7,7 +7,8 @@ def demo_purge(env):
     _logger.warning("purging demo-data")
 
     non_supplements = env["product.template"].search([
-        ("is_supplement", "=", False),
+        # ("is_supplement", "=", False),
+        (True,"=",True)
     ])
     for product in non_supplements:
         _logger.info(" Product : %s | Supplement : %s",product.name, product.is_supplement)
