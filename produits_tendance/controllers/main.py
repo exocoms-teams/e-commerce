@@ -4,7 +4,6 @@ import os
 import re
 from odoo import http
 from odoo.http import request
-from odoo.addons.website.controllers.main import Website
 from ..collecte_scrapers.ebay_ingestor import run_ingestion_for_keyword
 from ..collecte_scrapers.meta_ingestor import run_meta_ingestion
 from .dashboard_api import TrendDashboardAPI
@@ -379,19 +378,10 @@ class TrendIngestController(http.Controller):
             headers=[('Content-Type', 'application/json')]
         )
     
-class TrendStaticPagesController(Website):
+class TrendStaticPagesController(http.Controller):
 
-    @http.route('/', type='http', auth="public", website=True, sitemap=True)
-    def index(self, **kw):
-        # Vérification Multi-site
-        current_website = request.website
-        if current_website and current_website.name == 'Winners':
-            # Si c'est Winners, on force l'affichage de notre Landing Page SaaS
-            return request.render('produits_tendance.winners_home_page', {})
-        
-        # Sinon, on laisse Odoo afficher la page d'accueil normale des autres sites
-        return super(TrendStaticPagesController, self).index(**kw)
-    
+    # --- PAGES LEGALES (Lien depuis le Footer) ---
+    # Route de la Home Page
     @http.route('/mentions-legales', type='http', auth='public', website=True)
     def mentions_legales(self, **kwargs):
         return request.render('produits_tendance.template_mentions_legales', {})

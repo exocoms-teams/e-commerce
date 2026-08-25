@@ -4,70 +4,84 @@
     <!-- ============================================================
          WIN-45 : Landing Page SaaS - route "/" (Autonome)
     ============================================================ -->
-    <template id="winners_home_page" name="Winners Landing Page">
-        <t t-call="website.layout">
-            <div id="wrap" class="winners-site-wrapper winners-home-wrapper bg-dark">
+    <!-- On hérite de la page d'accueil native au lieu d'utiliser t-call -->
+    <template id="winners_home_page" inherit_id="website.homepage" name="Winners Landing Page">
+        
+        <!-- 1. On masque le contenu de la page d'accueil par défaut si on est sur Winners -->
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="t-if">not website or website.name != 'Winners'</attribute>
+        </xpath>
+
+        <!-- 2. On insère VOTRE code juste après, intact. Aucun risque d'erreur $0 ! -->
+        <xpath expr="//div[@id='wrap']" position="after">
+            <t t-if="website and website.name == 'Winners'">
                 
-                <!-- SECTION HERO (Design SaaS Bleu Nuit) -->
-                <section class="winners-hero text-center text-white py-5 bg-dark">
-                    <div class="container-fluid mt-5 px-md-5" style="max-width: 1400px;">
-                        <h1 class="display-3 fw-bold mb-4">
-                            Découvrez les produits<br/>qui vont <span class="text-orange">exploser ↗</span>
-                        </h1>
-                        <p class="lead mb-5 mx-auto text-light" style="max-width: 600px; opacity: 0.85;">
-                            Accédez à vos données, suivez les tendances en temps réel et prenez des décisions gagnantes avant vos concurrents.
-                        </p>
-                        
-                        <!-- Boutons d'action conditionnels -->
-                        <div class="d-flex justify-content-center gap-3 mb-5">
-                            <t t-if="request.env.user._is_public()">
-                                <a href="/web/signup" class="btn btn-orange btn-lg fw-bold px-4 rounded-pill shadow">Créer un compte</a>
-                                <a href="/web/login" class="btn btn-outline-light btn-lg fw-bold px-4 rounded-pill">Se connecter</a>
-                            </t>
-                            <t t-else="">
-                                <a href="/dashboard" class="btn btn-orange btn-lg fw-bold px-4 rounded-pill shadow">Accéder au Dashboard ↗</a>
-                            </t>
-                        </div>
+                <!-- DÉBUT DE VOTRE CODE EXACT ET INTACT -->
+                <div id="wrap" class="winners-site-wrapper winners-home-wrapper bg-dark">
+                    
+                    <!-- SECTION HERO (Design SaaS Bleu Nuit) -->
+                    <section class="winners-hero text-center text-white py-5 bg-dark">
+                        <div class="container-fluid mt-5 px-md-5" style="max-width: 1400px;">
+                            <h1 class="display-3 fw-bold mb-4">
+                                Découvrez les produits<br/>qui vont <span class="text-orange">exploser ↗</span>
+                            </h1>
+                            <p class="lead mb-5 mx-auto text-light" style="max-width: 600px; opacity: 0.85;">
+                                Accédez à vos données, suivez les tendances en temps réel et prenez des décisions gagnantes avant vos concurrents.
+                            </p>
+                            
+                            <!-- Boutons d'action conditionnels -->
+                            <div class="d-flex justify-content-center gap-3 mb-5">
+                                <t t-if="request.env.user._is_public()">
+                                    <a href="/web/signup" class="btn btn-orange btn-lg fw-bold px-4 rounded-pill shadow">Créer un compte</a>
+                                    <a href="/web/login" class="btn btn-outline-light btn-lg fw-bold px-4 rounded-pill">Se connecter</a>
+                                </t>
+                                <t t-else="">
+                                    <a href="/dashboard" class="btn btn-orange btn-lg fw-bold px-4 rounded-pill shadow">Accéder au Dashboard ↗</a>
+                                </t>
+                            </div>
 
-                        <!-- Vidéo de démonstration du Dashboard -->
-                        <div class="hero-mockup mx-auto position-relative">
-                            <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline" class="img-fluid rounded-4 shadow-lg w-100">
-                                <source src="/produits_tendance/static/src/img/dashboard_demo.mp4" type="video/mp4"/>
-                                Votre navigateur ne supporte pas la lecture de vidéos.
-                            </video>
+                            <!-- Vidéo de démonstration du Dashboard -->
+                            <div class="hero-mockup mx-auto position-relative">
+                                <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline" class="img-fluid rounded-4 shadow-lg w-100">
+                                    <source src="/produits_tendance/static/src/img/dashboard_demo.mp4" type="video/mp4"/>
+                                    Votre navigateur ne supporte pas la lecture de vidéos.
+                                </video>
+                            </div>
                         </div>
+                    </section>
+
+                    <!-- SECTION INTÉGRATIONS (Logos) -->
+                    <section class="winners-integrations py-5 bg-white text-center">
+                        <div class="container pt-4">
+                            <p class="text-muted fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">Connecté à vos plateformes préférées</p>
+                            <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 gap-md-5 opacity-75">
+                                <img src="/produits_tendance/static/src/img/shopify.png" height="30" alt="Shopify"/>
+                                <img src="/produits_tendance/static/src/img/woo.png" height="30" alt="WooCommerce"/>
+                                <img src="/produits_tendance/static/src/img/amazon.png" height="30" alt="Amazon"/>
+                                <img src="/produits_tendance/static/src/img/tiktok.png" height="30" alt="TikTok"/>
+                                <img src="/produits_tendance/static/src/img/meta.png" height="30" alt="Facebook"/>
+                                <img src="/produits_tendance/static/src/img/ebay.png" height="30" alt="eBay"/>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- WIN-103 : "Comment ça marche" - 3 étapes -->
+                    <div class="bg-light">
+                        <t t-call="produits_tendance.template_how_it_works"/>
                     </div>
-                </section>
 
-                <!-- SECTION INTÉGRATIONS (Logos) -->
-                <section class="winners-integrations py-5 bg-white text-center">
-                    <div class="container pt-4">
-                        <p class="text-muted fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">Connecté à vos plateformes préférées</p>
-                        <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 gap-md-5 opacity-75">
-                            <img src="/produits_tendance/static/src/img/shopify.png" height="30" alt="Shopify"/>
-                            <img src="/produits_tendance/static/src/img/woo.png" height="30" alt="WooCommerce"/>
-                            <img src="/produits_tendance/static/src/img/amazon.png" height="30" alt="Amazon"/>
-                            <img src="/produits_tendance/static/src/img/tiktok.png" height="30" alt="TikTok"/>
-                            <img src="/produits_tendance/static/src/img/meta.png" height="30" alt="Facebook"/>
-                            <img src="/produits_tendance/static/src/img/ebay.png" height="30" alt="eBay"/>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- WIN-103 : "Comment ça marche" - 3 étapes -->
-                <div class="bg-light">
-                    <t t-call="produits_tendance.template_how_it_works"/>
                 </div>
+                <!-- FIN DE VOTRE CODE -->
 
-            </div>
-        </t>
+            </t>
+        </xpath>
     </template>
 
     <!-- ============================================================
          NOUVEAU HEADER GLOBAL (Design SaaS) - Protégé Multi-site
     ============================================================ -->
     <template id="header_winners" inherit_id="website.layout" name="Header Winners">
-        <!-- On utilise position="before" pour ne PAS casser le XML de My Website 2 -->
+        <!-- VOTRE HEADER EST PARFAIT. On utilise la méthode CSS pour cacher. -->
         <xpath expr="//header" position="before">
             <t t-if="website and website.name == 'Winners'">
                 
@@ -139,6 +153,7 @@
          NOUVEAU FOOTER GLOBAL - Protégé Multi-site
     ============================================================ -->
     <template id="footer_winners" inherit_id="website.layout" name="Footer Winners">
+        <!-- VOTRE FOOTER EST PARFAIT AUSSI -->
         <xpath expr="//main" position="after">
             <t t-if="website and website.name == 'Winners'">
                 <footer class="o_winners_footer winners-site-wrapper">
