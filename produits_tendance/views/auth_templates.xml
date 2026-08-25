@@ -201,7 +201,7 @@
 
     </template>
 
-    <!-- 1. Formulaire Inscription principal : Nom + Email + Bouton -->
+    <!-- Page Inscription (/web/signup) — titre, icônes, texte du bouton -->
     <template id="auth_signup_signup_winners_content" inherit_id="auth_signup.signup" name="Winners - Contenu page Inscription">
 
         <xpath expr="//form[hasclass('oe_signup_form')]" position="before">
@@ -212,7 +212,6 @@
             </div>
         </xpath>
 
-        <!-- Champ Nom -->
         <xpath expr="//div[hasclass('field-name')]" position="attributes">
             <attribute name="class" add="o_winners_field_icon" separator=" "/>
         </xpath>
@@ -220,7 +219,6 @@
             <i class="fa fa-user-o o_winners_field_icon_glyph" role="presentation"/>
         </xpath>
 
-        <!-- Champ Email / Login -->
         <xpath expr="//div[hasclass('field-login')]" position="attributes">
             <attribute name="class" add="o_winners_field_icon" separator=" "/>
         </xpath>
@@ -228,32 +226,10 @@
             <i class="fa fa-envelope-o o_winners_field_icon_glyph" role="presentation"/>
         </xpath>
 
-        <!-- Bouton Soumission -->
         <xpath expr="//div[hasclass('oe_login_buttons')]/button[@type='submit']" position="replace">
-            <button type="submit" class="btn btn-primary mb-1 w-100">
+            <button type="submit" class="btn btn-primary mb-1">
                 Créer un compte <i class="fa fa-arrow-right ms-1" role="presentation"/>
             </button>
-        </xpath>
-
-    </template>
-
-    <!-- 2. Champs Mot de passe (Héritent de auth_signup.fields) -->
-    <template id="auth_signup_fields_winners" inherit_id="auth_signup.fields" name="Winners - Champs mot de passe">
-
-        <!-- Champ Mot de passe -->
-        <xpath expr="//div[hasclass('field-password')]" position="attributes">
-            <attribute name="class" add="o_winners_field_icon" separator=" "/>
-        </xpath>
-        <xpath expr="//div[hasclass('field-password')]//input[@name='password']" position="before">
-            <i class="fa fa-lock o_winners_field_icon_glyph" role="presentation"/>
-        </xpath>
-
-         <!-- Champ Confirmation Mot de passe -->
-        <xpath expr="//div[hasclass('field-confirm_password')]" position="attributes">
-            <attribute name="class" add="o_winners_field_icon" separator=" "/>
-        </xpath>
-        <xpath expr="//div[hasclass('field-confirm_password')]//input[@name='confirm_password']" position="before">
-            <i class="fa fa-lock o_winners_field_icon_glyph" role="presentation"/>
         </xpath>
 
     </template>

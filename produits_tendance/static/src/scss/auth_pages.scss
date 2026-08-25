@@ -128,20 +128,27 @@ main:has(.oe_website_login_container) {
 }
 
 .o_winners_auth_feature_icon {
-    flex: 0 0 36px;
+    flex: 0 0 auto;
     width: 36px;
     height: 36px;
     border-radius: $o-winners-radius;
-    background: rgba(255, 255, 255, 0.1);
-    display: flex ;
-    align-items: center ;
-    justify-content: center ;
+    background: rgba($o-winners-white, 0.1);
+    
+    // 1. Flexbox centering
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: $o-winners-accent;
 
-    i {
-        font-size: 1.1rem;
-        line-height: 1 ;
-        margin: 0 ;
+    // 2. Override default font icon behavior
+    i, span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        line-height: 1 ; // Stops font line-height from pushing the icon down/right
+        font-size: 1rem;            // Adjust size of the icon here
     }
 }
 
@@ -155,31 +162,38 @@ main:has(.oe_website_login_container) {
 .o_winners_auth_partners_logos {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: $o-winners-spacing-unit; // or ~12px
     align-items: center;
 }
 
 .o_winners_auth_partner_logo {
-    width: 48px;
-    height: 48px;
+    // 1. Square container styling
+    width: 52px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.12); // Plus contrasté pour être bien visible
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 10px;
-    padding: 8px;
-    transition: background 0.2s ease;
+    
+    // 2. Dark glassmorphism card style
+    background: rgba(255, 255, 255, 0.08); // Semi-transparent white
+    border: 1px solid rgba(255, 255, 255, 0.15); // Subtle white border
+    border-radius: 10px; // Rounded corners (or use $o-winners-radius)
+    padding: 8px; // Inner spacing for the icon
+    
+    // Smooth transition for hover effects
+    transition: background 0.2s ease, border-color 0.2s ease;
 
     &:hover {
-        background: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
     }
 
+    // 3. Ensure the icon fills the square nicely
     img, svg {
         width: 100%;
         height: 100%;
-        max-width: 28px;
-        max-height: 28px;
+        max-width: 32px;  // Gives icons a solid, readable size
+        max-height: 32px;
         object-fit: contain;
     }
 }
@@ -242,27 +256,33 @@ main:has(.oe_website_login_container) {
 // -----------------------------------------------------------
 .o_winners_field_icon {
     position: relative;
-    display: block;
 
-    // 1. Décalage du texte (placeholder + saisie) pour éviter le chevauchement
-    .form-control,
-    input.form-control {
-        padding-left: 42px ; // Décale le texte vers la droite
-        height: 48px;                  // Ajuste selon ta hauteur souhaitée
+    .form-control {
+        padding-left: 42px;
     }
 
-    // 2. Positionnement parfait de l'icône à l'intérieur de l'input
     .o_winners_field_icon_glyph {
         position: absolute;
         left: 14px;
-        bottom: 14px; // Anchors icon to the center of the 48px input
-        top: auto;
-        transform: none;
-        z-index: 5;
-        pointer-events: none;
+        top: 50%;
+        transform: translateY(-50%);
         color: $o-winners-text-muted;
-        font-size: 1rem;
-        line-height: 1;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    // Cas "field-login" / "field-name" : label au-dessus de l'input,
+    // dans le même conteneur → l'icône se cale sous le label (valeur
+    // approximative, à ajuster visuellement selon le rendu réel).
+    &:not(.input-group) .o_winners_field_icon_glyph {
+        bottom: 22px;
+    }
+
+    // Cas "input-group" (champ mot de passe) : pas de label à
+    // l'intérieur, l'icône se centre verticalement sur l'input.
+    &.input-group .o_winners_field_icon_glyph {
+        top: 50%;
+        transform: translateY(-50%);
     }
 }
 
