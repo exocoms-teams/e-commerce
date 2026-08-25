@@ -92,7 +92,7 @@ class MatelasVente(http.Controller):
 
         request.env['matelas.avis'].sudo().create({
             'name': name,
-            'profession': profession or '',
+            'profession': profession.strip() if profession else '',
             'note': note,
             'titre': titre or '',
             'commentaire': commentaire,

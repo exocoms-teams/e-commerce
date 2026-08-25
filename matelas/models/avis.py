@@ -11,7 +11,7 @@ class MatelasAvis(models.Model):
     _order = 'create_date desc'
 
     name = fields.Char(string="Nom / Pseudonyme", required=True)
-    profession = fields.Char()
+    profession = fields.Char(string="Profession")
     note = fields.Integer(string="Note (sur 5)", required=True)
     titre = fields.Char(string="Titre / Produit")
     commentaire = fields.Text(required=True)
