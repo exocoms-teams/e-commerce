@@ -57,19 +57,24 @@ class ProductTemplate(models.Model):
 
 
     def _archive_demo_products(self):
+        config = self.env["ir.config_parameter"].sudo()
+
+        if config.get_param("custom_supplements.demo_products_cleaned"):
+            return
+
         products = self.search([
             ("is_supplement", "=", False),
             ("is_published", "=", True),
         ])
 
         _logger.info(
-            "Nettoyage des produits de démonstration : %s produits trouvés",
+            "Nettoyage des produits de démonstration : %s produits",
             len(products),
         )
 
         for product in products:
             _logger.info(
-                "Archivage du produit : [%s] %s",
+                "Archivage : [%s] %s",
                 product.id,
                 product.name,
             )
@@ -79,11 +84,9 @@ class ProductTemplate(models.Model):
             "is_published": False,
         })
 
-        cron = self.env.ref(
-            "custom_supplements.ir_cron_archive_demo_products",
-            raise_if_not_found=False,
+        config.set_param(
+            "custom_supplements.demo_products_cleaned",
+            "1",
         )
 
-        if cron:
-            cron.active = False
-            _logger.info("Cron de nettoyage désactivé.")
+        _logger.info("Nettoyage des produits de démonstration terminé.")
