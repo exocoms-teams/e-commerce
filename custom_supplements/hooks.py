@@ -9,9 +9,10 @@ def demo_purge(env):
     non_supplements = env["product.template"].search([
         ("is_supplement", "=", False),
     ])
-    _logger.info("%s",non_supplements)
-
-    non_supplements.write({
-        "is_published": False,
-        "active":False
-    })
+    for product in non_supplements:
+        _logger.info(" unlisting %s",product.name)
+        product.write({
+            "is_published": False,
+            "active":False
+        })
+        
