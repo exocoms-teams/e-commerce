@@ -7,6 +7,45 @@ from odoo.http import request
 from odoo.addons.website.controllers.main import Website
 
 
+from ..data_definition.__init__ import GAMMES_DATA, USAGES_DATA, DEVIS_SUR_MESURE_DATA
+    
+class CapsuleDevisController(http.Controller):
+
+    @http.route(['/devis-sur-mesure'], type='http', auth="public", website=True)
+    def devis_sur_mesure(self, **kwargs):
+        values = {
+            'devis_data': DEVIS_SUR_MESURE_DATA,
+            'gammes': GAMMES_DATA,
+        }
+        return request.render("capsule_house_theme.devis_sur_mesure_page", values)
+
+    @http.route(['/devis-sur-mesure/submit'], type='http', auth="public", methods=['POST'], website=True, csrf=True)
+    def devis_submit(self, **post):
+        # Création automatique de la piste (Lead) dans le CRM d'Odoo
+        request.env['crm.lead'].sudo().create({
+            'name': f"Demande Devis Pod : {post.get('gamme', 'Inconnue')} - {post.get('contact_name')}",
+            'contact_name': post.get('contact_name'),
+            'email_from': post.get('email'),
+            'phone': post.get('phone'),
+            'description': f"""
+            Gamme choisie: {post.get('gamme')}
+            Usage: {post.get('usage')}
+            Acces terrain: {post.get('acces_camion')}
+            Fondations: {post.get('fondations')}
+            Options choisies: {post.getlist('options')}
+            Message: {post.get('message')}
+            """,
+        })
+        return request.render("capsule_house_theme.devis_merci")
+
+class CapsuleDevis(http.Controller):
+
+    @http.route(['/devis-sur-mesure'], type='http', auth="public", website=True)
+    def page_devis(self, **kw):
+        return request.render("capsule_house_theme.devis_sur_mesure_page", {
+            'devis_data': DEVIS_SUR_MESURE_DATA,
+        })
+
 class CapsuleHouseWebsite(Website):
     """Contrôleurs frontend du site Capsule House.
 
@@ -152,7 +191,6 @@ class CapsuleHouseWebsite(Website):
         # section "gammes" de l'accueil (19.0.1.0.72, voir
         # home_gammes.xml — demande client : "même nos gamme doit
         # apparaître sur accueil").
-        from odoo.addons.capsule_house_theme import USAGES_DATA, GAMMES_DATA
 
         return request.render('capsule_house_theme.page_home', {
             'featured_products': self._serialize_products(featured_products),
@@ -350,7 +388,7 @@ class CapsuleHouseWebsite(Website):
         contexte. 404 natif si le slug ne correspond à aucune entrée de
         GAMMES_DATA (jamais de page fabriquée pour un slug inconnu).
         """
-        from odoo.addons.capsule_house_theme import GAMMES_DATA
+        
         gamme = next((g for g in GAMMES_DATA if g['slug'] == slug), None)
         if not gamme:
             return request.not_found()
