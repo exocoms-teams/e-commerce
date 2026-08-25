@@ -63,22 +63,49 @@ class ProductTemplate(models.Model):
             return
 
         xmlids = [
-            # "stock_barcode.product_cable_management_box_2_product_template",  # Cable Management Box
-            # "stock_barcode.product_custom_cabinet_metric_product_template",  # Customized Cabinet (Metric)
-            # "stock_barcode.product_custom_cabinet_usa_product_template",  # Customized Cabinet (USA)
-            # # "sale.advance_product_0_product_template",  # Deposit
-            # "product.desk_pad_product_template",  # Desk Pad
-            # "product.product_product_20_product_template",  # Flipover
-            # "product.product_product_furniture_product_template",  # Furniture Assembly
-            # "product.expense_hotel_product_template",  # Hotel Accommodation
-            # "product.product_product_local_delivery_product_template",  # Local Delivery
-            # "product.monitor_stand_product_template",  # Monitor Stand
-            # "product.product_template_dining_table",  # Outdoor dining table
-            # "product.expense_product_product_template",  # Restaurant Expenses
-            # # "delivery.product_product_delivery_product_template",  # Standard delivery
-            # # "delivery.product_product_delivery_poste_product_template",  # The Poste
-            # "product.product_product_2_product_template",  # Virtual Home Staging
-            # "product.product_product_1_product_template",  # Virtual Interior Design
+            "product.product_template_acoustic_bloc_screens",  # Acoustic Bloc Screens
+            "product.product_product_10_product_template",  # Cabinet with Doors
+            "stock_barcode.product_cable_management_box_2_product_template",  # Cable Management Box
+            "stock.product_cable_management_box_product_template",  # Cable Management Box
+            "sale.product_product_1_product_template",  # Chair floor protection
+            "product.product_product_11_product_template",  # Conference Chair
+            "product.product_product_13_product_template",  # Corner Desk Left Sit
+            "product.product_product_5_product_template",  # Corner Desk Right Sit
+            "product.product_product_4_product_template",  # Customizable Desk
+            "stock_barcode.product_custom_cabinet_metric_product_template",  # Customized Cabinet (Metric)
+            "stock_barcode.product_custom_cabinet_usa_product_template",  # Customized Cabinet (USA)
+            # "sale.advance_product_0_product_template",  # Deposit
+            "product.product_product_3_product_template",  # Desk Combination
+            "product.desk_organizer_product_template",  # Desk Organizer
+            "product.desk_pad_product_template",  # Desk Pad
+            "product.product_product_22_product_template",  # Desk Stand with Screen
+            "product.product_product_27_product_template",  # Drawer
+            "product.product_product_16_product_template",  # Drawer Black
+            "product.product_product_20_product_template",  # Flipover
+            "product.consu_delivery_03_product_template",  # Four Person Desk
+            "product.product_product_furniture_product_template",  # Furniture Assembly
+            "product.expense_hotel_product_template",  # Hotel Accommodation
+            "product.product_product_24_product_template",  # Individual Workplace
+            "product.product_product_6_product_template",  # Large Cabinet
+            "product.product_product_8_product_template",  # Large Desk
+            "product.consu_delivery_02_product_template",  # Large Meeting Table
+            "product.product_product_local_delivery_product_template",  # Local Delivery
+            "product.monitor_stand_product_template",  # Monitor Stand
+            "product.product_delivery_01_product_template",  # Office Chair
+            "product.product_product_12_product_template",  # Office Chair Black
+            "product.office_combo_product_template",  # Office Combo
+            "product.product_order_01_product_template",  # Office Design Software
+            "product.product_delivery_02_product_template",  # Office Lamp
+            "product.product_template_dining_table",  # Outdoor dining table
+            "product.product_product_9_product_template",  # Pedal Bin
+            "product.expense_product_product_template",  # Restaurant Expenses
+            # "delivery.product_product_delivery_product_template",  # Standard delivery
+            "product.product_product_7_product_template",  # Storage Box
+            # "delivery.product_product_delivery_poste_product_template",  # The Poste
+            "product.consu_delivery_01_product_template",  # Two-Seat Sofa
+            "product.product_product_2_product_template",  # Virtual Home Staging
+            "product.product_product_1_product_template",  # Virtual Interior Design
+            # "website_sale.product_product_1_product_template",  # Warranty
         ]
         products = self.search([
             ("is_supplement", "=", False)
