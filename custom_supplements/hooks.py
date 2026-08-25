@@ -3,9 +3,8 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-def demo_purge(cr):
+def demo_purge(env):
     _logger.warning("purging demo-data")
-    env = api.Environment(cr, SUPERUSER_ID, {})
 
     non_supplements = env["product.template"].search([
         ("is_supplement", "=", False),
