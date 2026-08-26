@@ -56,12 +56,19 @@ class ProductTemplate(models.Model):
             self.is_storable = True
 
 
-    def _archive_demo_products(self):
+    def _purge_demo(self):
         config = self.env["ir.config_parameter"].sudo()
 
-        if config.get_param("custom_supplements.demo_products_cleaned"):
+        if config.get_param("custom_supplements.demo_purged"):
             return
+        self._archive_demo_products()
+        self._archive_demo_category()
+        config.set_param(
+            "custom_supplements.demo_purged",
+            "1",
+        )
 
+    def _archive_demo_products(self):
         xmlids = [
             "product.product_template_acoustic_bloc_screens",  # Acoustic Bloc Screens
             "product.product_product_10_product_template",  # Cabinet with Doors
@@ -133,9 +140,74 @@ class ProductTemplate(models.Model):
             "is_published": False,
         })
 
-        config.set_param(
-            "custom_supplements.demo_products_cleaned",
-            "1",
-        )
-
         _logger.info("Nettoyage des produits de démonstration terminé.")
+
+    def _archive_demo_category(self):
+        xmlids =[
+                "website_sale.public_category_desks",  # Desks
+                "website_sale.public_category_desks_components",  # Components
+                "website_sale.public_category_desks_office",  # Office Desks
+                "website_sale.public_category_furnitures_chairs",  # Chairs
+                "website_sale.public_category_desks_gaming",  # Gaming Desks
+                "website_sale.public_category_furnitures_couches",  # Couches
+                "website_sale.public_category_desks_glass",  # Glass Desks
+                "website_sale.public_category_desks_standing",  # Standing Desks
+                "website_sale.public_category_desks_foldable",  # Foldable Desks
+                "website_sale.public_category_furnitures",  # Furnitures
+                "website_sale.public_category_furnitures_sofas",  # Sofas
+                "website_sale.public_category_furnitures_recliners",  # Recliners
+                "website_sale.public_category_furnitures_beds",  # Beds
+                "website_sale.public_category_furnitures_wardrobes",  # Wardrobes
+                "website_sale.public_category_boxes",  # Boxes
+                "website_sale.public_category_boxes_vintage",  # Vintage Boxes
+                "website_sale.public_category_boxes_rustic",  # Rustic Boxes
+                "website_sale.public_category_boxes_luxury",  # Luxury Boxes
+                "website_sale.public_category_boxes_stackable",  # Stackable Boxes
+                "website_sale.public_category_boxes_collapsible",  # Collapsible Boxes
+                "website_sale.public_category_drawers",  # Drawers
+                "website_sale.public_category_drawers_nightstand",  # Nightstand Drawers
+                "website_sale.public_category_drawers_underbed",  # Under-bed Drawers
+                "website_sale.public_category_drawers_file",  # File Drawers
+                "website_sale.public_category_drawers_kitchen",  # Kitchen Drawer Units
+                "website_sale.public_category_cabinets",  # Cabinets
+                "website_sale.public_category_cabinets_kitchen",  # Kitchen Cabinets
+                "website_sale.public_category_cabinets_bathroom",  # Bathroom Cabinets
+                "website_sale.public_category_cabinets_storage",  # Storage Cabinets
+                "website_sale.public_category_cabinets_medicine",  # Medicine Cabinets
+                "website_sale.public_category_bins",  # Bins
+                "website_sale.public_category_bins_laundry",  # Laundry Bins
+                "website_sale.public_category_bins_toy",  # Toy Bins
+                "website_sale.public_category_bins_storage",  # Food Storage Bins
+                "website_sale.public_category_lamps",  # Lamps
+                "website_sale.public_category_lamps_desk",  # Desk Lamps
+                "website_sale.public_category_lamps_ceiling",  # Ceiling Lamps
+                "website_sale.public_category_lamps_chandelier",  # Chandeliers
+                "website_sale.public_category_lamps_touch",  # Touch Lamps
+                "website_sale.public_category_services_design_and_planning",  # Design and Planning
+                # "website_sale.public_category_services",  # Services
+                # "website_sale.public_category_services_delivery_and_installation",  # Delivery and Installation
+                "website_sale.public_category_services_repair_and_maintenance",  # Repair and Maintenance
+                "website_sale.public_category_services_relocation_and_moving",  # Relocation and Moving
+                "website_sale.public_category_multimedia",  # Multimedia
+                "website_sale.public_category_multimedia_virtual_design",  # Virtual Design Tools
+                "website_sale.public_category_multimedia_augmented_reality",  # Augmented Reality Tools
+                "website_sale.public_category_multimedia_education",  # Education Tools
+            ]
+        categories = self.env["product.public.category"].browse()
+
+        for xmlid in xmlids:
+            category = self.env.ref(xmlid, raise_if_not_found=False)
+
+            if category:
+                categories |= category
+                _logger.info(
+                    "Archivage : [%s] %s",
+                    category.id,
+                    category.name,
+                )
+
+        categories.write({
+            "active": False,
+        })  
+        
+        _logger.info("Nettoyage des catégories de démonstration terminé.")
