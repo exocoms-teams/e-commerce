@@ -31,6 +31,13 @@ body:has(.oe_website_login_container) #wrapwrap > header,
 body:has(.oe_website_login_container) #wrapwrap > footer {
     display: none;
 }
+.oe_website_login_container {
+    ~ header,
+    ~ footer {
+        display: none ;
+    }
+}
+
 
 // -----------------------------------------------------------
 // Grille 2 colonnes — le vrai conteneur flex est <main>, parent
@@ -38,7 +45,7 @@ body:has(.oe_website_login_container) #wrapwrap > footer {
 // (frères directs dans le DOM une fois website.login_layout
 // appliqué).
 // -----------------------------------------------------------
-main:has(.oe_website_login_container) {
+main {
     max-width: none;
     padding: 0;
     display: flex;
@@ -53,7 +60,7 @@ main:has(.oe_website_login_container) {
     @media (max-width: 991.98px) {
         min-height: auto;
         flex-direction: column;
-        padding: $o-winners-spacing-unit * 3 $o-winners-spacing-unit * 2;
+        padding: ($o-winners-spacing-unit * 3) ($o-winners-spacing-unit * 2);
     }
 }
 
