@@ -157,11 +157,13 @@ main:has(.oe_website_login_container) {
 // Logos partenaires : fond blanc systématique — certains logos
 // (TikTok blanc, Amazon sombre...) ne resteraient pas lisibles
 // directement sur le panneau navy sans ce contraste garanti.
-.o_winners_auth_partners_logos {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $o-winners-spacing-unit;
-    align-items: center;
+.o_winners_auth_partner_logo {
+    width: 48px ;
+    height: 48px ;
+    max-width: 48px ;
+    max-height: 48px ;
+    display: inline-block ;
+    object-fit: contain;
 }
 
 .o_winners_auth_partner_logo {
@@ -242,27 +244,24 @@ main:has(.oe_website_login_container) {
 // Icônes dans les champs (email / mot de passe / nom)
 // -----------------------------------------------------------
 .o_winners_field_icon {
-    position: relative;
-
-    .form-control {
-        padding-left: 38px;
-    }
+    position: relative ;
+    display: flex ;
+    align-items: center ;
 
     .o_winners_field_icon_glyph {
-        position: absolute;
-        left: 14px;
+        position: absolute ;
+        left: 14px ;
+        top: 50% ;
+        transform: translateY(-50%) ;
+        z-index: 5 ;
+        margin: 0 ;
+        line-height: 1 ;
         color: $o-winners-text-muted;
         pointer-events: none;
-        z-index: 2;
     }
 
-    &:not(.input-group) .o_winners_field_icon_glyph {
-        bottom: 22px;
-    }
-
-    &.input-group .o_winners_field_icon_glyph {
-        top: 50%;
-        transform: translateY(-50%);
+    input.form-control {
+        padding-left: 42px ;
     }
 }
 
