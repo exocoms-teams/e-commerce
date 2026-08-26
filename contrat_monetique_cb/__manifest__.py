@@ -17,6 +17,8 @@
             'contrat_monetique_cb/static/src/js/main.js',
         ],
     },
+    'post_init_hook': 'post_init_hook',
+    'uninstall_hook': 'uninstall_hook',
     'installable': True,
     'auto_install': False,
     'application': False,

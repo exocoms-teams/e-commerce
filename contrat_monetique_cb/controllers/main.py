@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 from odoo import http
 from odoo.http import request
+from odoo.addons.website.controllers.main import Website
 
 
-class ContratMonetique(http.Controller):
+class ContratMonetiqueCB(Website):
 
-    @http.route('/contrat-commercant-cb', type='http', auth='public', website=True, sitemap=True)
-    def contrat_monetique(self, **kw):
+    @http.route()
+    def index(self, **kw):
         return request.render('contrat_monetique_cb.page_contrat_monetique', {})
