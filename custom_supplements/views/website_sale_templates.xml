@@ -25,24 +25,22 @@
                         <div t-if="product.is_vegan" class="cs-vegan"><i class="fa fa-leaf" aria-hidden="true"/><span>100% vegan</span></div>
                         <div t-if="product.dosage"><i class="fa fa-eyedropper" aria-hidden="true"/><span t-esc="product.dosage"/></div>
                     </div>
-                    <hr/>
+                    <hr t-if="product.ingredients" />
                     <div t-if="product.ingredients" class="cs-ingredient-note">
                         <h3 class="h5">Ingrédients actifs</h3>
                         <p class="mb-0" t-esc="product.ingredients"/>
                     </div>
-                    <hr/>
+                    <hr t-if="product.allergen_ids" />
                     <div t-if="product.allergen_ids" class="cs-allergen-note">
                         <h3 class="h5">Allergènes</h3>
                         <ul>
                             <t t-foreach="product.allergen_ids" t-as="allergen">
-                            <li t-esc="allergen.name"/>
+                            <li t-esc="allergen.name" />
                         </t>
                         </ul>
                         
-                        <span t-esc="', '.join(product.allergen_ids.mapped('name'))"/>
                     </div>
-                    <hr t-if="product.allergen_ids"/>
-                    <hr/>
+                    <hr t-if="product.nutritional_info" />
                     <div t-if="product.nutritional_info" class="cs-nutrition-note">
                         <h3 class="h5">Valeurs nutritionnelles</h3>
                         <div t-out="product.nutritional_info"/>
