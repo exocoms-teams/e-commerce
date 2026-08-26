@@ -62,7 +62,7 @@ class ProductTemplate(models.Model):
         if config.get_param("custom_supplements.demo_purged"):
             return
         self._archive_demo_products()
-        self._archive_demo_category()
+        # self._archive_demo_category()
         config.set_param(
             "custom_supplements.demo_purged",
             "1",
