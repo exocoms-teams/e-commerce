@@ -9,15 +9,6 @@
    N'affecte QUE l'apparence : aucune règle ici ne cache, ne
    désactive ni ne contourne la validation ou la logique native
    des formulaires.
-
-   Conformité Charte Graphique Winners :
-   - Toutes les couleurs passent par _winners_variables.scss
-     (aucune couleur hex/rgb en dur).
-   - Composants partagés réutilisés : .o_winners_card,
-     .o_winners_btn_primary, .o_winners_btn_secondary
-     (section 5 du Design System) plutôt que des classes
-     custom ou des classes Bootstrap natives (.btn-primary).
-   - Nommage BEM : .o_winners_bloc__element / --modificateur.
    ============================================================ */
 
 // -----------------------------------------------------------
@@ -60,7 +51,7 @@ main:has(.oe_website_login_container) {
 }
 
 // -----------------------------------------------------------
-// BLOC : Panneau gauche (sombre)
+// Panneau gauche (sombre)
 // -----------------------------------------------------------
 .o_winners_auth_side {
     flex: 0 0 46%;
@@ -76,14 +67,10 @@ main:has(.oe_website_login_container) {
     }
 }
 
-// Élément BEM : .o_winners_auth_side__inner
-.o_winners_auth_side__inner {
+.o_winners_auth_side_inner {
     max-width: 460px;
 }
 
-// -----------------------------------------------------------
-// BLOC : Logo Winners (dans le panneau sombre)
-// -----------------------------------------------------------
 .o_winners_auth_logo {
     display: flex;
     align-items: center;
@@ -93,15 +80,11 @@ main:has(.oe_website_login_container) {
     font-weight: 700;
     font-size: 1.25rem;
 
-    // Élément : .o_winners_auth_logo__mark
-    .o_winners_auth_logo__mark {
+    .o_winners_auth_logo_mark {
         color: $o-winners-accent;
     }
 }
 
-// -----------------------------------------------------------
-// BLOC : Titre d'accroche
-// -----------------------------------------------------------
 .o_winners_auth_title {
     font-family: $o-winners-font-family;
     font-weight: 700;
@@ -109,22 +92,17 @@ main:has(.oe_website_login_container) {
     line-height: 1.25;
     margin-bottom: $o-winners-spacing-unit * 2;
 
-    // Élément : .o_winners_auth_title__accent
-    .o_winners_auth_title__accent {
+    .o_winners_auth_accent {
         color: $o-winners-accent;
     }
 }
 
 .o_winners_auth_subtitle {
-    // Texte secondaire sur fond sombre : variable dédiée de la charte
-    color: $o-winners-text-light-muted;
+    color: rgba($o-winners-white, 0.75);
     font-family: $o-winners-font-family;
     margin-bottom: $o-winners-spacing-unit * 5;
 }
 
-// -----------------------------------------------------------
-// BLOC : Liste des bénéfices (features)
-// -----------------------------------------------------------
 .o_winners_auth_features {
     margin: 0 0 ($o-winners-spacing-unit * 5) 0;
     padding: 0;
@@ -144,92 +122,89 @@ main:has(.oe_website_login_container) {
         span {
             display: block;
             font-size: 0.875rem;
-            color: $o-winners-text-light-muted;
+            color: rgba($o-winners-white, 0.7);
         }
     }
 }
 
-// Élément : .o_winners_auth_features__icon
-.o_winners_auth_features__icon {
+.o_winners_auth_feature_icon {
     flex: 0 0 auto;
     width: 36px;
     height: 36px;
     border-radius: $o-winners-radius;
     background: rgba($o-winners-white, 0.1);
-
-    // 1. Centrage flexbox
+    
+    // 1. Flexbox centering
     display: flex;
     align-items: center;
     justify-content: center;
     color: $o-winners-accent;
 
-    // 2. Neutralise le comportement par défaut des icônes fa-*
+    // 2. Override default font icon behavior
     i, span {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         margin: 0;
         padding: 0;
-        line-height: 1; // Empêche le line-height de décaler l'icône
-        font-size: 1rem;
+        line-height: 1 ; // Stops font line-height from pushing the icon down/right
+        font-size: 1rem;            // Adjust size of the icon here
     }
 }
 
-// -----------------------------------------------------------
-// BLOC : Logos partenaires / plateformes
-// -----------------------------------------------------------
-.o_winners_auth_partners__label {
+.o_winners_auth_partners_label {
     display: block;
     font-size: 0.8rem;
-    color: $o-winners-text-light-muted;
+    color: rgba($o-winners-white, 0.6);
     margin-bottom: $o-winners-spacing-unit;
 }
 
-.o_winners_auth_partners__logos {
+.o_winners_auth_partners_logos {
     display: flex;
     flex-wrap: wrap;
-    gap: $o-winners-spacing-unit;
+    gap: $o-winners-spacing-unit; // or ~12px
     align-items: center;
 }
 
-.o_winners_auth_partners__logo {
-    // 1. Carré conteneur
+.o_winners_auth_partner_logo {
+    // 1. Square container styling
     width: 52px;
     height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    // 2. Carte "glassmorphism" sur fond sombre — variables charte
-    background: rgba($o-winners-white, 0.08);
-    border: 1px solid $o-winners-border-dark;
-    border-radius: $o-winners-radius;
-    padding: 8px;
-
+    
+    // 2. Dark glassmorphism card style
+    background: rgba(255, 255, 255, 0.08); // Semi-transparent white
+    border: 1px solid rgba(255, 255, 255, 0.15); // Subtle white border
+    border-radius: 10px; // Rounded corners (or use $o-winners-radius)
+    padding: 8px; // Inner spacing for the icon
+    
+    // Smooth transition for hover effects
     transition: background 0.2s ease, border-color 0.2s ease;
 
     &:hover {
-        background: rgba($o-winners-white, 0.15);
-        border-color: rgba($o-winners-white, 0.3);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
     }
 
-    // 3. L'icône remplit le carré proprement
+    // 3. Ensure the icon fills the square nicely
     img, svg {
         width: 100%;
         height: 100%;
-        max-width: 32px;
+        max-width: 32px;  // Gives icons a solid, readable size
         max-height: 32px;
         object-fit: contain;
     }
 }
 
 // -----------------------------------------------------------
-// Panneau droit (formulaire) — réutilise le composant partagé
-// .o_winners_card (Design System §5) plutôt qu'un style ad-hoc
-// sur .oe_website_login_container. La classe est ajoutée via
-// xpath dans auth_templates.xml.
+// Panneau droit (formulaire) — le conteneur réel ici est
+// .oe_website_login_container (natif au module "website"), pas
+// une .card : ce projet utilise website.login_layout plutôt que
+// web.login_layout brut (voir commentaire dans auth_templates.xml).
 // -----------------------------------------------------------
-.o_winners_card.oe_website_login_container {
+.oe_website_login_container {
     flex: 0 0 auto;
     width: 480px;
     align-self: center;
@@ -249,16 +224,12 @@ main:has(.oe_website_login_container) {
     }
 }
 
-// -----------------------------------------------------------
-// BLOC : En-tête d'accueil du formulaire ("Bienvenue !")
-// -----------------------------------------------------------
 .o_winners_auth_welcome {
     text-align: center;
     margin-bottom: $o-winners-spacing-unit * 3;
     font-family: $o-winners-font-family;
 
-    // Élément : .o_winners_auth_welcome__pretitle
-    .o_winners_auth_welcome__pretitle {
+    .o_winners_auth_welcome_pretitle {
         display: block;
         color: $o-winners-primary;
         font-weight: 600;
@@ -266,16 +237,14 @@ main:has(.oe_website_login_container) {
         margin-bottom: 4px;
     }
 
-    // Élément : .o_winners_auth_welcome__title
-    .o_winners_auth_welcome__title {
+    .o_winners_auth_form_title {
         font-weight: 700;
         font-size: 1.75rem;
         color: $o-winners-text-dark;
         margin-bottom: 4px;
     }
 
-    // Élément : .o_winners_auth_welcome__subtitle
-    .o_winners_auth_welcome__subtitle {
+    .o_winners_auth_form_subtitle {
         color: $o-winners-text-muted;
         font-size: 0.9rem;
         margin-bottom: 0;
@@ -283,7 +252,7 @@ main:has(.oe_website_login_container) {
 }
 
 // -----------------------------------------------------------
-// BLOC : Icônes dans les champs (email / mot de passe / nom)
+// Icônes dans les champs (email / mot de passe / nom)
 // -----------------------------------------------------------
 .o_winners_field_icon {
     position: relative;
@@ -292,8 +261,7 @@ main:has(.oe_website_login_container) {
         padding-left: 42px;
     }
 
-    // Élément : .o_winners_field_icon__glyph
-    .o_winners_field_icon__glyph {
+    .o_winners_field_icon_glyph {
         position: absolute;
         left: 14px;
         top: 50%;
@@ -304,23 +272,22 @@ main:has(.oe_website_login_container) {
     }
 
     // Cas "field-login" / "field-name" : label au-dessus de l'input,
-    // dans le même conteneur → l'icône se cale sous le label.
-    &:not(.input-group) .o_winners_field_icon__glyph {
-        top: auto;
+    // dans le même conteneur → l'icône se cale sous le label (valeur
+    // approximative, à ajuster visuellement selon le rendu réel).
+    &:not(.input-group) .o_winners_field_icon_glyph {
         bottom: 22px;
-        transform: none;
     }
 
-    // Cas "input-group" (champ mot de passe) : pas de label
-    // à l'intérieur, l'icône se centre verticalement sur l'input.
-    &.input-group .o_winners_field_icon__glyph {
+    // Cas "input-group" (champ mot de passe) : pas de label à
+    // l'intérieur, l'icône se centre verticalement sur l'input.
+    &.input-group .o_winners_field_icon_glyph {
         top: 50%;
         transform: translateY(-50%);
     }
 }
 
 // -----------------------------------------------------------
-// BLOC : "Se souvenir de moi"
+// "Se souvenir de moi"
 // -----------------------------------------------------------
 .o_winners_remember_me {
     margin: $o-winners-spacing-unit 0 ($o-winners-spacing-unit * 2);
@@ -336,11 +303,11 @@ main:has(.oe_website_login_container) {
     }
 }
 
-// Le formulaire natif Odoo (labels, inputs) n'a pas de classe
+// Le titre "Connexion" / "Sign up" natif d'Odoo n'a pas de classe
 // dédiée ; on cible via le contexte du formulaire pour rester
 // cohérent avec la charte sans dupliquer de markup.
-.o_winners_card .oe_login_form,
-.o_winners_card .oe_signup_form {
+.oe_website_login_container .oe_login_form,
+.oe_website_login_container .oe_signup_form {
     font-family: $o-winners-font-family;
 
     .form-label {
@@ -367,77 +334,32 @@ main:has(.oe_website_login_container) {
         }
     }
 
+    .btn-primary {
+        background: $o-winners-accent;
+        border-color: $o-winners-accent;
+        border-radius: $o-winners-radius;
+        font-weight: 600;
+        padding: 10px;
+
+        &:hover, &:focus {
+            background: darken(#FF6B35, 8%);
+            border-color: darken(#FF6B35, 8%);
+        }
+    }
+
     .btn-link {
         color: $o-winners-primary;
     }
 }
 
 // -----------------------------------------------------------
-// COMPOSANT PARTAGÉ : Bouton Principal (Design System §5)
-// .o_winners_btn_primary — Fond orange (accent), texte blanc.
-// Remplace l'ancien .btn.btn-primary (classe Bootstrap native,
-// interdite par la charte hors composants partagés).
-// -----------------------------------------------------------
-.o_winners_btn_primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: $o-winners-spacing-unit;
-    width: 100%;
-    border: none;
-    border-radius: $o-winners-radius;
-    background: $o-winners-accent;
-    color: $o-winners-white;
-    font-family: $o-winners-font-family;
-    font-weight: 600;
-    font-size: 0.95rem;
-    padding: 10px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-
-    &:hover, &:focus {
-        background: darken($o-winners-accent, 8%);
-        color: $o-winners-white;
-    }
-}
-
-// -----------------------------------------------------------
-// COMPOSANT PARTAGÉ : Bouton Secondaire (Design System §5)
-// .o_winners_btn_secondary — Fond blanc, bordure grise
-// (ex : "Continuer avec Google"). Utilisé pour les boutons
-// sociaux de connexion.
-// -----------------------------------------------------------
-.o_winners_btn_secondary {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: $o-winners-spacing-unit;
-    width: 100%;
-    border: $o-winners-border-soft;
-    border-radius: $o-winners-radius;
-    background: $o-winners-white;
-    color: $o-winners-text-dark;
-    font-family: $o-winners-font-family;
-    font-size: 0.9rem;
-    padding: 10px;
-    margin-bottom: $o-winners-spacing-unit;
-    cursor: pointer;
-    transition: background 0.2s ease;
-
-    &:hover {
-        background: $o-winners-bg-light;
-    }
-}
-
-// -----------------------------------------------------------
-// BLOC : Séparateur social ("ou continuer avec")
+// Boutons sociaux (non fonctionnels)
 // -----------------------------------------------------------
 .o_winners_auth_social {
     margin-top: $o-winners-spacing-unit * 2;
 }
 
-// Élément : .o_winners_auth_social__separator
-.o_winners_auth_social__separator {
+.o_winners_auth_social_sep {
     display: flex;
     align-items: center;
     text-align: center;
@@ -453,6 +375,26 @@ main:has(.oe_website_login_container) {
 
     span {
         padding: 0 $o-winners-spacing-unit;
+    }
+}
+
+.o_winners_social_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $o-winners-spacing-unit;
+    width: 100%;
+    border: $o-winners-border-soft;
+    border-radius: $o-winners-radius;
+    background: $o-winners-white;
+    color: $o-winners-text-dark;
+    padding: 10px;
+    margin-bottom: $o-winners-spacing-unit;
+    font-family: $o-winners-font-family;
+    font-size: 0.9rem;
+
+    &:hover {
+        background: $o-winners-bg-light;
     }
 }
 
@@ -475,15 +417,14 @@ main:has(.oe_website_login_container) {
     transition: opacity 0.2s ease, transform 0.2s ease;
     z-index: 1080;
 
-    // Modificateur BEM : .o_winners_toast--visible
-    &.o_winners_toast--visible {
+    &.o_winners_toast_visible {
         opacity: 1;
         transform: translateX(-50%) translateY(0);
     }
 }
 
 // -----------------------------------------------------------
-// BLOC : Footer légal commun
+// Footer légal commun
 // -----------------------------------------------------------
 .o_winners_auth_footer {
     flex: 0 0 100%;
@@ -501,8 +442,7 @@ main:has(.oe_website_login_container) {
         }
     }
 
-    // Élément : .o_winners_auth_footer__separator
-    .o_winners_auth_footer__separator {
+    .o_winners_auth_footer_sep {
         margin: 0 $o-winners-spacing-unit;
         color: rgba($o-winners-text-muted, 0.5);
     }
