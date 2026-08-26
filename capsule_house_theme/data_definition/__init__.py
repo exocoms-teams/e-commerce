@@ -361,29 +361,243 @@ DEVIS_SUR_MESURE_DATA = {
     'slug': 'sur-mesure',
     'title_fr': 'Demande de devis personnalisé',
     'title_en': 'Custom quote request',
-    'subtitle_fr': 'Concevez votre capsule-house ou cabine selon vos contraintes et besoins spécifiques.',
-    'subtitle_en': 'Design your capsule house or cabin according to your specific constraints and needs.',
+    'subtitle_fr': 'Concevez votre capsule-house, cabine ou module selon vos contraintes, matériaux et besoins spécifiques.',
+    'subtitle_en': 'Design your capsule house, cabin or module according to your specific constraints, materials and needs.',
     
-    # SOURCE : Étape 1 du formulaire web — Sélection du modèle de base
+    # -------------------------------------------------------------------------
+    # ÉTAPE 1 — SÉLECTION DE LA GAMME & FORMAT/TAILLE
+    # -------------------------------------------------------------------------
     'step_gammes': [
-        {'slug': 'capsule', 'name_fr': 'Gamme Capsule', 'name_en': 'Capsule Range'},
-        {'slug': 'cabine', 'name_fr': 'Gamme Cabine', 'name_en': 'Cabin Range'},
-        {'slug': 'dome', 'name_fr': 'Gamme Dôme', 'name_en': 'Dome Range'},
-        {'slug': 'modulaire', 'name_fr': 'Gamme Modulaire', 'name_en': 'Modular Range'},
-        {'slug': 'pliable', 'name_fr': 'Gamme Pliable', 'name_en': 'Foldable Range'},
-        {'slug': 'autre', 'name_fr': 'Projet spécial / Inconnu', 'name_en': 'Special project / Unknown'},
+        {
+            'slug': 'capsule',
+            'name_fr': 'Gamme Capsule',
+            'name_en': 'Capsule Range',
+            'description_fr': 'Design futuriste aluminium, 18 à 40 m²',
+            'description_en': 'Futuristic aluminium design, 18 to 40 sqm',
+            'formats': [
+                {'code': 'CAP_STUDIO', 'label_fr': 'Studio (18 - 20 m²)', 'label_en': 'Studio (18 - 20 sqm)'},
+                {'code': 'CAP_DUO', 'label_fr': 'Duo (26 - 30 m²)', 'label_en': 'Duo (26 - 30 sqm)'},
+                {'code': 'CAP_PANORAMA', 'label_fr': 'Panorama (36 - 40 m²)', 'label_en': 'Panorama (36 - 40 sqm)'},
+                {'code': 'CAP_CUSTOM', 'label_fr': 'Dimensions sur-mesure', 'label_en': 'Custom dimensions'},
+            ]
+        },
+        {
+            'slug': 'cabine',
+            'name_fr': 'Gamme Cabine',
+            'name_en': 'Cabin Range',
+            'description_fr': 'Style bois & acier, idéale bureau ou studio de jardin (10 à 25 m²)',
+            'description_en': 'Wood & steel style, ideal for office or garden studio (10 to 25 sqm)',
+            'formats': [
+                {'code': 'CAB_SOLO', 'label_fr': 'Solo / Bureau (10 - 12 m²)', 'label_en': 'Solo / Office (10 - 12 sqm)'},
+                {'code': 'CAB_COMFORT', 'label_fr': 'Comfort (15 - 18 m²)', 'label_en': 'Comfort (15 - 18 sqm)'},
+                {'code': 'CAB_LODGE', 'label_fr': 'Lodge (20 - 25 m²)', 'label_en': 'Lodge (20 - 25 sqm)'},
+                {'code': 'CAB_CUSTOM', 'label_fr': 'Dimensions sur-mesure', 'label_en': 'Custom dimensions'},
+            ]
+        },
+        {
+            'slug': 'dome',
+            'name_fr': 'Gamme Dôme',
+            'name_en': 'Dome Range',
+            'description_fr': 'Structure géodésique triangulée panoramique (19 à 50 m²)',
+            'description_en': 'Triangulated geodesic panoramic structure (19 to 50 sqm)',
+            'formats': [
+                {'code': 'DOM_COMPACT', 'label_fr': 'Compact (19 - 20 m²)', 'label_en': 'Compact (19 - 20 sqm)'},
+                {'code': 'DOM_CONFORT', 'label_fr': 'Confort (28 - 30 m²)', 'label_en': 'Confort (28 - 30 sqm)'},
+                {'code': 'DOM_PANORAMIQUE', 'label_fr': 'Panoramique (38 - 50 m²)', 'label_en': 'Panoramic (38 - 50 sqm)'},
+                {'code': 'DOM_CUSTOM', 'label_fr': 'Diamètre / Surface sur-mesure', 'label_en': 'Custom diameter / surface'},
+            ]
+        },
+        {
+            'slug': 'modulaire',
+            'name_fr': 'Gamme Modulaire',
+            'name_en': 'Modular Range',
+            'description_fr': 'Système extensible RE2020 par juxtaposition de modules',
+            'description_en': 'RE2020 extensible system by assembling modules',
+            'formats': [
+                {'code': 'MOD_1', 'label_fr': 'Module simple (16 - 20 m²)', 'label_en': 'Single module (16 - 20 sqm)'},
+                {'code': 'MOD_2', 'label_fr': 'Module double (30 - 38 m²)', 'label_en': 'Double module (30 - 38 sqm)'},
+                {'code': 'MOD_3', 'label_fr': 'Module triple (45 - 57 m²)', 'label_en': 'Triple module (45 - 57 sqm)'},
+                {'code': 'MOD_PLUS', 'label_fr': 'Projet sur-mesure (> 4 modules / Étage)', 'label_en': 'Custom project (> 4 modules / Multi-storey)'},
+            ]
+        },
+        {
+            'slug': 'pliable',
+            'name_fr': 'Gamme Pliable',
+            'name_en': 'Foldable Range',
+            'description_fr': 'Structure rédéployable rapidement (14 à 38 m²)',
+            'description_en': 'Quickly deployable structure (14 to 38 sqm)',
+            'formats': [
+                {'code': 'PLI_COMPACT', 'label_fr': 'Compact (14 - 18 m²)', 'label_en': 'Compact (14 - 18 sqm)'},
+                {'code': 'PLI_CONFORT', 'label_fr': 'Confort (25 - 29 m²)', 'label_en': 'Confort (25 - 29 sqm)'},
+                {'code': 'PLI_PANORAMIQUE', 'label_fr': 'Panoramique (35 - 38 m²)', 'label_en': 'Panoramic (35 - 38 sqm)'},
+            ]
+        },
+        {
+            'slug': 'autre',
+            'name_fr': 'Projet spécial / Architecture sur-mesure',
+            'name_en': 'Special project / Custom architecture',
+            'description_fr': 'Étude personnalisée hors catalogue standard',
+            'description_en': 'Custom study outside standard catalog',
+            'formats': []
+        },
     ],
-    
-    # SOURCE : Étape 2 — Faisabilité logistique & BTP
+
+    # -------------------------------------------------------------------------
+    # ÉTAPE 2 — PRÉCISIONS SUPERFICIE ET AGENCEMENT
+    # -------------------------------------------------------------------------
+    'superficie_specs': {
+        'surface_cible': {
+            'label_fr': 'Superficie globale souhaitée (m²)',
+            'label_en': 'Desired total floor area (sqm)',
+            'type': 'number',
+            'placeholder': 'ex: 28',
+            'min': 10,
+            'max': 200,
+        },
+        'hauteur_plafond': {
+            'label_fr': 'Hauteur sous plafond souhaitée',
+            'label_en': 'Desired ceiling height',
+            'options': [
+                {'value': 'standard', 'label_fr': 'Standard (2,40 m)', 'label_en': 'Standard (2.40 m)'},
+                {'value': 'haut', 'label_fr': 'Hauteur augmentée (2,60 m - 2,80 m)', 'label_en': 'Increased height (2.60 m - 2.80 m)'},
+                {'value': 'mezzanine', 'label_fr': 'Espace pour Mezzanine (> 3,20 m)', 'label_en': 'Space for Mezzanine (> 3.20 m)'},
+            ]
+        },
+        'agencement': {
+            'label_fr': 'Nombre de pièces principales',
+            'label_en': 'Number of main rooms',
+            'options': [
+                {'value': 'studio_open', 'label_fr': 'Open-space / Studio monopièce', 'label_en': 'Open-space / Single room studio'},
+                {'value': 't2', 'label_fr': '2 pièces (1 Chambre séparée + Séjour)', 'label_en': '2 rooms (1 Separate bedroom + Living room)'},
+                {'value': 't3', 'label_fr': '3 pièces (2 Chambres + Séjour)', 'label_en': '3 rooms (2 Bedrooms + Living room)'},
+                {'value': 'custom_layout', 'label_fr': 'Agencement spécifique sur plan', 'label_en': 'Specific layout from custom plan'},
+            ]
+        }
+    },
+
+    # -------------------------------------------------------------------------
+    # ÉTAPE 3 — SELECTION DES MATÉRIAUX (EXTÉRIEUR & INTÉRIEUR)
+    # -------------------------------------------------------------------------
+    'materiaux_specs': [
+        {
+            'category_fr': 'Bardage & Revêtement Extérieur',
+            'category_en': 'External Cladding & Coating',
+            'options': [
+                {'code': 'MAT_EXT_ALU', 'label_fr': 'Panneaux aluminium laqué (Look futuriste)', 'label_en': 'Lacquered aluminium panels (Futuristic look)'},
+                {'code': 'MAT_EXT_BOIS_NAT', 'label_fr': 'Bardage Bois naturel PEFC (Mélèze / Douglas / Cèdre)', 'label_en': 'Natural PEFC wood cladding (Larch / Douglas / Cedar)'},
+                {'code': 'MAT_EXT_BOIS_COMP', 'label_fr': 'Bardage Bois composite (Sans entretien)', 'label_en': 'Composite wood cladding (Maintenance free)'},
+                {'code': 'MAT_EXT_ACIER_ZINC', 'label_fr': 'Acier traité / Zinc joint debout', 'label_en': 'Treated steel / Standing seam zinc'},
+                {'code': 'MAT_EXT_MIXTE', 'label_fr': 'Finition mixte (Bois & Aluminium/Acier)', 'label_en': 'Mixed finish (Wood & Aluminium/Steel)'},
+            ]
+        },
+        {
+            'category_fr': 'Sol Intérieur',
+            'category_en': 'Interior Flooring',
+            'options': [
+                {'code': 'MAT_SOL_SPC', 'label_fr': 'Revêtement SPC haute résistance (Effet parquet / béton)', 'label_en': 'High-resistance SPC flooring (Parquet / concrete effect)'},
+                {'code': 'MAT_SOL_PARQUET', 'label_fr': 'Parquet contrecollé bois massif', 'label_en': 'Engineered hardwood flooring'},
+                {'code': 'MAT_SOL_VINYLE', 'label_fr': 'Vinyle PVC passage intensif (Grand confort acoustique)', 'label_en': 'Heavy-duty PVC vinyl (High acoustic comfort)'},
+                {'code': 'MAT_SOL_RESINE', 'label_fr': 'Résine coulée aspect béton ciré', 'label_en': 'Poured resin with polished concrete effect'},
+            ]
+        },
+        {
+            'category_fr': 'Murs & Plafonds Intérieurs',
+            'category_en': 'Interior Walls & Ceilings',
+            'options': [
+                {'code': 'MAT_INT_BOIS', 'label_fr': 'Habillage bois chaleureux (Contreplaqué bouleau / Epicéa)', 'label_en': 'Warm wood panelling (Birch plywood / Spruce)'},
+                {'code': 'MAT_INT_PLACO', 'label_fr': 'Panneaux de finition peints (Blanc / Couleurs au choix)', 'label_en': 'Painted finish panels (White / Custom colours)'},
+                {'code': 'MAT_INT_ALU', 'label_fr': 'Panneaux aluminium / Composite contemporain', 'label_en': 'Aluminium / Contemporary composite panels'},
+            ]
+        },
+        {
+            'category_fr': 'Menuiseries & Vitrages',
+            'category_en': 'Joinery & Glazing',
+            'options': [
+                {'code': 'MAT_VIT_DV_STD', 'label_fr': 'Double vitrage isolant renforcé (NF EN 1279)', 'label_en': 'Reinforced insulating double glazing (NF EN 1279)'},
+                {'code': 'MAT_VIT_TV', 'label_fr': 'Triple vitrage haute performance thermique', 'label_en': 'High thermal performance triple glazing'},
+                {'code': 'MAT_VIT_FEUILLETE', 'label_fr': 'Vitrage feuilleté Sécurit anti-effraction', 'label_en': 'Laminated burglar-resistant safety glass'},
+                {'code': 'MAT_VIT_TEINTE', 'label_fr': 'Vitrage teinté / Miroir sans étain (Intimité extérieure)', 'label_en': 'Tinted glass / One-way mirror glass (Exterior privacy)'},
+            ]
+        },
+        {
+            'category_fr': 'Isolation Thermique & Acoustique',
+            'category_en': 'Thermal & Acoustic Insulation',
+            'options': [
+                {'code': 'ISO_RE2020', 'label_fr': 'Isolation standard RE2020 (Laine de roche / PUR)', 'label_en': 'Standard RE2020 insulation (Rock wool / PUR)'},
+                {'code': 'ISO_BIO', 'label_fr': 'Isolation biosourcée (Laine de bois / Chanvre / Coton)', 'label_en': 'Bio-based insulation (Wood fibre / Hemp / Cotton)'},
+                {'code': 'ISO_PHONIQUE_PLUS', 'label_fr': 'Renforcement acoustique haute densité', 'label_en': 'High-density acoustic reinforcement'},
+            ]
+        }
+    ],
+
+    # -------------------------------------------------------------------------
+    # ÉTAPE 4 — ÉQUIPEMENTS DE CONFORT & OPTIONS
+    # -------------------------------------------------------------------------
+    'options_interieures': [
+        {
+            'category_fr': 'Cuisine & Coin Repas',
+            'category_en': 'Kitchen & Dining Area',
+            'items': [
+                {'code': 'OPT_KITCHEN_COMPACT', 'label_fr': 'Kitchenette compacte (Plaques 2 feux, frigo top, évier)', 'label_en': 'Compact kitchenette (2 burners, top fridge, sink)'},
+                {'code': 'OPT_KITCHEN_FULL', 'label_fr': 'Cuisine équipée complète (Four, lave-vaisselle encastré, hotte)', 'label_en': 'Full equipped kitchen (Oven, built-in dishwasher, hood)'},
+                {'code': 'OPT_KITCHEN_ISLAND', 'label_fr': 'Ilot central de repas / Plan de travail sur-mesure', 'label_en': 'Central dining island / Custom worktop'},
+                {'code': 'OPT_KITCHEN_NONE', 'label_fr': 'Attentes fluides seules (Cuisine non fournie)', 'label_en': 'Utility connections only (Kitchen not supplied)'},
+            ]
+        },
+        {
+            'category_fr': 'Salle d\'eau & Sanitaires',
+            'category_en': 'Bathroom & Toilets',
+            'items': [
+                {'code': 'OPT_BATH_STD', 'label_fr': 'Salle d\'eau clé en main (Douche italienne/vitrée, vasque, meuble)', 'label_en': 'Turnkey bathroom (Walk-in/glass shower, sink, cabinet)'},
+                {'code': 'OPT_BATH_LUXE', 'label_fr': 'Pack Salle d\'eau Premium (Robinetterie encastrée, miroir LED chauffant)', 'label_en': 'Premium bathroom pack (Built-in taps, heated LED mirror)'},
+                {'code': 'OPT_WC_SUSPENDU', 'label_fr': 'WC suspendu traditionnel (Raccordé au réseau)', 'label_en': 'Traditional wall-hung toilet (Connected to mains)'},
+                {'code': 'OPT_WC_INCINERATEUR', 'label_fr': 'Toilettes à incinération ou sèches haut de gamme (Autonome)', 'label_en': 'Incinerating or high-end dry toilets (Off-grid)'},
+            ]
+        },
+        {
+            'category_fr': 'Chauffage, Ventillat & Climatisation',
+            'category_en': 'Heating, Ventilation & Air Conditioning',
+            'items': [
+                {'code': 'OPT_PAC_AIR_AIR', 'label_fr': 'Climatisation réversible Pompe à Chaleur (Chaud/Froid)', 'label_en': 'Reversible Heat Pump air conditioning (Heating/Cooling)'},
+                {'code': 'OPT_PLANCHER_CHAUFFANT', 'label_fr': 'Plancher chauffant électrique très basse consommation', 'label_en': 'Very low consumption electric underfloor heating'},
+                {'code': 'OPT_VMC_DF', 'label_fr': 'VMC Double Flux (Qualité de l\'air & économies d\'énergie)', 'label_en': 'Dual-flow MVHR (Air quality & energy savings)'},
+                {'code': 'OPT_POELE_BOIS', 'label_fr': 'Attente conduit de cheminée / Poêle à granulés compact', 'label_en': 'Chimney flue connection / Compact pellet stove'},
+            ]
+        },
+        {
+            'category_fr': 'Aménagement, Mobilier & Domotique',
+            'category_en': 'Layout, Furniture & Home Automation',
+            'items': [
+                {'code': 'OPT_MEUBLE_ESCAMOTABLE', 'label_fr': 'Lit escamotable au plafond / armoire lit gain de place', 'label_en': 'Ceiling-mounted foldaway bed / space-saving wall bed'},
+                {'code': 'OPT_MEZZANINE', 'label_fr': 'Mezzanine de couchage ou de rangement avec échelle/escalier', 'label_en': 'Sleeping or storage mezzanine with ladder/staircase'},
+                {'code': 'OPT_DOMOTIQUE_PACK', 'label_fr': 'Pack Domotique (Gestion chauffage à distance, serrure connectée)', 'label_en': 'Smart Home Pack (Remote heating control, smart lock)'},
+                {'code': 'OPT_STORE_MOT', 'label_fr': 'Stores / Occultants motorisés intégrés', 'label_en': 'Integrated motorised blinds / blackout shades'},
+            ]
+        },
+        {
+            'category_fr': 'Autonomie & Énergie Extérieure',
+            'category_en': 'Autonomy & Outdoor Energy',
+            'items': [
+                {'code': 'OPT_SOLAR_PACK', 'label_fr': 'Kit Panneaux photovoltaïques en toiture + Onduleur', 'label_en': 'Rooftop solar panel kit + Inverter'},
+                {'code': 'OPT_BATTERY', 'label_fr': 'Batterie de stockage d\'énergie (Pour autonomie complète)', 'label_en': 'Energy storage battery (For full off-grid autonomy)'},
+                {'code': 'OPT_WATER_HARVEST', 'label_fr': 'Système de récupération & filtration d\'eau de pluie', 'label_en': 'Rainwater harvesting & filtration system'},
+                {'code': 'OPT_TERRASSE_BOIS', 'label_fr': 'Terrasse extérieure sur-mesure (Bois composite / Pin autoclave)', 'label_en': 'Custom outdoor deck (Composite wood / Pressure-treated pine)'},
+            ]
+        }
+    ],
+
+    # -------------------------------------------------------------------------
+    # ÉTAPE 5 — FAISABILITÉ LOGISTIQUE & TERRAIN
+    # -------------------------------------------------------------------------
     'terrain_specs': [
         {
             'id': 'acces_camion',
-            'label_fr': 'Accessibilité du terrain',
-            'label_en': 'Site accessibility',
+            'label_fr': 'Accessibilité du terrain pour livraison',
+            'label_en': 'Site accessibility for delivery',
             'options': [
-                {'value': 'facile', 'label_fr': 'Accès poids lourd direct (< 10m)', 'label_en': 'Direct truck access (< 10m)'},
+                {'value': 'facile', 'label_fr': 'Accès poids lourd direct (< 10m du site)', 'label_en': 'Direct truck access (< 10m from site)'},
                 {'value': 'moyen', 'label_fr': 'Accès restreint / Grutage nécessaire (10-30m)', 'label_en': 'Restricted access / Crane needed (10-30m)'},
-                {'value': 'difficile', 'label_fr': 'Accès très difficile / Grande grue (> 30m)', 'label_en': 'Very difficult access / Heavy crane (> 30m)'},
+                {'value': 'difficile', 'label_fr': 'Accès très difficile / Grande grue ou transport héliporté (> 30m)', 'label_en': 'Very difficult access / Heavy crane or helicopter (> 30m)'},
             ]
         },
         {
@@ -391,47 +605,42 @@ DEVIS_SUR_MESURE_DATA = {
             'label_fr': 'Type de fondation envisagé',
             'label_en': 'Planned foundation type',
             'options': [
-                {'value': 'vis', 'label_fr': 'Pieux vissés (recommandé / écologique)', 'label_en': 'Screw piles (recommended / eco-friendly)'},
+                {'value': 'vis', 'label_fr': 'Pieux vissés (recommandé / réversible & écologique)', 'label_en': 'Screw piles (recommended / reversible & eco-friendly)'},
                 {'value': 'plots', 'label_fr': 'Plots en béton', 'label_en': 'Concrete pads'},
-                {'value': 'dalle', 'label_fr': 'Dalle béton existante', 'label_en': 'Existing concrete slab'},
-                {'value': 'a_definir', 'label_fr': 'À définir avec votre équipe', 'label_en': 'To be defined with your team'},
-            ]
-        }
-    ],
-
-    # SOURCE : Étape 3 — Matrice des options techniques (Catalogues d'options)
-    'options_techniques': [
-        {
-            'category_fr': 'Autonomie & Énergie',
-            'category_en': 'Autonomy & Energy',
-            'items': [
-                {'code': 'OPT_SOLAR', 'label_fr': 'Kit panneaux solaires + batteries', 'label_en': 'Solar panel kit + batteries'},
-                {'code': 'OPT_OFFGRID_WATER', 'label_fr': 'Récupérateur d\'eau de pluie & filtration', 'label_en': 'Rainwater harvesting & filtration'},
-                {'code': 'OPT_COMPOST_WC', 'label_fr': 'Toilettes sèches / à incinération (Hors-réseau)', 'label_en': 'Dry / Incinerating toilets (Off-grid)'},
-                {'code': 'OPT_PAC', 'label_fr': 'Pompe à chaleur réversible (Chaud/Froid)', 'label_en': 'Reversible heat pump (Heating/Cooling)'},
+                {'value': 'dalle', 'label_fr': 'Dalle béton existante ou à couler', 'label_en': 'Existing or to-be-poured concrete slab'},
+                {'value': 'a_definir', 'label_fr': 'À définir après étude de sol avec vos techniciens', 'label_en': 'To be defined after soil study with your technicians'},
             ]
         },
         {
-            'category_fr': 'Aménagement & Finitions',
-            'category_en': 'Fit-out & Finishes',
-            'items': [
-                {'code': 'OPT_KITCHEN', 'label_fr': 'Cuisine sur-mesure intégrée', 'label_en': 'Integrated custom kitchen'},
-                {'code': 'OPT_MEUBLE', 'label_fr': 'Pack mobilier optimisé (Lit escamotable, rangements)', 'label_en': 'Optimised furniture pack (Murphy bed, storage)'},
-                {'code': 'OPT_TERRASSE', 'label_fr': 'Terrasse en bois composite intégrable', 'label_en': 'Integrable composite wooden deck'},
-                {'code': 'OPT_DOMOTIQUE', 'label_fr': 'Pack domotique (Accès serrure connectée, gestion énergie)', 'label_en': 'Smart home pack (Connected lock, energy control)'},
+            'id': 'raccordements',
+            'label_fr': 'Raccordements aux réseaux',
+            'label_en': 'Network connections',
+            'options': [
+                {'value': 'reseau_existant', 'label_fr': 'Terrain déjà viabilisé (Eau, Électricité, Tout-à-l\'égout à proximité)', 'label_en': 'Serviced plot (Water, Electricity, Mains drainage nearby)'},
+                {'value': 'partiel', 'label_fr': 'Viabilisation partielle (Électricité seule / Fosse septique nécessaire)', 'label_en': 'Partial servicing (Electricity only / Septic tank needed)'},
+                {'value': '100_autonome', 'label_fr': 'Projet 100% Autonome (Hors-réseau / Off-grid)', 'label_en': '100% Autonomous project (Off-grid)'},
             ]
         }
     ],
 
-    # SOURCE : Étape 4 — Segmentation marketing de la demande
+    # -------------------------------------------------------------------------
+    # ÉTAPE 6 — SEGMENTATION USAGES ET CADRE RÉGLEMENTAIRE
+    # -------------------------------------------------------------------------
     'usages_projet': [
-        {'value': 'principal', 'label_fr': 'Résidence principale / Studio de jardin', 'label_en': 'Main residence / Garden studio'},
-        {'value': 'pro', 'label_fr': 'Bureau / Espace professionnel', 'label_en': 'Office / Professional space'},
+        {'value': 'principal', 'label_fr': 'Résidence principale / Extension de maison', 'label_en': 'Main residence / House extension'},
+        {'value': 'studio_jardin', 'label_fr': 'Studio de jardin / Chambre d\'amis', 'label_en': 'Garden studio / Guest room'},
+        {'value': 'pro', 'label_fr': 'Bureau / Cabinet / Espace professionnel', 'label_en': 'Office / Consulting room / Professional space'},
         {'value': 'tourisme', 'label_fr': 'Projet touristique / Airbnb (1 à 3 unités)', 'label_en': 'Tourism project / Airbnb (1 to 3 units)'},
-        {'value': 'parc_touristique', 'label_fr': 'Domaine / Camping / Parc (> 3 unités)', 'label_en': 'Resort / Campsite / Park (> 3 units)'},
+        {'value': 'parc_touristique', 'label_fr': 'Domaine / Camping / Hôtellerie de plein air (> 3 unités)', 'label_en': 'Resort / Campsite / Outdoor hotel (> 3 units)'},
+    ],
+    
+    'cadre_urbanisme': [
+        {'value': 'dp', 'label_fr': 'Déclaration Préalable de travaux (< 20 m² ou < 40 m² en zone U)', 'label_en': 'Prior declaration (< 20 sqm)'},
+        {'value': 'pc', 'label_fr': 'Permis de Construire nécessaire (> 20 m² / > 40 m²)', 'label_en': 'Building Permit required'},
+        {'value': 'mobile', 'label_fr': 'Usage temporaire / Mobile sans fondation lourde', 'label_en': 'Temporary / Mobile use without heavy foundations'},
+        {'value': 'a_verifier', 'label_fr': 'Besoin d\'accompagnement sur les démarches administratives', 'label_en': 'Need assistance with administrative procedures'},
     ]
 }
-
 
 # -----------------------------------------------------------------------------
 # ARGUMENTAIRES D'USAGE (`USAGES_DATA`)
