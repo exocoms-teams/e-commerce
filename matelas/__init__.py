@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from . import controllers
 from . import models
 from . import wizards
 from . import i18n_map
+
+_logger = logging.getLogger(__name__)
 
 
 def _assign_nouveaute_tag(env):
@@ -101,18 +105,35 @@ def _fix_fr_translations(env):
         update = {}
         for entry in translations:
             source = entry.get('source') or ''
-            fr_value = i18n_map.EN_TO_FR.get(source) or i18n_map.EN_TO_FR.get(source.strip())
+            if not source:
+                continue
+
+            fr_value = (
+                i18n_map.EN_TO_FR.get(source)
+                or i18n_map.EN_TO_FR.get(source.strip())
+            )
             if fr_value:
                 update[source] = fr_value
+            else:
+                _logger.warning(
+                    "No French translation mapping found for source %s "
+                    "in view matelas.%s",
+                    ascii(source),
+                    xmlid,
+                )
+
         if update:
-            view.update_field_translations('arch_db', {'fr_FR': update})
+            view.update_field_translations(
+                'arch_db',
+                {'fr_FR': update},
+            )
 
 
 def _ensure_french_is_default_language(env):
     """Installe (si besoin) et active la langue française, puis la remet
     comme langue par défaut du site public.
 
-   
+
     """
     fr_lang = env['res.lang']._activate_and_install_lang('fr_FR')
     if not fr_lang:
