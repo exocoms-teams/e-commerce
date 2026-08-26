@@ -138,64 +138,64 @@ class TrendProduct(models.Model):
                     "Le nombre de ventes (sales_count) ne peut pas être négatif."
                 )
 
+
+    def build_current_metrics(self):
+        """Construit le snapshot des métriques actuelles du produit.
+
+        Les publicités sont dédupliquées par ad_ref afin de ne compter
+        que la dernière observation connue de chaque publicité.
+        """
+        self.ensure_one()
+
+        latest_ads = latest_ads_by_ref(
+            self.ad_ids.filtered(lambda ad: ad.is_active)
+        )
+
+        return {
+            'ventes': self.sales_count or 0,
+            'likes': sum(latest_ads.mapped('likes_count')),
+            'partages': sum(latest_ads.mapped('shares_count')),
+            'ads': len(latest_ads),
+    }
+
     # --- SCORE DE TENDANCE ---
     def compute_trend_score(self, previous_metrics=None):
-        """Calcule le score de tendance de ce produit."""
+        """Calcule le score à partir des métriques actuelles
+        et des métriques du snapshot précédent."""
+        
         self.ensure_one()
+
         scoring_engine = ScoringEngine()
-        now = datetime.now()
+        current_metrics = self.build_current_metrics()
 
-        # Fenêtre actuelle (30 derniers jours)
-        current_start = now - timedelta(days=30)
-        current_end = now
+        # Premier calcul du produit :
+        # aucune période précédente signifie métriques précédentes à zéro.
+        previous_metrics = previous_metrics or {}
 
-        current_domain = [
-            ('product_id', '=', self.id),
-            ('computed_at', '>=', current_start),
-            ('computed_at', '<=', current_end),
-        ]
-        current_scores = self.env['trend.score'].search(current_domain)
-        current_metrics = {
-            'ventes': sum(current_scores.mapped('metric_sales')),
-            'likes': sum(current_scores.mapped('metric_likes')),
-            'partages': sum(current_scores.mapped('metric_shares')),
-            'ads': sum(current_scores.mapped('metric_ads_count')),
-        }
-
-        # Calculer previous_metrics SEULEMENT s'il n'est pas passé en paramètre
-        if previous_metrics is None:
-            previous_start = now - timedelta(days=60)
-            previous_end = now - timedelta(days=30)
-
-            previous_domain = [
-                ('product_id', '=', self.id),
-                ('computed_at', '>=', previous_start),
-                ('computed_at', '<', previous_end),
-            ]
-            previous_scores = self.env['trend.score'].search(previous_domain)
-            previous_metrics = {
-                'ventes': sum(previous_scores.mapped('metric_sales')),
-                'likes': sum(previous_scores.mapped('metric_likes')),
-                'partages': sum(previous_scores.mapped('metric_shares')),
-                'ads': sum(previous_scores.mapped('metric_ads_count')),
-            }
-
-        # Récupération de source_score via ir.config_parameter
         source_score = 0.0
-        IrConfigParam = self.env['ir.config_parameter'].sudo()
+
+        ir_config = self.env['ir.config_parameter'].sudo()
+
         source_mapping = {
             'scraping': 'winners.source_score_scraping',
             'crowdsourcing': 'winners.source_score_crowdsourcing',
             'api': 'winners.source_score_api',
         }
-        param_name = source_mapping.get(self.source)
-        if param_name:
-            param_value = IrConfigParam.get_param(param_name)
-            if param_value is not None:
+
+        parameter_name = source_mapping.get(self.source)
+
+        if parameter_name:
+            parameter_value = ir_config.get_param(parameter_name)
+
+            if parameter_value is not None:
                 try:
-                    source_score = float(param_value)
+                    source_score = float(parameter_value)
                     source_score = max(0.0, min(source_score, 1.0))
                 except (ValueError, TypeError):
                     source_score = 0.0
 
-        return scoring_engine.calculate_trend_score(current_metrics, previous_metrics, source_score)
+        return scoring_engine.calculate_trend_score(
+            current_metrics=current_metrics,
+            previous_metrics=previous_metrics,
+            source_score=source_score,
+        )
