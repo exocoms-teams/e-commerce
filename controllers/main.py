@@ -7,17 +7,17 @@ from odoo.addons.website.controllers.main import Website
 
 class MonetiqueWebsite(Website):
 
-    @http.route('/', type='http', auth='public', website=True)
-    def homepage(self, **kwargs):
-        Product = request.env['product.template'].sudo()
-        featured = Product.search([
-            ('is_published', '=', True),
-            ('website_published', '=', True),
-        ], limit=8, order='website_sequence asc')
-        return request.render('monetique_theme.homepage', {
-            'featured_products': featured,
-            'year': datetime.datetime.now().year,
-        })
+    # @http.route('/', type='http', auth='public', website=True)
+    # def homepage(self, **kwargs):
+    #     Product = request.env['product.template'].sudo()
+    #     featured = Product.search([
+    #         ('is_published', '=', True),
+    #         ('website_published', '=', True),
+    #     ], limit=8, order='website_sequence asc')
+    #     return request.render('monetique_theme.homepage', {
+    #         'featured_products': featured,
+    #         'year': datetime.datetime.now().year,
+    #     })
 
     @http.route('/solutions', type='http', auth='public', website=True)
     def solutions(self, **kwargs):
