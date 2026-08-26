@@ -20,17 +20,17 @@
         <xpath expr="//div[@id='product_details']" position="inside">
             <t t-if="product.is_supplement">
                 <section class="cs-product-info" aria-labelledby="cs-product-info-title">
-                    <h2 id="cs-product-info-title" class="h5">La formule en détail</h2>
+                    <h2 id="cs-product-info-title" class="h4">La formule en détail</h2>
                     <div class="cs-product-facts">
                         <div t-if="product.is_vegan" class="cs-vegan"><i class="fa fa-leaf" aria-hidden="true"/><span>100% vegan</span></div>
                         <div t-if="product.dosage"><i class="fa fa-eyedropper" aria-hidden="true"/><span t-esc="product.dosage"/></div>
                     </div>
                     <div t-if="product.ingredients" class="cs-ingredient-note">
-                        <h3>Ingrédients actifs</h3>
+                        <h3 class="h5">Ingrédients actifs</h3>
                         <p class="mb-0" t-esc="product.ingredients"/>
                     </div>
                     <div t-if="product.allergen_ids" class="cs-allergen-note">
-                        <h3>Allergènes</h3>
+                        <h3 class="h5">Allergènes</h3>
                         <ul>
                             <t t-foreach="product.allergen_ids" t-as="allergen">
                             <li t-esc="allergen.name"/>
@@ -40,7 +40,7 @@
                         <span t-esc="', '.join(product.allergen_ids.mapped('name'))"/>
                     </div>
                     <div t-if="product.nutritional_info" class="cs-nutrition-note">
-                        <h3 class="h6">Valeurs nutritionnelles</h3>
+                        <h3 class="h5">Valeurs nutritionnelles</h3>
                         <div t-out="product.nutritional_info"/>
                     </div>
                     
