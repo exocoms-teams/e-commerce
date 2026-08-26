@@ -2,22 +2,30 @@
    WIN-121 : Pôle Authentification (Connexion, Inscription,
    Boutons Sociaux)
 
-   Restyle des pages /web/login et /web/signup selon la maquette
-   "Page complète (Desktop)" : panneau sombre à gauche + formulaire
-   blanc à droite, avec variantes tablette et mobile.
+   Conforme à la Charte Graphique & Contrat d'Intégration CSS
+   "Winners" :
+   - Aucune couleur en dur : tout passe par _winners_variables.scss,
+     y compris les nouvelles variables $o-winners-text-light-muted
+     et $o-winners-border-dark (texte/bordures sur fond sombre).
+   - Ne redéfinit JAMAIS .o_winners_card, .o_winners_btn_primary,
+     .o_winners_btn_secondary ou .o_winners_footer : ces composants
+     partagés sont supposés déjà stylés ailleurs dans le design
+     system (chargés via le manifest) — ce fichier ne fait
+     qu'ajouter le layout propre à cette page autour d'eux.
 
-   N'affecte QUE l'apparence : aucune règle ici ne cache, ne
-   désactive ni ne contourne la validation ou la logique native
-   des formulaires.
+   ⚠️ Si .o_winners_card / .o_winners_btn_primary /
+   .o_winners_btn_secondary / .o_winners_footer ne sont pas encore
+   définis ailleurs dans le projet au moment où ce fichier est
+   chargé, ces éléments s'afficheront avec un style minimal
+   (Bootstrap par défaut) jusqu'à ce que ces composants partagés
+   soient en place.
    ============================================================ */
 
 // -----------------------------------------------------------
 // Masquage du header/footer standard du site sur les pages
 // d'authentification uniquement (le module "website" installé
 // sur ce projet force website.layout, avec header/nav/footer
-// complets, sur /web/login et /web/signup). On les cache plutôt
-// que de les supprimer côté template pour ne rien casser si
-// d'autres modules en dépendent ailleurs sur la page.
+// complets, sur /web/login et /web/signup).
 // -----------------------------------------------------------
 body:has(.oe_website_login_container) #wrapwrap > header,
 body:has(.oe_website_login_container) #wrapwrap > footer {
@@ -25,12 +33,11 @@ body:has(.oe_website_login_container) #wrapwrap > footer {
 }
 
 // -----------------------------------------------------------
-// Page / grille 2 colonnes
+// Grille 2 colonnes — le vrai conteneur flex est <main>, parent
+// commun de .o_winners_auth_side et .oe_website_login_container
+// (frères directs dans le DOM une fois website.login_layout
+// appliqué).
 // -----------------------------------------------------------
-// Le vrai conteneur flex est <main>, parent commun de
-// .o_winners_auth_side et .oe_website_login_container (frères
-// directs) — pas le panneau droit lui-même, qui ne fait
-// qu'apparaître en second dans le DOM.
 main:has(.oe_website_login_container) {
     max-width: none;
     padding: 0;
@@ -63,7 +70,7 @@ main:has(.oe_website_login_container) {
     padding: $o-winners-spacing-unit * 7 $o-winners-spacing-unit * 6;
 
     @media (max-width: 991.98px) {
-        display: none; // caché en tablette/mobile, cf. spec ticket
+        display: none;
     }
 }
 
@@ -98,7 +105,7 @@ main:has(.oe_website_login_container) {
 }
 
 .o_winners_auth_subtitle {
-    color: rgba($o-winners-white, 0.75);
+    color: $o-winners-text-light-muted;
     font-family: $o-winners-font-family;
     margin-bottom: $o-winners-spacing-unit * 5;
 }
@@ -122,7 +129,7 @@ main:has(.oe_website_login_container) {
         span {
             display: block;
             font-size: 0.875rem;
-            color: rgba($o-winners-white, 0.7);
+            color: $o-winners-text-light-muted;
         }
     }
 }
@@ -133,94 +140,64 @@ main:has(.oe_website_login_container) {
     height: 36px;
     border-radius: $o-winners-radius;
     background: rgba($o-winners-white, 0.1);
-    
-    // 1. Flexbox centering
+    border: 1px solid $o-winners-border-dark;
     display: flex;
     align-items: center;
     justify-content: center;
     color: $o-winners-accent;
-
-    // 2. Override default font icon behavior
-    i, span {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0;
-        padding: 0;
-        line-height: 1 ; // Stops font line-height from pushing the icon down/right
-        font-size: 1rem;            // Adjust size of the icon here
-    }
 }
 
 .o_winners_auth_partners_label {
     display: block;
     font-size: 0.8rem;
-    color: rgba($o-winners-white, 0.6);
+    color: $o-winners-text-light-muted;
     margin-bottom: $o-winners-spacing-unit;
 }
 
+// Logos partenaires : fond blanc systématique — certains logos
+// (TikTok blanc, Amazon sombre...) ne resteraient pas lisibles
+// directement sur le panneau navy sans ce contraste garanti.
 .o_winners_auth_partners_logos {
     display: flex;
     flex-wrap: wrap;
-    gap: $o-winners-spacing-unit; // or ~12px
+    gap: $o-winners-spacing-unit;
     align-items: center;
 }
 
 .o_winners_auth_partner_logo {
-    // 1. Square container styling
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    
-    // 2. Dark glassmorphism card style
-    background: rgba(255, 255, 255, 0.08); // Semi-transparent white
-    border: 1px solid rgba(255, 255, 255, 0.15); // Subtle white border
-    border-radius: 10px; // Rounded corners (or use $o-winners-radius)
-    padding: 8px; // Inner spacing for the icon
-    
-    // Smooth transition for hover effects
+    background: rgba($o-winners-white, 0.08);
+    border: 1px solid $o-winners-border-dark;
+    border-radius: $o-winners-radius;
+    padding: 10px;
+    object-fit: contain;
     transition: background 0.2s ease, border-color 0.2s ease;
 
     &:hover {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    // 3. Ensure the icon fills the square nicely
-    img, svg {
-        width: 100%;
-        height: 100%;
-        max-width: 32px;  // Gives icons a solid, readable size
-        max-height: 32px;
-        object-fit: contain;
+        background: rgba($o-winners-white, 0.15);
+        border-color: rgba($o-winners-white, 0.3);
     }
 }
 
 // -----------------------------------------------------------
-// Panneau droit (formulaire) — le conteneur réel ici est
-// .oe_website_login_container (natif au module "website"), pas
-// une .card : ce projet utilise website.login_layout plutôt que
-// web.login_layout brut (voir commentaire dans auth_templates.xml).
+// Panneau droit (formulaire) — .o_winners_card gère l'apparence
+// (fond, radius, ombre) ; on n'ajoute ici que les ajustements
+// de layout propres à cette page (largeur, marge).
 // -----------------------------------------------------------
-.oe_website_login_container {
+.o_winners_auth_card {
     flex: 0 0 auto;
     width: 480px;
     align-self: center;
     margin: $o-winners-spacing-unit * 4;
     padding: $o-winners-spacing-unit * 4;
-    border-radius: $o-winners-radius * 2;
-    box-shadow: $o-winners-shadow-soft;
-    border: $o-winners-border-soft;
-    background: $o-winners-white;
 
     @media (max-width: 575.98px) {
         width: 100%;
         margin: 0;
-        padding: $o-winners-spacing-unit * 3 $o-winners-spacing-unit * 2;
-        box-shadow: none;
-        border: none;
     }
 }
 
@@ -251,6 +228,16 @@ main:has(.oe_website_login_container) {
     }
 }
 
+// Le style de base des inputs vient de .o_winners_signup_field
+// (WIN-47, composant déjà défini) — ici uniquement typo/liens.
+.oe_login_form, .oe_signup_form {
+    font-family: $o-winners-font-family;
+
+    .btn-link {
+        color: $o-winners-primary;
+    }
+}
+
 // -----------------------------------------------------------
 // Icônes dans les champs (email / mot de passe / nom)
 // -----------------------------------------------------------
@@ -258,28 +245,21 @@ main:has(.oe_website_login_container) {
     position: relative;
 
     .form-control {
-        padding-left: 42px;
+        padding-left: 38px;
     }
 
     .o_winners_field_icon_glyph {
         position: absolute;
         left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
         color: $o-winners-text-muted;
         pointer-events: none;
         z-index: 2;
     }
 
-    // Cas "field-login" / "field-name" : label au-dessus de l'input,
-    // dans le même conteneur → l'icône se cale sous le label (valeur
-    // approximative, à ajuster visuellement selon le rendu réel).
     &:not(.input-group) .o_winners_field_icon_glyph {
         bottom: 22px;
     }
 
-    // Cas "input-group" (champ mot de passe) : pas de label à
-    // l'intérieur, l'icône se centre verticalement sur l'input.
     &.input-group .o_winners_field_icon_glyph {
         top: 50%;
         transform: translateY(-50%);
@@ -303,57 +283,9 @@ main:has(.oe_website_login_container) {
     }
 }
 
-// Le titre "Connexion" / "Sign up" natif d'Odoo n'a pas de classe
-// dédiée ; on cible via le contexte du formulaire pour rester
-// cohérent avec la charte sans dupliquer de markup.
-.oe_website_login_container .oe_login_form,
-.oe_website_login_container .oe_signup_form {
-    font-family: $o-winners-font-family;
-
-    .form-label {
-        color: $o-winners-text-dark;
-        font-weight: 500;
-    }
-
-    .form-control {
-        border-radius: $o-winners-radius;
-        border: $o-winners-border-soft;
-        padding: 10px 14px;
-
-        &:focus {
-            border-color: $o-winners-primary;
-            box-shadow: 0 0 0 3px rgba($o-winners-primary, 0.12);
-        }
-
-        &.is-invalid {
-            border-color: $o-winners-danger;
-        }
-
-        &.is-valid {
-            border-color: $o-winners-success;
-        }
-    }
-
-    .btn-primary {
-        background: $o-winners-accent;
-        border-color: $o-winners-accent;
-        border-radius: $o-winners-radius;
-        font-weight: 600;
-        padding: 10px;
-
-        &:hover, &:focus {
-            background: darken(#FF6B35, 8%);
-            border-color: darken(#FF6B35, 8%);
-        }
-    }
-
-    .btn-link {
-        color: $o-winners-primary;
-    }
-}
-
 // -----------------------------------------------------------
-// Boutons sociaux (non fonctionnels)
+// Boutons sociaux — .o_winners_btn_secondary gère fond/bordure ;
+// ici uniquement mise en page (largeur pleine, logo + texte).
 // -----------------------------------------------------------
 .o_winners_auth_social {
     margin-top: $o-winners-spacing-unit * 2;
@@ -384,17 +316,15 @@ main:has(.oe_website_login_container) {
     justify-content: center;
     gap: $o-winners-spacing-unit;
     width: 100%;
-    border: $o-winners-border-soft;
-    border-radius: $o-winners-radius;
-    background: $o-winners-white;
-    color: $o-winners-text-dark;
     padding: 10px;
     margin-bottom: $o-winners-spacing-unit;
     font-family: $o-winners-font-family;
     font-size: 0.9rem;
 
-    &:hover {
-        background: $o-winners-bg-light;
+    .o_winners_social_btn_logo {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
     }
 }
 
@@ -424,26 +354,23 @@ main:has(.oe_website_login_container) {
 }
 
 // -----------------------------------------------------------
-// Footer légal commun
+// Footer légal — .o_winners_footer gère fond/couleurs ; ici
+// uniquement la mise en page (largeur pleine sous les 2 colonnes).
 // -----------------------------------------------------------
 .o_winners_auth_footer {
     flex: 0 0 100%;
     order: 3;
-    padding: $o-winners-spacing-unit * 2 0 ($o-winners-spacing-unit * 4);
-    color: $o-winners-text-muted;
+    text-align: center;
+    font-size: 0.85rem;
     font-family: $o-winners-font-family;
+    padding: $o-winners-spacing-unit * 2 0 ($o-winners-spacing-unit * 4);
 
     a {
-        color: $o-winners-text-muted;
         text-decoration: underline;
-
-        &:hover {
-            color: $o-winners-primary;
-        }
     }
 
     .o_winners_auth_footer_sep {
         margin: 0 $o-winners-spacing-unit;
-        color: rgba($o-winners-text-muted, 0.5);
+        opacity: 0.5;
     }
 }

@@ -15,7 +15,6 @@
         toast.textContent = message;
         document.body.appendChild(toast);
 
-        // Force reflow to enable the transition on next frame.
         requestAnimationFrame(function () {
             toast.classList.add("o_winners_toast_visible");
         });
