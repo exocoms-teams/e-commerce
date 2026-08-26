@@ -31,11 +31,12 @@ class TrendScoringOrchestrator(models.AbstractModel):
         else:
             previous_metrics = None
 
+        current_metrics = product.build_current_metrics()
+
         score_value = product.compute_trend_score(
             previous_metrics=previous_metrics,
+            current_metrics=current_metrics,
         )
-
-        current_metrics = product.build_current_metrics()
 
         score_values = {
             'product_id': product.id,

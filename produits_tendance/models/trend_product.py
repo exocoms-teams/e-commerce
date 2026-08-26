@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 from .trend_ad import latest_ads_by_ref
 from odoo.addons.produits_tendance.services.scoring_engine import ScoringEngine
 
+_COMPUTE_ARGUMENT_NOT_PROVIDED = object()
 
 class TrendProduct(models.Model):
     _name = 'trend.product'
@@ -159,18 +160,65 @@ class TrendProduct(models.Model):
     }
 
     # --- SCORE DE TENDANCE ---
-    def compute_trend_score(self, previous_metrics=None):
-        """Calcule le score à partir des métriques actuelles
-        et des métriques du snapshot précédent."""
-        
+    def compute_trend_score(
+        self,
+        previous_metrics=_COMPUTE_ARGUMENT_NOT_PROVIDED,
+        current_metrics=None,
+    ):
+        """Calcule le score de tendance.
+
+        - Appel historique sans argument :
+        conserve l'ancien calcul par fenêtres temporelles.
+        - Appel de l'orchestrateur :
+        utilise explicitement current_metrics et previous_metrics.
+        """
         self.ensure_one()
 
         scoring_engine = ScoringEngine()
-        current_metrics = self.build_current_metrics()
+        now = datetime.now()
 
-        # Premier calcul du produit :
-        # aucune période précédente signifie métriques précédentes à zéro.
-        previous_metrics = previous_metrics or {}
+        # Mode orchestrateur :
+        # les métriques actuelles sont fournies explicitement.
+        if current_metrics is None:
+            current_start = now - timedelta(days=30)
+            current_end = now
+
+            current_scores = self.env['trend.score'].search([
+                ('product_id', '=', self.id),
+                ('computed_at', '>=', current_start),
+                ('computed_at', '<=', current_end),
+            ])
+
+            current_metrics = {
+                'ventes': sum(current_scores.mapped('metric_sales')),
+                'likes': sum(current_scores.mapped('metric_likes')),
+                'partages': sum(current_scores.mapped('metric_shares')),
+                'ads': sum(current_scores.mapped('metric_ads_count')),
+            }
+
+        # Appel historique sans previous_metrics :
+        # conserve l'ancien calcul de la période précédente.
+        if previous_metrics is _COMPUTE_ARGUMENT_NOT_PROVIDED:
+            previous_start = now - timedelta(days=60)
+            previous_end = now - timedelta(days=30)
+
+            previous_scores = self.env['trend.score'].search([
+                ('product_id', '=', self.id),
+                ('computed_at', '>=', previous_start),
+                ('computed_at', '<', previous_end),
+            ])
+
+            previous_metrics = {
+                'ventes': sum(previous_scores.mapped('metric_sales')),
+                'likes': sum(previous_scores.mapped('metric_likes')),
+                'partages': sum(previous_scores.mapped('metric_shares')),
+                'ads': sum(previous_scores.mapped('metric_ads_count')),
+            }
+
+        # Premier calcul quotidien :
+        # previous_metrics=None signifie qu'il n'existe aucun snapshot précédent.
+        elif previous_metrics is None:
+            previous_metrics = {}
 
         source_score = 0.0
 
