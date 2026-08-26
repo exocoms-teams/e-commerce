@@ -6,6 +6,10 @@ from odoo import http
 from odoo.http import request
 from odoo.addons.website.controllers.main import Website
 from odoo.tools import config  # <-- NOUVEL IMPORT POUR LES TESTS
+from ..collecte_scrapers.ebay_ingestor import run_ingestion_for_keyword
+from ..collecte_scrapers.meta_ingestor import run_meta_ingestion
+from .dashboard_api import TrendDashboardAPI
+
 
 # -----------------------------------------------------------
 # 1. CONTROLEUR DU FORMULAIRE WEB (Frontend)
