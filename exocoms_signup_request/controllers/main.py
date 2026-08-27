@@ -128,30 +128,31 @@ class ExocomsSignupRequestHome(AuthSignupHome):
         Requests = request.env['exocoms.signup.request'].sudo()
         state, record = Requests._confirm_token(token)
 
-    if state == 'done':
-    partner = record.partner_id
+        if state == 'done':
+            partner = record.partner_id
 
-    if partner and not partner.user_ids:
-        ttl_hours = Requests._get_int_param(
-            'token_ttl_hours',
-            company=record.company_id,
-        )
-        signup_token = partner.sudo()._generate_signup_token(
-            expiration=ttl_hours
-        )
-        return request.redirect('/web/signup?%s' % urlencode({
-            'token': signup_token,
-        }))
+            if partner and not partner.user_ids:
+                ttl_hours = Requests._get_int_param(
+                    'token_ttl_hours',
+                    company=record.company_id,
+                )
+                signup_token = partner.sudo()._generate_signup_token(
+                    expiration=ttl_hours
+                )
+                return request.redirect('/web/signup?%s' % urlencode({
+                    'token': signup_token,
+                }))
 
-    # Cas limite : le contact existe déjà avec un compte actif.
-    return request.redirect('/web/login?%s' % urlencode({
-        'login': record.email,
-    }))
+            # Cas limite : le contact existe déjà avec un compte actif.
+            return request.redirect('/web/login?%s' % urlencode({
+                'login': record.email,
+            }))
 
         return request.render(
             'exocoms_signup_request.request_confirm_failed',
             self._exocoms_values(
                 state=state, email=record.email if record else ''))
+
 
     @http.route('/signup/resend', type='http', auth='public', website=True,
                 methods=['POST'], sitemap=False)
