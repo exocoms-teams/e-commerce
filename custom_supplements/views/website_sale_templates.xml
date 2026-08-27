@@ -61,4 +61,15 @@
             </div>
         </xpath>
     </template>
+
+    <template
+        id="filter_radio_and_multi_attributes"
+        inherit_id="website_sale.filter_radio_and_multi_attributes"
+    >
+        <xpath expr="//input[@name='attribute_value']" position="attributes">
+            <attribute name="t-att-type">
+                "'radio' if a.display_type == 'radio' else 'checkbox'"
+            </attribute>
+        </xpath>
+    </template>
 </odoo>
