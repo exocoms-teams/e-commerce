@@ -26,8 +26,9 @@ class MatelasVente(http.Controller):
                 ('product_tag_ids', 'in', nouveaute_tag.ids),
             ], limit=4)
 
+        # Fallback volontaire : la seconde requête n’est exécutée que si
+        # aucun produit publié avec le tag Nouveauté n’a été trouvé.
         if not nouveautes:
-
             nouveautes = request.env['product.template'].sudo().search([
                 ('is_published', '=', True),
             ], order='create_date desc', limit=4)
@@ -48,11 +49,12 @@ class MatelasVente(http.Controller):
         a_achete = False
 
         if request.env.user.id != request.env.ref('base.public_user').id:
-            commandes = request.env['sale.order'].sudo().search([
-                ('partner_id', '=', partner.id),
-                ('state', 'in', ['sale', 'done']),
-            ], limit=1)
-            a_achete = bool(commandes)
+            a_achete = bool(
+                request.env['sale.order'].sudo().search_count([
+                    ('partner_id', '=', partner.id),
+                    ('state', 'in', ['sale', 'done']),
+                ], limit=1)
+            )
 
         avis_list = request.env['matelas.avis'].sudo().search([
             ('is_published', '=', True),
@@ -68,11 +70,11 @@ class MatelasVente(http.Controller):
     def avis_submit(self, name=None, note=None, titre=None, commentaire=None, profession=None, **kwargs):
         partner = request.env.user.partner_id
 
-        commandes = request.env['sale.order'].sudo().search([
+        a_achete = request.env['sale.order'].sudo().search_count([
             ('partner_id', '=', partner.id),
             ('state', 'in', ['sale', 'done']),
         ], limit=1)
-        if not commandes:
+        if not a_achete:
             return {
                 'success': False,
                 'error': "Vous devez avoir effectué un achat pour laisser un avis.",

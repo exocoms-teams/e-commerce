@@ -17,6 +17,7 @@ class MatelasNewsletterWizard(models.TransientModel):
         env = self.env
 
         mailing_list = env.ref('matelas.newsletter_mailing_list', raise_if_not_found=False)
+        # Compatibilité avec les bases où l’identifiant externe serait absent.
         if not mailing_list:
             mailing_list = env['mailing.list'].search(
                 [('name', '=', 'Newsletter Matelas')], limit=1)
@@ -30,6 +31,8 @@ class MatelasNewsletterWizard(models.TransientModel):
                 ('is_published', '=', True),
                 ('product_tag_ids', 'in', nouveaute_tag.ids),
             ], limit=6)
+        # Fallback volontaire : la seconde requête n’est exécutée que si
+        # aucun produit publié avec le tag Nouveauté n’a été trouvé.
         if not products:
             products = env['product.template'].search([
                 ('is_published', '=', True),
