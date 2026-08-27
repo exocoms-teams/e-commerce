@@ -65,11 +65,17 @@
     <template
         id="filter_radio_and_multi_attributes"
         inherit_id="website_sale.filter_radio_and_multi_attributes"
+        name="Radio and Multi attributes in Filter - Radio fix"
     >
-        <xpath expr="//input[@name='attribute_value']" position="attributes">
-            <attribute name="t-att-type">
-                "'radio' if a.display_type == 'radio' else 'checkbox'"
-            </attribute>
+        <xpath expr="//input[@name='attribute_value']" position="replace">
+            <input
+                t-att-type="'radio' if a.display_type == 'radio' else 'checkbox'"
+                name="attribute_value"
+                class="form-check-input"
+                t-att-id="'%s-%s' % (a.id, v.id)"
+                t-att-value="'%s-%s' % (a.id, v.id)"
+                t-att-checked="v.id in attrib_set"
+            />
         </xpath>
     </template>
 </odoo>
