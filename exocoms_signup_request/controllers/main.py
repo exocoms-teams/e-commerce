@@ -128,18 +128,25 @@ class ExocomsSignupRequestHome(AuthSignupHome):
         Requests = request.env['exocoms.signup.request'].sudo()
         state, record = Requests._confirm_token(token)
 
-        if state == 'done':
-            partner = record.partner_id
-            # Le jeton d'invitation prend le relais : Odoo affiche sa propre
-            # page de choix du mot de passe, crée l'utilisateur et connecte.
-            if partner and partner.signup_token:
-                return request.redirect('/web/signup?%s' % urlencode({
-                    'token': partner.signup_token,
-                }))
-            # Cas limite : le contact existe déjà avec un compte actif.
-            return request.redirect('/web/login?%s' % urlencode({
-                'login': record.email,
-            }))
+    if state == 'done':
+    partner = record.partner_id
+
+    if partner and not partner.user_ids:
+        ttl_hours = Requests._get_int_param(
+            'token_ttl_hours',
+            company=record.company_id,
+        )
+        signup_token = partner.sudo()._generate_signup_token(
+            expiration=ttl_hours
+        )
+        return request.redirect('/web/signup?%s' % urlencode({
+            'token': signup_token,
+        }))
+
+    # Cas limite : le contact existe déjà avec un compte actif.
+    return request.redirect('/web/login?%s' % urlencode({
+        'login': record.email,
+    }))
 
         return request.render(
             'exocoms_signup_request.request_confirm_failed',
