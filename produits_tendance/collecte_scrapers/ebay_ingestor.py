@@ -74,7 +74,11 @@ def push_to_odoo(item, odoo_url, odoo_api_key):
     country_code = item.get("itemLocation", {}).get("country", "US")
     image_url = item.get("image", {}).get("imageUrl", False)
     categories_list = item.get("categories", [])
-    
+    price_raw = item.get("price", {}).get("value")
+    try:
+        price = float(price_raw) if price_raw is not None else 0.0
+    except (TypeError, ValueError):
+        price = 0.0
     if categories_list and len(categories_list) > 0:
         real_category = categories_list[0].get("categoryName", "Tech & Gadgets")
     else:
@@ -92,6 +96,7 @@ def push_to_odoo(item, odoo_url, odoo_api_key):
             "score_site_x": seller_score, 
             "country": country_code,
             "source": "api",
+            "price": price,
             "image_url": image_url
         }
     }

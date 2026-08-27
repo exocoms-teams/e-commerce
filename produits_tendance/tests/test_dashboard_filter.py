@@ -10,17 +10,18 @@ class TestDashboardFilterAPI(HttpCase):
         super().setUp()
         self.cat_electronique = self.env['trend.category'].create({'name': 'Électronique'})
         self.cat_maison = self.env['trend.category'].create({'name': 'Maison'})
-
+        self.authenticate('admin', 'admin')
         self.product_ma = self.env['trend.product'].create({
             'name': 'Lampe LED (test)',
             'product_ref': 'TEST-FILTER-0001',
             'category_id': self.cat_maison.id,
             'country': 'MA',
             'source': 'api',
+            'price': 50.0,
         })
         self.env['trend.score'].create({
             'product_id': self.product_ma.id,
-            'computed_score': 30.0,
+            'computed_score': 998.0,
         })
 
         self.product_fr = self.env['trend.product'].create({
@@ -28,7 +29,8 @@ class TestDashboardFilterAPI(HttpCase):
             'product_ref': 'TEST-FILTER-0002',
             'category_id': self.cat_electronique.id,
             'country': 'FR',
-            'source': 'api',
+            'source': 'scraping',
+            'price': 300.0,
         })
         # Score tres eleve pour garantir que ce produit reste le mieux
         # score globalement (test_get_product_list_applies_limit), quelles
@@ -38,6 +40,7 @@ class TestDashboardFilterAPI(HttpCase):
             'product_id': self.product_fr.id,
             'computed_score': 999.0,
         })
+        
 
     def test_get_product_list_without_filter_returns_all_sorted_by_score(self):
         api = TrendDashboardAPI(self.env)
@@ -97,3 +100,42 @@ class TestDashboardFilterAPI(HttpCase):
         self.assertEqual(len(data), 1)
         # Le mieux score (FR, 999.0) doit etre celui retourne.
         self.assertEqual(data[0]['id'], self.product_fr.id)
+    def test_get_product_list_filters_by_price_max(self):
+       api = TrendDashboardAPI(self.env)
+       data = api.get_product_list(price_max=200)
+       ids = [p['id'] for p in data]
+       self.assertIn(self.product_ma.id, ids)
+       self.assertNotIn(self.product_fr.id, ids)
+
+    def test_get_product_list_filters_by_source(self):
+       api = TrendDashboardAPI(self.env)
+       data = api.get_product_list(source='api')
+       ids = [p['id'] for p in data]
+       self.assertIn(self.product_ma.id, ids)
+       self.assertNotIn(self.product_fr.id, ids)
+
+    def test_get_product_list_combines_price_and_source(self):
+       # assertIn/assertNotIn plutot qu'une egalite stricte : les donnees
+       # de demo (demo/dashboard_demo.xml) incluent aussi des produits
+       # source='api' avec un prix <= 200, meme pattern que
+       # test_get_product_list_filters_by_price_max/_by_source ci-dessus.
+       api = TrendDashboardAPI(self.env)
+       data = api.get_product_list(price_max=200, source='api')
+       ids = [p['id'] for p in data]
+       self.assertIn(self.product_ma.id, ids)
+       self.assertNotIn(self.product_fr.id, ids)
+       self.assertEqual(ids[0], self.product_ma.id)
+
+    def test_api_dashboard_filter_route_price_and_source(self):
+       response = self.url_open('/api/dashboard/filter?price_max=200&source=api')
+       self.assertEqual(response.status_code, 200)
+       payload = response.json()
+       ids = [p['id'] for p in payload['products']]
+       self.assertIn(self.product_ma.id, ids)
+       self.assertNotIn(self.product_fr.id, ids)
+
+    def test_dashboard_page_respects_price_and_source_in_url(self):
+       response = self.url_open('/dashboard?price_max=200&source=api')
+       self.assertEqual(response.status_code, 200)
+       # le produit FR (300, scraping) ne doit pas apparaître dans le HTML rendu
+       self.assertNotIn(b'Ecouteurs sans fil', response.content)

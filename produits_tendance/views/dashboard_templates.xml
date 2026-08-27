@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- ============================================================
-         WIN-45 / WIN-50 : Dashboard - Classement produits + filtres
-         dynamiques (catégorie, pays) + Freemium
+         WIN-45 / WIN-50 / WIN-76 / WIN-77 : Dashboard - Classement produits +
+         filtres dynamiques (catégorie, pays, prix max, source) + Freemium
+         + pagination ("Charger plus")
 
          Respecte la charte graphique Winners :
          - uniquement les variables SCSS de _winners_variables.scss
          - toute classe custom préfixée par o_winners_
-         - composants réutilisés : .o_winners_product_card et
-           .o_winners_filter_panel (déjà référencé dans la charte, section 5)
+         - composants réutilisés : .o_winners_product_card,
+           .o_winners_filter_panel et .o_winners_btn_primary (section 5)
 
          Le rendu initial (sans filtre) est fait côté serveur (QWeb).
-         Au changement d'un select du panneau de filtres, le JS
+         Au changement d'un champ du panneau de filtres, le JS
          (dashboard_filters.js) appelle /api/dashboard/filter en AJAX et
-         reconstruit uniquement #o_winners_product_grid, sans recharger
-         la page.
+         reconstruit #o_winners_product_grid, sans recharger la page. Le
+         même appel AJAX est réutilisé par le bouton "Charger plus"
+         (mode "append" plutôt que "replace"), sur demande explicite du
+         ticket WIN-77.
     ============================================================ -->
 
     <template id="template_dashboard" name="Dashboard - Classement produits tendance">
@@ -45,28 +48,51 @@
                         </div>
                     </div>
 
-                    <!-- Panneau de filtres : catégorie + pays -->
+                    <!-- Panneau de filtres : catégorie + pays + prix max + source -->
                     <div class="o_winners_filter_panel mb-4" id="o_winners_filter_panel">
                         <div class="row g-3 align-items-end">
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <label for="o_winners_filter_category" class="form-label">Catégorie</label>
                                 <select id="o_winners_filter_category" class="form-select o_winners_filter_panel__select" name="category_id">
                                     <option value="">Toutes les catégories</option>
                                     <t t-foreach="categories" t-as="cat">
-                                        <option t-att-value="cat['id']"><t t-esc="cat['name']"/></option>
+                                        <option t-att-value="cat['id']" t-att-selected="str(cat['id']) == str(selected_category_id) or None">
+                                            <t t-esc="cat['name']"/>
+                                        </option>
                                     </t>
                                 </select>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <label for="o_winners_filter_country" class="form-label">Pays</label>
                                 <select id="o_winners_filter_country" class="form-select o_winners_filter_panel__select" name="country">
                                     <option value="">Tous les pays</option>
                                     <t t-foreach="countries" t-as="c">
-                                        <option t-att-value="c"><t t-esc="c"/></option>
+                                        <option t-att-value="c" t-att-selected="c == selected_country or None">
+                                            <t t-esc="c"/>
+                                        </option>
                                     </t>
                                 </select>
                             </div>
                             <div class="col-md-2">
+                                <label for="o_winners_filter_price_max" class="form-label">Prix max</label>
+                                <input type="number" min="0" step="1"
+                                       id="o_winners_filter_price_max"
+                                       class="form-control o_winners_filter_panel__input"
+                                       name="price_max"
+                                       t-att-value="selected_price_max"/>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="o_winners_filter_source" class="form-label">Source</label>
+                                <select id="o_winners_filter_source" class="form-select o_winners_filter_panel__select" name="source">
+                                    <option value="">Toutes les sources</option>
+                                    <t t-foreach="sources" t-as="s">
+                                        <option t-att-value="s['value']" t-att-selected="s['value'] == selected_source or None">
+                                            <t t-esc="s['label']"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
                                 <button type="button" id="o_winners_filter_reset" class="btn btn-link o_winners_filter_panel__reset">
                                     Réinitialiser
                                 </button>
@@ -79,6 +105,20 @@
                         <t t-call="produits_tendance.template_product_cards">
                             <t t-set="products" t-value="products"/>
                         </t>
+                    </div>
+
+                    <!-- Pagination (WIN-45/77) : bouton "Charger plus", réutilise
+                         l'AJAX /api/dashboard/filter en mode "append". Absent du
+                         DOM si has_more est faux (ex: compte Gratuit à 5 produits
+                         ou dernière page atteinte) : dashboard_filters.js ne
+                         recrée alors pas de bouton tant qu'un has_more=true
+                         n'est pas renvoyé par une réponse AJAX suivante. -->
+                    <div id="o_winners_load_more_wrapper" class="o_winners_load_more_wrapper" t-if="has_more">
+                        <button type="button" id="o_winners_load_more"
+                                class="o_winners_btn_primary"
+                                t-att-data-next-offset="next_offset">
+                            Charger plus
+                        </button>
                     </div>
 
                 </div>

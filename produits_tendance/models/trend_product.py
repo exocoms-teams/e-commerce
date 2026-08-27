@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from .trend_ad import latest_ads_by_ref
@@ -12,6 +13,7 @@ class TrendProduct(models.Model):
     product_ref = fields.Char(string="Référence produit (site source)")
     category_id = fields.Many2one('trend.category', string="Catégorie")
     sales_count = fields.Integer(string="Nombre de ventes")
+    price = fields.Float(string="Prix", help="Prix du produit sur le site source, utilisé pour le filtre price_max (WIN-45/76).")
     date = fields.Date(string="Date de collecte")
     score_site_x = fields.Float(string="Score site source")
     country = fields.Char(string="Pays")
@@ -138,31 +140,62 @@ class TrendProduct(models.Model):
 
     # --- SCORE DE TENDANCE ---
     def compute_trend_score(self, previous_metrics=None):
-        """Calcule le score de tendance de ce produit (formule décrite dans
-        score.md) en croisant sales_count/score_site_x (trend.product) avec
-        les likes_count/shares_count agrégés des trend.ad liés.
-        """
-        # Create ScoringEngine instance
+        """Calcule le score de tendance de ce produit."""
+        self.ensure_one()
         scoring_engine = ScoringEngine()
+        now = datetime.now()
 
-        # Handle the case where previous_metrics is None (convert to required dict)
-        if previous_metrics is None:
-            previous_metrics = {'ventes': 0, 'likes': 0, 'partages': 0, 'ads': 0}
-        # FILTRER LES PUBLICITÉS EN DOUBLE AVANT LE CALCUL
-        latest_ads = latest_ads_by_ref(self.ad_ids)
-        # Build current metrics (same logic as in trend_score_calculator.build_current_metrics)
+        # Fenêtre actuelle (30 derniers jours)
+        current_start = now - timedelta(days=30)
+        current_end = now
+
+        current_domain = [
+            ('product_id', '=', self.id),
+            ('computed_at', '>=', current_start),
+            ('computed_at', '<=', current_end),
+        ]
+        current_scores = self.env['trend.score'].search(current_domain)
         current_metrics = {
-            'ventes': self.sales_count or 0,
-            'likes': sum(latest_ads.mapped('likes_count')),
-            'partages': sum(latest_ads.mapped('shares_count')),
-            'ads': len(latest_ads),
+            'ventes': sum(current_scores.mapped('metric_sales')),
+            'likes': sum(current_scores.mapped('metric_likes')),
+            'partages': sum(current_scores.mapped('metric_shares')),
+            'ads': sum(current_scores.mapped('metric_ads_count')),
         }
 
-        # Normalize source score (same logic as in trend_score_calculator.normalize_source_score)
-        source_score = 0.0
-        if self.score_site_x:
-            source_score = max(0.0, min(self.score_site_x / 10.0, 1.0))
+        # Calculer previous_metrics SEULEMENT s'il n'est pas passé en paramètre
+        if previous_metrics is None:
+            previous_start = now - timedelta(days=60)
+            previous_end = now - timedelta(days=30)
 
-        self.ensure_one()
-        # Calculate score using ScoringEngine
+            previous_domain = [
+                ('product_id', '=', self.id),
+                ('computed_at', '>=', previous_start),
+                ('computed_at', '<', previous_end),
+            ]
+            previous_scores = self.env['trend.score'].search(previous_domain)
+            previous_metrics = {
+                'ventes': sum(previous_scores.mapped('metric_sales')),
+                'likes': sum(previous_scores.mapped('metric_likes')),
+                'partages': sum(previous_scores.mapped('metric_shares')),
+                'ads': sum(previous_scores.mapped('metric_ads_count')),
+            }
+
+        # Récupération de source_score via ir.config_parameter
+        source_score = 0.0
+        IrConfigParam = self.env['ir.config_parameter'].sudo()
+        source_mapping = {
+            'scraping': 'winners.source_score_scraping',
+            'crowdsourcing': 'winners.source_score_crowdsourcing',
+            'api': 'winners.source_score_api',
+        }
+        param_name = source_mapping.get(self.source)
+        if param_name:
+            param_value = IrConfigParam.get_param(param_name)
+            if param_value is not None:
+                try:
+                    source_score = float(param_value)
+                    source_score = max(0.0, min(source_score, 1.0))
+                except (ValueError, TypeError):
+                    source_score = 0.0
+
         return scoring_engine.calculate_trend_score(current_metrics, previous_metrics, source_score)

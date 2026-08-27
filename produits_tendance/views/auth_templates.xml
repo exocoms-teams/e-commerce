@@ -1,6 +1,7 @@
 <odoo>
 <!--  ============================================================
          WIN-47 : Module Connexion / Inscription
+<<<<<<< HEAD
          Hérite des templates natifs auth_signup pour appliquer la
          charte graphique Winners (préfixe o_winners_).
 
@@ -43,6 +44,26 @@
          (web.login / auth_signup.signup), qui restent fonctionnellement
          intacts (mêmes champs, mêmes name=, même csrf_token, même
          action de soumission).
+=======
+         Application du style Winners sur les formulaires d'authentification
+    ============================================================ -->
+
+    <!-- Surcharge globale du formulaire d'inscription pour ajouter les classes Winners -->
+    <template id="auth_signup_signup_winners" inherit_id="auth_signup.signup" name="Winners - Formulaire inscription">
+        <!-- On cible le formulaire lui-même au lieu de chercher des classes instables -->
+        <xpath expr="//form" position="attributes">
+            <attribute name="class" add="o_winners_signup_form" separator=" "/>
+        </xpath>
+    </template>
+
+    <!-- Surcharge des champs additionnels (mot de passe) -->
+    <template id="auth_signup_fields_winners" inherit_id="auth_signup.fields" name="Winners - Champs mot de passe">
+        <!-- On ajoute une classe enveloppe globale si besoin -->
+        <xpath expr="//div[hasclass('mb-3')]" position="attributes">
+            <attribute name="class" add="o_winners_signup_field" separator=" "/>
+        </xpath>
+    </template>
+>>>>>>> c51b3c9b1159b8f81a86c6bfdb98e90045191376
 
          web.login_layout est le template partagé par /web/login,
          /web/signup et /web/reset_password : le surcharger une seule
