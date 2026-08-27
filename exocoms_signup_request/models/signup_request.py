@@ -464,11 +464,7 @@ class ExocomsSignupRequest(models.Model):
 
         # Jeton d'invitation Odoo : c'est lui qui autorisera la page native
         # /web/signup?token=... à créer l'utilisateur et à ouvrir la session.
-        partner.signup_prepare(
-            signup_type='signup',
-            expiration=fields.Datetime.now() + timedelta(
-                hours=self._get_int_param(
-                    'token_ttl_hours', company=record.company_id)))
+        partner.signup_prepare(signup_type='signup')
 
         record.write({
             'state': 'confirmed',
