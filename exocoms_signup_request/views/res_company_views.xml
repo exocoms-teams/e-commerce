@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_company_form_signup" model="ir.ui.view">
+        <field name="name">res.company.form.exocoms.signup</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Inscription portail (EXOCOMS)"
+                       groups="base.group_system">
+                    <field name="exocoms_signup_override"/>
+                    <group invisible="not exocoms_signup_override">
+                        <field name="exocoms_token_ttl_hours"/>
+                        <field name="exocoms_max_per_ip"/>
+                        <field name="exocoms_block_disposable"/>
+                        <field name="exocoms_check_mx"/>
+                        <field name="exocoms_restrict_allowed"/>
+                    </group>
+                    <div class="text-muted" invisible="exocoms_signup_override">
+                        Cette société applique les réglages généraux définis
+                        dans Paramètres → Inscription portail.
+                    </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

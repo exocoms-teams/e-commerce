@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_signup_domain_list" model="ir.ui.view">
+        <field name="name">exocoms.signup.domain.list</field>
+        <field name="model">exocoms.signup.domain</field>
+        <field name="arch" type="xml">
+            <list string="Domaines email" editable="bottom">
+                <field name="name" placeholder="exemple.com"/>
+                <field name="kind"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       options="{'no_create': True}" placeholder="Toutes sociétés"/>
+                <field name="note" placeholder="Commentaire interne"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_signup_domain_search" model="ir.ui.view">
+        <field name="name">exocoms.signup.domain.search</field>
+        <field name="model">exocoms.signup.domain</field>
+        <field name="arch" type="xml">
+            <search string="Domaines email">
+                <field name="name"/>
+                <filter name="filter_blocked" string="Refusés"
+                        domain="[('kind', '=', 'blocked')]"/>
+                <filter name="filter_allowed" string="Autorisés"
+                        domain="[('kind', '=', 'allowed')]"/>
+                <separator/>
+                <filter name="filter_archived" string="Archivés"
+                        domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter name="filter_all_companies" string="Toutes sociétés"
+                        domain="[('company_id', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_kind" string="Type"
+                            context="{'group_by': 'kind'}"/>
+                    <filter name="group_company" string="Société"
+                            context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_signup_domain" model="ir.actions.act_window">
+        <field name="name">Domaines d'inscription</field>
+        <field name="res_model">exocoms.signup.domain</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="view_signup_domain_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Ajouter un domaine</p>
+            <p>
+                Les domaines « Refusés » sont rejetés à l'inscription. Les
+                domaines « Autorisés » ne servent que si la restriction par
+                liste blanche est activée dans les paramètres généraux.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_signup_domain"
+              name="Domaines d'inscription"
+              parent="base.menu_email"
+              action="action_signup_domain"
+              sequence="90"
+              groups="base.group_system"/>
+
+</odoo>
