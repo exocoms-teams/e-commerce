@@ -9,14 +9,22 @@ class TrendScoringOrchestrator(models.AbstractModel):
 
     @api.model
     def score_product(self, product, computed_at=None):
-        """Calcule et persiste un nouveau score pour un produit.
-
-        Cette méthode ne modifie jamais un trend.score existant.
-        Chaque appel crée une nouvelle ligne d'historique.
-        """
         product.ensure_one()
 
-        latest_score = product.score_ids.sorted(
+        computed_at = computed_at or fields.Datetime.now()
+        score_date = fields.Date.to_date(computed_at)
+
+        existing_score = self.env['trend.score'].search([
+            ('product_id', '=', product.id),
+            ('score_date', '=', score_date),
+        ], limit=1)
+
+        if existing_score:
+            return existing_score
+
+        latest_score = product.score_ids.filtered(
+            lambda score: score.score_date < score_date
+        ).sorted(
             'computed_at',
             reverse=True,
         )[:1]
@@ -38,17 +46,16 @@ class TrendScoringOrchestrator(models.AbstractModel):
             current_metrics=current_metrics,
         )
 
-        score_values = {
+        return self.env['trend.score'].create({
             'product_id': product.id,
+            'score_date': score_date,
             'computed_score': score_value,
-            'computed_at': computed_at or fields.Datetime.now(),
+            'computed_at': computed_at,
             'metric_sales': current_metrics['ventes'],
             'metric_likes': current_metrics['likes'],
             'metric_shares': current_metrics['partages'],
             'metric_ads_count': current_metrics['ads'],
-        }
-
-        return self.env['trend.score'].create(score_values)
+        })
 
     @api.model
     def run_daily_scoring(self):

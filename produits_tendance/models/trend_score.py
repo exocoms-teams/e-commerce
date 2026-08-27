@@ -67,3 +67,14 @@ class TrendScore(models.Model):
         string="Publicités actives de la période (A_T)",
         default=0,
     )
+    #unicité trend.score par produit + date du jour
+    score_date = fields.Date(
+        string="Date du score",
+        required=True,
+        default=fields.Date.context_today,
+        index=True,
+    )
+    _product_score_date_uniq = models.Constraint(
+        'unique(product_id, score_date)',
+        "Un seul score est autorisé par produit et par jour.",
+    )
