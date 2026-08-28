@@ -38,6 +38,13 @@ class WebsiteSaleSupplements(WebsiteSale):
             ])
         
             _logger.warning('allergen domain : %s', domain)
+
+
+            products = request.env['product.template'].search(domain)
+
+            _logger.warning("DOMAIN :", domain)
+            _logger.warning("PRODUCTS :", products)
+            _logger.warning("VEGAN VALUES :", products.mapped('is_vegan'))
         return domain
 
     
