@@ -15,7 +15,6 @@ class WebsiteSaleSupplements(WebsiteSale):
         if request.httprequest.args.get('vegan'):
             # Utilisation standard Odoo 19+
             domain = Domain(domain) & Domain([('is_vegan', '=', True)])
-            print(">>> _get_search_domain APPELE")
 
         
         # Filtre Allergènes

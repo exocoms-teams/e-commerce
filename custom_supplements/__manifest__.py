@@ -24,6 +24,7 @@
         # 2. Ton design spécifique
         'web.assets_frontend': [
             'custom_supplements/static/src/scss/style.scss',
+        'custom_supplements/static/src/js/shop_filters.js',
         ],
 
         'web.assets_backend': [
