@@ -44,6 +44,7 @@ class TrendScore(models.Model):
         precompute=True,
         index=True,
     )
+    
     rank = fields.Integer(
         string="Classement",
         default=0,
