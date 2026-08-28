@@ -40,7 +40,7 @@ class WebsiteSaleSupplements(WebsiteSale):
             _logger.warning('allergen domain : %s', domain)
 
 
-            products = request.env['product.template'].search(domain)
+        products = request.env['product.template'].search(domain)
 
         _logger.warning("DOMAIN : %s", domain)
         _logger.warning("PRODUCTS : %s", products)
