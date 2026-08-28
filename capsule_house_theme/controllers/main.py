@@ -160,7 +160,13 @@ class CapsuleHouseWebsite(Website):
             ('website_id', '=', website.id),
             ('is_published', '=', True),
         ]
-        featured_products = Product.search(domain, limit=8, order='website_sequence asc')
+        # limit=16 (v19.0.1.0.102, était 8) : "Meilleures ventes" est
+        # désormais un vrai carousel (voir featured_products.xml), même
+        # comportement que exocoms_theme (dashbord.xml, s_carousel_best)
+        # — jusqu'à 16 produits regroupés par lots de 4 slides. Retour
+        # client : "mes produit qui s'affiche sur les meilleur n'ont pas
+        # la même configuration que le carousel de exocoms".
+        featured_products = Product.search(domain, limit=16, order='website_sequence asc')
 
         # Métriques de la maquette de référence : "4 modèles disponibles"
         # est un vrai comptage (sûr à afficher). "2 340 pods installés" et

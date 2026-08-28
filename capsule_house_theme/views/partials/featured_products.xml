@@ -18,6 +18,26 @@
         request.env.lang que hero.xml/footer.xml. Les données produit
         elles-mêmes (item['name'], item['category_name']) ne sont pas
         traduites, comme partout ailleurs dans ce module.
+
+        CARROUSEL (v19.0.1.0.102) : jusqu'ici une simple grille CSS
+        statique (tous les produits affichés d'un coup, sans
+        défilement) — retour client, comparaison directe avec
+        exocoms_theme : "mes produit qui s'affiche sur les meilleur
+        n'ont pas la même configuration que le carousel de exocoms".
+        Vérification du vrai code d'exocoms_theme (views/partials/
+        dashbord.xml, section "MEILLEURES VENTES") : un carousel
+        Bootstrap 5 natif (data-bs-ride="carousel"), jusqu'à 16
+        produits regroupés par lots de 4 (plusieurs "slides"),
+        défilement automatique toutes les 5s (data-bs-interval="5000"),
+        flèches précédent/suivant. Aucun JS custom nécessaire côté
+        exocoms : uniquement les attributs data-bs-* natifs, déjà
+        fournis par le bundle Bootstrap 5 embarqué par Odoo (web
+        frontend) — reproduit ici à l'identique, avec nos propres
+        classes de carte (.ch-product-card, inchangées) plutôt que
+        celles d'exocoms (.o_carousel_product_card). `featured_products`
+        est désormais découpé en lots de 4 (`featured_chunks`) via un
+        t-set, comme new_chunks/best_chunks côté exocoms. `limit=16`
+        posé dans controllers/main.py (index()), était 8.
     -->
     <template id="partial_featured_products" name="Capsule House - Meilleures ventes">
         <section class="ch-bestsellers">
@@ -30,42 +50,66 @@
                     <h2 class="ch-section-title">Best sellers</h2>
                     <a href="/shop" class="ch-see-all">See all models →</a>
                 </div>
-                <div class="ch-bestsellers-grid" t-if="featured_products">
-                    <t t-foreach="featured_products" t-as="item">
-                        <div class="ch-product-card">
-                            <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-img">
-                                <img t-attf-src="/web/image/product.template/#{ item['id'] }/image_512"
-                                     t-att-alt="item['name']"/>
-                            </a>
-                            <div class="ch-product-card-body">
-                                <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-name" t-esc="item['name']"/>
-                                <span class="ch-product-card-spec" t-if="item['category_name']" t-esc="item['category_name']"/>
-                                <div class="ch-product-card-rating" t-if="item['rating_count']">
-                                    <i class="fa fa-star"/>
-                                    <span t-esc="'(%s)' % item['rating_count']"/>
-                                </div>
-                                <div class="ch-product-card-price-row">
-                                    <span class="ch-product-card-price"
-                                          t-esc="item['price']"
-                                          t-options="{'widget': 'monetary', 'display_currency': item['currency']}"/>
-                                    <span class="ch-product-card-compare-price" t-if="item['has_discount']"
-                                          t-esc="item['compare_price']"
-                                          t-options="{'widget': 'monetary', 'display_currency': item['currency']}"/>
-                                </div>
+
+                <t t-if="featured_products">
+                    <t t-set="featured_chunks" t-value="[featured_products[i:i+4] for i in range(0, len(featured_products), 4)]"/>
+                    <div class="ch-bestsellers-carousel-wrap">
+                        <div id="ch_bestsellers_carousel" class="carousel slide" t-att-data-bs-ride="'carousel' if len(featured_chunks) > 1 else None" data-bs-interval="5000">
+                            <div class="carousel-inner">
+                                <t t-foreach="featured_chunks" t-as="chunk">
+                                    <div t-attf-class="carousel-item#{' active' if chunk_first else ''}">
+                                        <div class="ch-bestsellers-grid">
+                                            <t t-foreach="chunk" t-as="item">
+                                                <div class="ch-product-card">
+                                                    <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-img">
+                                                        <img t-attf-src="/web/image/product.template/#{ item['id'] }/image_512"
+                                                             t-att-alt="item['name']"/>
+                                                    </a>
+                                                    <div class="ch-product-card-body">
+                                                        <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-name" t-esc="item['name']"/>
+                                                        <span class="ch-product-card-spec" t-if="item['category_name']" t-esc="item['category_name']"/>
+                                                        <div class="ch-product-card-rating" t-if="item['rating_count']">
+                                                            <i class="fa fa-star"/>
+                                                            <span t-esc="'(%s)' % item['rating_count']"/>
+                                                        </div>
+                                                        <div class="ch-product-card-price-row">
+                                                            <span class="ch-product-card-price"
+                                                                  t-esc="item['price']"
+                                                                  t-options="{'widget': 'monetary', 'display_currency': item['currency']}"/>
+                                                            <span class="ch-product-card-compare-price" t-if="item['has_discount']"
+                                                                  t-esc="item['compare_price']"
+                                                                  t-options="{'widget': 'monetary', 'display_currency': item['currency']}"/>
+                                                        </div>
+                                                    </div>
+                                                    <t t-if="request.env.lang == 'fr_FR'">
+                                                        <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-add" title="Voir le produit">
+                                                            <i class="fa fa-plus"/>
+                                                        </a>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-add" title="View product">
+                                                            <i class="fa fa-plus"/>
+                                                        </a>
+                                                    </t>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
                             </div>
-                            <t t-if="request.env.lang == 'fr_FR'">
-                                <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-add" title="Voir le produit">
-                                    <i class="fa fa-plus"/>
+                            <t t-if="len(featured_chunks) > 1">
+                                <a class="ch-bestsellers-arrow ch-bestsellers-arrow-prev" href="#ch_bestsellers_carousel" data-bs-slide="prev" role="button">
+                                    <i class="fa fa-chevron-left"/>
+                                    <span class="visually-hidden"><t t-if="request.env.lang == 'fr_FR'">Précédent</t><t t-else="">Previous</t></span>
                                 </a>
-                            </t>
-                            <t t-else="">
-                                <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-add" title="View product">
-                                    <i class="fa fa-plus"/>
+                                <a class="ch-bestsellers-arrow ch-bestsellers-arrow-next" href="#ch_bestsellers_carousel" data-bs-slide="next" role="button">
+                                    <i class="fa fa-chevron-right"/>
+                                    <span class="visually-hidden"><t t-if="request.env.lang == 'fr_FR'">Suivant</t><t t-else="">Next</t></span>
                                 </a>
                             </t>
                         </div>
-                    </t>
-                </div>
+                    </div>
+                </t>
                 <p t-else="" class="ch-featured-empty">
                     <t t-if="request.env.lang == 'fr_FR'">Les modules Capsule House arrivent très bientôt.</t>
                     <t t-else="">Capsule House models are coming very soon.</t>

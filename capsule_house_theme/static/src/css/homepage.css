@@ -395,11 +395,47 @@
     margin-bottom: 28px;
 }
 
+/* v19.0.1.0.102 : "Meilleures ventes" est désormais un vrai carousel
+   Bootstrap 5 (voir featured_products.xml, comparaison avec
+   exocoms_theme/views/partials/dashbord.xml, "MEILLEURES VENTES") —
+   .ch-bestsellers-grid reste utilisée mais maintenant PAR SLIDE (un lot
+   de 4 produits maximum), imbriquée dans un .carousel-item Bootstrap
+   plutôt que d'afficher tous les produits d'un coup. Le mécanisme de
+   défilement (transform/transition) est natif Bootstrap (déjà chargé
+   par le frontend Odoo), aucun CSS custom nécessaire pour ça — seuls
+   .ch-bestsellers-carousel-wrap et .ch-bestsellers-arrow sont propres
+   à ce thème (flèches stylées avec la palette Capsule House plutôt que
+   les .oi/.bg-700 d'exocoms). */
+.ch-bestsellers-carousel-wrap {
+    position: relative;
+}
+
 .ch-bestsellers-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 22px;
 }
+
+.ch-bestsellers-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ch-ink);
+    color: var(--ch-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    z-index: 3;
+    box-shadow: var(--shadow-md);
+    transition: background var(--transition);
+}
+.ch-bestsellers-arrow:hover { background: var(--ch-terracotta); color: var(--ch-white); text-decoration: none; }
+.ch-bestsellers-arrow-prev { left: -20px; }
+.ch-bestsellers-arrow-next { right: -20px; }
 
 .ch-product-card {
     position: relative;
@@ -712,6 +748,8 @@
     .ch-hero-illustration { min-height: 320px; }
     .ch-bestsellers-grid { grid-template-columns: repeat(2, 1fr); }
     .ch-testi-grid { grid-template-columns: repeat(2, 1fr); }
+    .ch-bestsellers-arrow-prev { left: 0; }
+    .ch-bestsellers-arrow-next { right: 0; }
 }
 
 @media (max-width: 768px) {
