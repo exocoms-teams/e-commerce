@@ -6,13 +6,10 @@ class TrendScore(models.Model):
     _description = "Score de tendance d'un produit"
     _order = "rank asc"
 
-    _sql_constraints = [
-        (
-            "trend_score_product_date_uniq",
-            "unique(product_id, score_date)",
-            "Un seul score de tendance est autorisé par produit et par jour.",
-        ),
-    ]
+    _unique_product_score_date = models.Constraint(
+        "UNIQUE(product_id, score_date)",
+        "Un seul score de tendance est autorisé par produit et par jour.",
+    )
 
     product_id = fields.Many2one(
         comodel_name="trend.product",
@@ -39,10 +36,12 @@ class TrendScore(models.Model):
         default=fields.Datetime.now,
         index=True,
     )
+
     score_date = fields.Date(
         string="Date du score",
         compute="_compute_score_date",
         store=True,
+        precompute=True,
         index=True,
     )
     rank = fields.Integer(
