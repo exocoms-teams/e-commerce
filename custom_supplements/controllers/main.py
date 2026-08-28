@@ -43,8 +43,14 @@ class WebsiteSaleSupplements(WebsiteSale):
         return options
 
     def _get_additional_shop_values(self, values, **kwargs):
+        allergens_exclude_ids = [
+            int(value)
+            for value in request.httprequest.args.getlist('allergens_exclude')
+            if value.isdigit()
+        ]
         values = super()._get_additional_shop_values(values, **kwargs)
         values['supplement_vegan'] = bool(request.httprequest.args.get('vegan'))
         values['allergens'] = request.env['allergen'].sudo().search([])
+        values['allergens_exclude_ids'] = allergens_exclude_ids
         return values
 
