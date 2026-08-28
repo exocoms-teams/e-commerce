@@ -5,13 +5,14 @@ import json
 from odoo import http
 from odoo.http import request
 from odoo.addons.website.controllers.main import Website
-from odoo.addons.http_routing.models.ir_http import slug as slugify
-# NB : importé sous l'alias `slugify` (pas `slug`) car la route
-# nos_gammes_detail(self, slug, **kw) ci-dessous a déjà un paramètre
-# nommé `slug` (le slug de la gamme dans l'URL /nos-gammes/<slug>) —
-# un import nommé `slug` serait masqué (shadowed) par ce paramètre à
-# l'intérieur de la méthode, et l'appeler planterait (TypeError: 'str'
-# object is not callable).
+# NB (v19.0.1.0.104) : PAS d'import `from odoo.addons.http_routing.
+# models.ir_http import slug` — cassait le chargement du module en
+# production ("ImportError: cannot import name 'slug' from
+# odoo.addons.http_routing.models.ir_http"). En Odoo 19, la fonction
+# `slug()` a été déplacée en méthode du modèle ir.http
+# (request.env['ir.http']._slug(record)) plutôt qu'un import direct
+# depuis ir_http.py — utilisée ainsi ci-dessous dans
+# nos_gammes_detail().
 
 
 from ..data_definition.__init__ import GAMMES_DATA, USAGES_DATA, DEVIS_SUR_MESURE_DATA
@@ -487,7 +488,9 @@ class CapsuleHouseWebsite(Website):
             ('parent_id', '=', False),
             '|', ('website_id', '=', website.id), ('website_id', '=', False),
         ], limit=1)
-        shop_category_url = ('/shop/category/%s' % slugify(category)) if category else False
+        shop_category_url = (
+            '/shop/category/%s' % request.env['ir.http']._slug(category)
+        ) if category else False
 
         return request.render('capsule_house_theme.page_nos_gammes_detail', {
             'gamme': gamme,
