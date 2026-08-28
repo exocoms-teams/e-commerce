@@ -8,6 +8,7 @@ publicWidget.registry.CustomSupplementFilters = publicWidget.Widget.extend({
     },
 
     _onFilterChange: function () {
+        console.log("shop filter loaded")
         const params = new URLSearchParams(window.location.search);
 
         const vegan = this.el.querySelector("#filter_vegan");
