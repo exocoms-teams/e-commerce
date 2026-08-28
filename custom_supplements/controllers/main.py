@@ -3,19 +3,27 @@ from odoo.http import request
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.fields import Domain
 
+import logging
+
+_logger = logging.getLogger(__name__)
+
 class WebsiteSaleSupplements(WebsiteSale):
     """Keep supplement filters compatible with the native Odoo shop flow."""
 
     def _get_search_domain(self, search, category, attrib_values, search_in_description=True, **kwargs):
+        _logger.warning('starting _get_search_domain')
         domain = super()._get_search_domain(
             search, category, attrib_values, search_in_description, **kwargs
         )
+        _logger.warning('initial domain : %s', domain)
+
 
         # Filtre Vegan
         if request.httprequest.args.get('vegan'):
             # Utilisation standard Odoo 19+
             domain = Domain(domain) & Domain([('is_vegan', '=', True)])
 
+            _logger.warning('vegan domain : %s', domain)
         
         # Filtre Allergènes
         allergen_ids = [
@@ -26,8 +34,9 @@ class WebsiteSaleSupplements(WebsiteSale):
 
         if allergen_ids:
             domain = Domain(domain) & Domain([('allergen_ids', 'not in', allergen_ids)])
-        
 
+        
+            _logger.warning('allergen domain : %s', domain)
         return domain
 
     
