@@ -12,7 +12,7 @@ class WebsiteSaleSupplements(WebsiteSale):
 
     def _get_shop_domain(self, search, category, attrib_values, search_in_description=True, **kwargs):
         _logger.warning('starting _get_search_domain')
-        domain = super()._get_search_domain(
+        domain = super()._get_shop_domain(
             search, category, attrib_values, search_in_description, **kwargs
         )
         _logger.warning('initial domain : %s', domain)
