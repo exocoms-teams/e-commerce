@@ -29,6 +29,16 @@
         (controllers/main.py). Scopée à notre site via
         _scope_layout_views() (external id
         capsule_house_theme.page_nos_gammes_detail).
+
+        BOUTON "Voir dans la boutique" (v19.0.1.0.103) : demande client
+        — "pour chaque gamme au niveau de leur hero il y a un bouton qui
+        les envoie directement à la catégorie correspondante du
+        filmstrip". `shop_category_url` est calculé par le contrôleur
+        (nos_gammes_detail()) à partir de la VRAIE catégorie boutique
+        product.public.category de même nom que la gamme (jamais une
+        URL fabriquée) — le bouton est masqué (t-if) si cette catégorie
+        n'existe pas encore sur cette base (maintenance pas encore
+        jouée).
     -->
     <template id="page_nos_gammes_detail" name="Capsule House - Gamme (détail)">
         <t t-call="website.layout">
@@ -60,8 +70,17 @@
                         <span t-if="gamme['status'] != 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">À confirmer</span>
                         <span t-if="gamme['status'] != 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">To be confirmed</span>
                     </div>
+                    <div class="ch-gamme-hero-actions" t-if="shop_category_url">
+                        <a t-att-href="shop_category_url" class="ch-btn ch-btn-primary" t-if="request.env.lang == 'fr_FR'">
+                            Voir dans la boutique <i class="fa fa-arrow-right"/>
+                        </a>
+                        <a t-att-href="shop_category_url" class="ch-btn ch-btn-primary" t-if="request.env.lang != 'fr_FR'">
+                            View in shop <i class="fa fa-arrow-right"/>
+                        </a>
+                    </div>
                 </div>
             </section>
+
 
             <section class="ch-gammes-content">
                 <div class="container">

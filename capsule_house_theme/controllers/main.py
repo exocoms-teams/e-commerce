@@ -5,6 +5,13 @@ import json
 from odoo import http
 from odoo.http import request
 from odoo.addons.website.controllers.main import Website
+from odoo.addons.http_routing.models.ir_http import slug as slugify
+# NB : importé sous l'alias `slugify` (pas `slug`) car la route
+# nos_gammes_detail(self, slug, **kw) ci-dessous a déjà un paramètre
+# nommé `slug` (le slug de la gamme dans l'URL /nos-gammes/<slug>) —
+# un import nommé `slug` serait masqué (shadowed) par ce paramètre à
+# l'intérieur de la méthode, et l'appeler planterait (TypeError: 'str'
+# object is not callable).
 
 
 from ..data_definition.__init__ import GAMMES_DATA, USAGES_DATA, DEVIS_SUR_MESURE_DATA
@@ -455,13 +462,36 @@ class CapsuleHouseWebsite(Website):
         """Page détail d'une gamme — voir nos_gammes() ci-dessus pour le
         contexte. 404 natif si le slug ne correspond à aucune entrée de
         GAMMES_DATA (jamais de page fabriquée pour un slug inconnu).
+
+        v19.0.1.0.103 — demande client : "pour chaque gamme au niveau de
+        leur hero il y a un bouton qui les envoie directement à la
+        catégorie correspondante du filmstrip" (le filmstrip de
+        catégories natif d'Odoo sur /shop — voir SHOP_CATEGORIES/
+        _setup_shop_categories dans setup_utils.py, même 5 gammes que
+        top-level de catégorie boutique). On résout la VRAIE catégorie
+        boutique (product.public.category) de même nom que la gamme,
+        avec exactement le même domaine de recherche que
+        _setup_shop_categories() (nom + website_id scopé/global) — si
+        elle n'existe pas encore (pas de maintenance jouée), le bouton
+        est simplement masqué côté template plutôt que de fabriquer un
+        lien mort.
         """
-        
         gamme = next((g for g in GAMMES_DATA if g['slug'] == slug), None)
         if not gamme:
             return request.not_found()
+
+        website = request.website
+        Category = request.env['product.public.category'].sudo()
+        category = Category.search([
+            ('name', '=', gamme['name']),
+            ('parent_id', '=', False),
+            '|', ('website_id', '=', website.id), ('website_id', '=', False),
+        ], limit=1)
+        shop_category_url = ('/shop/category/%s' % slugify(category)) if category else False
+
         return request.render('capsule_house_theme.page_nos_gammes_detail', {
             'gamme': gamme,
+            'shop_category_url': shop_category_url,
         })
 
     @http.route('/avis', type='http', auth='public', website=True, sitemap=True)
