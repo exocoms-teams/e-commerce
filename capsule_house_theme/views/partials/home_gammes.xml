@@ -52,6 +52,19 @@
         grille CSS qui se réorganise nativement sur petit écran, plus
         besoin de <div> de mise en page entre la zone et les sections.
 
+        CORRECTIF CONTENU (v19.0.1.0.98) : retour client, capture à
+        l'appui — 3 des 5 cartes (Cabine, Modulaire, Pliable)
+        affichaient encore le badge "À confirmer"/"To be confirmed" et
+        une tagline générique ("Formats à définir"), texte figé écrit en
+        dur en v19.0.1.0.87 et jamais remis à jour depuis. Or GAMMES_DATA
+        (data_definition/__init__.py), qui pilote les vraies pages détail
+        /nos-gammes/<slug>, marque les 5 gammes en
+        'status': GAMME_STATUS_DISPONIBLE avec un tagline_fr/tagline_en
+        complet pour chacune — les pages détail sont prêtes, seules les
+        cartes de l'accueil étaient en retard. Les 3 cartes concernées
+        reprennent maintenant le badge "Détails disponibles"/"Details
+        available" et le tagline_fr/tagline_en exact de GAMMES_DATA.
+
         Scopée à notre site via _scope_layout_views() (external id
         capsule_house_theme.partial_home_gammes).
     -->
@@ -80,8 +93,8 @@
                 <a class="ch-gamme-card-link" href="/nos-gammes/cabine">
                     <div class="ch-gamme-card-icon"><i class="fa fa-th-large"/></div>
                     <span class="ch-gamme-card-name">Cabine</span>
-                    <span class="ch-gamme-badge ch-gamme-badge-tbd">À confirmer</span>
-                    <span class="ch-gamme-card-tagline">Formats à définir</span>
+                    <span class="ch-gamme-badge ch-gamme-badge-ok">Détails disponibles</span>
+                    <span class="ch-gamme-card-tagline">3 tailles disponibles · 10 à 25 m²</span>
                     <span class="ch-gamme-card-cta">Voir la gamme <i class="fa fa-arrow-right"/></span>
                 </a>
             </section>
@@ -100,8 +113,8 @@
                 <a class="ch-gamme-card-link" href="/nos-gammes/modulaire">
                     <div class="ch-gamme-card-icon"><i class="fa fa-puzzle-piece"/></div>
                     <span class="ch-gamme-card-name">Modulaire</span>
-                    <span class="ch-gamme-badge ch-gamme-badge-tbd">À confirmer</span>
-                    <span class="ch-gamme-card-tagline">Système extensible — formats à définir</span>
+                    <span class="ch-gamme-badge ch-gamme-badge-ok">Détails disponibles</span>
+                    <span class="ch-gamme-card-tagline">Système extensible · modules combinables à volonté</span>
                     <span class="ch-gamme-card-cta">Voir la gamme <i class="fa fa-arrow-right"/></span>
                 </a>
             </section>
@@ -110,8 +123,8 @@
                 <a class="ch-gamme-card-link" href="/nos-gammes/pliable">
                     <div class="ch-gamme-card-icon"><i class="fa fa-inbox"/></div>
                     <span class="ch-gamme-card-name">Pliable</span>
-                    <span class="ch-gamme-badge ch-gamme-badge-tbd">À confirmer</span>
-                    <span class="ch-gamme-card-tagline">Structure repliable — formats à définir</span>
+                    <span class="ch-gamme-badge ch-gamme-badge-ok">Détails disponibles</span>
+                    <span class="ch-gamme-card-tagline">3 tailles disponibles · 14 à 38 m²</span>
                     <span class="ch-gamme-card-cta">Voir la gamme <i class="fa fa-arrow-right"/></span>
                 </a>
             </section>
@@ -141,8 +154,8 @@
                 <a class="ch-gamme-card-link" href="/nos-gammes/cabine">
                     <div class="ch-gamme-card-icon"><i class="fa fa-th-large"/></div>
                     <span class="ch-gamme-card-name">Cabine</span>
-                    <span class="ch-gamme-badge ch-gamme-badge-tbd">To be confirmed</span>
-                    <span class="ch-gamme-card-tagline">Formats to be defined</span>
+                    <span class="ch-gamme-badge ch-gamme-badge-ok">Details available</span>
+                    <span class="ch-gamme-card-tagline">3 sizes available · 10 to 25 sqm</span>
                     <span class="ch-gamme-card-cta">View range <i class="fa fa-arrow-right"/></span>
                 </a>
             </section>
@@ -161,8 +174,8 @@
                 <a class="ch-gamme-card-link" href="/nos-gammes/modulaire">
                     <div class="ch-gamme-card-icon"><i class="fa fa-puzzle-piece"/></div>
                     <span class="ch-gamme-card-name">Modulaire</span>
-                    <span class="ch-gamme-badge ch-gamme-badge-tbd">To be confirmed</span>
-                    <span class="ch-gamme-card-tagline">Extensible system — formats to be defined</span>
+                    <span class="ch-gamme-badge ch-gamme-badge-ok">Details available</span>
+                    <span class="ch-gamme-card-tagline">Extensible system · modules combinable as needed</span>
                     <span class="ch-gamme-card-cta">View range <i class="fa fa-arrow-right"/></span>
                 </a>
             </section>
@@ -171,8 +184,8 @@
                 <a class="ch-gamme-card-link" href="/nos-gammes/pliable">
                     <div class="ch-gamme-card-icon"><i class="fa fa-inbox"/></div>
                     <span class="ch-gamme-card-name">Pliable</span>
-                    <span class="ch-gamme-badge ch-gamme-badge-tbd">To be confirmed</span>
-                    <span class="ch-gamme-card-tagline">Foldable structure — formats to be defined</span>
+                    <span class="ch-gamme-badge ch-gamme-badge-ok">Details available</span>
+                    <span class="ch-gamme-card-tagline">3 sizes available · 14 to 38 sqm</span>
                     <span class="ch-gamme-card-cta">View range <i class="fa fa-arrow-right"/></span>
                 </a>
             </section>
