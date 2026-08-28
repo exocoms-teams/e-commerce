@@ -33,8 +33,9 @@ class WebsiteSaleSupplements(WebsiteSale):
         ]
 
         if allergen_ids:
-            domain = Domain(domain) & Domain([('allergen_ids', 'not in', allergen_ids)])
-
+            domain &= ~Domain([
+                ('allergen_ids', 'in', allergen_ids)
+            ])
         
             _logger.warning('allergen domain : %s', domain)
         return domain
