@@ -38,6 +38,21 @@
         est désormais découpé en lots de 4 (`featured_chunks`) via un
         t-set, comme new_chunks/best_chunks côté exocoms. `limit=16`
         posé dans controllers/main.py (index()), était 8.
+
+        CORRECTIF LIENS CASSÉS (v19.0.1.0.105) : retour client — "les
+        produit sur mon carrousel ne me mène nul par". Les 4 liens de
+        chaque carte utilisaient t-attf-href="/shop/#{ item['url'] }" —
+        or item['url'] (= product.website_url, voir
+        _serialize_products() dans controllers/main.py) contient DÉJÀ
+        le chemin complet ("/shop/..."), c'est un champ Odoo natif déjà
+        préfixé. Le "/shop/" ajouté ici en dur préfixait donc une
+        DEUXIÈME fois, produisant un lien cassé du type
+        "/shop//shop/nom-du-produit-1" (404). Comparaison avec
+        controllers/main.py (hero_data(), 'url': item['url']) qui
+        utilisait déjà item['url'] SANS le re-préfixer, correctement —
+        seule cette section (Meilleures ventes) avait le bug. Fix :
+        t-att-href="item['url']" directement sur les 4 liens (image,
+        nom, bouton "+" FR/EN), sans "/shop/" en dur.
     -->
     <template id="partial_featured_products" name="Capsule House - Meilleures ventes">
         <section class="ch-bestsellers">
@@ -61,12 +76,12 @@
                                         <div class="ch-bestsellers-grid">
                                             <t t-foreach="chunk" t-as="item">
                                                 <div class="ch-product-card">
-                                                    <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-img">
+                                                    <a t-att-href="item['url']" class="ch-product-card-img">
                                                         <img t-attf-src="/web/image/product.template/#{ item['id'] }/image_512"
                                                              t-att-alt="item['name']"/>
                                                     </a>
                                                     <div class="ch-product-card-body">
-                                                        <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-name" t-esc="item['name']"/>
+                                                        <a t-att-href="item['url']" class="ch-product-card-name" t-esc="item['name']"/>
                                                         <span class="ch-product-card-spec" t-if="item['category_name']" t-esc="item['category_name']"/>
                                                         <div class="ch-product-card-rating" t-if="item['rating_count']">
                                                             <i class="fa fa-star"/>
@@ -82,12 +97,12 @@
                                                         </div>
                                                     </div>
                                                     <t t-if="request.env.lang == 'fr_FR'">
-                                                        <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-add" title="Voir le produit">
+                                                        <a t-att-href="item['url']" class="ch-product-card-add" title="Voir le produit">
                                                             <i class="fa fa-plus"/>
                                                         </a>
                                                     </t>
                                                     <t t-else="">
-                                                        <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-add" title="View product">
+                                                        <a t-att-href="item['url']" class="ch-product-card-add" title="View product">
                                                             <i class="fa fa-plus"/>
                                                         </a>
                                                     </t>
