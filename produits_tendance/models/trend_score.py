@@ -1,10 +1,18 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class TrendScore(models.Model):
     _name = "trend.score"
     _description = "Score de tendance d'un produit"
     _order = "rank asc"
+
+    _sql_constraints = [
+        (
+            "trend_score_product_date_uniq",
+            "unique(product_id, score_date)",
+            "Un seul score de tendance est autorisé par produit et par jour.",
+        ),
+    ]
 
     product_id = fields.Many2one(
         comodel_name="trend.product",
@@ -27,6 +35,15 @@ class TrendScore(models.Model):
     )
     computed_at = fields.Datetime(
         string="Calculé le",
+        required=True,
+        default=fields.Datetime.now,
+        index=True,
+    )
+    score_date = fields.Date(
+        string="Date du score",
+        compute="_compute_score_date",
+        store=True,
+        index=True,
     )
     rank = fields.Integer(
         string="Classement",
@@ -67,3 +84,19 @@ class TrendScore(models.Model):
         string="Publicités actives de la période (A_T)",
         default=0,
     )
+    @api.depends("computed_at")
+    def _compute_score_date(self):
+        """Stocke le jour UTC de calcul pour l'unicité quotidienne.
+
+        ``computed_at`` est enregistré en UTC par Odoo et c'est déjà ce jour
+        qui est utilisé par l'historique du tableau de bord. Le stocker dans
+        un champ ``Date`` permet de faire appliquer l'unicité directement par
+        PostgreSQL, y compris lorsque deux workers créent un score en même
+        temps.
+        """
+        for score in self:
+            computed_at = (
+                fields.Datetime.to_datetime(score.computed_at)
+                if score.computed_at else False
+            )
+            score.score_date = computed_at.date() if computed_at else False
