@@ -1,6 +1,7 @@
-from odoo import http,Domain
+from odoo import http
 from odoo.http import request
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+from odoo import Domain
 
 class WebsiteSaleSupplements(WebsiteSale):
     """Keep supplement filters compatible with the native Odoo shop flow."""
