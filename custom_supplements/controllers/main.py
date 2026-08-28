@@ -42,11 +42,35 @@ class WebsiteSaleSupplements(WebsiteSale):
 
             products = request.env['product.template'].search(domain)
 
-            _logger.warning("DOMAIN : %s", domain)
-            _logger.warning("PRODUCTS : %s", products)
-            _logger.warning("VEGAN VALUES : %s", products.mapped('is_vegan'))
+        _logger.warning("DOMAIN : %s", domain)
+        _logger.warning("PRODUCTS : %s", products)
+        _logger.warning("VEGAN VALUES : %s", products.mapped('is_vegan'))
         return domain
 
+    def _shop_lookup_products(self, options, post, search, website):
+        fuzzy_search_term, product_count, search_result = super()._shop_lookup_products(
+            options, post, search, website
+        )
+
+        # Filtre vegan
+        if request.httprequest.args.get('vegan'):
+            search_result = search_result.filtered(lambda p: p.is_vegan)
+
+        # Filtre allergènes
+        allergen_ids = [
+            int(value)
+            for value in request.httprequest.args.getlist('allergens_exclude')
+            if value.isdigit()
+        ]
+
+        if allergen_ids:
+            search_result = search_result.filtered(
+                lambda p: not (p.allergen_ids.ids and set(p.allergen_ids.ids) & set(allergen_ids))
+            )
+
+        product_count = len(search_result)
+
+        return fuzzy_search_term, product_count, search_result
     
 
     def _get_search_options(self, **kwargs):
