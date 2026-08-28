@@ -112,7 +112,7 @@ class ProductTemplate(models.Model):
             "product.consu_delivery_01_product_template",  # Two-Seat Sofa
             "product.product_product_2_product_template",  # Virtual Home Staging
             "product.product_product_1_product_template",  # Virtual Interior Design
-            # "website_sale.product_product_1_product_template",  # Warranty
+            "website_sale.product_product_1_product_template",  # Warranty
         ]
         products = self.search([
             ("is_supplement", "=", False)
