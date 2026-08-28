@@ -9,6 +9,13 @@ EMAIL_REGEX = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
 
 class MatelasVente(http.Controller):
 
+    def _partner_has_purchased(self, partner):
+        """Return whether the partner has at least one confirmed order."""
+        return bool(request.env['sale.order'].sudo().search_count([
+            ('partner_id', '=', partner.id),
+            ('state', '=', 'sale'),
+        ], limit=1))
+
     @http.route('/', auth='public', website=True)
     def index(self, **kwargs):
         products = request.env['product.template'].sudo().search([
@@ -45,24 +52,20 @@ class MatelasVente(http.Controller):
 
     @http.route('/avis', auth='public', website=True)
     def avis(self, **kwargs):
-        partner = request.env.user.partner_id
-        a_achete = False
-
-        if request.env.user.id != request.env.ref('base.public_user').id:
-            a_achete = bool(
-                request.env['sale.order'].sudo().search_count([
-                    ('partner_id', '=', partner.id),
-                    ('state', 'in', ['sale', 'done']),
-                ], limit=1)
-            )
-
+        user = request.env.user
+        public_user = request.env.ref('base.public_user')
+        user_connected = user.id != public_user.id
+        a_achete = (
+            self._partner_has_purchased(user.partner_id)
+            if user_connected else False
+        )
         avis_list = request.env['matelas.avis'].sudo().search([
             ('is_published', '=', True),
         ], order='create_date desc', limit=20)
 
         return request.render('matelas.avis_page', {
             'a_achete': a_achete,
-            'user_connected': request.env.user.id != request.env.ref('base.public_user').id,
+            'user_connected': user_connected,
             'avis_list': avis_list,
         })
 
@@ -70,11 +73,7 @@ class MatelasVente(http.Controller):
     def avis_submit(self, name=None, note=None, titre=None, commentaire=None, profession=None, **kwargs):
         partner = request.env.user.partner_id
 
-        a_achete = request.env['sale.order'].sudo().search_count([
-            ('partner_id', '=', partner.id),
-            ('state', 'in', ['sale', 'done']),
-        ], limit=1)
-        if not a_achete:
+        if not self._partner_has_purchased(partner):
             return {
                 'success': False,
                 'error': "Vous devez avoir effectué un achat pour laisser un avis.",
