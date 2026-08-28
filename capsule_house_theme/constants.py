@@ -138,9 +138,31 @@ SHOP_CATEGORIES = ['Capsule', 'Cabine', 'Dôme', 'Modulaire', 'Pliable', 'Access
 # Sous-catégories (formats) au sein d'une gamme de premier niveau —
 # clé = nom de la catégorie parente (doit être dans SHOP_CATEGORIES),
 # valeur = liste des noms d'anciennes/futures catégories enfants.
-
+#
+# CORRECTIF (v19.0.1.0.99) : demande client — "on a mis en sous-catégorie
+# les formats de la gamme correspondant [Capsule = Studio/Duo/Panorama],
+# je voudrais pareil pour les autres catégories". Chaque gamme a ses
+# propres formats définis dans GAMMES_DATA (data_definition/__init__.py,
+# clé 'formats') ; ce sont ces noms qui sont repris ici comme
+# sous-catégories, exactement comme Studio/Duo/Panorama pour Capsule.
+#
+# ATTENTION collision de noms : _setup_shop_categories() (setup_utils.py)
+# recherche/rattache chaque sous-catégorie par son NOM SEUL (pas par
+# couple nom+parent) — si deux gammes différentes avaient une
+# sous-catégorie au même nom, la seconde synchronisation « volerait » la
+# catégorie déjà rattachée à la première gamme (mauvais parent_id).
+# GAMMES_DATA donne EXACTEMENT les mêmes noms de formats pour Dôme et
+# Pliable ('Compact', 'Confort', 'Panoramique') : ces deux gammes sont
+# donc préfixées par leur nom pour rester uniques. Cabine ('Solo /
+# Bureau', 'Comfort', 'Lodge') et Modulaire ('Module simple', 'Module
+# double', 'Module triple') ont déjà des noms uniques, repris tels quels
+# comme pour Capsule.
 SHOP_SUBCATEGORIES = {
     'Capsule': ['Studio', 'Duo', 'Panorama'],
+    'Cabine': ['Solo / Bureau', 'Comfort', 'Lodge'],
+    'Dôme': ['Dôme Compact', 'Dôme Confort', 'Dôme Panoramique'],
+    'Modulaire': ['Module simple', 'Module double', 'Module triple'],
+    'Pliable': ['Pliable Compact', 'Pliable Confort', 'Pliable Panoramique'],
 }
 
 RESETTABLE_VIEW_XML_IDS = [
