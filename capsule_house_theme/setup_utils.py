@@ -887,28 +887,76 @@ def _attach_shop_filters_to_products(env, website):
 def _publish_our_products(env, website, company):
     """
     SOURCE : Automatisation de mise en ligne Catalogue
-    Identifie tous les produits créés pour la société et bascule automatiquement
-    leur statut `is_published` à True tout en les associant au `website_id` du thème.
+    Identifie nos 24 vrais produits (data/products.xml) et bascule
+    automatiquement leur statut `is_published` à True tout en les
+    associant au `website_id` du thème.
+
+    CORRECTIF (v19.0.1.0.101) : cette fonction se voulait déjà
+    auto-réparatrice à chaque (ré)installation du module (post_init_hook
+    sur une base neuve, ou migrations qui rejouent
+    run_theme_maintenance) — mais son domaine de recherche
+    (`('company_id', '=', company.id)`) EXCLUAIT silencieusement nos 24
+    vrais produits : `data/products.xml` ne pose jamais explicitement
+    `company_id` sur ses <record> product.template, ce champ reste donc
+    False ("toutes les sociétés") sur ces 24 enregistrements — et un
+    domaine Odoo `('company_id', '=', X)` NE MATCHE JAMAIS un
+    enregistrement dont `company_id` vaut False (il faudrait un `|`
+    explicite avec `('company_id', '=', False)`, absent ici).
+
+    Conséquence concrète, retour client : "il vien de disparaitre après
+    le push ... c est parce qu il sont toujour sur all au lieu de
+    capsule house". Chaque nouvelle base (les builds de développement
+    Odoo.sh recréent TOUJOURS une base neuve à partir des data files du
+    module à chaque push, voir doc Odoo.sh "Branches") réinstalle nos 24
+    produits avec `website_id=False` ("Tous les sites"), et cette
+    fonction, censée les rescoper sur notre site, ne les voyait jamais à
+    cause du bug de domaine ci-dessus. Un précédent correctif avait
+    rescopé les 24 produits À LA MAIN dans le backend d'un build donné —
+    mais cette édition manuelle ne vit que dans CETTE base précise,
+    jamais rejouée automatiquement, donc perdue au prochain build/push.
+
+    Fix définitif : on identifie nos produits par leurs external ids
+    FIXES (`product_template_1` à `_24`, voir data/products.xml) plutôt
+    que par `company_id` — robuste même sur la base multi-société/
+    multi-site mutualisée (~17 sites, aucun risque de toucher aux
+    produits d'un autre site), et surtout réellement AUTO-RÉPARATEUR :
+    rejoué à chaque post_init_hook (nouvelle base) et à chaque
+    migration, donc plus jamais besoin d'édition manuelle en backend.
     """
-    Product = env['product.template'].sudo()
-    products = Product.search([
-        ('company_id', '=', company.id),
-        '|',
-        ('website_id', '=', False),
-        ('website_id', '=', website.id),
-    ])
+    products = env['product.template'].sudo().browse()
+    for i in range(1, 25):
+        product = env.ref(
+            'capsule_house_theme.product_template_%d' % i,
+            raise_if_not_found=False,
+        )
+        if product and product.exists():
+            products |= product.sudo()
+
     if not products:
-        _logger.info(
-            "capsule_house_theme: aucun produit trouvé pour la société "
-            "'%s' à publier sur le site id=%s pour l'instant.",
-            company.name, website.id,
+        _logger.warning(
+            "capsule_house_theme: aucun de nos 24 produits (external ids "
+            "product_template_1.._24) trouvé — data/products.xml n'a "
+            "peut-être pas encore été chargé sur cette base.",
         )
         return
-    products.write({
+
+    to_fix = products.filtered(
+        lambda p: p.website_id.id != website.id or not p.is_published
+    )
+    if not to_fix:
+        _logger.info(
+            "capsule_house_theme: nos %d produits déjà correctement "
+            "scopés (website_id=%s, publiés) — rien à faire.",
+            len(products), website.id,
+        )
+        return
+
+    to_fix.write({
         'website_id': website.id,
         'is_published': True,
     })
     _logger.info(
-        "capsule_house_theme: %d produit(s) de '%s' publié(s) sur le site "
-        "id=%s.", len(products), company.name, website.id,
+        "capsule_house_theme: %d/%d de nos produits recalés sur le site "
+        "id=%s ('%s') — website_id + is_published corrigés.",
+        len(to_fix), len(products), website.id, company.name,
     )
