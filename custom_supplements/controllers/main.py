@@ -42,9 +42,9 @@ class WebsiteSaleSupplements(WebsiteSale):
 
             products = request.env['product.template'].search(domain)
 
-            _logger.warning("DOMAIN :", domain)
-            _logger.warning("PRODUCTS :", products)
-            _logger.warning("VEGAN VALUES :", products.mapped('is_vegan'))
+            _logger.warning("DOMAIN : %s", domain)
+            _logger.warning("PRODUCTS : %s", products)
+            _logger.warning("VEGAN VALUES : %s", products.mapped('is_vegan'))
         return domain
 
     
