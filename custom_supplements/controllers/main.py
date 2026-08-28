@@ -10,10 +10,27 @@ class WebsiteSaleSupplements(WebsiteSale):
         domain = super()._get_search_domain(
             search, category, attrib_values, search_in_description, **kwargs
         )
+
+        # Filtre Vegan
         if request.httprequest.args.get('vegan'):
             # Utilisation standard Odoo 19+
             domain = Domain(domain) & Domain([('is_vegan', '=', True)])
+
+        
+        # Filtre Allergènes
+        allergen_ids = [
+            int(value)
+            for value in request.httprequest.args.getlist('allergens_exclude')
+            if value.isdigit()
+        ]
+
+        if allergen_ids:
+            domain = Domain(domain) & Domain([('allergen_ids', 'not in', allergen_ids)])
+        
+
         return domain
+
+    
 
     def _get_search_options(self, **kwargs):
         options = super()._get_search_options(**kwargs)
