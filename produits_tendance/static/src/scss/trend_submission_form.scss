@@ -20,23 +20,39 @@
         }
     }
 
-    /* Élément enfant : la carte du formulaire */
-    &__card {
-    background-color: $o-winners-white;
-    box-shadow: $o-winners-shadow-soft;
-}
-
-    &__submit_btn {
-    background-color: $o-winners-accent;
-    color: $o-winners-white;
-    border-radius: $o-winners-radius;
-    font-weight: 700;
-    border: none;
-    padding: 12px 24px;
-    transition: background-color 0.3s ease;
-
-    &:hover {
-        background-color: darken($o-winners-accent, 10%);
+    /* Élément enfant : la carte du formulaire (le look "carte" lui-même
+       vient de .o_winners_card, ici juste l'espacement propre à cette
+       page - voir website_templates.xml / winners_components.scss) */
+    &__card {  
+       padding: ($o-winners-spacing-unit * 4);
     }
-}
+
+    /* Champs de saisie (name/link_or_desc/category/country/email) */
+    &__input {
+        border: $o-winners-border-soft;
+        border-radius: $o-winners-radius;
+        color: $o-winners-text-dark;
+
+        &:focus {
+            border-color: $o-winners-accent;
+            box-shadow: 0 0 0 2px rgba($o-winners-accent, 0.15);
+        }
+    }
+
+    /* Boutons radio (raison de la soumission) */
+    &__radio:checked {
+        background-color: $o-winners-accent;
+        border-color: $o-winners-accent;
+    }
+
+    /* Message de succès (?success=1) */
+    &__success {
+        padding: ($o-winners-spacing-unit * 3);
+        border-left: 4px solid $o-winners-success;
+    }
+
+    &__success_title {
+        color: $o-winners-success;
+        font-weight: 700;
+    }
 }
