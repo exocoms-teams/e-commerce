@@ -1,32 +1,32 @@
-import publicWidget from "@web/legacy/js/public/public_widget";
+/** @odoo-module **/
 
-publicWidget.registry.CustomSupplementFilters = publicWidget.Widget.extend({
-    selector: ".cs-custom_filters",
+document.addEventListener("change", (event) => {
+    if (!event.target.closest(".cs-custom_filters")) {
+        return;
+    }
 
-    events: {
-        "change input": "_onFilterChange",
-    },
+    const params = new URLSearchParams(window.location.search);
 
-    _onFilterChange: function () {
-        console.log("shop filter loaded")
-        const params = new URLSearchParams(window.location.search);
+    // Vegan
+    const vegan = document.querySelector("#filter_vegan");
 
-        const vegan = this.el.querySelector("#filter_vegan");
+    if (vegan?.checked) {
+        params.set("vegan", "1");
+    } else {
+        params.delete("vegan");
+    }
 
-        if (vegan?.checked) {
-            params.set("vegan", "1");
-        } else {
-            params.delete("vegan");
-        }
+    // Allergènes
+    params.delete("allergens_exclude");
 
-        params.delete("allergens_exclude");
+    document
+        .querySelectorAll(
+            ".cs-custom_filters input[name='allergens_exclude']:checked"
+        )
+        .forEach((input) => {
+            params.append("allergens_exclude", input.value);
+        });
 
-        this.el
-            .querySelectorAll("input[name='allergens_exclude']:checked")
-            .forEach((input) => {
-                params.append("allergens_exclude", input.value);
-            });
-
-        window.location.search = params.toString();
-    },
+    // Retour à la page boutique avec les nouveaux filtres
+    window.location.href = `${window.location.pathname}?${params.toString()}`;
 });
