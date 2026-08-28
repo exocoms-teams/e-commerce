@@ -15,6 +15,7 @@ class WebsiteSaleSupplements(WebsiteSale):
         if request.httprequest.args.get('vegan'):
             # Utilisation standard Odoo 19+
             domain = Domain(domain) & Domain([('is_vegan', '=', True)])
+            print(">>> _get_search_domain APPELE")
 
         
         # Filtre Allergènes
@@ -46,7 +47,4 @@ class WebsiteSaleSupplements(WebsiteSale):
         values['supplement_vegan'] = bool(request.httprequest.args.get('vegan'))
         values['allergens'] = request.env['allergen'].sudo().search([])
         return values
-
-    from odoo.addons.portal.controllers.portal import CustomerPortal
-from odoo.http import route, request
 
