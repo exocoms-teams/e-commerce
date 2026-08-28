@@ -1,5 +1,4 @@
 /** @odoo-module **/
-console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 document.addEventListener("change", (event) => {
     if (!event.target.closest(".cs-custom_filters")) {
         return;
