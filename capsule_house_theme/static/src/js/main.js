@@ -157,9 +157,131 @@
         }
     }
 
+    /**
+     * Section "avis clients" de l'accueil (v19.0.1.0.100, voir
+     * views/partials/home_testimonials.xml). Même principe que
+     * initHeroDynamicContent() ci-dessus : l'arch reste 100% statique
+     * (section masquée par défaut, data-ch-testimonials-section), le
+     * contenu réel (jusqu'à 3 VRAIS avis publiés) est injecté ici après
+     * coup. Dégradation gracieuse : en cas d'échec du fetch OU si aucun
+     * avis n'est encore publié, la section reste masquée (jamais de
+     * témoignage fabriqué en secours).
+     */
+    function initTestimonialsSection() {
+        var section = document.querySelector('[data-ch-testimonials-section]');
+        if (!section) return;
+        var grid = section.querySelector('[data-ch-testimonials-grid]');
+        if (!grid) return;
+
+        fetch('/capsule-house/testimonials-data.json', { headers: { 'Accept': 'application/json' } })
+            .then(function (response) {
+                if (!response.ok) { throw new Error('HTTP ' + response.status); }
+                return response.json();
+            })
+            .then(function (data) {
+                var items = data.items || [];
+                if (!items.length) return;
+                items.forEach(function (item) {
+                    grid.appendChild(buildTestimonialCard(item));
+                });
+                section.classList.remove('d-none');
+            })
+            .catch(function () {
+                // Silencieux : dégradation gracieuse, section reste masquée.
+            });
+    }
+
+    // Avatar = initiale du vrai nom (même convention que .ch-avis-avatar
+    // sur /avis, voir avis_content.xml) — jamais une fausse photo.
+    function buildTestimonialCard(item) {
+        var card = document.createElement('div');
+        card.className = 'ch-testi-card';
+
+        var head = document.createElement('div');
+        head.className = 'ch-testi-card-head';
+
+        var avatar = document.createElement('div');
+        avatar.className = 'ch-testi-avatar';
+        avatar.textContent = item.initial || '?';
+        head.appendChild(avatar);
+
+        var meta = document.createElement('div');
+        var nameEl = document.createElement('div');
+        nameEl.className = 'ch-testi-name';
+        nameEl.textContent = item.name || '';
+        meta.appendChild(nameEl);
+
+        var stars = document.createElement('div');
+        stars.className = 'ch-testi-stars';
+        for (var i = 1; i <= 5; i++) {
+            var star = document.createElement('i');
+            star.className = 'fa ' + (i <= (item.rating || 0) ? 'fa-star' : 'fa-star-o');
+            stars.appendChild(star);
+        }
+        meta.appendChild(stars);
+        head.appendChild(meta);
+        card.appendChild(head);
+
+        var text = document.createElement('p');
+        text.className = 'ch-testi-text';
+        text.textContent = item.comment || '';
+        card.appendChild(text);
+
+        if (item.product) {
+            var tag = document.createElement('span');
+            tag.className = 'ch-testi-product-tag';
+            tag.textContent = item.product;
+            card.appendChild(tag);
+        }
+
+        return card;
+    }
+
+    /**
+     * Section "moyens de paiement" de l'accueil (v19.0.1.0.100, voir
+     * views/partials/home_payment_methods.xml). Même principe : section
+     * masquée par défaut, peuplée UNIQUEMENT avec les payment.provider
+     * réellement à l'état 'enabled' (voir controllers/main.py,
+     * payment_methods_data()). Reste masquée tant qu'aucun n'est
+     * configuré — jamais de logo de marque non vérifié.
+     */
+    function initPaymentMethodsSection() {
+        var section = document.querySelector('[data-ch-payment-section]');
+        if (!section) return;
+        var badges = section.querySelector('[data-ch-payment-badges]');
+        if (!badges) return;
+
+        fetch('/capsule-house/payment-methods-data.json', { headers: { 'Accept': 'application/json' } })
+            .then(function (response) {
+                if (!response.ok) { throw new Error('HTTP ' + response.status); }
+                return response.json();
+            })
+            .then(function (data) {
+                var items = data.items || [];
+                if (!items.length) return;
+                items.forEach(function (item) {
+                    var badge = document.createElement('span');
+                    badge.className = 'ch-payment-badge';
+                    var icon = document.createElement('i');
+                    icon.className = 'fa fa-credit-card';
+                    badge.appendChild(icon);
+                    var label = document.createElement('span');
+                    label.textContent = item.name || '';
+                    badge.appendChild(label);
+                    badges.appendChild(badge);
+                });
+                section.classList.remove('d-none');
+            })
+            .catch(function () {
+                // Silencieux : dégradation gracieuse, section reste masquée.
+            });
+    }
+
     function init() {
         initScrollReveal();
         initHeroDynamicContent();
+        initTestimonialsSection();
+        initPaymentMethodsSection();
     }
 
     if (document.readyState === 'loading') {

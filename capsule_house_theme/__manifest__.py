@@ -8,7 +8,7 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.99',
+    'version': '19.0.1.0.100',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
@@ -71,6 +71,19 @@ Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gamme
         # t-call se résout au rendu, pas au chargement des données).
         'views/pages/nos_gammes.xml',
         'views/partials/home_gammes.xml',
+        # Blocs avis clients + moyens de paiement en fin d'accueil
+        # (19.0.1.0.100) — demande client : "je veux ces deux blocs à
+        # la fin de ma page accueil". Les deux restent masqués tant
+        # qu'aucune vraie donnée n'existe (vrais avis publiés / vrai
+        # fournisseur de paiement activé) — voir home_testimonials.xml
+        # et home_payment_methods.xml. Chargés avant home.xml qui les
+        # t-call (même précaution d'ordre que home_usages.xml
+        # ci-dessus), même si dépend de capsule_house_theme.avis (voir
+        # views/avis_backend.xml plus bas, chargée séparément — le
+        # modèle capsule.house.avis lui-même vient de security/
+        # ir.model.access.csv, déjà en tête de liste).
+        'views/partials/home_testimonials.xml',
+        'views/partials/home_payment_methods.xml',
         # Avis clients (19.0.1.0.35, voir models/avis.py) : vrais avis
         # soumis par les clients, modérés avant publication. Vues backend
         # de modération d'abord, puis partiels/page frontend.

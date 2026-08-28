@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Section "moyens de paiement" de l'accueil (v19.0.1.0.100).
+        Demande client, capture d'écran d'exocoms_theme à l'appui : "je
+        veux ces deux blocs à la fin de ma page accueil" — bandeau de
+        confiance listant les moyens de paiement acceptés.
+
+        DÉVIATION ASSUMÉE : le bloc d'exocoms_theme affiche 7 logos
+        (Visa/Mastercard/Amex/Apple Pay/Google Pay/PayPal/Stripe) codés
+        en dur. Vérifié en direct sur ce site (/odoo/payment-providers) :
+        AUCUN fournisseur de paiement n'est réellement activé (Virement/
+        Paiement à la livraison = Désactivé, tous les autres = non
+        installés) — afficher ces logos serait une donnée fabriquée
+        (aucun de ces moyens n'est réellement accepté aujourd'hui).
+        Confirmé avec le client via question à choix ("Attendre la vraie
+        config" = choisi) : la section reste entièrement masquée tant
+        que le client n'a pas lui-même activé au moins un fournisseur
+        réel dans Paramètres > Paiements.
+
+        Même principe technique que home_testimonials.xml / hero.xml :
+        <section> statique masquée par défaut (d-none), peuplée par JS
+        (static/src/js/main.js, initPaymentMethodsSection) via
+        /capsule-house/payment-methods-data.json, qui ne renvoie QUE les
+        payment.provider réellement à l'état 'enabled'. Pas de logo de
+        marque tant qu'aucune intégration officielle n'est confirmée :
+        chaque moyen actif est affiché comme un badge texte (nom réel du
+        fournisseur), jamais une icône de carte bancaire suggérant une
+        marque non vérifiée.
+
+        Placée en tout dernier sur l'accueil (voir home.xml), après le
+        bloc avis clients — demande client : "à la fin de ma page
+        accueil".
+
+        Scopée à notre site via _scope_layout_views() (external ids
+        capsule_house_theme.partial_home_payment_methods, ._fr, ._en).
+    -->
+
+    <template id="partial_home_payment_methods_fr" name="Capsule House - Accueil : moyens de paiement FR">
+        <section class="ch-payment-section d-none" data-snippet="s_ch_payment_methods" data-name="Capsule House Paiements" data-ch-payment-section="1">
+            <div class="container">
+                <div class="ch-payment-inner">
+                    <span class="ch-payment-label oe_editable"><i class="fa fa-lock"/> Paiements sécurisés acceptés</span>
+                    <div class="ch-payment-badges" data-ch-payment-badges="1"/>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="partial_home_payment_methods_en" name="Capsule House - Accueil : moyens de paiement EN">
+        <section class="ch-payment-section d-none" data-snippet="s_ch_payment_methods" data-name="Capsule House Payment Methods" data-ch-payment-section="1">
+            <div class="container">
+                <div class="ch-payment-inner">
+                    <span class="ch-payment-label oe_editable"><i class="fa fa-lock"/> Secure payments accepted</span>
+                    <div class="ch-payment-badges" data-ch-payment-badges="1"/>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="partial_home_payment_methods" name="Capsule House - Accueil : moyens de paiement">
+        <t t-if="request.env.lang == 'fr_FR'" t-call="capsule_house_theme.partial_home_payment_methods_fr"/>
+        <t t-if="request.env.lang != 'fr_FR'" t-call="capsule_house_theme.partial_home_payment_methods_en"/>
+    </template>
+</odoo>

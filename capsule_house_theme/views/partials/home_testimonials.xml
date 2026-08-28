@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Section "avis clients" de l'accueil (v19.0.1.0.100). Demande
+        client, captures d'écran d'exocoms_theme à l'appui : "je veux
+        ces deux blocs à la fin de ma page accueil et pour le avis crée
+        le même nombre qu'on avait fait sur exocoms" (3 avis).
+
+        DÉVIATION ASSUMÉE vis-à-vis de la demande initiale : le bloc
+        d'exocoms_theme affiche 3 faux avis écrits en dur (noms/citations
+        inventés, hors-sujet — terminaux de paiement/télécom, pas des
+        maisons modulaires). Ce module a un principe explicite et déjà
+        en production ailleurs (models/avis.py, controllers/main.py :
+        "jamais de donnée fabriquée") : les avis affichés doivent être
+        RÉELS, soumis par de vrais clients et modérés (capsule.house.avis,
+        /avis). Confirmé avec le client via question à choix ("Bloc
+        branché sur les vrais avis" = recommandé, choisi).
+
+        Structure reprise du hero (voir hero.xml) plutôt que du filmstrip
+        gammes/usages : le nombre de cartes est VARIABLE (0 à 3 selon les
+        vrais avis publiés), donc pas de <section> par carte figée dans
+        l'arch. La section elle-même reste un unique bloc <section
+        data-snippet> statique (titre oe_editable), masquée par défaut
+        (d-none) ; le contenu (jusqu'à 3 avis) est injecté par JS après
+        chargement (static/src/js/main.js, initTestimonialsSection) via
+        /capsule-house/testimonials-data.json — même principe que le
+        hero (voir hero.xml/main.js, "Cause réelle #3"). Si aucun avis
+        n'est encore publié, la section reste invisible : aucun
+        témoignage fabriqué en attendant.
+
+        Avatar : réutilise la convention déjà en production sur /avis
+        (avis_content.xml, .ch-avis-avatar) — un cercle affichant
+        l'initiale du VRAI nom du client, jamais une fausse photo.
+
+        Placée en TOUT DERNIER sur l'accueil (voir home.xml), juste
+        avant le bloc "moyens de paiement" — demande client explicite :
+        "à la fin de ma page accueil".
+
+        Scopée à notre site via _scope_layout_views() (external ids
+        capsule_house_theme.partial_home_testimonials, ._fr, ._en).
+    -->
+
+    <template id="partial_home_testimonials_fr" name="Capsule House - Accueil : avis clients FR">
+        <section class="ch-testi-section d-none" data-snippet="s_ch_testimonials" data-name="Capsule House Avis" data-ch-testimonials-section="1">
+            <div class="container">
+                <div class="ch-usages-head">
+                    <span class="ch-models-badge"><i class="fa fa-quote-left"/> Vrais avis clients</span>
+                    <h2 class="ch-usages-title oe_editable">Ce que nos clients disent de nous</h2>
+                </div>
+                <div class="ch-testi-grid" data-ch-testimonials-grid="1"/>
+                <div class="ch-testi-cta">
+                    <a class="btn btn-outline-secondary" href="/avis">Voir tous les avis <i class="fa fa-arrow-right"/></a>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="partial_home_testimonials_en" name="Capsule House - Accueil : avis clients EN">
+        <section class="ch-testi-section d-none" data-snippet="s_ch_testimonials" data-name="Capsule House Testimonials" data-ch-testimonials-section="1">
+            <div class="container">
+                <div class="ch-usages-head">
+                    <span class="ch-models-badge"><i class="fa fa-quote-left"/> Real customer reviews</span>
+                    <h2 class="ch-usages-title oe_editable">What our customers say about us</h2>
+                </div>
+                <div class="ch-testi-grid" data-ch-testimonials-grid="1"/>
+                <div class="ch-testi-cta">
+                    <a class="btn btn-outline-secondary" href="/avis">See all reviews <i class="fa fa-arrow-right"/></a>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="partial_home_testimonials" name="Capsule House - Accueil : avis clients">
+        <t t-if="request.env.lang == 'fr_FR'" t-call="capsule_house_theme.partial_home_testimonials_fr"/>
+        <t t-if="request.env.lang != 'fr_FR'" t-call="capsule_house_theme.partial_home_testimonials_en"/>
+    </template>
+</odoo>

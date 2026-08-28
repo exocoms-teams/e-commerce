@@ -595,12 +595,123 @@
 }
 .ch-usage-bullet .fa { color: var(--ch-green); margin-top: 3px; font-size: 11px; }
 
+/* ── AVIS CLIENTS (accueil, v19.0.1.0.100) — voir
+   views/partials/home_testimonials.xml et static/src/js/main.js
+   (initTestimonialsSection). Grille peuplée dynamiquement (JS) avec
+   jusqu'à 3 VRAIS avis publiés (capsule.house.avis) — jamais de
+   témoignage fabriqué, section masquée (d-none) tant qu'aucun n'existe.
+   Réutilise la palette de .ch-avis-* (pages.css, page /avis) pour
+   rester cohérent visuellement avec la page dédiée. ── */
+.ch-testi-section {
+    background: var(--ch-bg-soft);
+    padding: 64px 0;
+}
+
+.ch-testi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 28px;
+}
+
+.ch-testi-card {
+    background: var(--ch-white);
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-lg);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.ch-testi-card-head { display: flex; align-items: center; gap: 14px; }
+
+.ch-testi-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--ch-terracotta);
+    color: var(--ch-white);
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ch-testi-name { font-size: 14px; font-weight: 700; color: var(--ch-ink); margin-bottom: 2px; }
+
+.ch-testi-stars { display: flex; gap: 3px; }
+.ch-testi-stars i.fa-star { color: var(--ch-amber); font-size: 13px; }
+.ch-testi-stars i.fa-star-o { color: var(--ch-gray-border); font-size: 13px; }
+
+.ch-testi-text { font-size: 14px; color: var(--ch-ink); line-height: 1.7; margin: 0; }
+
+.ch-testi-product-tag {
+    align-self: flex-start;
+    background: var(--ch-panel);
+    color: var(--ch-ink);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: var(--r-pill);
+}
+
+.ch-testi-cta { text-align: center; margin-top: 32px; }
+
+/* ── MOYENS DE PAIEMENT (accueil, v19.0.1.0.100) — voir
+   views/partials/home_payment_methods.xml et main.js
+   (initPaymentMethodsSection). Peuplé dynamiquement avec les SEULS
+   payment.provider réellement à l'état 'enabled' — jamais de logo de
+   marque non vérifié, section masquée tant qu'aucun n'est configuré. ── */
+.ch-payment-section {
+    background: var(--ch-white);
+    padding: 32px 0;
+    border-top: 1px solid var(--ch-gray-border);
+}
+
+.ch-payment-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px 28px;
+}
+
+.ch-payment-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ch-fog);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.ch-payment-label i { color: var(--ch-ink); }
+
+.ch-payment-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.ch-payment-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ch-panel);
+    color: var(--ch-ink);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: var(--r-pill);
+}
+.ch-payment-badge i { color: var(--ch-terracotta); }
+
 /* ── RESPONSIVE HOMEPAGE ── */
 @media (max-width: 1100px) {
     .ch-hero-grid { grid-template-columns: 1fr; }
     .ch-hero-visual { min-height: 320px; order: -1; }
     .ch-hero-illustration { min-height: 320px; }
     .ch-bestsellers-grid { grid-template-columns: repeat(2, 1fr); }
+    .ch-testi-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
@@ -611,6 +722,8 @@
     .ch-bestsellers-grid { grid-template-columns: 1fr; }
     .ch-bestsellers-head { flex-direction: column; align-items: flex-start; gap: 8px; }
     .ch-usages-zone { grid-template-columns: 1fr 1fr; }
+    .ch-testi-grid { grid-template-columns: 1fr; }
+    .ch-payment-inner { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 480px) {
     .ch-usages-zone { grid-template-columns: 1fr; }

@@ -113,6 +113,17 @@ SCOPED_VIEW_XML_IDS = [
     # Ajouté en 19.0.1.0.72 (section gammes de l'accueil, voir
     # home_gammes.xml).
     'capsule_house_theme.partial_home_gammes',
+    # Ajoutés en 19.0.1.0.100 (blocs avis clients + moyens de paiement en
+    # fin d'accueil, demande client "à la fin de ma page accueil" — voir
+    # home_testimonials.xml et home_payment_methods.xml). Même schéma
+    # routeur + _fr/_en que partial_hero ci-dessus (contenu 100%
+    # dynamique, injecté en JS, voir main.js).
+    'capsule_house_theme.partial_home_testimonials',
+    'capsule_house_theme.partial_home_testimonials_fr',
+    'capsule_house_theme.partial_home_testimonials_en',
+    'capsule_house_theme.partial_home_payment_methods',
+    'capsule_house_theme.partial_home_payment_methods_fr',
+    'capsule_house_theme.partial_home_payment_methods_en',
 ]
 
 # Catégories boutique (product.public.category), niveau top (celles qui

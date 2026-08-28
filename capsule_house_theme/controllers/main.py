@@ -304,6 +304,68 @@ class CapsuleHouseWebsite(Website):
             return '%s%s' % (symbol, amount_str)
         return '%s %s' % (amount_str, symbol)
 
+    @http.route('/capsule-house/testimonials-data.json', type='http', auth='public',
+                website=True, sitemap=False)
+    def testimonials_data(self, **kw):
+        """Jusqu'à 3 VRAIS avis publiés (capsule.house.avis,
+        state='published'), en JSON — récupérés côté client par
+        static/src/js/main.js (initTestimonialsSection) après le
+        chargement de la page, même principe que hero_data() ci-dessus :
+        home_testimonials.xml reste 100% statique dans l'arch (condition
+        nécessaire pour qu'Odoo le marque comme bloc sélectionnable), le
+        contenu réel est injecté après coup.
+
+        v19.0.1.0.100 — demande client : "je veux ce bloc à la fin de ma
+        page accueil ... pour le avis crée le même nombre qu'on avait
+        fait sur exocoms" (3, voir exocoms_theme). La section reste
+        masquée (d-none) tant qu'aucun avis n'est publié — jamais de
+        témoignage fabriqué (même principe que /avis, voir avis_page()
+        et _get_avis_stats() ci-dessus).
+        """
+        website = request.website
+        Avis = request.env['capsule.house.avis'].sudo()
+        avis_list = Avis.search([
+            ('website_id', '=', website.id),
+            ('state', '=', 'published'),
+        ], order='date desc, id desc', limit=3)
+
+        items = [{
+            'name': a.name,
+            'initial': (a.name or '?')[0].upper(),
+            'rating': a.rating,
+            'comment': a.comment,
+            'product': a.product or '',
+        } for a in avis_list]
+
+        return request.make_response(
+            json.dumps({'items': items}),
+            headers=[('Content-Type', 'application/json')],
+        )
+
+    @http.route('/capsule-house/payment-methods-data.json', type='http', auth='public',
+                website=True, sitemap=False)
+    def payment_methods_data(self, **kw):
+        """Moyens de paiement RÉELLEMENT actifs (payment.provider,
+        state='enabled'), en JSON — même principe que ci-dessus.
+        home_payment_methods.xml reste masqué (d-none) tant qu'aucun
+        fournisseur n'est réellement configuré : jamais de logo Visa/
+        Mastercard/PayPal... affiché avant que le client n'ait
+        lui-même activé un vrai moyen de paiement (v19.0.1.0.100).
+        Vérifié en direct sur ce site avant implémentation
+        (/odoo/payment-providers) : aucun fournisseur n'est enabled
+        aujourd'hui, la section est donc invisible tant que ça reste
+        le cas.
+        """
+        Provider = request.env['payment.provider'].sudo()
+        providers = Provider.search([('state', '=', 'enabled')], order='sequence asc')
+
+        items = [{'name': p.name} for p in providers]
+
+        return request.make_response(
+            json.dumps({'items': items}),
+            headers=[('Content-Type', 'application/json')],
+        )
+
     @http.route('/capsule-house/home', type='http', auth='public',
                 website=True, sitemap=False)
     def homepage_legacy_redirect(self, **kw):
