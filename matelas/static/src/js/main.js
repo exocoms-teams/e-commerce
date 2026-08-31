@@ -162,6 +162,19 @@
             });
         }
 
+        // ===== GESTION DES COOKIES =====
+        const btnCookieManage = document.querySelector('.btn-cookie-manage');
+        if (btnCookieManage && !btnCookieManage.dataset.bound) {
+            btnCookieManage.dataset.bound = 'true';
+
+            btnCookieManage.addEventListener('click', function(event) {
+                event.preventDefault();
+                document.cookie =
+                    'website_cookies_bar=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                window.location.reload();
+            });
+        }
+
         // ===== FAQ =====
         document.querySelectorAll('.faq-question').forEach(function(btn) {
             btn.addEventListener('click', function() {
