@@ -9,11 +9,11 @@
     'license': 'LGPL-3',
     'depends': ['website', 'website_sale'],
     'data': [
-        'views/contrat_monetique_templates.xml',
+        'views/contrat_monetique_cb_templates.xml',
     ],
     'assets': {
         'web.assets_frontend': [
-            'contrat_monetique_cb/static/src/css/contrat_monetique.css',
+            'contrat_monetique_cb/static/src/css/contrat_monetique_cb.css',
             'contrat_monetique_cb/static/src/js/main.js',
         ],
     },

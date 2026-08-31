@@ -1,0 +1,837 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         PAGE CONTRAT MONÉTIQUE CB
+         ============================================================
+         Template 100 % autonome (nouvel id) reprenant l'intégralité
+         du contenu de la page d'origine (mêmes textes, mêmes champs,
+         mêmes IDs pour la logique JS), remis en forme avec le nouveau
+         namespace `cmcb-*`.
+         L'original (contrat_monetique_templates.xml / test_templates.xml)
+         reste intact pour un rollback facile.
+    ============================================================ -->
+    <template id="page_contrat_monetique" name="Contrat monétique CB">
+
+        <t t-call="website.layout"
+           additional_title.translate="Contrat monétique à 0,25 % — TPE inclus"
+           meta_description.translate="Taux unique de 0,25 % sur toutes les cartes CB, Visa et Mastercard. Terminal de paiement inclus, SAV et versement des fonds à J+1, sans changer de banque. Audit gratuit de vos relevés sous 48 h.">
+
+            <!-- Polices chargées sur cette page uniquement (mêmes que l'original :
+                 Poppins pour les titres, Roboto pour le corps de texte) -->
+            <t t-set="head">
+                <link rel="preconnect" href="https://fonts.googleapis.com"/>
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500&amp;display=swap"/>
+            </t>
+
+
+            <!-- Fond fixe (parallax) : image bg-2 affichée en une seule fois
+                 derrière tout le contenu, fixée au viewport pendant le scroll -->
+            <div class="cmcb-bg" aria-hidden="true"></div>
+
+
+            <!-- ============================================================
+                 HERO
+            ============================================================ -->
+            <section class="cmcb-hero">
+
+                <div class="cmcb-container cmcb-hero__inner">
+
+                    <div class="cmcb-hero__content">
+
+                        <span class="cmcb-hero__eyebrow">
+                            <i class="fa fa-credit-card"/>
+                            Contrat commerçant EXOCOMS
+                        </span>
+
+                        <h1 class="cmcb-hero__title">
+                            Encaissez par carte à
+                            <span class="cmcb-hero__rate">0,25&#160;%</span>.
+                            <br/>
+                            Pas un centime de plus.
+                        </h1>
+
+                        <p class="cmcb-hero__lead">
+                            Votre banque vous facture entre 0,60&#160;% et 1,80&#160;% par transaction,
+                            plus la location du terminal, plus les frais fixes.
+                            EXOCOMS vous propose un contrat monétique transparent :
+                            un taux unique de 0,25&#160;%, terminal inclus, sans changer de banque.
+                        </p>
+
+                        <div class="cmcb-hero__actions">
+                            <a href="/contactus"
+                               class="cmcb-btn cmcb-btn--primary">
+                                Obtenir mon étude gratuite
+                            </a>
+
+                            <a href="#cmq-calculateur"
+                               class="cmcb-btn cmcb-btn--secondary">
+                                Calculer mes économies
+                            </a>
+
+                            <a href="/shop"
+                               class="cmcb-btn cmcb-btn--ghost">
+                                Voir nos produits
+                                <i class="fa fa-arrow-right"/>
+                            </a>
+                        </div>
+
+                        <div class="cmcb-hero__trust">
+                            <i class="fa fa-check-circle"/>
+                            <span>
+                                Audit de vos relevés monétiques offert —
+                                réponse sous 48 h.
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="cmcb-hero__visual">
+                        <span class="cmcb-float cmcb-float--top">
+                            <i class="fa fa-check-circle"/>
+                            TPE inclus
+                        </span>
+                        <span class="cmcb-float cmcb-float--bottom">
+                            <i class="fa fa-check-circle"/>
+                            0&#160;€ de frais cachés
+                        </span>
+                        <img
+                            class="cmcb-hero__img"
+                            src="/contrat_monetique_cb/static/src/img/happy-man.png"
+                            alt="Commerçant satisfait d'encaisser ses paiements à 0,25 % de commission"
+                        />
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ============================================================
+                 PREUVES CLÉS
+            ============================================================ -->
+            <section class="cmcb-proof">
+                <div class="cmcb-container">
+                    <div class="cmcb-proof__grid">
+                        <div class="cmcb-proof__item cmcb-proof__item--accent">
+                            <strong>0,25&#160;%</strong>
+                            <span>Taux unique, toutes cartes CB / Visa / Mastercard</span>
+                        </div>
+                        <div class="cmcb-proof__item">
+                            <strong>0&#160;€</strong>
+                            <span>Frais de dossier &amp; frais cachés</span>
+                        </div>
+                        <div class="cmcb-proof__item">
+                            <strong>TPE</strong>
+                            <span>Terminal dernière génération inclus</span>
+                        </div>
+                        <div class="cmcb-proof__item">
+                            <strong>J+1</strong>
+                            <span>Versement des fonds sur votre compte</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ============================================================
+                 PROBLÈME — le vrai coût d'un contrat bancaire
+            ============================================================ -->
+            <section class="cmcb-section cmcb-section--soft">
+                <div class="cmcb-container">
+
+                    <header class="cmcb-section__head">
+                        <span class="cmcb-section__label">
+                            Ce que votre relevé ne montre pas
+                        </span>
+                        <h2 class="cmcb-section__title">
+                            Le vrai coût d'un contrat bancaire
+                        </h2>
+                        <p class="cmcb-section__lead">
+                            Le taux annoncé par votre banque n'est que la partie visible.
+                            En additionnant toutes les lignes de votre relevé, le coût réel
+                            de l'encaissement carte dépasse souvent 1,5&#160;% de votre chiffre d'affaires.
+                        </p>
+                    </header>
+
+                    <div class="cmcb-grid--3">
+                        <article class="cmcb-card">
+                            <span class="cmcb-card__tag">Ligne 1 — Commission</span>
+                            <h3 class="cmcb-card__title">Un taux gonflé et opaque</h3>
+                            <p>
+                                Entre 0,60&#160;% et 1,80&#160;% selon la carte,
+                                avec des grilles différentes pour les cartes étrangères,
+                                professionnelles ou premium.
+                                Impossible d'anticiper ce que vous paierez réellement.
+                            </p>
+                        </article>
+
+                        <article class="cmcb-card">
+                            <span class="cmcb-card__tag">Ligne 2 — Matériel</span>
+                            <h3 class="cmcb-card__title">La location du TPE en plus</h3>
+                            <p>
+                                20 à 45&#160;€ par mois pour un terminal que vous ne possédez jamais,
+                                souvent avec des frais de maintenance, de mise à jour ou de paramétrage
+                                facturés séparément.
+                            </p>
+                        </article>
+
+                        <article class="cmcb-card">
+                            <span class="cmcb-card__tag">Ligne 3 — Frais fixes</span>
+                            <h3 class="cmcb-card__title">Des frais qui s'empilent</h3>
+                            <p>
+                                Minimum de perception par transaction, frais de télécollecte,
+                                abonnement monétique, frais de dossier à l'ouverture…
+                                autant de lignes qui alourdissent la facture chaque mois.
+                            </p>
+                        </article>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- ============================================================
+                 CALCULATEUR
+                 IMPORTANT : IDs conservés pour compatibilité JS
+            ============================================================ -->
+            <section
+                class="cmcb-section  cmcb-calc"
+                id="cmq-calculateur">
+
+                <div class="cmcb-container">
+
+                    <header class="cmcb-section__head">
+                        <span class="cmcb-section__label">
+                            Simulateur d'économies
+                        </span>
+                        <h2 class="cmcb-section__title">
+                            Combien votre banque vous coûte-t-elle vraiment&#160;?
+                        </h2>
+                        <p class="cmcb-section__lead">
+                            Entrez vos données actuelles pour obtenir une estimation
+                            immédiate de votre économie mensuelle.
+                        </p>
+                    </header>
+
+                    <div class="cmcb-calc__grid">
+
+                        <!-- PANEL DE SAISIE -->
+                        <div class="cmcb-calc__panel">
+
+                            <div class="cmcb-field">
+                                <label class="cmcb-field__row" for="cmq-ca">
+                                    <span>Chiffre d'affaires carte bancaire mensuel</span>
+                                    <strong class="cmcb-field__value" id="cmq-ca-val">20&#160;000&#160;€</strong>
+                                </label>
+                                <input
+                                    type="range"
+                                    class="cmcb-range"
+                                    id="cmq-ca"
+                                    min="2000"
+                                    max="200000"
+                                    step="1000"
+                                    value="20000"
+                                />
+                                <p class="cmcb-field__help">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                         stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="12" y1="16" x2="12" y2="12"/>
+                                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                    </svg>
+                                    Montant total encaissé par carte chaque mois.
+                                </p>
+                            </div>
+
+                            <div class="cmcb-field">
+                                <label class="cmcb-field__row" for="cmq-taux">
+                                    <span>Taux actuel de votre banque</span>
+                                    <strong class="cmcb-field__value" id="cmq-taux-val">0,90&#160;%</strong>
+                                </label>
+                                <input
+                                    type="range"
+                                    class="cmcb-range"
+                                    id="cmq-taux"
+                                    min="0.3"
+                                    max="2"
+                                    step="0.01"
+                                    value="0.9"
+                                />
+                                <p class="cmcb-field__help">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                         stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="12" y1="16" x2="12" y2="12"/>
+                                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                    </svg>
+                                    Indiqué sur votre contrat monétique
+                                    ou votre relevé de commissions.
+                                </p>
+                            </div>
+
+                            <div class="cmcb-field">
+                                <label class="cmcb-field__row" for="cmq-tpe">
+                                    <span>Location mensuelle de votre TPE</span>
+                                    <strong class="cmcb-field__value" id="cmq-tpe-val">30&#160;€</strong>
+                                </label>
+                                <input
+                                    type="range"
+                                    class="cmcb-range"
+                                    id="cmq-tpe"
+                                    min="0"
+                                    max="90"
+                                    step="5"
+                                    value="30"
+                                />
+                            </div>
+
+                            <p class="cmcb-calc__note">
+                                * Simulation indicative basée sur les informations que vous saisissez,
+                                hors frais annexes éventuels (télécollecte, minimum de perception,
+                                frais de dossier), qui augmenteraient encore l'écart en faveur d'EXOCOMS.
+                            </p>
+
+                        </div>
+
+                        <!-- PANEL RÉSULTAT -->
+                        <div class="cmcb-result" aria-live="polite">
+
+                            <header class="cmcb-result__head">
+                                <strong>EXOCOMS GROUP</strong>
+                                <span>Comparatif mensuel — Encaissement CB</span>
+                            </header>
+
+                            <div class="cmcb-result__group">
+                                <div class="cmcb-result__group-title">Votre Banque Actuelle</div>
+                                <div class="cmcb-result__row">
+                                    <span>Commissions (<span id="cmq-r-taux">0,90</span>&#160;%)</span>
+                                    <strong id="cmq-r-combq">180,00&#160;€</strong>
+                                </div>
+                                <div class="cmcb-result__row">
+                                    <span>Location TPE</span>
+                                    <strong id="cmq-r-loc">30,00&#160;€</strong>
+                                </div>
+                                <div class="cmcb-result__total">
+                                    <span>TOTAL BANQUE</span>
+                                    <strong id="cmq-r-totbq">210,00&#160;€</strong>
+                                </div>
+                            </div>
+
+                            <div class="cmcb-result__group cmcb-result__group--exo">
+                                <div class="cmcb-result__group-title">
+                                    <span>Offre EXOCOMS</span>
+                                    <span class="cmcb-badge cmcb-badge--success">Optimisé</span>
+                                </div>
+                                <div class="cmcb-result__row">
+                                    <span>Commissions (0,25&#160;%)</span>
+                                    <strong id="cmq-r-comexo">50,00&#160;€</strong>
+                                </div>
+                                <div class="cmcb-result__row">
+                                    <span>Location TPE</span>
+                                    <span class="cmcb-badge cmcb-badge--included">INCLUS</span>
+                                </div>
+                                <div class="cmcb-result__total">
+                                    <span>TOTAL EXOCOMS</span>
+                                    <strong id="cmq-r-totexo">50,00&#160;€</strong>
+                                </div>
+                            </div>
+
+                            <div class="cmcb-save">
+                                <span class="cmcb-save__label">Économie estimée</span>
+                                <strong class="cmcb-save__value" id="cmq-r-save">160,00&#160;€ / mois</strong>
+                                <span class="cmcb-save__year" id="cmq-r-savey">soit 1&#160;920&#160;€ / an</span>
+                            </div>
+
+                            <p class="cmcb-result__foot">*** MERCI DE VOTRE CONFIANCE ***</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ============================================================
+                 FONCTIONNALITÉS INCLUSES
+            ============================================================ -->
+            <section class="cmcb-section cmcb-section--tint">
+
+                <div class="cmcb-container">
+
+                    <header class="cmcb-section__head">
+                        <span class="cmcb-section__label">Un contrat, tout compris</span>
+                        <h2 class="cmcb-section__title">Ce que comprend le contrat à 0,25&#160;%</h2>
+                        <p class="cmcb-section__lead">
+                            Un seul taux, un seul interlocuteur, zéro mauvaise surprise.
+                            Tout ce dont vous avez besoin pour encaisser est inclus dans le contrat.
+                        </p>
+                    </header>
+
+                    <div class="cmcb-features">
+
+                        <article class="cmcb-feature">
+                            <span class="cmcb-feature__status">
+                                <i class="fa fa-check"/> Inclus
+                            </span>
+                            <h3 class="cmcb-feature__title">Terminal de paiement fourni</h3>
+                            <p>
+                                TPE dernière génération (fixe, portable ou Android)
+                                livré paramétré, sans contact, compatible Apple&#160;Pay
+                                et Google&#160;Pay.
+                            </p>
+                        </article>
+
+                        <article class="cmcb-feature">
+                            <span class="cmcb-feature__status">
+                                <i class="fa fa-check"/> Inclus
+                            </span>
+                            <h3 class="cmcb-feature__title">Toutes les cartes acceptées</h3>
+                            <p>
+                                CB, Visa, Mastercard, cartes étrangères et sans contact —
+                                au même taux de 0,25&#160;%, sans grille tarifaire à rallonge.
+                            </p>
+                        </article>
+
+                        <article class="cmcb-feature">
+                            <span class="cmcb-feature__status">
+                                <i class="fa fa-check"/> Inclus
+                            </span>
+                            <h3 class="cmcb-feature__title">Versement rapide des fonds</h3>
+                            <p>
+                                Vos encaissements sont versés à J+1 ouvré directement
+                                sur votre compte bancaire actuel. Vous ne changez pas de banque.
+                            </p>
+                        </article>
+
+                        <article class="cmcb-feature">
+                            <span class="cmcb-feature__status">
+                                <i class="fa fa-check"/> Inclus
+                            </span>
+                            <h3 class="cmcb-feature__title">SAV et échange de matériel</h3>
+                            <p>
+                                Assistance technique par des experts monétique
+                                et échange du terminal en cas de panne,
+                                sans facturation supplémentaire.
+                            </p>
+                        </article>
+
+                        <article class="cmcb-feature">
+                            <span class="cmcb-feature__status">
+                                <i class="fa fa-check"/> Inclus
+                            </span>
+                            <h3 class="cmcb-feature__title">Suivi de vos transactions</h3>
+                            <p>
+                                Espace de suivi en ligne : transactions en temps réel,
+                                exports comptables et relevés de commissions clairs
+                                et détaillés.
+                            </p>
+                        </article>
+
+                        <article class="cmcb-feature">
+                            <span class="cmcb-feature__status">
+                                <i class="fa fa-check"/> Inclus
+                            </span>
+                            <h3 class="cmcb-feature__title">Accompagnement à la migration</h3>
+                            <p>
+                                Nous gérons la transition depuis votre contrat bancaire actuel,
+                                sans interruption d'encaissement pour votre commerce.
+                            </p>
+                        </article>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ============================================================
+                 COMPARATIF
+            ============================================================ -->
+            <section class="cmcb-section">
+
+                <div class="cmcb-container">
+
+                    <header class="cmcb-section__head">
+                        <span class="cmcb-section__label">Comparatif</span>
+                        <h2 class="cmcb-section__title">Contrat bancaire classique vs contrat EXOCOMS</h2>
+                        <p class="cmcb-section__lead">
+                            Même volume d'encaissement, deux façons de facturer :
+                            l'écart se lit ligne par ligne.
+                        </p>
+                    </header>
+
+                    <div class="cmcb-compare__scroll">
+
+                        <div class="cmcb-compare">
+
+                            <div class="cmcb-compare__row">
+                                <div class="cmcb-compare__head cmcb-compare__head--empty"></div>
+                                <div class="cmcb-compare__head">
+                                    <span class="cmcb-compare__badge cmcb-compare__badge--bank">
+                                        Banque traditionnelle*
+                                    </span>
+                                </div>
+                                <div class="cmcb-compare__head cmcb-compare__head--exo">
+                                    <span class="cmcb-compare__badge cmcb-compare__badge--exo">
+                                        EXOCOMS 0,25&#160;%
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="cmcb-compare__row">
+                                <div class="cmcb-compare__label">Commission par transaction</div>
+                                <div class="cmcb-compare__cell">
+                                    <span>0,60&#160;% à 1,80&#160;% selon la carte</span>
+                                    <i class="fa fa-times cmcb-compare__icon cmcb-compare__icon--no"/>
+                                </div>
+                                <div class="cmcb-compare__cell cmcb-compare__cell--exo">
+                                    <span>0,25&#160;% taux unique</span>
+                                    <i class="fa fa-check cmcb-compare__icon cmcb-compare__icon--yes"/>
+                                </div>
+                            </div>
+
+                            <div class="cmcb-compare__row">
+                                <div class="cmcb-compare__label">Terminal de paiement</div>
+                                <div class="cmcb-compare__cell">
+                                    <span>Location 20 à 45&#160;€ / mois</span>
+                                    <i class="fa fa-times cmcb-compare__icon cmcb-compare__icon--no"/>
+                                </div>
+                                <div class="cmcb-compare__cell cmcb-compare__cell--exo">
+                                    <span>Inclus</span>
+                                    <i class="fa fa-check cmcb-compare__icon cmcb-compare__icon--yes"/>
+                                </div>
+                            </div>
+
+                            <div class="cmcb-compare__row">
+                                <div class="cmcb-compare__label">Frais de dossier</div>
+                                <div class="cmcb-compare__cell">
+                                    <span>Souvent 50 à 150&#160;€</span>
+                                    <i class="fa fa-times cmcb-compare__icon cmcb-compare__icon--no"/>
+                                </div>
+                                <div class="cmcb-compare__cell cmcb-compare__cell--exo">
+                                    <span>0&#160;€</span>
+                                    <i class="fa fa-check cmcb-compare__icon cmcb-compare__icon--yes"/>
+                                </div>
+                            </div>
+
+                            <div class="cmcb-compare__row">
+                                <div class="cmcb-compare__label">Minimum de perception</div>
+                                <div class="cmcb-compare__cell">
+                                    <span>Fréquent (ex. : 0,10&#160;€ / transaction)</span>
+                                    <i class="fa fa-times cmcb-compare__icon cmcb-compare__icon--no"/>
+                                </div>
+                                <div class="cmcb-compare__cell cmcb-compare__cell--exo">
+                                    <span>Aucun</span>
+                                    <i class="fa fa-check cmcb-compare__icon cmcb-compare__icon--yes"/>
+                                </div>
+                            </div>
+
+                            <div class="cmcb-compare__row">
+                                <div class="cmcb-compare__label">Lisibilité du relevé</div>
+                                <div class="cmcb-compare__cell">
+                                    <span>Grilles multiples, lignes de frais dispersées</span>
+                                    <i class="fa fa-times cmcb-compare__icon cmcb-compare__icon--no"/>
+                                </div>
+                                <div class="cmcb-compare__cell cmcb-compare__cell--exo">
+                                    <span>Un taux, un relevé clair</span>
+                                    <i class="fa fa-check cmcb-compare__icon cmcb-compare__icon--yes"/>
+                                </div>
+                            </div>
+
+                            <div class="cmcb-compare__row">
+                                <div class="cmcb-compare__label">Changement de banque requis</div>
+                                <div class="cmcb-compare__cell">
+                                    <span>Non</span>
+                                    <i class="fa fa-minus cmcb-compare__icon cmcb-compare__icon--neutral"/>
+                                </div>
+                                <div class="cmcb-compare__cell cmcb-compare__cell--exo">
+                                    <span>Non — vous gardez votre compte</span>
+                                    <i class="fa fa-check cmcb-compare__icon cmcb-compare__icon--yes"/>
+                                </div>
+                            </div>
+
+                            <div class="cmcb-compare__row">
+                                <div class="cmcb-compare__label">Interlocuteur</div>
+                                <div class="cmcb-compare__cell">
+                                    <span>Plateforme téléphonique mutualisée</span>
+                                    <i class="fa fa-times cmcb-compare__icon cmcb-compare__icon--no"/>
+                                </div>
+                                <div class="cmcb-compare__cell cmcb-compare__cell--exo">
+                                    <span>Expert monétique dédié EXOCOMS</span>
+                                    <i class="fa fa-check cmcb-compare__icon cmcb-compare__icon--yes"/>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <p class="cmcb-compare__note">
+                        * Fourchettes constatées sur le marché français des contrats monétiques
+                        bancaires pour commerçants. Les conditions exactes varient selon les
+                        établissements et les profils.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- ============================================================
+                 ÉTAPES DE MIGRATION
+            ============================================================ -->
+            <section class="cmcb-section cmcb-section--soft">
+
+                <div class="cmcb-container">
+
+                    <header class="cmcb-section__head">
+                        <span class="cmcb-section__label">Migration sans coupure</span>
+                        <h2 class="cmcb-section__title">Passer chez EXOCOMS en trois étapes</h2>
+                    </header>
+
+                    <div class="cmcb-steps">
+
+                        <article class="cmcb-step">
+                            <span class="cmcb-step__num">1</span>
+                            <h3 class="cmcb-step__title">Audit gratuit de vos relevés</h3>
+                            <p>
+                                Envoyez-nous vos trois derniers relevés de commissions monétiques.
+                                Nous chiffrons précisément ce que vous payez aujourd'hui
+                                et ce que vous économiserez.
+                            </p>
+                            <div class="cmcb-step__meta">
+                                <i class="fa fa-arrow-right"/>
+                                Réponse sous 48&#160;h
+                            </div>
+                        </article>
+
+                        <article class="cmcb-step">
+                            <span class="cmcb-step__num">2</span>
+                            <h3 class="cmcb-step__title">Signature et paramétrage</h3>
+                            <p>
+                                Signature électronique du contrat, ouverture de votre dossier
+                                commerçant et préparation de votre terminal, paramétré
+                                à votre activité et à votre caisse.
+                            </p>
+                            <div class="cmcb-step__meta">
+                                <i class="fa fa-arrow-right"/>
+                                Sous 5 jours ouvrés
+                            </div>
+                        </article>
+
+                        <article class="cmcb-step">
+                            <span class="cmcb-step__num">3</span>
+                            <h3 class="cmcb-step__title">Installation et bascule</h3>
+                            <p>
+                                Livraison et mise en service du TPE, tests d'encaissement,
+                                puis résiliation de votre ancien contrat gérée avec vous.
+                                Vous encaissez sans interruption.
+                            </p>
+                            <div class="cmcb-step__meta">
+                                <i class="fa fa-arrow-right"/>
+                                Sans coupure d'activité
+                            </div>
+                        </article>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ============================================================
+                 FAQ
+            ============================================================ -->
+            <section class="cmcb-section">
+
+                <div class="cmcb-container">
+
+                    <header class="cmcb-section__head cmcb-section__head--center">
+                        <span class="cmcb-section__label">Questions fréquentes</span>
+                        <h2 class="cmcb-section__title">Tout savoir sur le contrat à 0,25&#160;%</h2>
+                    </header>
+
+                    <div class="cmcb-faq">
+
+                        <details class="cmcb-faq__item">
+                            <summary class="cmcb-faq__q">
+                                Le taux de 0,25&#160;% est-il vraiment le seul coût&#160;?
+                            </summary>
+                            <div class="cmcb-faq__a">
+                                Oui. La commission de 0,25&#160;% s'applique sur le montant
+                                de chaque transaction encaissée, et c'est tout :
+                                le terminal, le SAV, le paramétrage et l'espace de suivi sont inclus.
+                                Il n'y a ni frais de dossier, ni minimum de perception,
+                                ni frais de télécollecte. Les conditions détaillées figurent
+                                dans votre contrat avant signature.
+                            </div>
+                        </details>
+
+                        <details class="cmcb-faq__item">
+                            <summary class="cmcb-faq__q">
+                                Dois-je changer de banque pour en bénéficier&#160;?
+                            </summary>
+                            <div class="cmcb-faq__a">
+                                Non. Le contrat commerçant EXOCOMS est indépendant de votre banque :
+                                vos encaissements sont simplement versés sur votre compte professionnel
+                                actuel. Vous conservez votre banque, vos crédits et vos habitudes —
+                                seul votre contrat monétique change.
+                            </div>
+                        </details>
+
+                        <details class="cmcb-faq__item">
+                            <summary class="cmcb-faq__q">
+                                Quelles cartes sont acceptées, et à quel taux&#160;?
+                            </summary>
+                            <div class="cmcb-faq__a">
+                                CB, Visa et Mastercard, y compris en sans contact,
+                                via Apple&#160;Pay et Google&#160;Pay, au taux unique de 0,25&#160;%.
+                                Contrairement aux grilles bancaires, il n'y a pas de surcoût opaque
+                                selon le type de carte : le taux est le même et votre relevé reste lisible.
+                            </div>
+                        </details>
+
+                        <details class="cmcb-faq__item">
+                            <summary class="cmcb-faq__q">
+                                Quand suis-je payé après un encaissement&#160;?
+                            </summary>
+                            <div class="cmcb-faq__a">
+                                Les fonds sont versés à J+1 ouvré sur votre compte bancaire,
+                                avec un relevé détaillé de chaque transaction et des commissions
+                                prélevées, exportable pour votre comptabilité.
+                            </div>
+                        </details>
+
+                        <details class="cmcb-faq__item">
+                            <summary class="cmcb-faq__q">
+                                Que se passe-t-il si mon terminal tombe en panne&#160;?
+                            </summary>
+                            <div class="cmcb-faq__a">
+                                Notre SAV est inclus dans le contrat. En cas de panne,
+                                nous diagnostiquons à distance et, si nécessaire,
+                                échangeons votre terminal sans facturation supplémentaire,
+                                pour que votre commerce continue d'encaisser.
+                            </div>
+                        </details>
+
+                        <details class="cmcb-faq__item">
+                            <summary class="cmcb-faq__q">
+                                Suis-je engagé sur une longue durée&#160;?
+                            </summary>
+                            <div class="cmcb-faq__a">
+                                Les modalités d'engagement sont précisées clairement dans votre
+                                contrat avant signature, sans clause cachée ni tacite reconduction
+                                opaque. Lors de l'audit gratuit, nous vous présentons l'ensemble
+                                des conditions, noir sur blanc.
+                            </div>
+                        </details>
+
+                        <details class="cmcb-faq__item">
+                            <summary class="cmcb-faq__q">
+                                Comment se passe la résiliation de mon contrat bancaire actuel&#160;?
+                            </summary>
+                            <div class="cmcb-faq__a">
+                                Nous vous accompagnons : vérification du préavis de votre contrat
+                                monétique en cours, préparation du courrier de résiliation
+                                et planification de la bascule pour que vous n'ayez jamais
+                                d'interruption d'encaissement.
+                            </div>
+                        </details>
+
+                        <details class="cmcb-faq__item">
+                            <summary class="cmcb-faq__q">
+                                Le terminal est-il compatible avec ma caisse&#160;?
+                            </summary>
+                            <div class="cmcb-faq__a">
+                                Nos TPE s'intègrent aux principales solutions d'encaissement du marché
+                                (protocole caisse, TPE Android autonomes ou connectés). EXOCOMS étant
+                                spécialiste monétique et point de vente, nous validons la compatibilité
+                                avec votre installation lors de l'audit.
+                            </div>
+                        </details>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ============================================================
+                 CTA FINAL
+            ============================================================ -->
+            <section class="cmcb-cta">
+
+                <div class="cmcb-container">
+
+                    <div class="cmcb-cta__card">
+
+                        <div class="cmcb-cta__inner">
+
+                            <span class="cmcb-cta__label">
+                                Passez à un contrat plus transparent
+                            </span>
+
+                            <h2 class="cmcb-cta__title">
+                                Vos relevés parlent d'eux-mêmes.
+                                <br/>
+                                Envoyez-les nous.
+                            </h2>
+
+                            <p class="cmcb-cta__text">
+                                Audit gratuit et sans engagement de vos trois derniers relevés
+                                monétiques : nous chiffrons vos économies réelles, noir sur blanc,
+                                sous 48&#160;heures.
+                            </p>
+
+                            <a href="/contactus"
+                               class="cmcb-btn cmcb-btn--light">
+                                Demander mon audit gratuit
+                            </a>
+
+                            <p class="cmcb-cta__note">
+                                EXOCOMS GROUP — Spécialiste monétique &amp; encaissement
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ============================================================
+                 MENTIONS LÉGALES
+            ============================================================ -->
+            <footer class="cmcb-legal">
+
+                <div class="cmcb-container">
+                    <p>
+                        Offre réservée aux professionnels.
+                        Taux de commission de 0,25&#160;% applicable sur le montant des transactions
+                        encaissées par carte bancaire dans le cadre du contrat commerçant EXOCOMS,
+                        sous réserve d'acceptation du dossier. Les conditions complètes (durée,
+                        modalités de versement, périmètre des cartes acceptées) sont détaillées
+                        dans les conditions contractuelles remises avant signature. Simulateur
+                        fourni à titre indicatif, sur la base des données saisies par l'utilisateur ;
+                        il ne constitue pas un engagement contractuel.
+                    </p>
+                </div>
+
+            </footer>
+
+        </t>
+
+    </template>
+
+</odoo>

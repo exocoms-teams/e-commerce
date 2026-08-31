@@ -1,31 +1,77 @@
 /**
- * Contrat monétique CB — révélations au scroll
+ * Contrat monétique CB — animation au scroll
  */
 (function () {
     'use strict';
 
-    if (!('IntersectionObserver' in window)) {
+    document.documentElement.classList.add('cmq-js', 'cmcb-js');
+
+    var delayPool = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+    // Blocs racine animés, puis leurs enfants en cascade.
+    var sections = document.querySelectorAll(
+        '.cmq-section, .cmq-calc, .cmq-final-wrap, ' +
+        '.cmcb-section, .cmcb-calc, .cmcb-cta, .cmcb-proof'
+    );
+
+    var revealTargets = function (root, baseIndex) {
+        var children = [];
+        var container = root.querySelector(':scope > .cmcb-container');
+        if (container && container.children.length) {
+            children = Array.prototype.slice.call(container.children);
+        } else {
+            children = [root];
+        }
+        children.forEach(function (el, i) {
+            el.classList.add('reveal');
+            el.setAttribute('data-delay', delayPool[(baseIndex + i) % delayPool.length]);
+        });
+        return children;
+    };
+
+    var hero = document.querySelector('.cmcb-hero');
+    var prepared = [];
+    if (hero) {
+        var heroChildren = [];
+        var heroContainer = hero.querySelector(':scope > .cmcb-container');
+        if (heroContainer && heroContainer.children.length) {
+            heroChildren = Array.prototype.slice.call(heroContainer.children);
+        } else {
+            heroChildren = [hero];
+        }
+        heroChildren.forEach(function (el, i) {
+            el.classList.add('reveal');
+            el.setAttribute('data-delay', delayPool[i % delayPool.length]);
+            prepared.push(el);
+        });
+    }
+
+    sections.forEach(function (section) {
+        prepared = prepared.concat(revealTargets(section, 0));
+    });
+
+    if (!prepared.length) {
         return;
     }
 
-    document.documentElement.classList.add('cmq-js');
-
-    var sections = document.querySelectorAll('.mq-stats-section, .cmq-section, .cmq-calc, .cmq-final-wrap');
-    if (!sections.length) {
-        return;
-    }
-
+    // Animation au scroll : les blocs sont cachés puis révélés quand ils
+    // entrent dans le viewport. Sans JS, tout reste visible.
     var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
             if (entry.isIntersecting) {
-                entry.target.classList.add('is-revealed');
+                entry.target.classList.add('is-in');
                 observer.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
 
-    sections.forEach(function (section) {
-        observer.observe(section);
+    prepared.forEach(function (el) {
+        var rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+            el.classList.add('is-in');
+        } else {
+            observer.observe(el);
+        }
     });
 })();
 
