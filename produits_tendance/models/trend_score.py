@@ -36,7 +36,6 @@ class TrendScore(models.Model):
         default=fields.Datetime.now,
         index=True,
     )
-
     score_date = fields.Date(
         string="Date du score",
         compute="_compute_score_date",
@@ -44,7 +43,6 @@ class TrendScore(models.Model):
         precompute=True,
         index=True,
     )
-    
     rank = fields.Integer(
         string="Classement",
         default=0,
@@ -84,6 +82,7 @@ class TrendScore(models.Model):
         string="Publicités actives de la période (A_T)",
         default=0,
     )
+
     @api.depends("computed_at")
     def _compute_score_date(self):
         """Stocke le jour UTC de calcul pour l'unicité quotidienne.

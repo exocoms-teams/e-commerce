@@ -131,3 +131,36 @@ class TestTrendScoringOrchestrator(TransactionCase):
         self.assertEqual(first_score.metric_sales, 10)
         self.assertEqual(first_score.metric_likes, 10)
         self.assertEqual(first_score.metric_shares, 2)
+
+    def test_run_daily_scoring_assigns_ranks_by_descending_score(self):
+        medium_product = self.env['trend.product'].create({
+            'name': 'Produit score moyen',
+            'product_ref': 'ORCHESTRATOR-RANK-MEDIUM',
+            'source': 'api',
+            'sales_count': 20,
+        })
+        best_product = self.env['trend.product'].create({
+            'name': 'Produit meilleur score',
+            'product_ref': 'ORCHESTRATOR-RANK-BEST',
+            'source': 'api',
+            'sales_count': 30,
+        })
+        scoring_datetime = '2026-08-24 09:00:00'
+
+        created_scores = self.orchestrator.run_daily_scoring(
+            computed_at=scoring_datetime,
+        )
+        ranked_scores = created_scores.sorted('rank')
+
+        self.assertEqual(ranked_scores.mapped('rank'), [1, 2, 3])
+        self.assertEqual(ranked_scores[0].product_id, best_product)
+        self.assertEqual(ranked_scores[1].product_id, medium_product)
+        self.assertEqual(ranked_scores[2].product_id, self.product)
+        self.assertGreater(
+            ranked_scores[0].computed_score,
+            ranked_scores[1].computed_score,
+        )
+        self.assertGreater(
+            ranked_scores[1].computed_score,
+            ranked_scores[2].computed_score,
+        )
