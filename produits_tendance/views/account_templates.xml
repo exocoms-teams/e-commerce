@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         WIN-125 : Espace Compte & Sous-pages
+         (Profil, Paramètres, Facturation, etc.)
+
+         Structure la zone "Compte" accessible via l'avatar
+         utilisateur : 8 routes pour éviter les liens morts.
+
+         Conformité Charte Graphique Winners :
+         - Réutilise les composants déjà définis dans le Design
+           System (§5) plutôt que d'en recréer :
+             .o_winners_sidebar_menu  (navigation globale)
+             .o_winners_empty_state   (pages coquilles)
+             .o_winners_card          (carte blanche standard)
+             .o_winners_btn_primary   (bouton principal)
+         - Seule la grille propre à /compte/* (sidebar + contenu)
+           est un élément nouveau, stylée dans account_pages.scss.
+    ============================================================ -->
+
+    <!-- ------------------------------------------------------------
+         Snippet réutilisé : menu de la sidebar Compte.
+         Appelé via t-call par les 2 templates de page ci-dessous,
+         pour ne jamais désynchroniser le menu entre les pages.
+         Attend la variable `menu` (liste de dict: key/label/url/active)
+         et `page_title` dans le contexte appelant.
+    ------------------------------------------------------------ -->
+    <template id="account_sidebar" name="Winners - Sidebar Compte">
+        <nav class="o_winners_sidebar_menu o_winners_account_sidebar">
+            <t t-foreach="menu" t-as="item">
+                <a t-attf-href="#{item['url']}"
+                   t-attf-class="o_winners_account_sidebar__link #{'o_winners_account_sidebar__link--active' if item['active'] else ''}">
+                    <t t-esc="item['label']"/>
+                </a>
+            </t>
+        </nav>
+    </template>
+
+    <!-- ------------------------------------------------------------
+         Page : /compte/profil — FONCTIONNELLE
+         Affiche et permet de modifier le nom réel de l'utilisateur
+         connecté. L'email (login) n'est pas modifiable ici : le
+         changer touche à l'authentification, hors périmètre de ce
+         ticket (contrainte "ne pas modifier la logique d'auth").
+    ------------------------------------------------------------ -->
+    <template id="account_profil_page" name="Winners - Compte / Profil">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container o_winners_account_page">
+
+                    <t t-call="produits_tendance.account_sidebar"/>
+
+                    <main class="o_winners_account_content">
+                        <div class="o_winners_card o_winners_account_card">
+
+                            <h1 class="o_winners_account_content__title">Profil</h1>
+                            <p class="o_winners_account_content__subtitle">
+                                Gérez les informations de votre compte.
+                            </p>
+
+                            <div t-if="success" class="alert alert-success" role="alert">
+                                Vos informations ont été mises à jour.
+                            </div>
+                            <div t-if="error" class="alert alert-danger" role="alert">
+                                <t t-esc="error"/>
+                            </div>
+
+                            <form method="post" action="/compte/profil" class="o_winners_account_form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Nom complet</label>
+                                    <input type="text" class="form-control" id="name" name="name"
+                                           t-att-value="user.name" required="required"/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Adresse e-mail</label>
+                                    <input type="email" class="form-control" id="email"
+                                           t-att-value="user.email" disabled="disabled"/>
+                                    <small class="form-text text-muted">
+                                        Pour changer votre e-mail, contactez le support.
+                                    </small>
+                                </div>
+
+                                <button type="submit" class="o_winners_btn_primary">
+                                    Enregistrer les modifications
+                                </button>
+                            </form>
+                        </div>
+                    </main>
+
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ------------------------------------------------------------
+         Pages : /compte/parametres, /compte/notifications,
+         /compte/facturation, /compte/equipe, /compte/api,
+         /compte/export, /compte/aide — rendu STRICTEMENT identique.
+         Un seul template pour les 7 routes (contrainte ticket :
+         "rendu simple et standardisé pour ne pas perdre de temps").
+    ------------------------------------------------------------ -->
+    <template id="account_coming_soon_page" name="Winners - Compte / Fonctionnalité à venir">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container o_winners_account_page">
+
+                    <t t-call="produits_tendance.account_sidebar"/>
+
+                    <main class="o_winners_account_content">
+                        <div class="o_winners_card o_winners_account_card">
+
+                            <!-- Composant partagé §5 : État Vide (Empty State) -->
+                            <div class="o_winners_empty_state">
+                                <i class="fa fa-clock-o o_winners_empty_state__icon" role="presentation"/>
+                                <h2 class="o_winners_empty_state__title">
+                                    <t t-esc="page_title"/>
+                                </h2>
+                                <p class="o_winners_empty_state__text">
+                                    Fonctionnalité à venir
+                                </p>
+                            </div>
+
+                        </div>
+                    </main>
+
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

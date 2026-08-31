@@ -24,6 +24,7 @@
         'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
         'views/legal_templates.xml',   # WIN-102
         'data/webhook_queue_cron.xml',      # WIN-67
+        'views/account_templates.xml',
     ],
 
 
@@ -51,6 +52,7 @@
             'produits_tendance/static/src/scss/product_card.scss',
             'produits_tendance/static/src/scss/home_page.scss',
             'produits_tendance/static/src/js/dashboard_filters.js',
+            'produits_tendance/static/src/scss/account_pages.scss',
         ],
     },
     'installable': True,
