@@ -61,7 +61,7 @@ class TrendScore(models.Model):
              "ni le classement (rank).",
     )
 
-    # --- SNAPSHOT DES MÉTRIQUES (période T de ce calcul) ---
+    # --- SNAPSHOT DES MÉTRIQUES (période T de ce calcul) 
     # Ces champs "gèlent" les valeurs de V_T, L_T, P_T, A_T au moment du calcul.
     # Nécessaire car trend.product/trend.ad sont mutables (les compteurs
     # évoluent dans le temps) : sans ce snapshot, il serait impossible de
