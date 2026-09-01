@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Inject Google Fonts and Font Awesome 6 into the <head> of every page.
+        web.layout is the base HTML skeleton template — the //head xpath is
+        one of the most stable in the entire Odoo codebase (it's literally
+        the HTML <head> element) and has not changed across versions.
+    -->
+    <template id="oa_beauty_head_assets" inherit_id="web.layout" name="O&amp;A Beauty — Head Assets">
+        <xpath expr="//head" position="inside">
+            <!-- Preconnect for performance -->
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+            <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com"/>
+            <!-- Google Fonts: Cormorant Garamond (display) + Jost (body) — preloaded for CWV -->
+            <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&amp;family=Jost:wght@300;400;500;600&amp;display=swap"/>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&amp;family=Jost:wght@300;400;500;600&amp;display=swap"/>
+            <!-- Font Awesome 6 — required for fa-brands fa-instagram/tiktok/pinterest -->
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plh7eecAlmChMD1EjyFg6J5BCFSgQ==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+            
+            <!-- ANALYTICS & TRACKING PLACEHOLDERS (Epic 5) -->
+            <!-- Google Analytics 4 -->
+            <!-- <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+            <script>
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-XXXXXXXXXX');
+            </script> -->
+            
+            <!-- Meta Pixel Code -->
+            <!-- <script>
+              !function(f,b,e,v,n,t,s)
+              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+              n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];
+              s.parentNode.insertBefore(t,s)}(window, document,'script',
+              'https://connect.facebook.net/en_US/fbevents.js');
+              fbq('init', 'XXXXXXXXXXXXXXXX');
+              fbq('track', 'PageView');
+            </script> -->
+
+            <!-- ========================================== -->
+            <!-- SEO: Schema.org, Open Graph, Twitter Cards -->
+            <!-- ========================================== -->
+            <!-- Note: Canonical URLs are natively handled by Odoo's website module -->
+            
+            <meta name="twitter:card" content="summary_large_image"/>
+            <meta name="twitter:site" content="@oabeauty"/>
+            <meta property="og:site_name" content="O&amp;A Beauty"/>
+            <t t-if="main_object and 'name' in main_object">
+                <meta property="og:title" t-att-content="main_object.name"/>
+                <meta property="twitter:title" t-att-content="main_object.name"/>
+            </t>
+            <t t-if="main_object and 'website_meta_description' in main_object and main_object.website_meta_description">
+                <meta property="og:description" t-att-content="main_object.website_meta_description"/>
+                <meta property="twitter:description" t-att-content="main_object.website_meta_description"/>
+            </t>
+            <t t-if="main_object and 'image_1920' in main_object">
+                <meta property="og:image" t-att-content="request.httprequest.url_root + 'web/image/' + main_object._name + '/' + str(main_object.id) + '/image_1920'"/>
+                <meta property="twitter:image" t-att-content="request.httprequest.url_root + 'web/image/' + main_object._name + '/' + str(main_object.id) + '/image_1920'"/>
+            </t>
+            
+            <!-- Schema.org Organization -->
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "O&amp;A Beauty",
+              "url": "http://oa-atelier.com/",
+              "logo": "http://oa-atelier.com/web/image/website/1/logo",
+              "sameAs": [
+                "https://instagram.com/oabeauty",
+                "https://tiktok.com/@oabeauty",
+                "https://pinterest.com/oabeauty"
+              ]
+            }
+            </script>
+        </xpath>
+    </template>
+
+    <!--
+        Epic 6 & 1: Newsletter et Réseaux Sociaux dans le Footer
+    -->
+    <template id="oa_beauty_footer" inherit_id="website.layout" name="O&amp;A Beauty — Footer">
+        <xpath expr="//footer" position="replace">
+            <footer id="bottom" class="oa-footer bg-white">
+                
+                <!-- Newsletter Section -->
+                <section class="oa-footer-newsletter py-5 border-bottom">
+                    <div class="container text-center">
+                        <h3 class="mb-3" style="font-family: var(--oa-font-display); color: var(--oa-prune); font-size: 2.2rem; font-style: italic;">Rejoignez le Cercle O&amp;A Beauty</h3>
+                        <p class="mb-4 text-muted" style="font-family: var(--oa-font-body); max-width: 500px; margin: 0 auto; font-size: 0.9rem; letter-spacing: 0.05em;">Abonnez-vous pour accéder en exclusivité aux nouveaux lancements, rituels de beauté et événements privés.</p>
+                        <div class="oa-newsletter-wrapper">
+                            <div class="oa-newsletter-form input-group d-flex justify-content-center mx-auto" style="max-width: 450px;">
+                                <input
+                                    type="email"
+                                    name="email"
+                                    class="oa-newsletter-email form-control rounded-0"
+                                    placeholder="Votre adresse e-mail"
+                                    autocomplete="email"
+                                    aria-label="Adresse e-mail pour la newsletter"
+                                    style="border: 1px solid var(--oa-border); border-right: none; background: transparent; font-size: 0.9rem; padding: 12px 20px; box-shadow: none; outline: none;"/>
+                                <button
+                                    type="button"
+                                    class="oa-newsletter-btn btn text-white rounded-0 px-4 d-flex align-items-center justify-content-center"
+                                    aria-label="S'abonner à la newsletter"
+                                    style="background-color: var(--oa-prune); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.15em; font-weight: 500; border: 1px solid var(--oa-prune); margin-left: -1px; min-height: 48px; cursor: pointer;">S'abonner</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Main Footer Content -->
+                <section class="oa-footer-main py-5">
+                    <div class="container">
+                        <div class="row gx-5">
+                            <!-- Column 1: Brand -->
+                            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                                <h4 class="mb-4" style="font-family: var(--oa-font-display); color: var(--oa-prune); font-size: 1.8rem;">O&amp;A Beauty</h4>
+                                <p class="text-muted" style="font-size: 0.85rem; line-height: 1.8; letter-spacing: 0.05em; padding-right: 20px;">
+                                    Une marque de cosmétiques de luxe dédiée à la célébration de la beauté naturelle grâce à des formulations propres, performantes et d'une élégance éditoriale.
+                                </p>
+                            </div>
+
+                            <!-- Column 2: Shop -->
+                            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                                <h6 class="text-uppercase mb-4" style="color: var(--oa-prune); font-weight: 600; letter-spacing: 0.15em; font-size: 0.8rem;">Boutique</h6>
+                                <ul class="list-unstyled mb-0 oa-footer-links">
+                                    <li class="mb-3"><a href="/shop/category/skincare" class="text-muted text-decoration-none">Soins de la Peau</a></li>
+                                    <li class="mb-3"><a href="/shop/category/makeup" class="text-muted text-decoration-none">Maquillage</a></li>
+                                    <li class="mb-3"><a href="/best-sellers" class="text-muted text-decoration-none">Meilleures Ventes</a></li>
+                                    <li class="mb-3"><a href="/new-arrivals" class="text-muted text-decoration-none">Nouveautés</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Column 3: Customer Care -->
+                            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                                <h6 class="text-uppercase mb-4" style="color: var(--oa-prune); font-weight: 600; letter-spacing: 0.15em; font-size: 0.8rem;">Service Client</h6>
+                                <ul class="list-unstyled mb-0 oa-footer-links">
+                                    <li class="mb-3"><a href="/contact-us" class="text-muted text-decoration-none">Nous Contacter</a></li>
+                                    <li class="mb-3"><a href="/faq" class="text-muted text-decoration-none">FAQ</a></li>
+                                    <li class="mb-3"><a href="/shipping-delivery" class="text-muted text-decoration-none">Livraison et Expédition</a></li>
+                                    <li class="mb-3"><a href="/returns" class="text-muted text-decoration-none">Retours et Remboursements</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Column 4: Community -->
+                            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                                <h6 class="text-uppercase mb-4" style="color: var(--oa-prune); font-weight: 600; letter-spacing: 0.15em; font-size: 0.8rem;">Communauté</h6>
+                                <ul class="list-unstyled mb-0 oa-footer-links">
+                                    <!-- Instagram -->
+                                    <li class="mb-3">
+                                        <a href="https://instagram.com" target="_blank" class="text-muted text-decoration-none d-flex align-items-center oa-social-link">
+                                            <span class="oa-social-icon me-3" aria-hidden="true">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                                </svg>
+                                            </span>
+                                            Instagram
+                                        </a>
+                                    </li>
+                                    <!-- TikTok -->
+                                    <li class="mb-3">
+                                        <a href="https://tiktok.com" target="_blank" class="text-muted text-decoration-none d-flex align-items-center oa-social-link">
+                                            <span class="oa-social-icon me-3" aria-hidden="true">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                                    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.89a8.18 8.18 0 004.78 1.52V7a4.85 4.85 0 01-1.01-.31z"/>
+                                                </svg>
+                                            </span>
+                                            TikTok
+                                        </a>
+                                    </li>
+                                    <!-- Pinterest -->
+                                    <li class="mb-3">
+                                        <a href="https://pinterest.com" target="_blank" class="text-muted text-decoration-none d-flex align-items-center oa-social-link">
+                                            <span class="oa-social-icon me-3" aria-hidden="true">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                                    <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+                                                </svg>
+                                            </span>
+                                            Pinterest
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bottom Row -->
+                <section class="oa-footer-bottom py-4" style="background-color: var(--oa-ivory);">
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                                <span class="text-muted" style="font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
+                                    &amp;copy; 2026 O&amp;A Beauty. Tous droits réservés.
+                                </span>
+                            </div>
+                            <div class="col-md-6 text-center text-md-end">
+                                <a href="/privacy" class="text-muted text-decoration-none me-4" style="font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">Politique de Confidentialité</a>
+                                <a href="/terms" class="text-muted text-decoration-none" style="font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">Conditions Générales</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="o_brand_promotion d-none"><t t-call="web.brand_promotion"/></div>
+            </footer>
+        </xpath>
+    </template>
+
+    <!--
+        Phase 5: SEO Crawl Optimization (Robots.txt)
+        Prevent indexing of cart and checkout to preserve crawl budget and avoid duplicate content issues.
+    -->
+    <template id="oa_beauty_robots" inherit_id="website.robots" name="O&amp;A Beauty — Robots.txt">
+        <xpath expr="." position="inside">
+            <t t-out="'User-agent: *\nDisallow: /shop/cart\nDisallow: /shop/checkout\nDisallow: /shop/payment\nDisallow: /shop/address\nDisallow: /my/\n'"/>
+        </xpath>
+    </template>
+    <!--
+        Phase 6: Accessibility Widget (Font Resizer + Text-To-Speech)
+    -->
+    <template id="oa_beauty_accessibility_widget" inherit_id="website.layout" name="O&amp;A Beauty — Accessibility Widget">
+        <xpath expr="//footer" position="after">
+            <!-- Accessibility Widget -->
+            <div class="oa-accessibility-widget">
+                <button class="oa-acc-toggle-btn" aria-label="Accessibilité et Lecture" title="Accessibilité et Lecture">
+                    <i class="fa fa-universal-access"></i>
+                </button>
+                <div class="oa-acc-panel">
+                    <div class="oa-acc-header">
+                        <h6>Accessibilité</h6>
+                        <button class="oa-acc-close-btn">&amp;times;</button>
+                    </div>
+                    <div class="oa-acc-body">
+                        <!-- Language Switcher -->
+                        <div class="oa-acc-option">
+                            <span class="oa-acc-label">Langue du Site</span>
+                            <div class="oa-acc-controls">
+                                <button onclick="switchSiteLanguage('fr')" title="Français">FR</button>
+                                <button onclick="switchSiteLanguage('en')" title="English">EN</button>
+                                <button onclick="switchSiteLanguage('ar')" title="العربية">AR</button>
+                            </div>
+                        </div>
+                        <!-- Font Size Adjustment -->
+                        <div class="oa-acc-option">
+                            <span class="oa-acc-label">Taille du Texte</span>
+                            <div class="oa-acc-controls">
+                                <button id="oa-font-dec" title="Diminuer">A-</button>
+                                <button id="oa-font-reset" title="Réinitialiser">Reset</button>
+                                <button id="oa-font-inc" title="Agrandir">A+</button>
+                            </div>
+                        </div>
+                        <!-- Text to Speech -->
+                        <div class="oa-acc-option">
+                            <span class="oa-acc-label">Lecture Vocale</span>
+                            <div class="oa-acc-controls">
+                                <button id="oa-tts-toggle" class="w-100 btn-tts-off">
+                                    <i class="fa fa-volume-up me-2"></i> Activer la lecture
+                                </button>
+                            </div>
+                        </div>
+                        <div class="oa-acc-tip text-muted small mt-2">
+                            Lorsque la lecture vocale est active, cliquez sur n'importe quel texte pour l'écouter.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accessibility Script -->
+            <script>
+                // Language Switcher Function
+                window.switchSiteLanguage = function(langCode) {
+                    let path = window.location.pathname;
+                    const search = window.location.search;
+                    const hash = window.location.hash;
+                    
+                    // Replace or prepend language prefix
+                    const langPrefixRegex = /^\/(en|fr|ar)(\/|$)/;
+                    if (langPrefixRegex.test(path)) {
+                        path = path.replace(langPrefixRegex, `/${langCode}$2`);
+                    } else {
+                        path = `/${langCode}${path === '/' ? '' : path}`;
+                    }
+                    
+                    // Update HTML lang attribute for TTS locale
+                    document.documentElement.lang = langCode;
+                    // Reload to apply Odoo language routing
+                    window.location.href = '/' + langCode + (path.replace(/^\/(en|fr|ar)(\/|$)/, '')) + search + hash;
+                };
+
+                document.addEventListener("DOMContentLoaded", function() {
+                    const toggleBtn = document.querySelector('.oa-acc-toggle-btn');
+                    const closeBtn = document.querySelector('.oa-acc-close-btn');
+                    const panel = document.querySelector('.oa-acc-panel');
+
+                    // Open/Close Panel
+                    if (toggleBtn &amp;&amp; panel) {
+                        toggleBtn.addEventListener('click', () => panel.classList.toggle('active'));
+                    }
+                    if (closeBtn &amp;&amp; panel) {
+                        closeBtn.addEventListener('click', () => panel.classList.remove('active'));
+                    }
+
+                    // Font Size Adjustments
+                    let fontSizePercent = 100;
+                    const fontInc = document.getElementById('oa-font-inc');
+                    const fontDec = document.getElementById('oa-font-dec');
+                    const fontReset = document.getElementById('oa-font-reset');
+
+                    const updateFontSize = (percent) => {
+                        fontSizePercent = percent;
+                        document.documentElement.style.fontSize = fontSizePercent + '%';
+                        localStorage.setItem('oa_font_size', fontSizePercent);
+                    };
+
+                    // Load saved font size
+                    const savedFontSize = localStorage.getItem('oa_font_size');
+                    if (savedFontSize) {
+                        updateFontSize(parseInt(savedFontSize));
+                    }
+
+                    if (fontInc) fontInc.addEventListener('click', () => updateFontSize(Math.min(fontSizePercent + 10, 150)));
+                    if (fontDec) fontDec.addEventListener('click', () => updateFontSize(Math.max(fontSizePercent - 10, 80)));
+                    if (fontReset) fontReset.addEventListener('click', () => updateFontSize(100));
+
+                    // Text To Speech (TTS) Logic
+                    const ttsToggle = document.getElementById('oa-tts-toggle');
+                    let ttsActive = false;
+                    let synth = window.speechSynthesis;
+
+                    if (ttsToggle) {
+                        ttsToggle.addEventListener('click', () => {
+                            ttsActive = !ttsActive;
+                            if (ttsActive) {
+                                ttsToggle.classList.remove('btn-tts-off');
+                                ttsToggle.classList.add('btn-tts-on');
+                                ttsToggle.innerHTML = '<i class="fa fa-volume-mute me-2"></i> Désactiver la lecture';
+                                document.body.classList.add('oa-tts-enabled');
+                            } else {
+                                ttsToggle.classList.remove('btn-tts-on');
+                                ttsToggle.classList.add('btn-tts-off');
+                                ttsToggle.innerHTML = '<i class="fa fa-volume-up me-2"></i> Activer la lecture';
+                                document.body.classList.remove('oa-tts-enabled');
+                                if (synth) synth.cancel();
+                            }
+                        });
+                    }
+
+                    // Click handler to read text aloud
+                    document.body.addEventListener('click', function(e) {
+                        if (!ttsActive || !synth) return;
+
+                        const textContainer = e.target.closest('p, h1, h2, h3, h4, h5, h6, span, a, li, button');
+                        if (textContainer) {
+                            // Don't trigger if click is on the widget itself
+                            if (textContainer.closest('.oa-accessibility-widget')) return;
+
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            const textToRead = textContainer.innerText || textContainer.textContent;
+                            if (textToRead &amp;&amp; textToRead.trim().length > 0) {
+                                synth.cancel(); // stop current reading
+                                const lang = document.documentElement.lang || 'fr';
+                                const utterance = new SpeechSynthesisUtterance(textToRead.trim());
+                                utterance.lang = lang;
+                                synth.speak(utterance);
+                            }
+                        }
+                    }, true); // Use capture phase to intercept clicks
+                });
+            </script>
+        </xpath>
+    </template>
+</odoo>

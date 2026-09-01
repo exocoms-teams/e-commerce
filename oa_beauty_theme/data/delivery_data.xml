@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Produit de livraison : Standard -->
+        <record id="product_product_delivery_standard" model="product.product">
+            <field name="name">Livraison Signature (Standard)</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">5.90</field>
+        </record>
+
+        <!-- Méthode de livraison : Standard -->
+        <record id="delivery_carrier_standard" model="delivery.carrier">
+            <field name="name">Livraison Signature (Offerte dès 100€)</field>
+            <field name="fixed_price">5.90</field>
+            <field name="free_over" eval="True"/>
+            <field name="amount">100.00</field>
+            <field name="sequence">1</field>
+            <field name="delivery_type">fixed</field>
+            <field name="product_id" ref="product_product_delivery_standard"/>
+            <field name="is_published" eval="True"/>
+        </record>
+
+        <!-- Produit de livraison : Express -->
+        <record id="product_product_delivery_express" model="product.product">
+            <field name="name">Livraison Express (24h)</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">12.00</field>
+        </record>
+
+        <!-- Méthode de livraison : Express -->
+        <record id="delivery_carrier_express" model="delivery.carrier">
+            <field name="name">Livraison Express (24h)</field>
+            <field name="fixed_price">12.00</field>
+            <field name="free_over" eval="False"/>
+            <field name="sequence">2</field>
+            <field name="delivery_type">fixed</field>
+            <field name="product_id" ref="product_product_delivery_express"/>
+            <field name="is_published" eval="True"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="oa_image_audit_action" model="ir.actions.act_window">
+        <field name="name">Image Audit (Large Files)</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('mimetype', 'in', ['image/jpeg', 'image/png', 'image/webp']), ('file_size', '>', 150000)]</field>
+        <field name="context">{'search_default_type_url': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                All your images are properly optimized!
+            </p>
+            <p>
+                This view shows images larger than 150KB. Large images slow down your website and hurt SEO. 
+                Consider compressing them using tools like TinyPNG or converting them to WebP.
+            </p>
+        </field>
+    </record>
+
+    <record id="oa_image_audit_list" model="ir.ui.view">
+        <field name="name">oa.image.audit.list</field>
+        <field name="model">ir.attachment</field>
+        <field name="arch" type="xml">
+            <list string="Large Images" decoration-danger="file_size &gt; 500000" decoration-warning="file_size &gt; 150000">
+                <field name="name"/>
+                <field name="res_model"/>
+                <field name="file_size" widget="integer"/>
+                <field name="mimetype"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="oa_image_audit_action_view_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="oa_image_audit_list"/>
+        <field name="act_window_id" ref="oa_image_audit_action"/>
+    </record>
+
+    <!-- Adding to our main menu in O&A Settings -->
+    <menuitem id="oa_beauty_menu_audit"
+              name="Performance Audit"
+              parent="oa_beauty_theme.oa_beauty_menu_root"
+              action="oa_image_audit_action"
+              sequence="20"/>
+</odoo>

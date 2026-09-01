@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Admin Settings UI for AI Configuration -->
+    <record id="res_config_settings_view_oa_beauty" model="ir.ui.view">
+        <field name="name">res.config.settings.view.oa.beauty</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="." position="inside">
+                <app string="O&amp;A Beauty" name="oa_beauty_theme" groups="base.group_system">
+                    <!-- AI Settings -->
+                    <block title="AI Beauty Advisor Configuration" name="oa_ai_settings">
+                        <setting id="oa_ai_provider" string="AI Provider" help="Select the LLM engine for the Advisor.">
+                            <field name="oa_ai_provider" widget="radio"/>
+                        </setting>
+                        <setting id="oa_ai_api_key" string="API Key" help="Your provider API key (Gemini, OpenAI, Claude).">
+                            <field name="oa_ai_api_key" password="True" placeholder="sk-..."/>
+                        </setting>
+                        <setting id="oa_ai_system_prompt" string="System Prompt" help="The core personality instructions for the AI.">
+                            <field name="oa_ai_system_prompt" widget="text" placeholder="You are an expert luxury beauty advisor..."/>
+                        </setting>
+                    </block>
+
+                    <!-- Packlink Settings -->
+                    <block title="Packlink Pro Logistics" name="oa_packlink_settings">
+                        <setting id="oa_packlink_api_key" string="Packlink API Key" help="Connect to Packlink PRO for automated shipping labels.">
+                            <field name="oa_packlink_api_key" password="True"/>
+                        </setting>
+                        <setting id="oa_packlink_sandbox" string="Sandbox Mode" help="Use the Packlink test environment.">
+                            <field name="oa_packlink_sandbox"/>
+                        </setting>
+                    </block>
+
+                    <!-- Ingram Micro Settings -->
+                    <block title="Ingram Micro IT Catalog" name="oa_ingram_settings">
+                        <setting id="oa_ingram_api_url" string="API URL" help="Base URL for the Ingram Micro API.">
+                            <field name="oa_ingram_api_url"/>
+                        </setting>
+                        <setting id="oa_ingram_client_id" string="Client ID" help="Client ID for authentication (e.g. contact@exocoms.fr).">
+                            <field name="oa_ingram_client_id"/>
+                        </setting>
+                        <setting id="oa_ingram_client_secret" string="Client Secret / Access Code" help="API key or password.">
+                            <field name="oa_ingram_client_secret" password="True"/>
+                        </setting>
+                        <setting id="oa_ingram_import_as_draft" string="Import as Draft" help="Check to avoid publishing IT products automatically on the beauty store.">
+                            <field name="oa_ingram_import_as_draft"/>
+                        </setting>
+                    </block>
+
+                    <!-- Analytics Settings -->
+                    <block title="Enterprise Analytics &amp; Tracking" name="oa_analytics_settings">
+                        <setting id="oa_consent_mode_enabled" string="Consent Mode v2" help="Enable advanced cookie consent integration.">
+                            <field name="oa_consent_mode_enabled"/>
+                        </setting>
+                        <setting id="oa_ga4_id" string="Google Analytics 4">
+                            <field name="oa_ga4_id" placeholder="G-XXXXXX"/>
+                        </setting>
+                        <setting id="oa_gtm_id" string="Google Tag Manager">
+                            <field name="oa_gtm_id" placeholder="GTM-XXXXXX"/>
+                        </setting>
+                        <setting id="oa_meta_pixel_id" string="Meta Pixel">
+                            <field name="oa_meta_pixel_id"/>
+                        </setting>
+                        <setting id="oa_tiktok_pixel_id" string="TikTok Pixel">
+                            <field name="oa_tiktok_pixel_id"/>
+                        </setting>
+                        <setting id="oa_pinterest_tag_id" string="Pinterest Tag">
+                            <field name="oa_pinterest_tag_id"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Analytics Tracking List View -->
+    <record id="oa_advisor_session_list_view" model="ir.ui.view">
+        <field name="name">oa.advisor.session.list</field>
+        <field name="model">oa.advisor.session</field>
+        <field name="arch" type="xml">
+            <list string="Advisor Sessions">
+                <field name="create_date" string="Date"/>
+                <field name="skin_type"/>
+                <field name="main_concern"/>
+                <field name="makeup_preference"/>
+                <field name="budget"/>
+                <field name="recommended_product_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="oa_advisor_session_action" model="ir.actions.act_window">
+        <field name="name">Beauty Advisor Analytics</field>
+        <field name="res_model">oa.advisor.session</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem id="oa_beauty_menu_root"
+              name="O&amp;A Beauty"
+              sequence="100"/>
+    <menuitem id="oa_beauty_menu_analytics"
+              name="Advisor Analytics"
+              parent="oa_beauty_menu_root"
+              action="oa_advisor_session_action"
+              sequence="10"/>
+
+</odoo>

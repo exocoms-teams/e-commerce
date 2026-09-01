@@ -1,0 +1,106 @@
+from odoo import fields, models, api
+
+
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
+
+    oa_type = fields.Char(string='Cosmetic Type')
+    oa_finish = fields.Char(string='Finish')
+    oa_best_for = fields.Char(string='Best For')
+    oa_key_ingredients = fields.Char(string='Key Ingredients')
+    
+    # Fragrance & Expansion Fields
+    oa_is_coming_soon = fields.Boolean(string='Coming Soon', default=False, help='If checked, the add to cart button will be replaced with a Coming Soon badge.')
+    oa_fragrance_top_notes = fields.Char(string='Top Notes', help='e.g., Bergamot, Mandarin, Pink Pepper')
+    oa_fragrance_heart_notes = fields.Char(string='Heart Notes', help='e.g., Rose, Jasmine, Orange Blossom')
+    oa_fragrance_base_notes = fields.Char(string='Base Notes', help='e.g., Vanilla, Musk, Sandalwood')
+    oa_mood = fields.Char(string='Mood / Feeling', help='e.g., Elegant, Sensual, Fresh')
+
+    # SEO & Editorial Fields
+    oa_benefits = fields.Html(string='Benefits', help='Long description of the product benefits.')
+    oa_how_to_use = fields.Html(string='How to Use', help='Instructions on how to use the product.')
+    oa_seo_keywords = fields.Char(string='SEO Keywords', help='Comma-separated keywords for meta tags.')
+
+    # Ingram Micro Fields
+    oa_is_ingram_product = fields.Boolean(string='Is Ingram Product', default=False, readonly=True)
+    oa_ingram_sku = fields.Char(string='Ingram SKU', readonly=True, index=True)
+
+    @api.model
+    def _archive_default_demo_products(self):
+        """
+        Archives Odoo default demo furniture products so they don't pollute the luxury theme.
+        We only match common demo keywords to avoid accidentally archiving the user's real products.
+        """
+        demo_keywords = [
+            'Desk', 'Chair', 'Acoustic', 'Cabinet', 'Bin', 'Drawer', 'Lamp', 'Pedestal',
+            'Conference', 'Table', 'Whiteboard', 'Storage', 'Bose', 'E-Com', 'Cable', 'Screen',
+            'Bureau', 'Chaise', 'Poubelle', 'Tiroir', 'Lampe', 'Caisson', 'Conférence', 'Tableau',
+            'Lorem Ipsum', 'Placeholder', 'Demo', 'Sample Product', 'Test Product'
+        ]
+        
+        domain = ['|'] * (len(demo_keywords) - 1)
+        for kw in demo_keywords:
+            domain.append(('name', 'ilike', kw))
+            
+        products = self.search(domain)
+        if products:
+            products.write({'active': False, 'is_published': False})
+
+    @api.model
+    def cron_sync_ingram_catalog(self):
+        """
+        Scheduled action to fetch and sync products from Ingram Micro API.
+        """
+        import logging
+        from ..utils.ingram_api_client import IngramApiClient
+        _logger = logging.getLogger(__name__)
+        _logger.info("Starting Ingram Micro Catalog Sync...")
+        
+        # Get settings
+        get_param = self.env['ir.config_parameter'].sudo().get_param
+        api_url = get_param('oa_beauty_theme.ingram_api_url')
+        client_id = get_param('oa_beauty_theme.ingram_client_id')
+        client_secret = get_param('oa_beauty_theme.ingram_client_secret')
+        import_as_draft = get_param('oa_beauty_theme.ingram_import_as_draft', default='True') == 'True'
+        
+        if not api_url or not client_id or not client_secret:
+            _logger.error("Ingram Micro API credentials not fully configured.")
+            return False
+            
+        client = IngramApiClient(api_url, client_id, client_secret)
+        products_data = client.fetch_catalog()
+        
+        if not products_data:
+            _logger.warning("No products retrieved from Ingram Micro.")
+            return True
+            
+        created_count = 0
+        updated_count = 0
+        
+        for item in products_data:
+            sku = item.get('ingramPartNumber')
+            if not sku:
+                continue
+                
+            existing_product = self.search([('oa_ingram_sku', '=', sku)], limit=1)
+            
+            vals = {
+                'name': item.get('description', 'Unknown Ingram Product'),
+                'default_code': sku,
+                'list_price': item.get('customerPrice', 0.0),
+                'standard_price': item.get('customerPrice', 0.0), # cost
+                'type': 'product',
+                'oa_is_ingram_product': True,
+                'oa_ingram_sku': sku,
+            }
+            
+            if existing_product:
+                existing_product.write({'list_price': vals['list_price'], 'standard_price': vals['standard_price']})
+                updated_count += 1
+            else:
+                vals['is_published'] = not import_as_draft
+                self.create(vals)
+                created_count += 1
+                
+        _logger.info("Ingram Sync Complete: %s created, %s updated.", created_count, updated_count)
+        return True
