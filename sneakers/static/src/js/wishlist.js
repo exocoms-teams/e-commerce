@@ -645,61 +645,209 @@ function addProductToCart(
 document.addEventListener(
     "click",
     function(e){
+
+
+
         var heartBtn = e.target.closest(
             ".sn-product-wishlist, .sn-btn-heart"
         );
-        if(!heartBtn) return;
+
+
+
+        if(!heartBtn)
+            return;
+
+
+
+
         e.preventDefault();
 
-        var productId = heartBtn.dataset.productId;
+
+
+
+        var productId =
+            heartBtn.dataset.productId;
+
+
+
+
         if(!productId){
-            console.error("Product variant ID missing");
+
+
+            console.error(
+                "Product variant ID missing"
+            );
+
+
             return;
+
         }
 
-        var isActive = heartBtn.classList.contains("sn-btn-heart--active");
 
-        fetch("/shop/wishlist/toggle", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": odoo.csrf_token
-            },
-            body: JSON.stringify({
-                jsonrpc: "2.0",
-                method: "call",
-                params: { product_id: parseInt(productId) }
-            })
-        })
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-            if(data.error){
-                console.error(data.error);
-                return;
+
+
+        fetch(
+            "/shop/wishlist/add",
+            {
+
+
+                method:"POST",
+
+
+                headers:{
+
+
+                    "Content-Type":"application/json",
+
+                    "X-CSRFToken": odoo.csrf_token
+
+
+                },
+
+
+
+                body:JSON.stringify({
+
+
+                    jsonrpc:"2.0",
+
+
+                    method:"call",
+
+
+
+                    params:{
+
+
+                        product_id:
+                            parseInt(productId)
+
+
+                    }
+
+
+
+                })
+
+
+
             }
-            var result = data.result || data;
-            if(result.action === "added"){
-                heartBtn.classList.add("active", "sn-btn-heart--active");
-                heartBtn.setAttribute("aria-pressed", "true");
-                if(window.snShowToast) window.snShowToast("Added to wishlist !");
+
+        )
+
+
+
+        .then(response => response.json())
+
+
+
+        .then(data => {
+
+
+
+            console.log(
+                "Wishlist response:",
+                data
+            );
+
+
+
+
+            if(data.error){
+
+
+                console.error(
+                    data.error
+                );
+
+
+                return;
+
+
+            }
+
+
+
+
+            if(data.result){
+
+
+
+                heartBtn.classList.add(
+
+                    "active",
+
+                    "sn-btn-heart--active"
+
+                );
+
+
+
+                heartBtn.setAttribute(
+
+                    "aria-pressed",
+
+                    "true"
+
+                );
+
+
+
+
+
+                if(window.snShowToast){
+
+
+                    window.snShowToast(
+
+                        "Added to wishlist !"
+
+                    );
+
+
+                }
+
+
+
+
+                // ponytail: sync localStorage so navbar dot updates
                 var wl = JSON.parse(localStorage.getItem("sn_wishlist") || "[]");
-                if(wl.indexOf(String(productId)) === -1){
+                if (wl.indexOf(String(productId)) === -1) {
                     wl.push(String(productId));
                     localStorage.setItem("sn_wishlist", JSON.stringify(wl));
                 }
-            } else if(result.action === "removed"){
-                heartBtn.classList.remove("active", "sn-btn-heart--active");
-                heartBtn.setAttribute("aria-pressed", "false");
-                if(window.snShowToast) window.snShowToast("Retiré de la wishlist");
-                var wl = JSON.parse(localStorage.getItem("sn_wishlist") || "[]");
-                var idx = wl.indexOf(String(productId));
-                if(idx !== -1) wl.splice(idx, 1);
-                localStorage.setItem("sn_wishlist", JSON.stringify(wl));
+                updateWishlistBadge();
+
+
+
             }
-            updateWishlistBadge();
+
+
+
+
+
         })
-        .catch(function(err){ console.error("WISHLIST ERROR:", err); });
+
+
+
+        .catch(function(error){
+
+
+            console.error(
+
+                "WISHLIST ERROR:",
+
+                error
+
+            );
+
+
+        });
+
+
+
     }
+
 );
 
 
