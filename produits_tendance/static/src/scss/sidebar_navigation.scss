@@ -1,0 +1,129 @@
+@import "winners_variables";
+
+.o_winners_sidebar_menu {
+  width: 260px;
+  min-height: 100vh;
+  background-color: $o-winners-bg-surface;
+  border-right: 1px solid $o-winners-border-color;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem 1rem;
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__item {
+    margin-bottom: 0.25rem;
+    position: relative;
+
+    &--has-dropdown {
+      &:hover .o_winners_sidebar_menu__dropdown {
+        display: block;
+      }
+
+      &:hover .o_winners_sidebar_menu__arrow {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: $o-winners-text-muted;
+    text-decoration: none;
+    border-radius: $o-winners-border-radius;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: lighten($o-winners-primary-color, 45%);
+      color: $o-winners-primary-color;
+    }
+
+    &--active {
+      background-color: $o-winners-primary-color;
+      color: #ffffff !important;
+      font-weight: 600;
+
+      .o_winners_sidebar_menu__icon {
+        color: #ffffff;
+      }
+    }
+  }
+
+  &__icon {
+    margin-right: 0.75rem;
+    width: 20px;
+    text-align: center;
+  }
+
+  &__arrow {
+    margin-left: auto;
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+  }
+
+  &__dropdown {
+    display: none;
+    list-style: none;
+    padding-left: 2.5rem;
+    margin-top: 0.25rem;
+
+    &-link {
+      display: block;
+      padding: 0.4rem 0;
+      color: $o-winners-text-muted;
+      font-size: 0.9rem;
+      text-decoration: none;
+
+      &:hover {
+        color: $o-winners-primary-color;
+      }
+    }
+  }
+
+  &__footer {
+    border-top: 1px solid $o-winners-border-color;
+    padding-top: 1rem;
+  }
+
+  &__avatar-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: $o-winners-border-radius;
+
+    &:hover, &--active {
+      background-color: lighten($o-winners-primary-color, 45%);
+    }
+  }
+
+  &__avatar img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+  }
+
+  &__user-info {
+    margin-left: 0.75rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__user-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: $o-winners-text-main;
+  }
+
+  &__user-role {
+    font-size: 0.75rem;
+    color: $o-winners-text-muted;
+  }
+}

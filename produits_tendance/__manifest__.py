@@ -23,6 +23,7 @@
         'data/subscription_products.xml',        # WIN-66
         'views/subscription_templates.xml',      # WIN-66
         'views/dashboard_templates.xml',   # WIN-48
+        'views/sidebar_templates.xml',         # WIN-126
     ],
     'assets': {
         'web.assets_frontend': [
@@ -34,6 +35,7 @@
             'produits_tendance/static/src/scss/dashboard.scss',
             'produits_tendance/static/src/scss/header.scss',
             'produits_tendance/static/src/js/dashboard_filters.js',
+            'produits_tendance/static/src/scss/sidebar_navigation.scss',
         ],
     },
     'installable': True,

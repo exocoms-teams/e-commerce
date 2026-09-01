@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template réutilisable pour la Sidebar Globale (WIN-126) -->
+    <template id="template_global_sidebar" name="Sidebar Globale Winners">
+        <aside class="o_winners_sidebar_menu">
+            <!-- Navigation principale -->
+            <nav class="o_winners_sidebar_menu__nav">
+                <ul class="o_winners_sidebar_menu__list">
+                    
+                    <!-- Dashboard -->
+                    <li class="o_winners_sidebar_menu__item">
+                        <a href="/dashboard" 
+                           t-attf-class="o_winners_sidebar_menu__link #{'o_winners_sidebar_menu__link--active' if request.httprequest.path == '/dashboard' else ''}">
+                            <i class="fa fa-th-large o_winners_sidebar_menu__icon"/>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <!-- Produits tendance (avec sous-menu dépliant) -->
+                    <li class="o_winners_sidebar_menu__item o_winners_sidebar_menu__item--has-dropdown">
+                        <a href="/produits-tendance" 
+                           t-attf-class="o_winners_sidebar_menu__link #{'o_winners_sidebar_menu__link--active' if '/produits-tendance' in request.httprequest.path else ''}">
+                            <i class="fa fa-line-chart o_winners_sidebar_menu__icon"/>
+                            <span>Produits tendance</span>
+                            <i class="fa fa-chevron-down o_winners_sidebar_menu__arrow"/>
+                        </a>
+                        <ul class="o_winners_sidebar_menu__dropdown">
+                            <li><a href="/produits-tendance/top" class="o_winners_sidebar_menu__dropdown-link">Top Ventes</a></li>
+                            <li><a href="/produits-tendance/nouveautes" class="o_winners_sidebar_menu__dropdown-link">Nouveautés</a></li>
+                            <li><a href="/produits-tendance/niches" class="o_winners_sidebar_menu__dropdown-link">Niches à fort potentiel</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Publicités -->
+                    <li class="o_winners_sidebar_menu__item">
+                        <a href="/publicites" 
+                           t-attf-class="o_winners_sidebar_menu__link #{'o_winners_sidebar_menu__link--active' if request.httprequest.path == '/publicites' else ''}">
+                            <i class="fa fa-bullhorn o_winners_sidebar_menu__icon"/>
+                            <span>Publicités</span>
+                        </a>
+                    </li>
+
+                    <!-- Analytics -->
+                    <li class="o_winners_sidebar_menu__item">
+                        <a href="/analytics" 
+                           t-attf-class="o_winners_sidebar_menu__link #{'o_winners_sidebar_menu__link--active' if request.httprequest.path == '/analytics' else ''}">
+                            <i class="fa fa-bar-chart o_winners_sidebar_menu__icon"/>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+
+                    <!-- Alertes -->
+                    <li class="o_winners_sidebar_menu__item">
+                        <a href="/alertes" 
+                           t-attf-class="o_winners_sidebar_menu__link #{'o_winners_sidebar_menu__link--active' if request.httprequest.path == '/alertes' else ''}">
+                            <i class="fa fa-bell o_winners_sidebar_menu__icon"/>
+                            <span>Alertes</span>
+                        </a>
+                    </li>
+
+                    <!-- Collections -->
+                    <li class="o_winners_sidebar_menu__item">
+                        <a href="/collections" 
+                           t-attf-class="o_winners_sidebar_menu__link #{'o_winners_sidebar_menu__link--active' if request.httprequest.path == '/collections' else ''}">
+                            <i class="fa fa-folder-open o_winners_sidebar_menu__icon"/>
+                            <span>Collections</span>
+                        </a>
+                    </li>
+
+                    <!-- Sources -->
+                    <li class="o_winners_sidebar_menu__item">
+                        <a href="/sources" 
+                           t-attf-class="o_winners_sidebar_menu__link #{'o_winners_sidebar_menu__link--active' if request.httprequest.path == '/sources' else ''}">
+                            <i class="fa fa-database o_winners_sidebar_menu__icon"/>
+                            <span>Sources</span>
+                        </a>
+                    </li>
+
+                    <!-- Comparaison -->
+                    <li class="o_winners_sidebar_menu__item">
+                        <a href="/comparaison" 
+                           t-attf-class="o_winners_sidebar_menu__link #{'o_winners_sidebar_menu__link--active' if request.httprequest.path == '/comparaison' else ''}">
+                            <i class="fa fa-exchange o_winners_sidebar_menu__icon"/>
+                            <span>Comparaison</span>
+                        </a>
+                    </li>
+
+                    <!-- Favoris -->
+                    <li class="o_winners_sidebar_menu__item">
+                        <a href="/favoris" 
+                           t-attf-class="o_winners_sidebar_menu__link #{'o_winners_sidebar_menu__link--active' if request.httprequest.path == '/favoris' else ''}">
+                            <i class="fa fa-heart o_winners_sidebar_menu__icon"/>
+                            <span>Favoris</span>
+                        </a>
+                    </li>
+
+                    <!-- Historique -->
+                    <li class="o_winners_sidebar_menu__item">
+                        <a href="/historique" 
+                           t-attf-class="o_winners_sidebar_menu__link #{'o_winners_sidebar_menu__link--active' if request.httprequest.path == '/historique' else ''}">
+                            <i class="fa fa-history o_winners_sidebar_menu__icon"/>
+                            <span>Historique</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+
+            <!-- Pied de sidebar : Avatar Utilisateur relié au TICKET 125 -->
+            <div class="o_winners_sidebar_menu__footer">
+                <a href="/compte/profil" 
+                   t-attf-class="o_winners_sidebar_menu__avatar-link #{'o_winners_sidebar_menu__avatar-link--active' if '/compte' in request.httprequest.path else ''}">
+                    <div class="o_winners_sidebar_menu__avatar">
+                        <img t-att-src="'/web/image/res.users/%s/avatar_128' % request.env.user.id" 
+                             alt="Avatar" class="rounded-circle"/>
+                    </div>
+                    <div class="o_winners_sidebar_menu__user-info">
+                        <span class="o_winners_sidebar_menu__user-name"><t t-esc="request.env.user.name"/></span>
+                        <span class="o_winners_sidebar_menu__user-role">Mon Compte</span>
+                    </div>
+                </a>
+            </div>
+        </aside>
+    </template>
+</odoo>
