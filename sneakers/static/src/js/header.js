@@ -149,11 +149,42 @@
     })();
 
     (function initWishlistBadge() {
-        var wl = JSON.parse(localStorage.getItem('sn_wishlist') || '[]');
+
         var badge = document.querySelector('.sn-wishlist-count');
+
         if (!badge) return;
-        badge.style.display = wl.length > 0 ? 'flex' : 'none';
+
+        try {
+
+            var wishlist = JSON.parse(
+                localStorage.getItem('sn_wishlist') || '[]'
+            );
+
+            console.log("WISHLIST QUANTITY :", wishlist.length);
+
+            var quantity = wishlist.length || 0;
+
+            if (quantity > 0) {
+
+                badge.textContent = quantity;
+                badge.style.display = 'flex';
+
+            } else {
+
+                badge.style.display = 'none';
+
+            }
+
+        } catch (error) {
+
+            console.error("WISHLIST BADGE ERROR", error);
+
+            badge.style.display = 'none';
+
+        }
+
     })();
+
 
 
 })();
