@@ -816,7 +816,7 @@ class SneakersController(CustomerPortal):
     def privacy_policy(self, **kwargs):
         return request.render('sneakers.page_privacy_policy', {})
 
-    @http.route('/newsletter/subscribe', type='json', auth='public', csrf=False)
+    @http.route('/newsletter/subscribe', type='jsonrpc', auth='public', csrf=False)
     def newsletter_subscribe(self, **kwargs):
         email = (kwargs.get('email') or '').strip()
         if not email or '@' not in email:

@@ -861,11 +861,36 @@ document.addEventListener(
 // ============================
 
 function updateWishlistBadge(){
-    var wl = JSON.parse(localStorage.getItem("sn_wishlist") || "[]");
-    var badge = document.querySelector(".sn-wishlist-count");
-    if (!badge) return;
-    badge.style.display = wl.length > 0 ? "block" : "none";
-}
+
+        var wl = JSON.parse(
+            localStorage.getItem("sn_wishlist") || "[]"
+        );
+
+        var badge = document.querySelector(
+            ".sn-wishlist-count"
+        );
+
+        if (!badge) return;
+
+        var quantity = wl.length || 0;
+
+        console.log(
+            "WISHLIST QUANTITY :",
+            quantity
+        );
+
+        if(quantity > 0){
+
+            badge.textContent = quantity;
+            badge.style.display = "flex";
+
+        }else{
+
+            badge.style.display = "none";
+
+        }
+
+    }
 
 // ============================
 // EMPTY STATE
