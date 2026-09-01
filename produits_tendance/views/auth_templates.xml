@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- ============================================================
+         WIN-47 : Module Connexion / Inscription
+         Hérite des templates natifs auth_signup pour appliquer la
+         charte graphique Winners (préfixe o_winners_).
+
+         Contrainte CSRF (WIN-47) : vérifiée dans l'arch native de
+         auth_signup.signup — le token est déjà écrit en dur
+         (<input type="hidden" name="csrf_token" .../>), aucune
+         surcharge nécessaire ici.
+    ============================================================ -->
+
     <!-- Champs nom + email (template principal du formulaire) -->
     <template id="auth_signup_signup_winners" inherit_id="auth_signup.signup" name="Winners - Formulaire inscription">
 
-        <xpath expr="//input[@name='name']" position="attributes">
+        <xpath expr="//div[hasclass('field-name')]" position="attributes">
             <attribute name="class" add="o_winners_signup_field" separator=" "/>
         </xpath>
 
-        <xpath expr="//input[@name='login']" position="attributes">
+        <xpath expr="//div[hasclass('field-login')]" position="attributes">
             <attribute name="class" add="o_winners_signup_field" separator=" "/>
         </xpath>
 
@@ -17,11 +28,11 @@
     <!-- Champs mot de passe (template appelé par le formulaire principal) -->
     <template id="auth_signup_fields_winners" inherit_id="auth_signup.fields" name="Winners - Champs mot de passe">
 
-        <xpath expr="//input[@name='password']" position="attributes">
+        <xpath expr="//div[hasclass('field-password')]" position="attributes">
             <attribute name="class" add="o_winners_signup_field" separator=" "/>
         </xpath>
 
-        <xpath expr="//input[@name='confirm_password']" position="attributes">
+        <xpath expr="//div[hasclass('field-confirm_password')]" position="attributes">
             <attribute name="class" add="o_winners_signup_field" separator=" "/>
         </xpath>
 
