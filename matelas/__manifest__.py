@@ -36,6 +36,7 @@
         'views/product_template_views.xml',
         'views/newsletter_wizard_views.xml',
         'views/avis_views.xml',
+        'views/contact_message_views.xml',
         'views/templates/home.xml',
         'views/templates/avis.xml',
         'views/templates/contact.xml',

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <record id="view_matelas_contact_message_list" model="ir.ui.view">
+      <field name="name">matelas.contact_message.list</field>
+      <field name="model">matelas.contact_message</field>
+      <field name="arch" type="xml">
+        <list string="Messages de contact"
+              create="false"
+              delete="false">
+          <field name="create_date" string="Date de réception"/>
+          <field name="nom"/>
+          <field name="prenom"/>
+          <field name="email"/>
+          <field name="telephone"/>
+          <field name="sujet"/>
+        </list>
+      </field>
+    </record>
+
+    <record id="view_matelas_contact_message_form" model="ir.ui.view">
+      <field name="name">matelas.contact_message.form</field>
+      <field name="model">matelas.contact_message</field>
+      <field name="arch" type="xml">
+        <form string="Message de contact"
+              create="false"
+              delete="false">
+          <sheet>
+            <group>
+              <group>
+                <field name="nom"/>
+                <field name="prenom"/>
+                <field name="email"/>
+              </group>
+              <group>
+                <field name="telephone"/>
+                <field name="sujet"/>
+                <field name="create_date" string="Date de réception"/>
+              </group>
+            </group>
+            <group>
+              <field name="message"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_matelas_contact_message" model="ir.actions.act_window">
+      <field name="name">Messages de contact</field>
+      <field name="res_model">matelas.contact_message</field>
+      <field name="view_mode">list,form</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Aucun message reçu
+        </p>
+        <p>
+          Les demandes envoyées depuis le formulaire de contact
+          apparaîtront ici.
+        </p>
+      </field>
+    </record>
+
+    <menuitem id="menu_matelas_contact_message"
+      name="Messages de contact"
+      parent="menu_matelas_root"
+      action="action_matelas_contact_message"
+      groups="base.group_user"
+      sequence="10"/>
+
+  </data>
+</odoo>

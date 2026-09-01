@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+import logging
 import re
 
+from markupsafe import Markup
 from odoo import http
 from odoo.http import request
 
 EMAIL_REGEX = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+_logger = logging.getLogger(__name__)
 
 
 class MatelasVente(http.Controller):
@@ -105,6 +108,126 @@ class MatelasVente(http.Controller):
     @http.route('/contact', auth='public', website=True)
     def contact(self, **kwargs):
         return request.render('matelas.contact_page', {})
+    @http.route('/contact/submit', type='jsonrpc', auth='public', website=True,)
+    def contact_submit(
+        self,
+        nom=None,
+        prenom=None,
+        email=None,
+        telephone=None,
+        sujet=None,
+        message=None,
+        **kwargs,
+    ):
+        """Enregistrer un message de contact et avertir la société par email."""
+        nom = (nom or '').strip()
+        prenom = (prenom or '').strip()
+        email = (email or '').strip()
+        telephone = (telephone or '').strip()
+        sujet = (sujet or '').strip()
+        message = (message or '').strip()
+
+        if not nom or not prenom or not email or not message:
+            return {
+                'success': False,
+                'error': "Merci de remplir tous les champs obligatoires.",
+            }
+
+        if not EMAIL_REGEX.match(email):
+            return {
+                'success': False,
+                'error': "L'adresse email saisie est invalide.",
+            }
+
+        if (
+            len(nom) > 100
+            or len(prenom) > 100
+            or len(email) > 254
+            or len(telephone) > 50
+            or len(sujet) > 200
+            or len(message) > 5000
+        ):
+            return {
+                'success': False,
+                'error': "Certaines informations saisies sont trop longues.",
+            }
+
+        company = request.env.company.sudo()
+        email_to = (company.email or '').strip()
+
+        if not email_to or not EMAIL_REGEX.match(email_to):
+            _logger.error(
+                "Impossible d'envoyer le formulaire de contact : "
+                "aucune adresse email valide n'est configurée sur la société."
+            )
+            return {
+                'success': False,
+                'error': (
+                    "Le service de contact est temporairement indisponible."
+                ),
+            }
+
+        clean_subject = sujet.replace('\r', ' ').replace('\n', ' ')
+        mail_subject = "Nouveau message de contact"
+        if clean_subject:
+            mail_subject = f"{mail_subject} - {clean_subject}"
+
+        body_html = Markup("""
+            <p>Un nouveau message a été envoyé depuis le site Matelas.</p>
+            <table>
+                <tr><th align="left">Nom</th><td>{}</td></tr>
+                <tr><th align="left">Prénom</th><td>{}</td></tr>
+                <tr><th align="left">Email</th><td>{}</td></tr>
+                <tr><th align="left">Téléphone</th><td>{}</td></tr>
+                <tr><th align="left">Sujet</th><td>{}</td></tr>
+            </table>
+            <p><strong>Message :</strong></p>
+            <div style="white-space: pre-wrap;">{}</div>
+        """).format(
+            nom,
+            prenom,
+            email,
+            telephone or "Non renseigné",
+            sujet or "Non renseigné",
+            message,
+        )
+
+        try:
+            # Le point de sauvegarde garantit qu'aucun message incomplet
+            # n'est conservé si la création ou l'envoi de l'email échoue.
+            with request.env.cr.savepoint():
+                request.env['matelas.contact_message'].sudo().create({
+                    'nom': nom,
+                    'prenom': prenom,
+                    'email': email,
+                    'telephone': telephone,
+                    'sujet': sujet,
+                    'message': message,
+                })
+
+                mail = request.env['mail.mail'].sudo().create({
+                    'subject': mail_subject,
+                    'email_from': (
+                        company.partner_id.email_formatted or email_to
+                    ),
+                    'email_to': email_to,
+                    'reply_to': email,
+                    'body_html': body_html,
+                    'auto_delete': True,
+                })
+                mail.send(raise_exception=True)
+        except Exception:
+            _logger.exception(
+                "Échec du traitement du formulaire de contact."
+            )
+            return {
+                'success': False,
+                'error': (
+                    "Une erreur est survenue pendant l'envoi du message."
+                ),
+            }
+
+        return {'success': True}
 
     @http.route('/mentions-legales', auth='public', website=True)
     def mentions_legales(self, **kwargs):

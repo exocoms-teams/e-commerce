@@ -135,30 +135,114 @@
 
         // ===== CONTACT =====
         const btnContact = document.getElementById('btn-contact-send');
-        if (btnContact) {
-            btnContact.addEventListener('click', function() {
+        if (btnContact && !btnContact.dataset.bound) {
+            btnContact.dataset.bound = 'true';
+
+            btnContact.addEventListener('click', function(event) {
+                event.preventDefault();
+
                 const nom = document.getElementById('c-nom').value.trim();
                 const prenom = document.getElementById('c-prenom').value.trim();
                 const email = document.getElementById('c-email').value.trim();
+                const telephone = document.getElementById('c-tel').value.trim();
+                const sujet = document.getElementById('c-sujet').value.trim();
                 const message = document.getElementById('c-message').value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
                 if (!nom || !prenom || !email || !message) {
-                    alert(en ? 'Please fill in all required fields (*)' : 'Merci de remplir tous les champs obligatoires (*)');
+                    alert(
+                        en
+                            ? 'Please fill in all required fields (*)'
+                            : 'Merci de remplir tous les champs obligatoires (*)'
+                    );
                     return;
                 }
 
-                document.getElementById('contact-success').style.display = 'block';
-                document.getElementById('c-nom').value = '';
-                document.getElementById('c-prenom').value = '';
-                document.getElementById('c-email').value = '';
-                document.getElementById('c-tel').value = '';
-                document.getElementById('c-sujet').value = '';
-                document.getElementById('c-message').value = '';
+                if (!emailRegex.test(email)) {
+                    alert(
+                        en
+                            ? 'Please enter a valid email address.'
+                            : 'Merci de saisir une adresse email valide.'
+                    );
+                    return;
+                }
 
-                window.scrollTo({
-                    top: document.querySelector('.contact-form-box').offsetTop - 100,
-                    behavior: 'smooth'
-                });
+                btnContact.disabled = true;
+
+                fetch('/contact/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'call',
+                        id: Date.now(),
+                        params: {
+                            nom: nom,
+                            prenom: prenom,
+                            email: email,
+                            telephone: telephone,
+                            sujet: sujet,
+                            message: message,
+                        },
+                    }),
+                })
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error(
+                                en
+                                    ? 'The server returned an error.'
+                                    : 'Le serveur a retourné une erreur.'
+                            );
+                        }
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        const result = data && data.result;
+
+                        if (!result || !result.success) {
+                            throw new Error(
+                                (result && result.error) ||
+                                (
+                                    en
+                                        ? 'An error occurred.'
+                                        : 'Une erreur est survenue.'
+                                )
+                            );
+                        }
+
+                        document.getElementById('contact-success').style.display =
+                            'block';
+                        document.getElementById('c-nom').value = '';
+                        document.getElementById('c-prenom').value = '';
+                        document.getElementById('c-email').value = '';
+                        document.getElementById('c-tel').value = '';
+                        document.getElementById('c-sujet').value = '';
+                        document.getElementById('c-message').value = '';
+
+                        const contactFormBox =
+                            document.querySelector('.contact-form-box');
+                        if (contactFormBox) {
+                            window.scrollTo({
+                                top: contactFormBox.offsetTop - 100,
+                                behavior: 'smooth',
+                            });
+                        }
+                    })
+                    .catch(function(error) {
+                        alert(
+                            error.message ||
+                            (
+                                en
+                                    ? 'An error occurred.'
+                                    : 'Une erreur est survenue.'
+                            )
+                        );
+                    })
+                    .finally(function() {
+                        btnContact.disabled = false;
+                    });
             });
         }
 
