@@ -240,8 +240,8 @@ GAMMES_DATA = [
         'name': 'Modulaire',
         'gender': 'm',
         'indicative': True,
-        'tagline_fr': 'Système extensible · modules combinables à volonté',
-        'tagline_en': 'Extensible system · modules combinable as needed',
+        'tagline_fr': '3 tailles disponibles · 16 à 57 m²',
+        'tagline_en': '3 sizes available · 16 to 57 sqm',
         'performances': [
             {'icon': 'fa-cubes', 'title_fr': 'Modules combinables', 'title_en': 'Combinable modules',
             'desc_fr': 'Assemblez plusieurs unités pour agrandir votre espace', 'desc_en': 'Assemble several units to expand your space'},
