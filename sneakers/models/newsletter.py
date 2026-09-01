@@ -15,7 +15,7 @@ class NewsletterSubscriber(models.Model):
     subscribed_date = fields.Datetime(default=fields.Datetime.now)
     unsubscribed_date = fields.Datetime()
 
-    email_unique = models.Constraint(
+    _email_unique = models.Constraint(
         'UNIQUE(email)',
         'This email is already subscribed.'
     )
