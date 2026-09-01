@@ -15,9 +15,10 @@ class NewsletterSubscriber(models.Model):
     subscribed_date = fields.Datetime(default=fields.Datetime.now)
     unsubscribed_date = fields.Datetime()
 
-    _sql_constraints = [
-        ('email_unique', 'UNIQUE(email)', 'This email is already subscribed.'),
-    ]
+    email_unique = models.Constraint(
+        'UNIQUE(email)',
+        'This email is already subscribed.'
+    )
 
     def action_unsubscribe(self):
         self.write({
