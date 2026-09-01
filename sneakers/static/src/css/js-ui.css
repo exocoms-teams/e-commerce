@@ -330,35 +330,10 @@
 
 /* PRODUCT — États boutons wishlist et taille */
 
-/* SVG heart toggle: filled by default, broken on hover when active */
-.sn-btn-heart,
-.sn-product-wishlist { display: flex; align-items: center; justify-content: center; }
-.sn-btn-heart svg,
-.sn-product-wishlist svg { width: 22px; height: 22px; flex-shrink: 0; }
-.sn-heart-filled { display: block; }
-.sn-heart-broken { display: none; }
-
-/* Active (favorited): burgundy bg + white heart */
-.sn-btn-heart--active,
-.sn-wishlist-btn--active {
-    background: var(--primary-color) !important;
+.sn-wishlist-btn--active,
+.sn-btn-heart--active {
+    color: var(--black) !important;
 }
-
-/* Hover on favorited: swap to broken heart (indicates remove) */
-.sn-wishlist-btn--active:hover .sn-heart-filled,
-.sn-btn-heart--active:hover .sn-heart-filled { display: none; }
-.sn-wishlist-btn--active:hover .sn-heart-broken,
-.sn-btn-heart--active:hover .sn-heart-broken { display: block; }
-
-/* SVG fill colors */
-.sn-btn-heart svg,
-.sn-product-wishlist svg { fill: var(--black); }
-.sn-btn-heart:hover svg,
-.sn-product-wishlist:hover svg { fill: var(--white); }
-.sn-btn-heart--active svg,
-.sn-wishlist-btn--active svg { fill: var(--white); }
-.sn-btn-heart--active:hover svg,
-.sn-wishlist-btn--active:hover svg { fill: var(--white); }
 
 .sn-size-options button.active {
     background: var(--primary-color);
@@ -520,20 +495,15 @@
 }
 
 .sn-wishlist-count{
-
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--primary-color);
-    color: var(--white);
-    font-size: 11px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
+    position:absolute;
+    top:-2px;
+    right:-2px;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:var(--primary-color);
+    display:none;
+    border:2px solid var(--black);
 }
 
 /* ============================================================
@@ -584,9 +554,10 @@ button:has(.fa-history) {
     display: none !important;
 }
 
-.text-muted {
-    --text-opacity: 1;
-    color: var(--black) !important;
+/* Target Quick reorder by text content via class */
+.o_cart_summary button,
+.oe_website_sale button {
+    color: transparent !important;
 }
 
 /* Hide the Quick reorder by targeting its wrapper */
@@ -857,9 +828,21 @@ div[name="website_sale_total"] {
 }
 
 .o_wsign_cart_summary .text-muted,
-.o_wsign_cart_summary span.text-muted {
+.o_wsign_cart_summary span.text-muted,
+.o_wsign_cart_summary .row .text-muted,
+.o_cart_summary .text-muted,
+.o_cart_summary span.text-muted {
     font-weight: 500 !important;
-    color: #666 !important;
+    color: #444 !important;
+}
+
+/* Summary row labels — ensure readable color */
+.sn-cart-layout .sn-summary-row span:first-child,
+.sn-checkout-layout .sn-summary-row span:first-child,
+.o_wsign_cart_summary .row span:first-child,
+.o_cart_summary .row span:first-child {
+    color: var(--text-dark, #1a1a2e) !important;
+    font-weight: 500 !important;
 }
 
 .o_wsign_cart_summary .oe_currency_value {
