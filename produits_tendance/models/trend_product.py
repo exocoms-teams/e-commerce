@@ -9,7 +9,7 @@ class TrendProduct(models.Model):
     _name = 'trend.product'
     _description = 'Produit collecté sur un site e-commerce'
 
-    name = fields.Char(string="Nom du produit", required=True)
+    name = fields.Char(string="Nom du produit", required=True, index=True)
     product_ref = fields.Char(string="Référence produit (site source)")
     category_id = fields.Many2one('trend.category', string="Catégorie")
     sales_count = fields.Integer(string="Nombre de ventes")

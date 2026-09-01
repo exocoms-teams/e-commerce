@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from werkzeug.exceptions import NotFound
 from ..models.trend_ad import latest_ads_by_ref
-from ..services.scoring_engine import ScoringEngine
+
 
 class TrendDashboardAPI:
     """Façade regroupant les lectures ORM utilisées par les pages publiques
@@ -32,10 +32,13 @@ class TrendDashboardAPI:
 
         N'est appelé par aucune page existante pour l'instant : le dashboard
         WIN-48 reste géré par sa propre logique de limite Freemium. Ce
-        utilitaire est prêt à être branché (`if not TrendDashboardAPI.is_pro_user(request.env): ...`)
+        utilitaire est prêt à être branché
+        (`if not TrendDashboardAPI.is_pro_user(request.env): ...`)
         par un futur contrôleur sans modifier de comportement déjà livré.
         """
         return env.user.has_group('produits_tendance.group_trend_pro')
+
+    # ------------------------------------------------------------------
     # Classement / dashboard (liste)
     # ------------------------------------------------------------------
     def get_dashboard_products(self, limit=None):
@@ -119,14 +122,33 @@ class TrendDashboardAPI:
         ]
 
     # ------------------------------------------------------------------
-    # Liste / filtres dynamiques (WIN-45 / WIN-50)
+    # Liste / filtres dynamiques (WIN-45 / WIN-49 / WIN-50 / WIN-77)
     # ------------------------------------------------------------------
-    def get_product_list(self, category_id=None, country=None, price_max=None,
-                          source=None, limit=None, offset=0):
-        """
-        :param float|None price_max: prix maximum, ou None/'' pour ne pas filtrer.
+    def get_product_list(
+        self,
+        category_id=None,
+        country=None,
+        price_max=None,
+        source=None,
+        search=None,
+        limit=None,
+        offset=0,
+    ):
+        """Retourne les produits triés par score de tendance décroissant,
+        optionnellement filtrés par catégorie, pays, prix max, source et
+        nom (recherche texte).
+
+        :param int|None category_id: id d'un trend.category, ou None/0 pour
+            ne pas filtrer sur la catégorie.
+        :param str|None country: code pays (ex. 'MA'), ou None/'' pour ne
+            pas filtrer sur le pays.
+        :param float|None price_max: prix maximum, ou None/'' pour ne pas
+            filtrer.
         :param str|None source: valeur de la Selection trend.product.source
-            ('scraping', 'crowdsourcing', 'api'), ou None/'' pour ne pas filtrer.
+            ('scraping', 'crowdsourcing', 'api'), ou None/'' pour ne pas
+            filtrer.
+        :param str|None search: texte de recherche sur le nom du produit
+            (WIN-49), comparaison "ilike" insensible à la casse.
         :param int|None limit: passé tel quel à env['trend.product'].search().
             ATTENTION Odoo interprète limit=0 comme « aucune limite » (test
             de véracité Python côté ORM), donc on court-circuite ce cas
@@ -138,12 +160,14 @@ class TrendDashboardAPI:
             « Charger plus »). Défaut 0 : un appel sans pagination
             (rendu initial, reset des filtres) doit toujours repartir
             du début — ne jamais remettre une valeur non nulle ici.
+        :rtype: list[dict]
         """
         if limit == 0:
             return []
 
         env = self.env(su=True)
         domain = []
+
         if category_id:
             domain.append(('category_id', '=', int(category_id)))
         if country:
@@ -155,19 +179,25 @@ class TrendDashboardAPI:
                 pass  # paramètre invalide ignoré, comportement identique à l'absence du filtre
         if source:
             domain.append(('source', '=', source))
+        if search:
+            domain.append(('name', 'ilike', search.strip()))
 
         products = env['trend.product'].search(
             domain, order='current_score desc', limit=limit, offset=offset
         )
 
-        return [{
-            'id': product.id,
-            'name': product.name,
-            'category': product.category_id.name or '',
-            'country': product.country or '',
-            'score': round(product.current_score, 1),
-            'sales_count': product.sales_count,
-        } for product in products]
+        return [
+            {
+                'id': product.id,
+                'name': product.name,
+                'category': product.category_id.name or '',
+                'country': product.country or '',
+                'score': round(product.current_score, 1),
+                'sales_count': product.sales_count,
+            }
+            for product in products
+        ]
+
     def get_filter_options(self):
         """Retourne les valeurs disponibles pour peupler les selects du
         panneau de filtres (.o_winners_filter_panel) : catégories connues
@@ -187,7 +217,7 @@ class TrendDashboardAPI:
         return {
             'categories': [{'id': c.id, 'name': c.name} for c in categories],
             'countries': countries,
-            'sources': [{'value': v, 'label': l} for v, l in sources],
+            'sources': [{'value': v, 'label': label} for v, label in sources],
         }
 
     def get_dashboard_stats(self):
@@ -209,11 +239,13 @@ class TrendDashboardAPI:
             'total_products': total_products,
             'avg_score': round(avg_score, 1),
         }
+
     @staticmethod
     def is_freemium_user(env):
         """Vrai si l'utilisateur est un compte Gratuit (ni Standard ni Pro)."""
         return env.user.has_group('produits_tendance.group_trend_free') \
-        and not env.user.has_group('produits_tendance.group_trend_standard')
+            and not env.user.has_group('produits_tendance.group_trend_standard')
+
     @staticmethod
     def get_pagination_limit(env, requested_offset=0, requested_limit=None):
         """Calcule (limit, offset) réels en clampant strictement au plafond
