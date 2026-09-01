@@ -24,6 +24,7 @@
         'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
         'views/legal_templates.xml',   # WIN-102
         'data/webhook_queue_cron.xml',      # WIN-67
+        'data/scoring_cron.xml',
     ],
 
 
@@ -54,5 +55,5 @@
         ],
     },
     'installable': True,
-    'application': False,
+    'application': True,
 }

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import fields
 from odoo.tests.common import TransactionCase
+from odoo.tools import mute_logger
 
 
 class TestTrendScore(TransactionCase):
@@ -55,3 +56,31 @@ class TestTrendScore(TransactionCase):
 
         self.assertEqual(len(self.product.ad_ids), 0)  # plus lu par le calcul
         self.assertAlmostEqual(score, expected_score, places=4)
+
+    @mute_logger('odoo.sql_db')
+    def test_only_one_score_per_product_and_day_is_allowed(self):
+        """La contrainte SQL bloque aussi deux heures distinctes du même jour."""
+        product = self.env['trend.product'].create({
+            'name': 'Produit contrainte score quotidien',
+            'product_ref': 'TEST-SCORE-DAILY-UNIQUE',
+            'country': 'MA',
+            'source': 'api',
+        })
+        score_model = self.env['trend.score']
+        score_model.create({
+            'product_id': product.id,
+            'computed_at': '2026-08-27 09:00:00',
+        })
+
+        with self.cr.savepoint():
+            with self.assertRaises(Exception):
+                score_model.create({
+                    'product_id': product.id,
+                    'computed_at': '2026-08-27 18:00:00',
+                })
+
+        next_day_score = score_model.create({
+            'product_id': product.id,
+            'computed_at': '2026-08-28 09:00:00',
+        })
+        self.assertTrue(next_day_score.id)

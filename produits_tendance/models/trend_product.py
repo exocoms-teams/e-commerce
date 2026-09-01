@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 from .trend_ad import latest_ads_by_ref
 from odoo.addons.produits_tendance.services.scoring_engine import ScoringEngine
 
+_COMPUTE_ARGUMENT_NOT_PROVIDED = object()
 
 class TrendProduct(models.Model):
     _name = 'trend.product'
@@ -138,41 +139,75 @@ class TrendProduct(models.Model):
                     "Le nombre de ventes (sales_count) ne peut pas être négatif."
                 )
 
-    # --- SCORE DE TENDANCE ---
-    def compute_trend_score(self, previous_metrics=None):
-        """Calcule le score de tendance de ce produit."""
+
+    def build_current_metrics(self):
+        """Construit le snapshot des métriques actuelles du produit.
+
+        Les publicités sont dédupliquées par ad_ref afin de ne compter
+        que la dernière observation connue de chaque publicité.
+        """
         self.ensure_one()
+
+        latest_ads = latest_ads_by_ref(
+            self.ad_ids.filtered(lambda ad: ad.is_active)
+        )
+
+        return {
+            'ventes': self.sales_count or 0,
+            'likes': sum(latest_ads.mapped('likes_count')),
+            'partages': sum(latest_ads.mapped('shares_count')),
+            'ads': len(latest_ads),
+    }
+
+    # --- SCORE DE TENDANCE ---
+    def compute_trend_score(
+        self,
+        previous_metrics=_COMPUTE_ARGUMENT_NOT_PROVIDED,
+        current_metrics=None,
+    ):
+        """Calcule le score de tendance.
+
+        - Appel historique sans argument :
+        conserve l'ancien calcul par fenêtres temporelles.
+        - Appel de l'orchestrateur :
+        utilise explicitement current_metrics et previous_metrics.
+        """
+        self.ensure_one()
+
         scoring_engine = ScoringEngine()
         now = datetime.now()
 
-        # Fenêtre actuelle (30 derniers jours)
-        current_start = now - timedelta(days=30)
-        current_end = now
+        # Mode orchestrateur :
+        # les métriques actuelles sont fournies explicitement.
+        if current_metrics is None:
+            current_start = now - timedelta(days=30)
+            current_end = now
 
-        current_domain = [
-            ('product_id', '=', self.id),
-            ('computed_at', '>=', current_start),
-            ('computed_at', '<=', current_end),
-        ]
-        current_scores = self.env['trend.score'].search(current_domain)
-        current_metrics = {
-            'ventes': sum(current_scores.mapped('metric_sales')),
-            'likes': sum(current_scores.mapped('metric_likes')),
-            'partages': sum(current_scores.mapped('metric_shares')),
-            'ads': sum(current_scores.mapped('metric_ads_count')),
-        }
+            current_scores = self.env['trend.score'].search([
+                ('product_id', '=', self.id),
+                ('computed_at', '>=', current_start),
+                ('computed_at', '<=', current_end),
+            ])
 
-        # Calculer previous_metrics SEULEMENT s'il n'est pas passé en paramètre
-        if previous_metrics is None:
+            current_metrics = {
+                'ventes': sum(current_scores.mapped('metric_sales')),
+                'likes': sum(current_scores.mapped('metric_likes')),
+                'partages': sum(current_scores.mapped('metric_shares')),
+                'ads': sum(current_scores.mapped('metric_ads_count')),
+            }
+
+        # Appel historique sans previous_metrics :
+        # conserve l'ancien calcul de la période précédente.
+        if previous_metrics is _COMPUTE_ARGUMENT_NOT_PROVIDED:
             previous_start = now - timedelta(days=60)
             previous_end = now - timedelta(days=30)
 
-            previous_domain = [
+            previous_scores = self.env['trend.score'].search([
                 ('product_id', '=', self.id),
                 ('computed_at', '>=', previous_start),
                 ('computed_at', '<', previous_end),
-            ]
-            previous_scores = self.env['trend.score'].search(previous_domain)
+            ])
+
             previous_metrics = {
                 'ventes': sum(previous_scores.mapped('metric_sales')),
                 'likes': sum(previous_scores.mapped('metric_likes')),
@@ -180,22 +215,35 @@ class TrendProduct(models.Model):
                 'ads': sum(previous_scores.mapped('metric_ads_count')),
             }
 
-        # Récupération de source_score via ir.config_parameter
+        # Premier calcul quotidien :
+        # previous_metrics=None signifie qu'il n'existe aucun snapshot précédent.
+        elif previous_metrics is None:
+            previous_metrics = {}
+
         source_score = 0.0
-        IrConfigParam = self.env['ir.config_parameter'].sudo()
+
+        ir_config = self.env['ir.config_parameter'].sudo()
+
         source_mapping = {
             'scraping': 'winners.source_score_scraping',
             'crowdsourcing': 'winners.source_score_crowdsourcing',
             'api': 'winners.source_score_api',
         }
-        param_name = source_mapping.get(self.source)
-        if param_name:
-            param_value = IrConfigParam.get_param(param_name)
-            if param_value is not None:
+
+        parameter_name = source_mapping.get(self.source)
+
+        if parameter_name:
+            parameter_value = ir_config.get_param(parameter_name)
+
+            if parameter_value is not None:
                 try:
-                    source_score = float(param_value)
+                    source_score = float(parameter_value)
                     source_score = max(0.0, min(source_score, 1.0))
                 except (ValueError, TypeError):
                     source_score = 0.0
 
-        return scoring_engine.calculate_trend_score(current_metrics, previous_metrics, source_score)
+        return scoring_engine.calculate_trend_score(
+            current_metrics=current_metrics,
+            previous_metrics=previous_metrics,
+            source_score=source_score,
+        )
