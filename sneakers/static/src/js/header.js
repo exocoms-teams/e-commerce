@@ -152,9 +152,8 @@
         var wl = JSON.parse(localStorage.getItem('sn_wishlist') || '[]');
         var badge = document.querySelector('.sn-wishlist-count');
         if (!badge) return;
-        badge.style.display = wl.length > 0 ? 'block' : 'none';
+        badge.style.display = wl.length > 0 ? 'flex' : 'none';
     })();
 
-    /* BACKEND : appeler /shop/cart/update avec product_id , qty */
 
 })();
