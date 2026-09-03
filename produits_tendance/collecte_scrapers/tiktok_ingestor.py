@@ -6,7 +6,6 @@ from playwright.async_api import (
 )
 
 TIKTOK_URL = "https://ads.tiktok.com/creative/creativeCenter/trends"
-
 NAVIGATION_TIMEOUT_MS = 30_000
 
 
@@ -14,43 +13,53 @@ async def scrape_tiktok_trends():
     """Collect trending items from TikTok Creative Center."""
 
     async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(headless=False)
+        browser = await playwright.firefox.launch(
+            headless=False,
+        )
+
         context = await browser.new_context(
             locale="en-US",
             viewport={"width": 1440, "height": 900},
         )
-        page = await context.new_page()
 
+        page = await context.new_page()
         page.set_default_navigation_timeout(NAVIGATION_TIMEOUT_MS)
 
         try:
-            print(f"URL value: {TIKTOK_URL}")
-            print(f"URL type: {type(TIKTOK_URL)}")
-
             response = await page.goto(
                 TIKTOK_URL,
                 wait_until="domcontentloaded",
                 timeout=NAVIGATION_TIMEOUT_MS,
             )
 
-            print(f"Final URL: {page.url}")
-            print(f"Page title: {await page.title()}")
-
             if response is None:
-                print("Tiktok returned no HTTP response.")
+                print("TikTok returned no HTTP response.")
                 return []
-            print( f"HTTP status: {response.status}")
+
+            print(f"Final URL: {page.url}")
+            print(f"HTTP status: {response.status}")
+
             if response.status >= 400:
                 print(f"TikTok refused the request with HTTP {response.status}.")
-                await page.screenshot(
-                path="tiktok_error.png",
-                    full_page=True,
-        )
-            return []
+                return []
 
+            print(f"Page title: {await page.title()}")
             print("TikTok Creative Center loaded successfully.")
-            return []
 
+            # Give the JavaScript content time to appear.
+            await page.wait_for_timeout(5_000)
+
+            body_text = await page.locator("body").inner_text()
+
+            print("\n--- PAGE CONTENT ---")
+            print(body_text[:5_000])
+            print("--- END PAGE CONTENT ---\n")
+
+            await page.screenshot(
+                path="tiktok_trends.png",
+                full_page=True,
+            )
+            return []
         except PlaywrightTimeoutError:
             print("TikTok did not load within 30 seconds.")
             return []
