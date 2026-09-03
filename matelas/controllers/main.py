@@ -117,6 +117,7 @@ class MatelasVente(http.Controller):
         telephone=None,
         sujet=None,
         message=None,
+        website=None,
         **kwargs,
     ):
         """Enregistrer un message de contact et avertir la société par email."""
@@ -126,6 +127,14 @@ class MatelasVente(http.Controller):
         telephone = (telephone or '').strip()
         sujet = (sujet or '').strip()
         message = (message or '').strip()
+        website = (website or '').strip()
+
+        # Honeypot anti-spam : ce champ reste vide pour un utilisateur normal.
+        if website:
+            return {
+                'success': False,
+                'error': "La soumission du formulaire a été refusée.",
+            }
 
         if not nom or not prenom or not email or not message:
             return {

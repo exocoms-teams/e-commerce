@@ -64,6 +64,23 @@ Solutions évaluées :
 
 ### Décision anti-spam
 
-La solution recommandée est un champ honeypot caché, contrôlé côté serveur.
+Après validation du tuteur le 03/09/2026, la solution du champ honeypot invisible a été retenue et implémentée.
 
-Conformément à la consigne de ne pas ajouter de mécanisme sans validation préalable, aucune protection anti-spam n’a été implémentée à ce stade. La proposition doit d’abord être validée par le tuteur.
+Le formulaire contient désormais un champ `website` placé hors de l’écran avec la classe `contact-honeypot`. Il est ignoré par la navigation au clavier et reste invisible pour un utilisateur normal. Le JavaScript transmet sa valeur à la route `/contact/submit`.
+
+Le contrôleur vérifie ce champ avant toute validation complémentaire, création d’un message ou tentative d’envoi d’email. S’il est rempli, la soumission est rejetée avec `success: false`.
+
+### Tests du honeypot
+
+Les tests suivants ont été réalisés le 03/09/2026 :
+
+- un utilisateur normal peut toujours envoyer le formulaire ;
+- le formulaire conserve son apparence et son comportement ;
+- la route répond avec `success: true` pour une soumission normale ;
+- un seul message est enregistré et un seul email est reçu dans Mailpit ;
+- une soumission directe avec le champ `website` rempli est rejetée avec `success: false` ;
+- la soumission bloquée ne crée aucun message et ne déclenche aucun email ;
+- aucune erreur JavaScript liée au formulaire n’apparaît dans la console ;
+- aucune erreur serveur liée au formulaire n’apparaît dans les logs Odoo.
+
+Le honeypot constitue une protection anti-spam basique et non intrusive. Une limitation de fréquence ou un CAPTCHA pourra être envisagé ultérieurement uniquement si le niveau de spam le nécessite.

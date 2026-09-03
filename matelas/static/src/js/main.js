@@ -147,6 +147,8 @@
                 const telephone = document.getElementById('c-tel').value.trim();
                 const sujet = document.getElementById('c-sujet').value.trim();
                 const message = document.getElementById('c-message').value.trim();
+                const websiteField = document.getElementById('c-website');
+                const website = websiteField ? websiteField.value.trim() : '';
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
                 if (!nom || !prenom || !email || !message) {
@@ -185,6 +187,7 @@
                             telephone: telephone,
                             sujet: sujet,
                             message: message,
+                            website: website,
                         },
                     }),
                 })
@@ -220,6 +223,9 @@
                         document.getElementById('c-tel').value = '';
                         document.getElementById('c-sujet').value = '';
                         document.getElementById('c-message').value = '';
+                        if (websiteField) {
+                            websiteField.value = '';
+                        }
 
                         const contactFormBox =
                             document.querySelector('.contact-form-box');
