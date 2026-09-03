@@ -1,10 +1,21 @@
 /**
- * produits_tendance — Filtres dynamiques du dashboard (WIN-45 / WIN-50)
+ * produits_tendance — Filtres dynamiques + pagination du dashboard
+ * (WIN-45 / WIN-50 / WIN-77)
  *
  * Écoute les changements des selects du panneau de filtres
  * (.o_winners_filter_panel), appelle /api/dashboard/filter en AJAX
- * (GET, JSON) et reconstruit uniquement la grille de cartes produit
+ * (GET, JSON) et reconstruit la grille de cartes produit
  * (#o_winners_product_grid), sans recharger la page.
+ *
+ * Le bouton "Charger plus" (#o_winners_load_more) réutilise le même
+ * endpoint AJAX, avec un offset croissant et en mode "append" (les
+ * nouvelles cartes s'ajoutent à la grille au lieu de la remplacer) —
+ * conformément au ticket WIN-77 ("Reutiliser le mecanisme AJAX du
+ * ticket Filtres dynamiques plutot que d'en recoder un nouveau").
+ *
+ * La limite Freemium n'est jamais recalculée côté client : le serveur
+ * (TrendDashboardAPI.get_pagination_limit) reste seul juge du (limit,
+ * offset) réellement appliqué, quel que soit l'offset envoyé ici.
  *
  * Reproduit côté client le même balisage que le sous-template QWeb
  * produits_tendance.template_product_cards, pour que le rendu initial
@@ -22,7 +33,16 @@
 
         var categorySelect = document.getElementById('o_winners_filter_category');
         var countrySelect = document.getElementById('o_winners_filter_country');
+        var priceMaxInput = document.getElementById('o_winners_filter_price_max');
+        var sourceSelect = document.getElementById('o_winners_filter_source');
         var resetBtn = document.getElementById('o_winners_filter_reset');
+        var loadMoreWrapper = document.getElementById('o_winners_load_more_wrapper');
+        var loadMoreBtn = document.getElementById('o_winners_load_more');
+
+        // Offset à utiliser au prochain clic sur "Charger plus". Initialisé
+        // depuis l'attribut posé par le rendu serveur (template_dashboard),
+        // puis mis à jour après chaque réponse AJAX.
+        var nextOffset = (loadMoreBtn && parseInt(loadMoreBtn.getAttribute('data-next-offset'), 10)) || 0;
 
         function escapeHtml(value) {
             var div = document.createElement('div');
@@ -35,21 +55,27 @@
             col.className = 'col-md-4 col-sm-6 mb-4';
 
             var categoryHtml = p.category
-                ? '<div class="o_winners_product_card__category">' + escapeHtml(p.category) + '</div>'
+                ? '<span class="o_winners_product_card__category">' + escapeHtml(p.category) + '</span>'
                 : '';
             var countryHtml = p.country
-                ? '<div class="o_winners_product_card__meta">' + escapeHtml(p.country) + '</div>'
+                ? '<span class="o_winners_product_card__country">' + escapeHtml(p.country) + '</span>'
                 : '';
-            var score = (typeof p.score === 'number') ? p.score.toFixed(1) : '0.0';
+            var scoreValue = (typeof p.score === 'number') ? p.score : 0.0;
+            var scoreTier = scoreValue >= 75 ? '--high' : (scoreValue >= 50 ? '--mid' : '--low');
+            var scoreText = scoreValue.toFixed(1);
 
+            // Structure alignée sur produits_tendance.template_product_cards
+            // (mêmes classes, y compris le modificateur de palier de score)
+            // pour que le rendu JS soit identique au rendu serveur initial.
             col.innerHTML =
                 '<a href="/product/' + encodeURIComponent(p.id) + '" class="o_winners_product_card">' +
                     categoryHtml +
-                    '<div class="o_winners_product_card__name">' + escapeHtml(p.name) + '</div>' +
-                    countryHtml +
-                    '<div class="o_winners_score_badge o_winners_product_card__score">' +
-                        '<div class="o_winners_score_badge__label">Score</div>' +
-                        '<div class="o_winners_score_badge__value">' + score + '</div>' +
+                    '<h3 class="o_winners_product_card__name">' + escapeHtml(p.name) + '</h3>' +
+                    '<div class="o_winners_product_card__footer">' +
+                        '<span class="o_winners_product_card__score o_winners_product_card__score' + scoreTier + '">' +
+                            scoreText +
+                        '</span>' +
+                        countryHtml +
                     '</div>' +
                 '</a>';
             return col;
@@ -57,15 +83,25 @@
 
         function renderEmptyState() {
             var col = document.createElement('div');
-            col.className = 'col-12 o_winners_product_grid__empty';
-            col.textContent = 'Aucun produit ne correspond à ces filtres.';
+            col.className = 'col-12';
+            var alert = document.createElement('div');
+            alert.className = 'alert alert-info text-center o_winners_product_grid__empty';
+            alert.textContent = 'Aucun produit ne correspond à ces filtres pour le moment.';
+            col.appendChild(alert);
             return col;
         }
 
-        function renderProducts(products) {
-            grid.innerHTML = '';
+        // append=false (filtres/reset) : la grille est entièrement
+        // reconstruite. append=true ("Charger plus") : les nouvelles
+        // cartes s'ajoutent à la suite des cartes déjà affichées.
+        function renderProducts(products, append) {
+            if (!append) {
+                grid.innerHTML = '';
+            }
             if (!products || !products.length) {
-                grid.appendChild(renderEmptyState());
+                if (!append) {
+                    grid.appendChild(renderEmptyState());
+                }
                 return;
             }
             products.forEach(function (p) {
@@ -73,11 +109,16 @@
             });
         }
 
-        // Compteur pour ignorer les réponses obsolètes si l'utilisateur
-        // change les filtres plus vite que le réseau ne répond.
-        var requestToken = 0;
+        function updateLoadMoreState(hasMore, offset) {
+            nextOffset = offset;
+            if (!loadMoreWrapper || !loadMoreBtn) {
+                return;
+            }
+            loadMoreWrapper.style.display = hasMore ? '' : 'none';
+            loadMoreBtn.setAttribute('data-next-offset', offset);
+        }
 
-        function applyFilters() {
+        function buildFilterParams() {
             var params = new URLSearchParams();
             if (categorySelect && categorySelect.value) {
                 params.set('category_id', categorySelect.value);
@@ -85,11 +126,30 @@
             if (countrySelect && countrySelect.value) {
                 params.set('country', countrySelect.value);
             }
+            if (priceMaxInput && priceMaxInput.value) {
+                params.set('price_max', priceMaxInput.value);
+            }
+            if (sourceSelect && sourceSelect.value) {
+                params.set('source', sourceSelect.value);
+            }
+            return params;
+        }
+
+        // Compteur pour ignorer les réponses obsolètes si l'utilisateur
+        // change les filtres plus vite que le réseau ne répond.
+        var requestToken = 0;
+
+        function fetchProducts(offset, append) {
+            var params = buildFilterParams();
+            params.set('offset', offset);
 
             var currentToken = ++requestToken;
             grid.classList.add('o_winners_product_grid--loading');
+            if (append && loadMoreBtn) {
+                loadMoreBtn.disabled = true;
+            }
 
-            fetch('/api/dashboard/filter?' + params.toString(), {
+            return fetch('/api/dashboard/filter?' + params.toString(), {
                 method: 'GET',
                 headers: { 'Accept': 'application/json' },
             })
@@ -99,7 +159,8 @@
                         return; // une requête plus récente est en cours
                     }
                     if (data && data.status === 'success') {
-                        renderProducts(data.products);
+                        renderProducts(data.products, append);
+                        updateLoadMoreState(!!data.has_more, data.next_offset || 0);
                     }
                 })
                 .catch(function () {
@@ -110,7 +171,27 @@
                     if (currentToken === requestToken) {
                         grid.classList.remove('o_winners_product_grid--loading');
                     }
+                    if (append && loadMoreBtn) {
+                        loadMoreBtn.disabled = false;
+                    }
                 });
+        }
+
+        // Changement de filtre : on repart toujours de offset=0 et on
+        // remplace la grille (append=false).
+        function applyFilters() {
+            fetchProducts(0, false);
+        }
+
+        // Le prix max est un input texte/numérique : on écoute "input" (frappe
+        // en direct) mais avec un léger debounce pour éviter une requête par
+        // caractère tapé.
+        var priceMaxDebounceTimer = null;
+        function applyFiltersDebounced() {
+            if (priceMaxDebounceTimer) {
+                clearTimeout(priceMaxDebounceTimer);
+            }
+            priceMaxDebounceTimer = setTimeout(applyFilters, 400);
         }
 
         if (categorySelect) {
@@ -119,11 +200,24 @@
         if (countrySelect) {
             countrySelect.addEventListener('change', applyFilters);
         }
+        if (priceMaxInput) {
+            priceMaxInput.addEventListener('input', applyFiltersDebounced);
+        }
+        if (sourceSelect) {
+            sourceSelect.addEventListener('change', applyFilters);
+        }
         if (resetBtn) {
             resetBtn.addEventListener('click', function () {
                 if (categorySelect) { categorySelect.value = ''; }
                 if (countrySelect) { countrySelect.value = ''; }
+                if (priceMaxInput) { priceMaxInput.value = ''; }
+                if (sourceSelect) { sourceSelect.value = ''; }
                 applyFilters();
+            });
+        }
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', function () {
+                fetchProducts(nextOffset, true);
             });
         }
     }

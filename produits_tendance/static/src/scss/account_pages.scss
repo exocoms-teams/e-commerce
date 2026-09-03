@@ -1,0 +1,113 @@
+// ============================================================
+// WIN-125 : Espace Compte Layout & Styling
+// ============================================================
+
+// Local Theme Variables (or import from _winners_variables.scss)
+$account-primary: #ff5722 !default;
+$account-bg-active: #eff6ff !default;
+$account-border: #e5e7eb !default;
+$account-text-dark: #111827 !default;
+$account-text-muted: #6b7280 !default;
+$account-text-link: #4b5563 !default;
+
+.o_winners_account_page {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    padding: 2rem 0 3rem;
+    align-items: flex-start;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    // Left Navigation Sidebar
+    .o_winners_account_sidebar {
+        width: 260px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        background-color: #ffffff;
+        border-radius: 8px;
+        border: 1px solid $account-border;
+        overflow: hidden;
+
+        @media (max-width: 768px) {
+            width: 100%;
+        }
+
+        &__link {
+            padding: 12px 16px;
+            color: $account-text-link;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+            &:hover {
+                background-color: #f3f4f6;
+                color: $account-text-dark;
+            }
+
+            &--active {
+                background-color: $account-bg-active;
+                color: $account-primary;
+                border-left: 4px solid $account-primary;
+                font-weight: 600;
+            }
+        }
+    }
+
+    // Right Content Wrapper
+    .o_winners_account_content {
+        flex: 1;
+        width: 100%;
+        min-width: 0; // Prevents grid/flex overflow issues
+
+        &__title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: $account-text-dark;
+        }
+
+        &__subtitle {
+            color: $account-text-muted;
+            margin-bottom: 1.5rem;
+        }
+    }
+
+    // White Container Card
+    .o_winners_account_card {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 2rem;
+        border: 1px solid $account-border;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    // Shared Component: Empty State ("Fonctionnalité à venir")
+    .o_winners_empty_state {
+        text-align: center;
+        padding: 3rem 1rem;
+
+        &__icon {
+            font-size: 3rem;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        &__title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: $account-text-dark;
+        }
+
+        &__text {
+            color: $account-text-muted;
+            margin-bottom: 0;
+        }
+    }
+}
