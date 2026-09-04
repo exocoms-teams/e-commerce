@@ -116,3 +116,34 @@ Les corrections suivantes ont été appliquées :
 - les cinq étoiles restent présentes et fonctionnelles ;
 - aucun avertissement d’association des libellés n’apparaît après la correction ;
 - aucune erreur JavaScript ou serveur n’a été détectée.
+
+## Mutualisation du bloc carte produit
+
+Date des tests : 04/09/2026
+
+Page testée : `/`
+
+### Modification réalisée
+
+Les cartes affichées dans les sections « Nos nouveautés » et « Nos best-sellers » utilisaient deux blocs HTML presque identiques dans `views/templates/home.xml`.
+
+Un template QWeb réutilisable nommé `matelas.product_card` a été créé. Il reçoit le produit courant et utilise le paramètre optionnel `show_badge`.
+
+Les deux boucles utilisent maintenant ce template :
+
+- `show_badge=True` pour la section « Nos nouveautés » ;
+- aucun badge pour la section « Nos best-sellers ».
+
+Le HTML de la carte, les classes CSS, l’image, le nom, le prix et les attributs du bouton Ajouter ne sont désormais définis qu’à un seul endroit.
+
+### Tests réalisés
+
+- le fichier `home.xml` est syntaxiquement valide ;
+- le HTML complet de la carte produit n’existe plus qu’à un seul endroit ;
+- les deux sections appellent le template commun ;
+- un produit publié apparaît dans les deux sections ;
+- le badge « Nouveau » apparaît uniquement dans la section « Nos nouveautés » ;
+- les images, noms, prix et boutons Ajouter restent visibles ;
+- l’ajout au panier fonctionne depuis les deux sections ;
+- la mise en page et le défilement des carrousels restent inchangés ;
+- aucune erreur JavaScript, QWeb ou serveur n’a été détectée.
