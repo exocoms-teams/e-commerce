@@ -84,3 +84,35 @@ Les tests suivants ont été réalisés le 03/09/2026 :
 - aucune erreur serveur liée au formulaire n’apparaît dans les logs Odoo.
 
 Le honeypot constitue une protection anti-spam basique et non intrusive. Une limitation de fréquence ou un CAPTCHA pourra être envisagé ultérieurement uniquement si le niveau de spam le nécessite.
+
+## Alignement de la validation du formulaire d’avis
+
+Date des tests : 04/09/2026
+Page testée : `/avis`
+Route testée : `/avis/submit`
+
+### Corrections réalisées
+
+Les champs obligatoires affichés dans l’interface ont été comparés aux contrôles de la méthode `avis_submit()`.
+
+Les corrections suivantes ont été appliquées :
+
+- ajout du titre à la validation JavaScript et serveur ;
+- nettoyage de `name`, `titre`, `commentaire` et `profession` avec `.strip()` ;
+- rejet d’un nom ou d’un titre composé uniquement d’espaces ;
+- validation stricte de la note entre 1 et 5 ;
+- enregistrement en base des valeurs nettoyées ;
+- association des libellés Nom, Profession, Titre et Commentaire avec leurs champs ;
+- remplacement du libellé de la note par un texte associé au groupe d’étoiles avec `aria-labelledby`.
+
+### Tests réalisés
+
+- une soumission avec un titre vide est rejetée côté interface ;
+- une soumission directe avec un titre vide est rejetée côté serveur ;
+- une soumission avec un nom composé uniquement d’espaces est rejetée côté interface ;
+- une soumission directe avec un nom composé uniquement d’espaces est rejetée côté serveur ;
+- aucun avis invalide n’est enregistré ;
+- un avis valide continue d’être enregistré et affiché normalement ;
+- les cinq étoiles restent présentes et fonctionnelles ;
+- aucun avertissement d’association des libellés n’apparaît après la correction ;
+- aucune erreur JavaScript ou serveur n’a été détectée.

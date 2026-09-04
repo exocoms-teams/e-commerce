@@ -82,23 +82,31 @@ class MatelasVente(http.Controller):
                 'error': "Vous devez avoir effectué un achat pour laisser un avis.",
             }
 
-        if not name or not (commentaire and commentaire.strip()) or not note:
-            return {
-                'success': False,
-                'error': "Merci de remplir tous les champs obligatoires.",
-            }
+        name = (name or '').strip()
+        profession = (profession or '').strip()
+        titre = (titre or '').strip()
+        commentaire = (commentaire or '').strip()
 
         try:
             note = int(note)
         except (TypeError, ValueError):
             note = 0
-        note = max(1, min(5, note))
 
+        if (
+            not name
+            or not titre
+            or not commentaire
+            or note not in range(1, 6)
+        ):
+            return {
+                'success': False,
+                'error': "Merci de remplir tous les champs obligatoires.",
+            }
         request.env['matelas.avis'].sudo().create({
             'name': name,
-            'profession': profession.strip() if profession else '',
+            'profession': profession,
             'note': note,
-            'titre': titre or '',
+            'titre': titre,
             'commentaire': commentaire,
             'partner_id': partner.id,
         })

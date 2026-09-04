@@ -66,7 +66,7 @@
                 const produit = document.getElementById('avis-produit').value.trim();
                 const commentaire = document.getElementById('avis-commentaire').value.trim();
 
-                if (!nom || note == 0 || !commentaire) {
+                if (!nom || note == 0 || !produit || !commentaire) {
                     alert(en ? 'Please fill in all required fields (*)' : 'Merci de remplir tous les champs obligatoires (*)');
                     return;
                 }
