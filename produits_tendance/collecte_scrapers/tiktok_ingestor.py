@@ -82,8 +82,6 @@ async def extract_visible_ads(page, region):
         snapshot_url = card_links[0]["href"]
         ad_id = snapshot_url.rstrip("/").split("/")[-1]
 
-        # Temporary inspection of images inside this card.
-        
         lines = [
             line.strip()
             for line in card_text.splitlines()
