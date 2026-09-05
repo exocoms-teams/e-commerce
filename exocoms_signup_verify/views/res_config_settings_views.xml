@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.exocoms.signup.verify</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="auth_signup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//setting[@id='login_documents']" position="after">
+                <setting id="exocoms_signup_verify"
+                         string="Validation de l'email à l'inscription"
+                         help="L'adresse email doit être confirmée avant l'activation du compte">
+                    <field name="exocoms_signup_check_mx" class="o_light_label"/>
+                    <div class="content-group mt8">
+                        <label for="exocoms_signup_blocked_domains" class="o_light_label"/>
+                        <field name="exocoms_signup_blocked_domains"
+                               placeholder="yopmail.com,mailinator.com"/>
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
