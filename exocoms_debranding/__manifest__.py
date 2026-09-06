@@ -1,53 +1,48 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "EXOCOMS - Marque blanche (Debranding Odoo)",
-    "version": "19.0.2.0.0",
-    "category": "Technical",
-    "summary": "Remplace les mentions « Powered by Odoo » par votre propre marque "
-               "(texte, logo, lien) dans le portail, les e-mails et les rapports PDF.",
+    "name": "EXOCOMS Debranding",
+    "summary": "Suppression complète du branding Odoo (Odoo 19 uniquement)",
     "description": """
-Marque blanche EXOCOMS
-======================
+Debranding Odoo 19
+==================
 
-Remplace — ou supprime — les mentions promotionnelles Odoo (« Powered by Odoo »,
-« Propulsé par Odoo », « Sent by ... using Odoo », liens vers odoo.com, balise
-meta generator) dans :
+Remplace l'identité Odoo par celle de l'éditeur / intégrateur :
 
-* toutes les pages du portail et du site web (frontend) ;
-* tous les e-mails sortants (layouts de notification, templates) ;
-* tous les rapports QWeb / PDF : devis, bons de commande, factures, BL... ;
-* le back-office : titre de l'onglet navigateur et entrées Odoo du menu utilisateur.
+* titre de l'onglet navigateur et titre des pages backend / frontend ;
+* liens « Powered by Odoo », « Odoo.com », « Manage Databases » ;
+* entrées « Documentation », « Support », « Mon compte Odoo » du menu utilisateur ;
+* titres des boîtes de dialogue d'erreur (« Odoo Server Error », ...) ;
+* logo, favicon et icônes PWA remplacés par ceux de la société ;
+* nom de l'application PWA (manifest.webmanifest) ;
+* pied de page des courriels de notification ;
+* désactivation du cron de notification éditeur (publisher warranty).
 
-En mode « Remplacer », le bloc d'origine est conservé (position, alignement,
-style) et son contenu est remplacé par votre accroche, votre logo et votre lien.
-
-Le paramétrage est **par société** : une instance multi-société peut donc
-afficher une marque différente pour chaque client hébergé.
-
-Le nettoyage est effectué au niveau du moteur de rendu QWeb (`ir.qweb._render`),
-ce qui le rend indépendant des identifiants de templates : aucune surcharge XML
-fragile, aucun risque de casse lors d'une montée de version.
-
-Configuration : Paramètres > Technique > Marque blanche.
-Interrupteur général : paramètre système `exocoms_debranding.enabled`.
+Le patch des templates QWeb est dynamique : le module scanne les vues à
+l'installation et ne crée que les héritages qui s'appliquent réellement.
+Aucun échec d'installation si un template Odoo change de structure.
 """,
+    "version": "19.0.1.1.0",
+    "category": "Technical Settings",
     "author": "EXOCOMS Group",
-    "website": "https://exocoms.fr",
+    "website": "https://www.exocoms.fr",
     "license": "LGPL-3",
     "depends": ["base", "web", "mail"],
     "data": [
         "data/ir_config_parameter.xml",
-        "views/res_company_views.xml",
+        "views/res_config_settings_views.xml",
     ],
     "assets": {
         "web.assets_backend": [
-            "exocoms_debranding/static/src/js/debrand_backend.js",
+            "exocoms_debranding/static/src/js/debranding.js",
+            "exocoms_debranding/static/src/scss/backend.scss",
         ],
         "web.assets_frontend": [
-            "exocoms_debranding/static/src/scss/debrand_frontend.scss",
+            "exocoms_debranding/static/src/scss/frontend.scss",
         ],
     },
+    "pre_init_hook": "pre_init_hook",
     "post_init_hook": "post_init_hook",
+    "uninstall_hook": "uninstall_hook",
     "installable": True,
     "application": False,
     "auto_install": False,

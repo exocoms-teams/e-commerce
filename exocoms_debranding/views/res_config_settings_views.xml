@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_debranding_config_settings" model="ir.ui.view">
+        <field name="name">res.config.settings.debranding.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form string="Debranding" class="oe_form_configuration">
+                <header>
+                    <button string="Enregistrer" type="object" name="execute"
+                            class="btn-primary" data-hotkey="s"/>
+                    <button string="Annuler" type="object" name="cancel"
+                            class="btn-secondary" data-hotkey="j"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        Les patchs de templates sont ré-appliqués à chaque enregistrement.
+                        Après l'installation de nouveaux modules, utiliser le bouton
+                        <b>Ré-appliquer le debranding</b>.
+                    </div>
+                    <group>
+                        <group string="Identité">
+                            <field name="debranding_name"/>
+                            <field name="debranding_url" widget="url"/>
+                            <field name="debranding_web_app_name"/>
+                            <field name="debranding_logo" widget="image"
+                                   options="{'size': [128, 64]}"/>
+                            <field name="debranding_favicon" widget="image"
+                                   options="{'size': [64, 64]}"/>
+                        </group>
+                        <group string="Menu utilisateur">
+                            <field name="debranding_documentation_url" widget="url"/>
+                            <field name="debranding_support_url" widget="url"/>
+                        </group>
+                    </group>
+                    <group string="Avancé">
+                        <field name="debranding_logo_url"/>
+                        <field name="debranding_theme_color" widget="color"/>
+                        <field name="debranding_hide_version"/>
+                        <field name="debranding_excluded_modules"/>
+                    </group>
+                    <div class="mt-3">
+                        <button string="Ré-appliquer le debranding" type="object"
+                                name="action_debranding_rescan" class="btn-secondary"
+                                icon="fa-refresh"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_debranding_config_settings" model="ir.actions.act_window">
+        <field name="name">Debranding</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="view_id" ref="view_debranding_config_settings"/>
+        <field name="context">{'module': 'exocoms_debranding'}</field>
+    </record>
+
+    <menuitem id="menu_debranding_config"
+              name="Debranding"
+              parent="base.menu_custom"
+              action="action_debranding_config_settings"
+              groups="base.group_system"
+              sequence="90"/>
+
+</odoo>

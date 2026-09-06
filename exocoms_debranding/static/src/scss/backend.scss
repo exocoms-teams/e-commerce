@@ -1,0 +1,23 @@
+// Filet de sécurité : masque les résidus de branding que le patch QWeb
+// serveur ne couvre pas (contenus injectés en JS, badges Enterprise).
+
+.o_web_client {
+    a[href*="apps.odoo.com"],
+    a[href*="odoo.com/documentation"],
+    a[href*="odoo.com/help"],
+    a[href*="odoo.com/trial"],
+    a[href*="www.odoo.com/page/"] {
+        display: none !important;
+    }
+
+    .o_enterprise_label,
+    .o_web_studio_upgrade_banner,
+    .o_debranding_hidden {
+        display: none !important;
+    }
+}
+
+// Bandeau "Mon compte Odoo" / promotions dans le menu utilisateur.
+.o_user_menu a[href*="odoo.com"] {
+    display: none !important;
+}

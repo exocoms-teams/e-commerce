@@ -1,142 +1,105 @@
-# EXOCOMS – Marque blanche (Debranding Odoo)
+# exocoms_debranding
 
-Module Odoo 19 qui **remplace par votre marque** — ou supprime — les mentions
-promotionnelles Odoo dans le portail, les e-mails, les devis et tous les
-rapports PDF.
+Debranding complet d'Odoo **19** (Community / Enterprise). Le module refuse de
+s'installer sur toute autre version (`pre_init_hook`).
 
-Paramétrage **par société** : sur une instance multi-société, chaque client
-hébergé peut afficher sa propre marque, son propre logo et son propre lien.
+## Ce qui est couvert
 
-## Principe
-
-Plutôt que de surcharger une dizaine de templates XML (dont les identifiants
-changent à chaque version majeure), le module intercepte **le moteur de rendu
-QWeb lui-même** (`ir.qweb._render`). Tout ce qui est rendu par Odoo passe par ce
-point unique :
-
-| Canal | Couvert |
+| Zone | Mécanisme |
 |---|---|
-| Pages portail (`/my`, `/my/quotes`, `/my/invoices`…) | ✅ |
-| Site web / page de login / page de signup | ✅ |
-| E-mails de notification (`mail.mail_notification_layout`, `_light`…) | ✅ |
-| Templates de mail (devis envoyé, facture envoyée, relances…) | ✅ |
-| Rapports QWeb-HTML et PDF (devis, BC, factures, BL, en-têtes/pieds) | ✅ |
-| Back-office : titre de l'onglet + menu utilisateur | ✅ (option) |
+| Titre de l'onglet backend | patch OWL de `WebClient` (partie `zopenerp`) |
+| `<title>` des pages `web.layout` / `web.frontend_layout` | héritage QWeb dynamique |
+| Tous les liens `odoo.com` des templates QWeb (login, portail, site, emails de notification, « Powered by Odoo ») | scan + héritages QWeb générés à l'installation |
+| Menu utilisateur : Documentation, Support, Mon compte Odoo | retrait ou re-ciblage via le registre `user_menuitems` |
+| Titres des dialogues d'erreur (« Odoo Server Error »…) | surcharge des statiques `error_dialogs` |
+| Nom de l'application PWA (`manifest.webmanifest`) | paramètre système `web.web_app_name` |
+| Icônes PWA + couleur de thème | override défensif du contrôleur `WebManifest` |
+| Visuels Odoo (`<img>`, `<link rel="icon">` pointant sur `/web/static/img/odoo*`) | héritages QWeb dynamiques, `position="attributes"` |
+| Version du serveur dans `session_info` | masquée pour les non-administrateurs (optionnel) |
+| Cron « Publisher: Update Notification » | désactivé (réactivé à la désinstallation) |
+| Favicon | champ `res.company.favicon` exposé dans l'écran de configuration |
 
-Aucune surcharge de vue standard : le module survit aux mises à jour Odoo.sh et
-aux migrations de version.
+## Approche technique
+
+Aucun héritage QWeb statique n'est livré. À l'installation (et à chaque
+enregistrement de la configuration), le module :
+
+1. supprime ses anciens patchs ;
+2. recherche les vues `qweb` contenant `odoo.com`, remonte à leur vue racine ;
+3. calcule l'arch combinée, compte les ancres, génère une vue d'extension
+   `priority=99` avec autant de specs `xpath ... position="replace"` ;
+4. crée chaque vue dans un `savepoint` — si le xpath ne s'applique pas, le patch
+   est abandonné et journalisé en `warning`, sans faire échouer l'installation.
+
+Conséquence : le module survit aux évolutions de structure des templates Odoo.
 
 ## Configuration
 
-**Paramètres > Technique > Marque blanche** (administrateur), puis choisir la
-société.
+**Paramètres → Technique → Debranding** (`base.group_system`).
 
-| Champ | Rôle |
+| Paramètre système | Rôle |
 |---|---|
-| **Mentions Odoo** | `Remplacer par notre marque` ou `Supprimer sans rien afficher` |
-| **Texte d'accroche** | Ex. `Propulsé par`. Vide = seulement le logo / le nom |
-| **Nom de marque** | Vide = nom de la société |
-| **Lien de la marque** | Vide = site web de la société ; vide aussi = non cliquable |
-| **Afficher le logo** | Affiche le logo à la place du nom |
-| **Logo de marque** | PNG à fond transparent, ~200×50 px conseillé |
-| **Hauteur du logo (px)** | 16 par défaut ; 20–24 pour un logo plus lisible |
-| **Débrander le back-office** | Titre d'onglet + retrait des entrées Odoo du menu utilisateur |
+| `debranding.name` | Nom de marque de substitution |
+| `debranding.url` | Cible des liens rebrandés (vide → texte simple) |
+| `debranding.documentation_url` | Vide → entrée retirée du menu utilisateur |
+| `debranding.support_url` | Vide → entrée retirée du menu utilisateur |
+| `debranding.hide_version` | Masque la version serveur aux non-admins |
+| `debranding.excluded_modules` | Modules dont les liens `odoo.com` sont fonctionnels |
+| `debranding.logo_url` | Source des icônes PWA et des visuels remplacés (défaut `/logo.png`) |
+| `debranding.theme_color` | Couleur de thème PWA (hex) |
+| `web.web_app_name` | Nom PWA |
 
-Interrupteur général (désactive tout le module sans le désinstaller) :
-paramètre système `exocoms_debranding.enabled` = `True` / `False`.
+⚠️ Les liens `odoo.com` de `iap*`, `partner_autocomplete`, `google_*`,
+`microsoft_*`, `payment` et `web_editor` sont **exclus par défaut** : les
+réécrire casserait l'achat de crédits IAP et les flux OAuth.
 
-### Rendu en mode « Remplacer »
+## Logo
 
-Le bloc d'origine est **conservé** — sa balise, ses classes, son style inline,
-donc sa position et son alignement — et seul son contenu est remplacé. Le pied
-de page du devis PDF passe ainsi de `Powered by Odoo` à
-`Propulsé par [logo] EXOCOMS`, au même endroit, avec la même taille de police.
+Trois niveaux, du plus natif au plus spécifique :
 
-Le logo est servi par une route publique `/exocoms_brand/logo?company=<id>`
-en URL **absolue** : indispensable pour qu'il s'affiche dans les e-mails et les
-PDF, consultés hors session.
+1. **`res.company.logo`** — couvre nativement l'écran de connexion, la barre de
+   navigation, les rapports PDF (`web.external_layout_*`) et l'en-tête des
+   courriels de notification. Exposé dans l'écran de configuration du module.
+2. **`res.company.favicon`** — onglet navigateur, backend et portail. Idem.
+3. **Reste du branding visuel** — icônes PWA, `apple-touch-icon`, page hors
+   ligne, visuels `/web/static/img/odoo-*` encore présents dans certains
+   templates : réécrits vers `debranding.logo_url` (défaut `/logo.png`, qui sert
+   le logo de la société courante).
 
-## Ce qui est traité
+Format conseillé : PNG carré 512×512 sur fond transparent pour `logo_url` si
+l'installation PWA est utilisée — la route `/logo.png` redimensionne mais ne
+recadre pas.
 
-* `Powered by Odoo` / `Propulsé par Odoo` / `Généré par Odoo`
-* `Sent by <Société> using Odoo` / `Envoyé par <Société> avec Odoo`
-* `Create a free website with Odoo` / `Créez un site web gratuitement avec Odoo`
-* tous les liens `<a href="…odoo.com…">`
-* la balise `<meta name="generator">` (renommée avec votre marque)
-* back-office : entrées *Documentation*, *Support*, *Compte Odoo* du menu
-  utilisateur, et `Odoo` dans le titre de l'onglet
+Non couvert : le logo du gestionnaire de bases (`/web/database/manager`), rendu
+hors base de données.
 
-Deux garde-fous évitent les faux positifs : la suppression d'un bloc est
-plafonnée à 900 caractères de contenu, et une formule (« Powered by … ») n'est
-traitée que si elle est suivie du mot *Odoo* ou si elle est devenue orpheline.
-« Powered by Stripe » ou « Envoyé par Radia avec accusé de réception » restent
-intacts. Une seule injection de marque par document, quel que soit le nombre de
-mentions rencontrées.
+## Exploitation
 
-## Installation
+- **Après installation d'un nouveau module** (website, sale, helpdesk…), cliquer
+  sur **Ré-appliquer le debranding**. Le scan ne se relance pas tout seul sur un
+  `-u`.
+- **Multi-website** : les patchs sont créés sur la vue racine, hors mécanisme
+  COW. Relancer le scan après toute duplication de site.
+- **Gestionnaire de bases** (`/web/database/manager`) : rendu hors base de
+  données, non patchable depuis un module. Le neutraliser côté serveur :
+  `list_db = False` dans `odoo.conf` (sur Odoo.sh : non exposé en production).
+- **Licence** : Odoo Community est LGPLv3, le debranding est autorisé. La marque
+  « Odoo » reste déposée : ne pas la réutiliser dans le nouveau nommage.
 
-> **Important** : ce module contient du code Python. Il ne peut donc **pas**
-> être installé via *Apps > Importer un module (.zip)* : ce mécanisme ne charge
-> que les fichiers de données, jamais le Python. Sur Odoo.sh, le déploiement
-> passe obligatoirement par Git.
+## Déploiement Odoo.sh
 
-### Odoo.sh
-
-```bash
-git checkout -b feature/debranding
-unzip exocoms_debranding.zip -d .
-git add exocoms_debranding
-git commit -m "feat(debranding): marque blanche configurable"
-git push origin feature/debranding
-```
-
-Après le build : **Apps > Mettre à jour la liste des applications** > rechercher
-*EXOCOMS - Marque blanche* > **Installer**.
-
-### Local / VPS
+Dépôt Git uniquement — l'import ZIP n'exécute pas les hooks Python.
 
 ```bash
-unzip exocoms_debranding.zip -d /chemin/vers/addons/
-sudo systemctl restart odoo
-odoo -d <base> -i exocoms_debranding --stop-after-init
+cp -r exocoms_debranding /chemin/vers/repo/
+cd /chemin/vers/repo
+git add exocoms_debranding && git commit -m "feat: exocoms_debranding (Odoo 19)"
+git push origin <branche>
 ```
 
-## Déploiement chez un client
+## Désinstallation
 
-1. Installer le module sur l'instance du client.
-2. *Paramètres > Technique > Marque blanche* > sélectionner sa société.
-3. Renseigner son nom, son URL, téléverser son logo.
-4. Vérifier sur trois supports : `/my/quotes` (portail), l'impression PDF d'un
-   devis, et un e-mail de devis envoyé à une adresse de test.
-
-Aucune donnée métier n'est modifiée : à la désinstallation, tout revient à
-l'état d'origine.
-
-## Désactivation ponctuelle (débogage)
-
-```python
-html = self.env["ir.qweb"].with_context(exocoms_skip_debrand=True)._render(tid, values)
-```
-
-## Tests
-
-```bash
-odoo -d <base> -i exocoms_debranding --test-enable --test-tags /exocoms_debranding --stop-after-init
-```
-
-## Limites connues
-
-* Le **gestionnaire de bases de données** (`/web/database/manager`) est rendu
-  hors ORM : il ne peut pas être débrandé par un module. Non exposé sur Odoo.sh.
-* Le **favicon** reste celui d'Odoo tant qu'il n'est pas remplacé dans
-  *Paramètres > Sociétés > … > Favicon*.
-* Les **métadonnées PDF** (producteur du fichier) sont écrites par le moteur de
-  rendu PDF et ne dépendent pas du HTML.
-
-## Rappel juridique
-
-L'AGPL/LGPL n'impose pas de conserver la mention « Powered by Odoo » dans les
-pages rendues. En revanche, si vous distribuez du code AGPL modifié, vous devez
-en publier les sources. Vérifiez également les clauses de votre contrat Odoo
-Enterprise, qui encadre l'usage de la marque et peut restreindre la revente
-sous marque blanche : à valider avant tout déploiement client.
+Les vues générées portent un `ir.model.data` du module : elles sont supprimées
+automatiquement. Le cron de notification éditeur est réactivé par
+l'`uninstall_hook`. Les `ir.config_parameter` (`noupdate`) restent en base et
+peuvent être purgés manuellement.
