@@ -146,7 +146,7 @@ def _toggle_odoo_online(env, active):
     l'abonnement : le neutraliser sortirait du cadre contractuel.
     """
     if not active and _is_enterprise(env):
-        _logger.warning(
+        _logger.info(
             "Debranding : modules Enterprise détectés, le cron de notification "
             "éditeur est laissé actif (obligation contractuelle)."
         )
