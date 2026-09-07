@@ -19,11 +19,23 @@
                         Après l'installation de nouveaux modules, utiliser le bouton
                         <b>Ré-appliquer le debranding</b>.
                     </div>
+
+                    <group string="Société éditée">
+                        <field name="company_id" readonly="1"
+                               options="{'no_open': True}"/>
+                        <div class="text-muted" colspan="2">
+                            Changer de société via le sélecteur en haut à droite pour
+                            éditer une autre marque. Champs vides = valeurs par défaut
+                            de la base.
+                        </div>
+                    </group>
+
                     <group>
                         <group string="Identité">
-                            <field name="debranding_name"/>
-                            <field name="debranding_url" widget="url"/>
-                            <field name="debranding_web_app_name"/>
+                            <field name="debranding_name"
+                                   placeholder="Valeur par défaut de la base"/>
+                            <field name="debranding_url" widget="url"
+                                   placeholder="Valeur par défaut de la base"/>
                             <field name="debranding_logo" widget="image"
                                    options="{'size': [128, 64]}"/>
                             <field name="debranding_favicon" widget="image"
@@ -32,14 +44,25 @@
                         <group string="Menu utilisateur">
                             <field name="debranding_documentation_url" widget="url"/>
                             <field name="debranding_support_url" widget="url"/>
+                            <field name="debranding_logo_url"
+                                   placeholder="/web/image/res.company/&lt;id&gt;/logo"/>
+                            <field name="debranding_theme_color" widget="color"/>
                         </group>
                     </group>
+
+                    <group string="Valeurs par défaut de la base">
+                        <field name="debranding_multi_company"/>
+                        <field name="debranding_default_name"/>
+                        <field name="debranding_default_url" widget="url"/>
+                        <field name="debranding_default_logo_url"/>
+                        <field name="debranding_web_app_name"/>
+                    </group>
+
                     <group string="Avancé">
-                        <field name="debranding_logo_url"/>
-                        <field name="debranding_theme_color" widget="color"/>
                         <field name="debranding_hide_version"/>
                         <field name="debranding_excluded_modules"/>
                     </group>
+
                     <div class="mt-3">
                         <button string="Ré-appliquer le debranding" type="object"
                                 name="action_debranding_rescan" class="btn-secondary"

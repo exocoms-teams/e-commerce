@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """Rebranding du manifeste PWA (nom, icônes, couleurs).
 
+Les valeurs sont résolues sur la société de la requête : en multi-société avec
+un site web par société, chaque site sert son propre manifeste.
+
 L'override est défensif : si le contrôleur amont change de chemin d'import,
 le module se charge quand même et le manifeste reste natif.
 """
@@ -34,25 +37,26 @@ if WebManifest is not None:
             except Exception:  # noqa: BLE001
                 return response
 
-            ICP = request.env["ir.config_parameter"].sudo()
-            name = ICP.get_param("debranding.name") or "EXOCOMS"
-            logo = ICP.get_param("debranding.logo_url") or "/logo.png"
-            theme = ICP.get_param("debranding.theme_color") or ""
+            branding = request.env.company.sudo()._debranding_values()
+            app_name = (
+                request.env["ir.config_parameter"].sudo().get_param("web.web_app_name")
+                or branding["name"]
+            )
 
-            manifest["name"] = ICP.get_param("web.web_app_name") or name
-            manifest["short_name"] = name
+            manifest["name"] = app_name
+            manifest["short_name"] = branding["name"]
             manifest["icons"] = [
                 {
-                    "src": logo,
+                    "src": branding["logo"],
                     "sizes": size,
                     "type": "image/png",
                     "purpose": "any",
                 }
                 for size in ("192x192", "512x512")
             ]
-            if theme:
-                manifest["theme_color"] = theme
-                manifest["background_color"] = theme
+            if branding["theme_color"]:
+                manifest["theme_color"] = branding["theme_color"]
+                manifest["background_color"] = branding["theme_color"]
 
             response.set_data(json.dumps(manifest))
             return response

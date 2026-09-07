@@ -13,6 +13,7 @@ Remplace l'identité Odoo par celle de l'éditeur / intégrateur :
 * entrées « Documentation », « Support », « Mon compte Odoo » du menu utilisateur ;
 * titres des boîtes de dialogue d'erreur (« Odoo Server Error », ...) ;
 * logo, favicon et icônes PWA remplacés par ceux de la société ;
+* mode multi-société : marque, logo et URL résolus par société au rendu ;
 * nom de l'application PWA (manifest.webmanifest) ;
 * pied de page des courriels de notification ;
 * désactivation du cron de notification éditeur (publisher warranty).
@@ -21,7 +22,7 @@ Le patch des templates QWeb est dynamique : le module scanne les vues à
 l'installation et ne crée que les héritages qui s'appliquent réellement.
 Aucun échec d'installation si un template Odoo change de structure.
 """,
-    "version": "19.0.1.1.0",
+    "version": "19.0.2.0.0",
     "category": "Technical Settings",
     "author": "EXOCOMS Group",
     "website": "https://www.exocoms.fr",
