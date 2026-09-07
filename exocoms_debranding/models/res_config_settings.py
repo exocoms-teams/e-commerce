@@ -44,7 +44,7 @@ class ResConfigSettings(models.TransientModel):
         readonly=False,
     )
     debranding_favicon = fields.Binary(
-        related="company_id.favicon",
+        related="company_id.debranding_favicon",
         string="Favicon",
         readonly=False,
     )

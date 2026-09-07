@@ -30,7 +30,8 @@ class ResCompany(models.Model):
              "/web/image/res.company/<id>/logo.",
     )
     debranding_theme_color = fields.Char(string="Couleur de thème (PWA)")
-
+    debranding_favicon = fields.Binary(string="Favicon de la marque")
+    
     def _debranding_values(self):
         """Valeurs de marque résolues pour cette société.
 
