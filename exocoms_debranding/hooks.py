@@ -326,7 +326,7 @@ def _apply_view_patches(env, params):
     count = 0
     for root in roots:
         module = (root.key or "").split(".")[0]
-        if not module or module == MODULE or module in params["excluded"]:
+        if not module or module == MODULE or module in params["excluded"] or root.key == "web.brand_promotion_message":
             continue
         try:
             arch = root.with_context(lang=None, inherit_branding=False).get_combined_arch()

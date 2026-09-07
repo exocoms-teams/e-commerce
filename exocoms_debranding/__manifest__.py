@@ -31,6 +31,7 @@ Aucun échec d'installation si un template Odoo change de structure.
     "data": [
         "data/ir_config_parameter.xml",
         "views/res_config_settings_views.xml",
+        "views/web_templates.xml",
     ],
     "assets": {
         "web.assets_backend": [
