@@ -178,9 +178,9 @@ def _title_specs(params):
 
 
 def _anchor_specs(tree, params):
-    """Specs pour les liens odoo.com : remplacement complet du noeud."""
-    nb = len(tree.xpath(ANCHOR_XPATH))
-    if not nb:
+    """Specs pour les liens odoo.com : remplacement complet du noeud via XPath absolu."""
+    elements = tree.xpath(ANCHOR_XPATH)
+    if not elements:
         return ""
 
     if params["multi"]:
@@ -199,20 +199,24 @@ def _anchor_specs(tree, params):
     else:
         replacement = "<span>%s</span>" % escape(params["name"])
 
-    # Chaque spec est appliquée séquentiellement sur l'arbre muté :
-    # n specs identiques traitent les n occurrences.
-    return (
-        '<xpath expr="(%s)[1]" position="replace">%s</xpath>'
-        % (ANCHOR_XPATH, replacement)
-    ) * nb
+    specs = ""
+    tree_root = tree.getroottree()
+    for el in elements:
+        # Génère le chemin XPath absolu (ex: /t/div[2]/a)
+        exact_xpath = tree_root.getpath(el)
+        specs += '<xpath expr="%s" position="replace">%s</xpath>' % (exact_xpath, replacement)
+        
+    return specs
 
 
 def _asset_specs(tree, params):
-    """Specs pour les visuels Odoo (img / link icon) : réécriture de la source."""
+    """Specs pour les visuels Odoo (img / link icon) : réécriture de la source via XPath absolu."""
     specs = ""
+    tree_root = tree.getroottree()
+    
     for xpath, attr in ((IMG_XPATH, "src"), (LINK_XPATH, "href")):
-        nb = len(tree.xpath(xpath))
-        if not nb:
+        elements = tree.xpath(xpath)
+        if not elements:
             continue
 
         if params["multi"]:
@@ -235,9 +239,11 @@ def _asset_specs(tree, params):
             if attr == "src":
                 body += '<attribute name="alt">%s</attribute>' % escape(params["name"])
 
-        specs += (
-            '<xpath expr="(%s)[1]" position="attributes">%s</xpath>' % (xpath, body)
-        ) * nb
+        for el in elements:
+            # Génère le chemin XPath absolu (ex: /t/t[1]/a/img)
+            exact_xpath = tree_root.getpath(el)
+            specs += '<xpath expr="%s" position="attributes">%s</xpath>' % (exact_xpath, body)
+            
     return specs
 
 
