@@ -36,25 +36,25 @@ DEFAULT_EXCLUDED_MODULES = (
     "microsoft_calendar,payment,web_editor,base_setup_iap"
 )
 
-ANCHOR_XPATHS = [
-    "//a[contains(@href,'odoo.com')]",
-    "//a[contains(@t-att-href,'odoo.com')]",
-    "//a[contains(@t-attf-href,'odoo.com')]",
-]
+ANCHOR_XPATH = (
+    "//a[contains(@href,'odoo.com')]"
+    " | //a[contains(@t-att-href,'odoo.com')]"
+    " | //a[contains(@t-attf-href,'odoo.com')]"
+)
 
-IMG_XPATHS = [
-    "//img[contains(@src,'/web/static/img/odoo')]",
-    "//img[contains(@src,'odoo.com')]",
-    "//img[contains(@t-att-src,'/web/static/img/odoo')]",
-    "//img[contains(@t-attf-src,'/web/static/img/odoo')]",
-]
+IMG_XPATH = (
+    "//img[contains(@src,'/web/static/img/odoo')]"
+    " | //img[contains(@src,'odoo.com')]"
+    " | //img[contains(@t-att-src,'/web/static/img/odoo')]"
+    " | //img[contains(@t-attf-src,'/web/static/img/odoo')]"
+)
 
 # <link rel="icon"> / apple-touch-icon pointant sur les visuels Odoo.
-LINK_XPATHS = [
-    "//link[contains(@href,'/web/static/img/odoo')]",
-    "//link[contains(@t-att-href,'/web/static/img/odoo')]",
-    "//link[contains(@t-attf-href,'/web/static/img/odoo')]",
-]
+LINK_XPATH = (
+    "//link[contains(@href,'/web/static/img/odoo')]"
+    " | //link[contains(@t-att-href,'/web/static/img/odoo')]"
+    " | //link[contains(@t-attf-href,'/web/static/img/odoo')]"
+)
 
 VIEW_SEARCH_DOMAIN = [
     ("type", "=", "qweb"),
@@ -179,17 +179,12 @@ def _title_specs(params):
 
 def _anchor_specs(tree, params):
     """Réécrit les liens Odoo.com trouvés dans la vue.
-
-    FIX Odoo 19 : Indexe chaque sélecteur XPath individuellement,
-    pas l'union combinée.
+    
+    FIX Odoo 19 : Utilise union XPath simple avec positional predicates.
     """
-    # Cherche TOUS les nœuds (quel que soit le sélecteur)
-    all_nodes = []
-    for xpath_expr in ANCHOR_XPATHS:
-        nodes = tree.xpath(xpath_expr)
-        all_nodes.extend(nodes)
+    nodes = tree.xpath(ANCHOR_XPATH)
 
-    if not all_nodes:
+    if not nodes:
         return ""
 
     if params["multi"]:
@@ -216,27 +211,8 @@ def _anchor_specs(tree, params):
 
     specs = ""
 
-    # Génère un xpath pour CHAQUE nœud trouvé
-    for node in all_nodes:
-        # Détermine quel sélecteur base a trouvé ce nœud
-        matched_xpath = None
-        for xpath_expr in ANCHOR_XPATHS:
-            if node in tree.xpath(xpath_expr):
-                matched_xpath = xpath_expr
-                break
-
-        if not matched_xpath:
-            continue
-
-        # Compte la position du nœud dans son sélecteur
-        matching_nodes = tree.xpath(matched_xpath)
-        try:
-            node_index = matching_nodes.index(node) + 1
-        except ValueError:
-            continue
-
-        # Génère le xpath indexé correctement
-        xpath = "(%s)[%d]" % (matched_xpath, node_index)
+    for index in range(len(nodes)):
+        xpath = "(%s)[%d]" % (ANCHOR_XPATH, index + 1)
         specs += (
             '<xpath expr="%s" position="replace">%s</xpath>'
             % (escape(xpath), replacement)
@@ -247,22 +223,18 @@ def _anchor_specs(tree, params):
 
 def _asset_specs(tree, params):
     """Réécrit les images et liens d'assets Odoo.
-
-    FIX Odoo 19 : Indexe chaque sélecteur XPath individuellement.
+    
+    FIX Odoo 19 : Utilise union XPath simple avec positional predicates.
     """
     specs = ""
 
-    for xpaths_list, attr in (
-        (IMG_XPATHS, "src"),
-        (LINK_XPATHS, "href"),
+    for xpath, attr in (
+        (IMG_XPATH, "src"),
+        (LINK_XPATH, "href"),
     ):
-        # Collecte TOUS les nœuds de tous les sélecteurs
-        all_nodes = []
-        for xpath_expr in xpaths_list:
-            nodes = tree.xpath(xpath_expr)
-            all_nodes.extend(nodes)
+        nodes = tree.xpath(xpath)
 
-        if not all_nodes:
+        if not nodes:
             continue
 
         if params["multi"]:
@@ -300,27 +272,8 @@ def _asset_specs(tree, params):
                     % escape(params["name"])
                 )
 
-        # Génère un xpath pour CHAQUE nœud trouvé
-        for node in all_nodes:
-            # Détermine quel sélecteur base a trouvé ce nœud
-            matched_xpath = None
-            for xpath_expr in xpaths_list:
-                if node in tree.xpath(xpath_expr):
-                    matched_xpath = xpath_expr
-                    break
-
-            if not matched_xpath:
-                continue
-
-            # Compte la position du nœud dans son sélecteur
-            matching_nodes = tree.xpath(matched_xpath)
-            try:
-                node_index = matching_nodes.index(node) + 1
-            except ValueError:
-                continue
-
-            # Génère le xpath indexé correctement
-            indexed_xpath = "(%s)[%d]" % (matched_xpath, node_index)
+        for index in range(len(nodes)):
+            indexed_xpath = "(%s)[%d]" % (xpath, index + 1)
 
             specs += (
                 '<xpath expr="%s" position="attributes">%s</xpath>'
@@ -387,6 +340,11 @@ def _apply_manual_patches(env, params):
     return count
 
 
+def _root_view(view):
+    while view.inherit_id:
+        view = view.inherit_id
+    return view
+
 
 def _apply_view_patches(env, params):
     """Réécrit liens et visuels Odoo dans les templates qui les contiennent.
@@ -410,7 +368,7 @@ def _apply_view_patches(env, params):
             arch = view.with_context(
                 lang=None,
                 inherit_branding=False,
-            ).arch_db
+            ).get_combined_arch()
 
             tree = etree.fromstring(arch.encode("utf-8"))
         except Exception:
