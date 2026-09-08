@@ -7,6 +7,7 @@ class MatelasAvis(models.Model):
     """Avis clients laissés sur le site (page /avis).
     """
     _name = 'matelas.avis'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Avis client"
     _order = 'create_date desc'
 
@@ -16,7 +17,7 @@ class MatelasAvis(models.Model):
     titre = fields.Char(string="Titre / Produit")
     commentaire = fields.Text(required=True)
     partner_id = fields.Many2one('res.partner', string="Client")
-    is_published = fields.Boolean(string="Publié", default=True)
+    is_published = fields.Boolean(string="Publié", default=False)
 
     @api.constrains('note')
     def _check_note(self):

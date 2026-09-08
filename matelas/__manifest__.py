@@ -11,6 +11,7 @@
         'account',
         'im_livechat',
         'website_livechat',
+        'mail',
         'mass_mailing',
         'website_mass_mailing',
         'crm',

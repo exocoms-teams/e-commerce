@@ -203,3 +203,37 @@ Après le nettoyage, les contrôles suivants ont été effectués :
 - aucune nouvelle erreur JavaScript détectée ;
 - aucune erreur Odoo liée au nettoyage dans les logs ;
 - vérification `git diff --check` réussie.
+
+## Modération des avis clients
+
+Date des tests : 08/09/2026
+Page testée : `/avis`
+
+### Modification réalisée
+
+Les nouveaux avis soumis depuis le site sont désormais enregistrés avec le champ `is_published` désactivé. Ils restent donc invisibles sur la page publique `/avis` tant qu’un administrateur ne les a pas validés.
+
+Le modèle `matelas.avis` utilise maintenant les fonctionnalités de messagerie et d’activités d’Odoo. Lorsqu’un nouvel avis est soumis, une activité intitulée « Nouvel avis à modérer » est créée pour les administrateurs actifs.
+
+Le message de confirmation affiché au client a également été modifié afin de préciser que son avis sera visible après validation.
+
+L’ajout immédiat de l’avis dans la page par JavaScript a été supprimé pour respecter le fonctionnement de la modération.
+
+Les traductions française et anglaise du message de confirmation ont été mises à jour.
+
+### Parcours de modération validé
+
+Le parcours complet suivant a été testé :
+
+- soumission d’un nouvel avis depuis `/avis` ;
+- enregistrement de l’avis dans le backend avec le champ « Publié » décoché ;
+- avis invisible sur le site public avant validation, y compris après rechargement ;
+- notification de modération reçue par l’administrateur ;
+- publication manuelle de l’avis depuis le menu « Avis clients » ;
+- avis visible sur `/avis` après publication ;
+- message de confirmation correctement affiché au client ;
+- aucune erreur JavaScript, Python, QWeb ou serveur détectée.
+
+### Périmètre conservé
+
+Le widget de témoignages Elfsight présent sur la page d’accueil et le fichier `views/templates/home.xml` n’ont pas été modifiés. Leur fonctionnement sera traité séparément après décision du responsable.

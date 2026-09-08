@@ -73,13 +73,23 @@ class MatelasVente(http.Controller):
         })
 
     @http.route('/avis/submit', type='jsonrpc', auth='user', website=True)
-    def avis_submit(self, name=None, note=None, titre=None, commentaire=None, profession=None, **kwargs):
+    def avis_submit(
+        self,
+        name=None,
+        note=None,
+        titre=None,
+        commentaire=None,
+        profession=None,
+        **kwargs,
+    ):
         partner = request.env.user.partner_id
 
         if not self._partner_has_purchased(partner):
             return {
                 'success': False,
-                'error': "Vous devez avoir effectué un achat pour laisser un avis.",
+                'error': (
+                    "Vous devez avoir effectué un achat pour laisser un avis."
+                ),
             }
 
         name = (name or '').strip()
@@ -102,14 +112,34 @@ class MatelasVente(http.Controller):
                 'success': False,
                 'error': "Merci de remplir tous les champs obligatoires.",
             }
-        request.env['matelas.avis'].sudo().create({
+
+        avis = request.env['matelas.avis'].sudo().create({
             'name': name,
             'profession': profession,
             'note': note,
             'titre': titre,
             'commentaire': commentaire,
             'partner_id': partner.id,
+            'is_published': False,
         })
+
+        administrators = (
+            request.env.ref('base.group_system')
+            .sudo()
+            .all_user_ids
+            .filtered(lambda user: user.active and not user.share)
+        )
+
+        for administrator in administrators:
+            avis.activity_schedule(
+                'mail.mail_activity_data_todo',
+                summary="Nouvel avis à modérer",
+                note=(
+                    "Un nouvel avis client a été soumis et attend "
+                    "votre validation."
+                ),
+                user_id=administrator.id,
+            )
 
         return {'success': True}
 

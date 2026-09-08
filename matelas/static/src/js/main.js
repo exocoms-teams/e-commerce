@@ -99,22 +99,6 @@
                             return;
                         }
 
-                        const starsHtml = '★'.repeat(parseInt(note)) + '☆'.repeat(5 - parseInt(note));
-                        const justNow = en ? 'just now' : "à l'instant";
-                        const card = `
-                            <div class="col-md-4 mb-4">
-                                <div class="avis-card">
-                                    <div class="avis-stars">${starsHtml}</div>
-                                    ${produit ? `<p class="avis-produit">🛏️ ${produit}</p>` : ''}
-                                    <p class="avis-texte">"${commentaire}"</p>
-                                    <strong class="avis-auteur">${nom}</strong>
-                                    ${profession ? `<span class="avis-profession"> — ${profession}</span>` : ''}
-                                    <span class="avis-date"> — ${justNow}</span>
-                                </div>
-                            </div>
-                        `;
-
-                        document.getElementById('avis-container').innerHTML += card;
                         document.getElementById('avis-success').style.display = 'block';
                         document.getElementById('avis-nom').value = '';
                         document.getElementById('avis-profession').value = '';
@@ -122,7 +106,9 @@
                         document.getElementById('avis-produit').value = '';
                         document.getElementById('avis-commentaire').value = '';
                         stars.forEach(s => s.classList.remove('active'));
-                        document.getElementById('avis-container').scrollIntoView({ behavior: 'smooth' });
+                        document.getElementById('avis-success').scrollIntoView({
+                            behavior: 'smooth',
+                        });
                     })
                     .catch(function() {
                         alert(en ? 'Something went wrong.' : 'Une erreur est survenue.');
