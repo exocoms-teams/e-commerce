@@ -81,6 +81,7 @@ def pre_init_hook(env):
             "exocoms_debranding cible exclusivement Odoo 19. "
             "Version détectée : %s" % release.version
         )
+    _clear_patches(env)
 
 
 def post_init_hook(env):
@@ -135,6 +136,14 @@ def _is_enterprise(env):
     return bool(env["ir.module.module"].sudo().search_count([
         ("state", "=", "installed"),
         ("license", "=like", "OEEL%"),
+    ]))
+
+
+def _website_installed_or_scheduled(env):
+    """Vrai si le module website est installé ou prévu à l'installation."""
+    return bool(env["ir.module.module"].sudo().search_count([
+        ("name", "=", "website"),
+        ("state", "in", ("installed", "to install", "to upgrade")),
     ]))
 
 
@@ -362,6 +371,9 @@ def _apply_view_patches(env, params):
         module = (view.key or "").split(".")[0]
 
         if not module or module == MODULE or module in params["excluded"]:
+            continue
+
+        if view.key == "web.login_layout" and _website_installed_or_scheduled(env):
             continue
 
         try:
