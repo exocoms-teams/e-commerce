@@ -147,3 +147,38 @@ Le HTML de la carte, les classes CSS, l’image, le nom, le prix et les attribut
 - l’ajout au panier fonctionne depuis les deux sections ;
 - la mise en page et le défilement des carrousels restent inchangés ;
 - aucune erreur JavaScript, QWeb ou serveur n’a été détectée.
+
+## Audit des classes CSS
+
+Date des vérifications : 07/09/2026
+
+### Vérification du carrousel
+
+La classe `.bestseller-scroll` est toujours utilisée dans `views/templates/home.xml` par le conteneur de la section « Vu récemment ».
+
+Le fichier `static/src/js/main.js` crée également des éléments portant la classe `.bestseller-scroll-item`. Les règles principales et les sous-règles associées au défilement horizontal restent donc nécessaires.
+
+Aucune règle liée à `.bestseller-scroll` n’a été supprimée et aucune modification visuelle n’a été apportée.
+
+### Classes potentiellement inutilisées
+
+L’ensemble des fichiers CSS présents dans `static/src/css/` a été analysé. Les utilisations ont ensuite été recherchées dans les fichiers XML, JavaScript, Python et les autres fichiers du module.
+
+Les classes personnalisées suivantes semblent potentiellement inutilisées :
+
+- `bestseller-grid` ;
+- `contact-info-box` ;
+- `contact-select` ;
+- `footer-links` ;
+- `footer-main` ;
+- `footer-payment` ;
+- `footer-payment-icons` ;
+- `footer-payment-label` ;
+- `footer-title` ;
+- `payment-icon` ;
+- `price-container` ;
+- `temoignage-card`.
+
+Les classes appartenant à Odoo ou Bootstrap n’ont pas été retenues comme inutilisées, car elles peuvent être générées dynamiquement par le framework.
+
+Conformément à la consigne, aucune classe potentiellement inutilisée n’a été supprimée. Une validation préalable est nécessaire avant tout nettoyage définitif.
