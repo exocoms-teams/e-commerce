@@ -36,25 +36,26 @@ DEFAULT_EXCLUDED_MODULES = (
     "microsoft_calendar,payment,web_editor,base_setup_iap"
 )
 
-ANCHOR_XPATH = (
-    "//a[contains(@href,'odoo.com')]"
-    " | //a[contains(@t-att-href,'odoo.com')]"
-    " | //a[contains(@t-attf-href,'odoo.com')]"
-)
+# LISTES de xpaths (pas des unions) pour éviter les problèmes d'indexation
+ANCHOR_XPATHS = [
+    "//a[contains(@href,'odoo.com')]",
+    "//a[contains(@t-att-href,'odoo.com')]",
+    "//a[contains(@t-attf-href,'odoo.com')]",
+]
 
-IMG_XPATH = (
-    "//img[contains(@src,'/web/static/img/odoo')]"
-    " | //img[contains(@src,'odoo.com')]"
-    " | //img[contains(@t-att-src,'/web/static/img/odoo')]"
-    " | //img[contains(@t-attf-src,'/web/static/img/odoo')]"
-)
+IMG_XPATHS = [
+    "//img[contains(@src,'/web/static/img/odoo')]",
+    "//img[contains(@src,'odoo.com')]",
+    "//img[contains(@t-att-src,'/web/static/img/odoo')]",
+    "//img[contains(@t-attf-src,'/web/static/img/odoo')]",
+]
 
 # <link rel="icon"> / apple-touch-icon pointant sur les visuels Odoo.
-LINK_XPATH = (
-    "//link[contains(@href,'/web/static/img/odoo')]"
-    " | //link[contains(@t-att-href,'/web/static/img/odoo')]"
-    " | //link[contains(@t-attf-href,'/web/static/img/odoo')]"
-)
+LINK_XPATHS = [
+    "//link[contains(@href,'/web/static/img/odoo')]",
+    "//link[contains(@t-att-href,'/web/static/img/odoo')]",
+    "//link[contains(@t-attf-href,'/web/static/img/odoo')]",
+]
 
 VIEW_SEARCH_DOMAIN = [
     ("type", "=", "qweb"),
@@ -76,11 +77,16 @@ ODOO_ONLINE_CRONS = [
 # Hooks
 # ---------------------------------------------------------------------------
 def pre_init_hook(env):
+    """Vérifie la version Odoo et nettoie les anciens patches AVANT le chargement des vues."""
     if not release.version.startswith(("19.", "saas~19")):
         raise UserError(
             "exocoms_debranding cible exclusivement Odoo 19. "
             "Version détectée : %s" % release.version
         )
+
+    # 🔥 CRITICAL : Supprimer les anciens patches AVANT que Odoo ne charge les vues
+    # Cela évite l'erreur "cannot be located" due aux anciennes XPath avec union
+    _clear_patches(env)
 
 
 def post_init_hook(env):
@@ -98,6 +104,7 @@ def uninstall_hook(env):
 def rebrand(env):
     """(Ré)applique l'ensemble des patchs. Idempotent."""
     params = _get_params(env)
+    # Les patches sont déjà supprimés dans pre_init_hook, mais on le refait pour être sûr
     _clear_patches(env)
 
     env["ir.config_parameter"].sudo().set_param("web.web_app_name", params["name"])
@@ -179,14 +186,29 @@ def _title_specs(params):
 
 def _anchor_specs(tree, params):
     """Réécrit les liens Odoo.com trouvés dans la vue.
-    
-    FIX Odoo 19 : Utilise union XPath simple avec positional predicates.
-    """
-    nodes = tree.xpath(ANCHOR_XPATH)
 
-    if not nodes:
+    Chaque nœud est traité une seule fois.
+    Le premier sélecteur XPath qui trouve le nœud est utilisé.
+    """
+    matched_nodes = []
+    seen_nodes = set()
+
+    for xpath_expr in ANCHOR_XPATHS:
+        for node in tree.xpath(xpath_expr):
+            node_id = id(node)
+
+            if node_id in seen_nodes:
+                continue
+
+            seen_nodes.add(node_id)
+            matched_nodes.append((node, xpath_expr))
+
+    if not matched_nodes:
         return ""
 
+    # ------------------------------------------------------------
+    # Construction du remplacement
+    # ------------------------------------------------------------
     if params["multi"]:
         replacement = (
             "<t t-if=\"debranding['url']\">"
@@ -198,6 +220,7 @@ def _anchor_specs(tree, params):
             "<span t-out=\"debranding['name']\"/>"
             "</t>"
         )
+
     elif params["url"]:
         replacement = (
             '<a href="%s" target="_blank" rel="noopener">%s</a>'
@@ -206,37 +229,81 @@ def _anchor_specs(tree, params):
                 escape(params["name"]),
             )
         )
+
     else:
-        replacement = "<span>%s</span>" % escape(params["name"])
-
-    specs = ""
-
-    for index in range(len(nodes)):
-        xpath = "(%s)[%d]" % (ANCHOR_XPATH, index + 1)
-        specs += (
-            '<xpath expr="%s" position="replace">%s</xpath>'
-            % (escape(xpath), replacement)
+        replacement = (
+            "<span>%s</span>"
+            % escape(params["name"])
         )
 
-    return specs
+    # ------------------------------------------------------------
+    # Génération des XPath
+    # ------------------------------------------------------------
+    specs = []
+
+    for node, matched_xpath in matched_nodes:
+        matching_nodes = tree.xpath(matched_xpath)
+
+        try:
+            node_index = matching_nodes.index(node) + 1
+        except ValueError:
+            _logger.warning(
+                "Debranding : nœud introuvable lors du calcul "
+                "de son index dans %s",
+                matched_xpath,
+            )
+            continue
+
+        indexed_xpath = "(%s)[%d]" % (
+            matched_xpath,
+            node_index,
+        )
+
+        specs.append(
+            '<xpath expr="%s" position="replace">%s</xpath>'
+            % (
+                escape(indexed_xpath),
+                replacement,
+            )
+        )
+
+    return "".join(specs)
 
 
 def _asset_specs(tree, params):
     """Réécrit les images et liens d'assets Odoo.
-    
-    FIX Odoo 19 : Utilise union XPath simple avec positional predicates.
+
+    Chaque nœud est traité une seule fois.
+    Le premier sélecteur XPath qui trouve le nœud est utilisé.
     """
-    specs = ""
+    specs = []
 
-    for xpath, attr in (
-        (IMG_XPATH, "src"),
-        (LINK_XPATH, "href"),
+    for xpaths_list, attr in (
+        (IMG_XPATHS, "src"),
+        (LINK_XPATHS, "href"),
     ):
-        nodes = tree.xpath(xpath)
+        # --------------------------------------------------------
+        # Recherche des nœuds sans doublons
+        # --------------------------------------------------------
+        matched_nodes = []
+        seen_nodes = set()
 
-        if not nodes:
+        for xpath_expr in xpaths_list:
+            for node in tree.xpath(xpath_expr):
+                node_id = id(node)
+
+                if node_id in seen_nodes:
+                    continue
+
+                seen_nodes.add(node_id)
+                matched_nodes.append((node, xpath_expr))
+
+        if not matched_nodes:
             continue
 
+        # --------------------------------------------------------
+        # Construction des attributs
+        # --------------------------------------------------------
         if params["multi"]:
             body = (
                 '<attribute name="%s"/>'
@@ -244,7 +311,11 @@ def _asset_specs(tree, params):
                 '<attribute name="t-att-%s">'
                 "debranding['logo']"
                 "</attribute>"
-            ) % (attr, attr, attr)
+            ) % (
+                attr,
+                attr,
+                attr,
+            )
 
             if attr == "src":
                 body += (
@@ -272,29 +343,53 @@ def _asset_specs(tree, params):
                     % escape(params["name"])
                 )
 
-        for index in range(len(nodes)):
-            indexed_xpath = "(%s)[%d]" % (xpath, index + 1)
+        # --------------------------------------------------------
+        # Génération des XPath
+        # --------------------------------------------------------
+        for node, matched_xpath in matched_nodes:
+            matching_nodes = tree.xpath(matched_xpath)
 
-            specs += (
-                '<xpath expr="%s" position="attributes">%s</xpath>'
-                % (escape(indexed_xpath), body)
+            try:
+                node_index = matching_nodes.index(node) + 1
+            except ValueError:
+                _logger.warning(
+                    "Debranding : nœud asset introuvable lors "
+                    "du calcul de son index dans %s",
+                    matched_xpath,
+                )
+                continue
+
+            indexed_xpath = "(%s)[%d]" % (
+                matched_xpath,
+                node_index,
             )
 
-    return specs
+            specs.append(
+                '<xpath expr="%s" position="attributes">%s</xpath>'
+                % (
+                    escape(indexed_xpath),
+                    body,
+                )
+            )
+
+    return "".join(specs)
 
 
 # ---------------------------------------------------------------------------
 # Application
 # ---------------------------------------------------------------------------
 def _clear_patches(env):
+    """Supprime tous les patches existants du module."""
     imd = env["ir.model.data"].sudo().search([
         ("module", "=", MODULE),
         ("model", "=", "ir.ui.view"),
         ("name", "=like", PATCH_PREFIX + "%"),
     ])
     views = env["ir.ui.view"].sudo().browse(imd.mapped("res_id")).exists()
-    imd.unlink()
-    views.unlink()
+    if imd or views:
+        _logger.info("Debranding : suppression de %s anciens patches", len(imd))
+        imd.unlink()
+        views.unlink()
 
 
 def _create_patch(env, parent, name, specs):
@@ -320,10 +415,20 @@ def _create_patch(env, parent, name, specs):
             })
             View.flush_model()
         return view
-    except Exception as err:  # noqa: BLE001 - dégradation volontaire
-        _logger.warning(
-            "Debranding : patch ignoré sur %s (%s)", parent.key or parent.id, err
-        )
+    except Exception as err:
+        # Vérifier si c'est une erreur de localisation XPath
+        error_msg = str(err)
+        if "cannot be located" in error_msg:
+            _logger.info(
+                "Debranding : nœud non trouvé dans %s, patch ignoré",
+                parent.key or parent.id
+            )
+        else:
+            _logger.warning(
+                "Debranding : patch ignoré sur %s (%s)",
+                parent.key or parent.id,
+                err
+            )
         return False
 
 
@@ -365,13 +470,19 @@ def _apply_view_patches(env, params):
             continue
 
         try:
+            # Utiliser arch_db directement au lieu de get_combined_arch()
             arch = view.with_context(
                 lang=None,
                 inherit_branding=False,
-            ).get_combined_arch()
+            ).arch_db
 
             tree = etree.fromstring(arch.encode("utf-8"))
-        except Exception:
+        except Exception as e:
+            _logger.debug(
+                "Debranding : impossible de parser %s (%s)",
+                view.key or view.id,
+                e
+            )
             continue
 
         specs = _anchor_specs(tree, params) + _asset_specs(tree, params)
