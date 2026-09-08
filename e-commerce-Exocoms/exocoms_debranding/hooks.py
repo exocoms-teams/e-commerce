@@ -36,25 +36,25 @@ DEFAULT_EXCLUDED_MODULES = (
     "microsoft_calendar,payment,web_editor,base_setup_iap"
 )
 
-ANCHOR_XPATH = (
-    "//a[contains(@href,'odoo.com')]"
-    " | //a[contains(@t-att-href,'odoo.com')]"
-    " | //a[contains(@t-attf-href,'odoo.com')]"
-)
+ANCHOR_XPATHS = [
+    "//a[contains(@href,'odoo.com')]",
+    "//a[contains(@t-att-href,'odoo.com')]",
+    "//a[contains(@t-attf-href,'odoo.com')]",
+]
 
-IMG_XPATH = (
-    "//img[contains(@src,'/web/static/img/odoo')]"
-    " | //img[contains(@src,'odoo.com')]"
-    " | //img[contains(@t-att-src,'/web/static/img/odoo')]"
-    " | //img[contains(@t-attf-src,'/web/static/img/odoo')]"
-)
+IMG_XPATHS = [
+    "//img[contains(@src,'/web/static/img/odoo')]",
+    "//img[contains(@src,'odoo.com')]",
+    "//img[contains(@t-att-src,'/web/static/img/odoo')]",
+    "//img[contains(@t-attf-src,'/web/static/img/odoo')]",
+]
 
 # <link rel="icon"> / apple-touch-icon pointant sur les visuels Odoo.
-LINK_XPATH = (
-    "//link[contains(@href,'/web/static/img/odoo')]"
-    " | //link[contains(@t-att-href,'/web/static/img/odoo')]"
-    " | //link[contains(@t-attf-href,'/web/static/img/odoo')]"
-)
+LINK_XPATHS = [
+    "//link[contains(@href,'/web/static/img/odoo')]",
+    "//link[contains(@t-att-href,'/web/static/img/odoo')]",
+    "//link[contains(@t-attf-href,'/web/static/img/odoo')]",
+]
 
 VIEW_SEARCH_DOMAIN = [
     ("type", "=", "qweb"),
@@ -178,66 +178,155 @@ def _title_specs(params):
 
 
 def _anchor_specs(tree, params):
-    """Specs pour les liens odoo.com : remplacement complet du noeud."""
-    nb = len(tree.xpath(ANCHOR_XPATH))
-    if not nb:
+    """Réécrit les liens Odoo.com trouvés dans la vue.
+
+    FIX Odoo 19 : Indexe chaque sélecteur XPath individuellement,
+    pas l'union combinée.
+    """
+    # Cherche TOUS les nœuds (quel que soit le sélecteur)
+    all_nodes = []
+    for xpath_expr in ANCHOR_XPATHS:
+        nodes = tree.xpath(xpath_expr)
+        all_nodes.extend(nodes)
+
+    if not all_nodes:
         return ""
 
     if params["multi"]:
         replacement = (
             "<t t-if=\"debranding['url']\">"
-            "<a t-att-href=\"debranding['url']\" target=\"_blank\" rel=\"noopener\""
-            " t-out=\"debranding['name']\"/>"
+            "<a t-att-href=\"debranding['url']\" "
+            "target=\"_blank\" rel=\"noopener\" "
+            "t-out=\"debranding['name']\"/>"
             "</t>"
-            "<t t-else=\"\"><span t-out=\"debranding['name']\"/></t>"
+            "<t t-else=\"\">"
+            "<span t-out=\"debranding['name']\"/>"
+            "</t>"
         )
     elif params["url"]:
-        replacement = '<a href="%s" target="_blank" rel="noopener">%s</a>' % (
-            escape(params["url"]),
-            escape(params["name"]),
+        replacement = (
+            '<a href="%s" target="_blank" rel="noopener">%s</a>'
+            % (
+                escape(params["url"]),
+                escape(params["name"]),
+            )
         )
     else:
         replacement = "<span>%s</span>" % escape(params["name"])
 
-    # Chaque spec est appliquée séquentiellement sur l'arbre muté :
-    # n specs identiques traitent les n occurrences.
-    return (
-        '<xpath expr="(%s)[1]" position="replace">%s</xpath>'
-        % (ANCHOR_XPATH, replacement)
-    ) * nb
+    specs = ""
+
+    # Génère un xpath pour CHAQUE nœud trouvé
+    for node in all_nodes:
+        # Détermine quel sélecteur base a trouvé ce nœud
+        matched_xpath = None
+        for xpath_expr in ANCHOR_XPATHS:
+            if node in tree.xpath(xpath_expr):
+                matched_xpath = xpath_expr
+                break
+
+        if not matched_xpath:
+            continue
+
+        # Compte la position du nœud dans son sélecteur
+        matching_nodes = tree.xpath(matched_xpath)
+        try:
+            node_index = matching_nodes.index(node) + 1
+        except ValueError:
+            continue
+
+        # Génère le xpath indexé correctement
+        xpath = "(%s)[%d]" % (matched_xpath, node_index)
+        specs += (
+            '<xpath expr="%s" position="replace">%s</xpath>'
+            % (escape(xpath), replacement)
+        )
+
+    return specs
 
 
 def _asset_specs(tree, params):
-    """Specs pour les visuels Odoo (img / link icon) : réécriture de la source."""
+    """Réécrit les images et liens d'assets Odoo.
+
+    FIX Odoo 19 : Indexe chaque sélecteur XPath individuellement.
+    """
     specs = ""
-    for xpath, attr in ((IMG_XPATH, "src"), (LINK_XPATH, "href")):
-        nb = len(tree.xpath(xpath))
-        if not nb:
+
+    for xpaths_list, attr in (
+        (IMG_XPATHS, "src"),
+        (LINK_XPATHS, "href"),
+    ):
+        # Collecte TOUS les nœuds de tous les sélecteurs
+        all_nodes = []
+        for xpath_expr in xpaths_list:
+            nodes = tree.xpath(xpath_expr)
+            all_nodes.extend(nodes)
+
+        if not all_nodes:
             continue
 
         if params["multi"]:
             body = (
                 '<attribute name="%s"/>'
                 '<attribute name="t-attf-%s"/>'
-                "<attribute name=\"t-att-%s\">debranding['logo']</attribute>"
+                '<attribute name="t-att-%s">'
+                "debranding['logo']"
+                "</attribute>"
             ) % (attr, attr, attr)
+
             if attr == "src":
                 body += (
                     '<attribute name="alt"/>'
-                    "<attribute name=\"t-att-alt\">debranding['name']</attribute>"
+                    '<attribute name="t-att-alt">'
+                    "debranding['name']"
+                    "</attribute>"
                 )
+
         else:
             body = (
                 '<attribute name="%s">%s</attribute>'
                 '<attribute name="t-att-%s"/>'
                 '<attribute name="t-attf-%s"/>'
-            ) % (attr, escape(params["logo"]), attr, attr)
-            if attr == "src":
-                body += '<attribute name="alt">%s</attribute>' % escape(params["name"])
+            ) % (
+                attr,
+                escape(params["logo"]),
+                attr,
+                attr,
+            )
 
-        specs += (
-            '<xpath expr="(%s)[1]" position="attributes">%s</xpath>' % (xpath, body)
-        ) * nb
+            if attr == "src":
+                body += (
+                    '<attribute name="alt">%s</attribute>'
+                    % escape(params["name"])
+                )
+
+        # Génère un xpath pour CHAQUE nœud trouvé
+        for node in all_nodes:
+            # Détermine quel sélecteur base a trouvé ce nœud
+            matched_xpath = None
+            for xpath_expr in xpaths_list:
+                if node in tree.xpath(xpath_expr):
+                    matched_xpath = xpath_expr
+                    break
+
+            if not matched_xpath:
+                continue
+
+            # Compte la position du nœud dans son sélecteur
+            matching_nodes = tree.xpath(matched_xpath)
+            try:
+                node_index = matching_nodes.index(node) + 1
+            except ValueError:
+                continue
+
+            # Génère le xpath indexé correctement
+            indexed_xpath = "(%s)[%d]" % (matched_xpath, node_index)
+
+            specs += (
+                '<xpath expr="%s" position="attributes">%s</xpath>'
+                % (escape(indexed_xpath), body)
+            )
+
     return specs
 
 
@@ -298,39 +387,43 @@ def _apply_manual_patches(env, params):
     return count
 
 
-def _root_view(view):
-    while view.inherit_id:
-        view = view.inherit_id
-    return view
-
 
 def _apply_view_patches(env, params):
-    """Réécrit liens et visuels Odoo dans tous les templates QWeb.
+    """Réécrit liens et visuels Odoo dans les templates qui les contiennent.
 
-    On patche la vue racine avec l'arch combinée : les contenus introduits par
-    des vues d'extension tierces sont donc couverts eux aussi.
+    Contrairement à l'ancienne stratégie, on ne remonte pas systématiquement
+    jusqu'à la vue racine. Cela évite les problèmes liés aux templates
+    appelés avec ``t-call`` sur Odoo 19.
     """
     View = env["ir.ui.view"].sudo()
     candidates = View.with_context(active_test=False).search(VIEW_SEARCH_DOMAIN)
 
-    roots = View.browse()
-    for view in candidates:
-        roots |= _root_view(view)
-
     count = 0
-    for root in roots:
-        module = (root.key or "").split(".")[0]
+
+    for view in candidates:
+        module = (view.key or "").split(".")[0]
+
         if not module or module == MODULE or module in params["excluded"]:
             continue
+
         try:
-            arch = root.with_context(lang=None, inherit_branding=False).get_combined_arch()
+            arch = view.with_context(
+                lang=None,
+                inherit_branding=False,
+            ).arch_db
+
             tree = etree.fromstring(arch.encode("utf-8"))
-        except Exception:  # noqa: BLE001
+        except Exception:
             continue
 
         specs = _anchor_specs(tree, params) + _asset_specs(tree, params)
+
         if not specs:
             continue
-        if _create_patch(env, root, "%s%s" % (PATCH_PREFIX, root.id), specs):
+
+        name = "%s%s" % (PATCH_PREFIX, view.id)
+
+        if _create_patch(env, view, name, specs):
             count += 1
+
     return count
