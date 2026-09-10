@@ -48,6 +48,7 @@ GAMMES_DATA = [
         'indicative': True,  # Activer le bandeau d'avertissement "Données indicatives"[cite: 1]
         'tagline_fr': '3 tailles disponibles · 18 à 40 m²',
         'tagline_en': '3 sizes available · 18 to 40 sqm',
+        'catalogue_pdf': '/capsule_house_theme/static/src/files/catalogue-capsule-TEST.pdf',
         
         # SOURCE : Spécifications techniques standardisées & Normes Françaises
         'performances': [
