@@ -36,25 +36,24 @@ DEFAULT_EXCLUDED_MODULES = (
     "microsoft_calendar,payment,web_editor,base_setup_iap"
 )
 
-ANCHOR_XPATH = (
-    "//a[contains(@href,'odoo.com')]"
-    " | //a[contains(@t-att-href,'odoo.com')]"
-    " | //a[contains(@t-attf-href,'odoo.com')]"
-)
+ANCHOR_XPATHS = [
+    "//a[contains(@href,'odoo.com')]",
+    "//a[contains(@t-att-href,'odoo.com')]",
+    "//a[contains(@t-attf-href,'odoo.com')]",
+]
 
-IMG_XPATH = (
-    "//img[contains(@src,'/web/static/img/odoo')]"
-    " | //img[contains(@src,'odoo.com')]"
-    " | //img[contains(@t-att-src,'/web/static/img/odoo')]"
-    " | //img[contains(@t-attf-src,'/web/static/img/odoo')]"
-)
+IMG_XPATHS = [
+    "//img[contains(@src,'/web/static/img/odoo')]",
+    "//img[contains(@src,'odoo.com')]",
+    "//img[contains(@t-att-src,'/web/static/img/odoo')]",
+    "//img[contains(@t-attf-src,'/web/static/img/odoo')]",
+]
 
-# <link rel="icon"> / apple-touch-icon pointant sur les visuels Odoo.
-LINK_XPATH = (
-    "//link[contains(@href,'/web/static/img/odoo')]"
-    " | //link[contains(@t-att-href,'/web/static/img/odoo')]"
-    " | //link[contains(@t-attf-href,'/web/static/img/odoo')]"
-)
+LINK_XPATHS = [
+    "//link[contains(@href,'/web/static/img/odoo')]",
+    "//link[contains(@t-att-href,'/web/static/img/odoo')]",
+    "//link[contains(@t-attf-href,'/web/static/img/odoo')]",
+]
 
 VIEW_SEARCH_DOMAIN = [
     ("type", "=", "qweb"),
@@ -155,7 +154,7 @@ def _toggle_odoo_online(env, active):
     l'abonnement : le neutraliser sortirait du cadre contractuel.
     """
     if not active and _is_enterprise(env):
-        _logger.warning(
+        _logger.info(
             "Debranding : modules Enterprise détectés, le cron de notification "
             "éditeur est laissé actif (obligation contractuelle)."
         )
@@ -188,12 +187,20 @@ def _title_specs(params):
 
 def _anchor_specs(tree, params):
     """Réécrit les liens Odoo.com trouvés dans la vue.
-    
-    FIX Odoo 19 : Utilise union XPath simple avec positional predicates.
-    """
-    nodes = tree.xpath(ANCHOR_XPATH)
 
-    if not nodes:
+    Utilise des xpaths individuels par sélecteur pour éviter les
+    problèmes d'indexation avec les unions XPath.
+    """
+    from collections import defaultdict
+
+    matched = []
+    seen = set()
+    for xpath_expr in ANCHOR_XPATHS:
+        for i, node in enumerate(tree.xpath(xpath_expr), 1):
+            if id(node) not in seen:
+                seen.add(id(node))
+                matched.append((xpath_expr, i))
+    if not matched:
         return ""
 
     if params["multi"]:
@@ -218,34 +225,49 @@ def _anchor_specs(tree, params):
     else:
         replacement = "<span>%s</span>" % escape(params["name"])
 
+    groups = defaultdict(list)
+    for xpath_expr, index in matched:
+        groups[xpath_expr].append(index)
+
     specs = ""
-
-    for index in range(len(nodes)):
-        xpath = "(%s)[%d]" % (ANCHOR_XPATH, index + 1)
-        specs += (
-            '<xpath expr="%s" position="replace">%s</xpath>'
-            % (escape(xpath), replacement)
-        )
-
+    for xpath_expr, indices in groups.items():
+        for idx in reversed(indices):
+            indexed = "(%s)[%d]" % (xpath_expr, idx)
+            specs += (
+                '<xpath expr="%s" position="replace">%s</xpath>'
+                % (escape(indexed), replacement)
+            )
     return specs
-
 
 def _asset_specs(tree, params):
     """Réécrit les images et liens d'assets Odoo.
-    
-    FIX Odoo 19 : Utilise union XPath simple avec positional predicates.
+
+    Utilise des xpaths individuels par sélecteur pour éviter les
+    problèmes d'indexation avec les unions XPath.
     """
+    from collections import defaultdict
+
     specs = ""
 
-    for xpath, attr in (
-        (IMG_XPATH, "src"),
-        (LINK_XPATH, "href"),
+    for xpaths_list, attr in (
+        (IMG_XPATHS, "src"),
+        (LINK_XPATHS, "href"),
     ):
-        nodes = tree.xpath(xpath)
+        # ── 1. Trouver chaque nœud avec son sélecteur spécifique ──
+        matched = []       # liste de (xpath_expr, index)
+        seen = set()       # ids des nœuds déjà vus (évite les doublons)
 
-        if not nodes:
+        for xpath_expr in xpaths_list:
+            for i, node in enumerate(tree.xpath(xpath_expr), 1):
+                if id(node) not in seen:
+                    seen.add(id(node))
+                    matched.append((xpath_expr, i))
+
+        if not matched:
             continue
 
+        # ── 2. Construire le body (contenu des attributs) ──
+        # (identique à avant, pas de changement ici)
         if params["multi"]:
             body = (
                 '<attribute name="%s"/>'
@@ -262,7 +284,6 @@ def _asset_specs(tree, params):
                     "debranding['name']"
                     "</attribute>"
                 )
-
         else:
             body = (
                 '<attribute name="%s">%s</attribute>'
@@ -274,20 +295,25 @@ def _asset_specs(tree, params):
                 attr,
                 attr,
             )
-
             if attr == "src":
                 body += (
                     '<attribute name="alt">%s</attribute>'
                     % escape(params["name"])
                 )
 
-        for index in range(len(nodes)):
-            indexed_xpath = "(%s)[%d]" % (xpath, index + 1)
+        # ── 3. Grouper par sélecteur ──
+        groups = defaultdict(list)
+        for xpath_expr, index in matched:
+            groups[xpath_expr].append(index)
 
-            specs += (
-                '<xpath expr="%s" position="attributes">%s</xpath>'
-                % (escape(indexed_xpath), body)
-            )
+        # ── 4. Générer les specs (ordre inversé par sélecteur) ──
+        for xpath_expr, indices in groups.items():
+            for idx in reversed(indices):          # [2] avant [1]
+                indexed = "(%s)[%d]" % (xpath_expr, idx)
+                specs += (
+                    '<xpath expr="%s" position="attributes">%s</xpath>'
+                    % (escape(indexed), body)
+                )
 
     return specs
 
@@ -386,7 +412,7 @@ def _apply_view_patches(env, params):
         except Exception:
             continue
 
-        specs = _anchor_specs(tree, params) + _asset_specs(tree, params)
+        specs = _asset_specs(tree, params) + _anchor_specs(tree, params)
 
         if not specs:
             continue
