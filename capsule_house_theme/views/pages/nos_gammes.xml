@@ -79,9 +79,12 @@
                                 View in shop <i class="fa fa-arrow-right"/>
                             </a>
                         </div>
-                        <a t-if="gamme.get('catalogue_pdf')" t-att-href="gamme['catalogue_pdf']" class="ch-btn-dark" download="1" target="_blank">
+                        <a t-attf-href="/nos-gammes/#{ gamme['slug'] }/catalogue.pdf" class="ch-btn-dark" download="1" t-if="request.env.lang == 'fr_FR'">
                             <i class="fa fa-download"/> Télécharger le catalogue PDF
                         </a>
+                        <a t-attf-href="/nos-gammes/#{ gamme['slug'] }/catalogue.pdf" class="ch-btn-dark" download="1" t-if="request.env.lang != 'fr_FR'">
+                            <i class="fa fa-download"/> Download PDF catalogue
+                        </a>    
                     </div>
                 </div>
             </section>

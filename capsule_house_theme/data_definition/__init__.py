@@ -48,8 +48,7 @@ GAMMES_DATA = [
         'indicative': True,  # Activer le bandeau d'avertissement "Données indicatives"[cite: 1]
         'tagline_fr': '3 tailles disponibles · 18 à 40 m²',
         'tagline_en': '3 sizes available · 18 to 40 sqm',
-        'catalogue_pdf': '/capsule_house_theme/static/src/files/catalogue-capsule-TEST.pdf',
-        
+
         # SOURCE : Spécifications techniques standardisées & Normes Françaises
         'performances': [
             {'icon': 'fa-square-o', 'title_fr': 'Vitrage isolant', 'title_en': 'Insulating glazing',
@@ -116,7 +115,7 @@ GAMMES_DATA = [
         'indicative': True,
         'tagline_fr': '3 tailles disponibles · 10 à 25 m²',
         'tagline_en': '3 sizes available · 10 to 25 sqm',
-        'catalogue_pdf': '/capsule_house_theme/static/src/files/catalogue-cabine-TEST.pdf',
+
         'performances': [
             {'icon': 'fa-tree', 'title_fr': 'Structure bois & acier', 'title_en': 'Wood & steel structure',
              'desc_fr': 'Châssis robuste et bardage haute résistance', 'desc_en': 'Robust chassis and high-resistance cladding'},
@@ -185,7 +184,7 @@ GAMMES_DATA = [
         'indicative': True,
         'tagline_fr': '3 tailles disponibles · 19 à 50 m²',
         'tagline_en': '3 sizes available · 19 to 50 sqm',
-        'catalogue_pdf': '/capsule_house_theme/static/src/files/catalogue-dome-TEST.pdf',
+
         'performances': [
             {'icon': 'fa-refresh', 'title_fr': 'Structure triangulée', 'title_en': 'Triangulated structure',
             'desc_fr': 'Excellente résistance aux vents forts et à la neige', 'desc_en': 'Strong resistance to high winds and snow load'},
@@ -245,7 +244,7 @@ GAMMES_DATA = [
         'indicative': True,
         'tagline_fr': '3 tailles disponibles · 16 à 57 m²',
         'tagline_en': '3 sizes available · 16 to 57 sqm',
-        'catalogue_pdf': '/capsule_house_theme/static/src/files/catalogue-modulaire-TEST.pdf',
+
         'performances': [
             {'icon': 'fa-cubes', 'title_fr': 'Modules combinables', 'title_en': 'Combinable modules',
             'desc_fr': 'Assemblez plusieurs unités pour agrandir votre espace', 'desc_en': 'Assemble several units to expand your space'},
@@ -305,7 +304,7 @@ GAMMES_DATA = [
         'indicative': True,
         'tagline_fr': '3 tailles disponibles · 14 à 38 m²',
         'tagline_en': '3 sizes available · 14 to 38 sqm',
-        'catalogue_pdf': '/capsule_house_theme/static/src/files/catalogue-pliable-TEST.pdf',
+
         'performances': [
             {'icon': 'fa-cube', 'title_fr': 'Cadre acier galvanisé', 'title_en': 'Galvanised steel frame',
             'desc_fr': 'Forte épaisseur, résiste aux pliages et dépliages répétés', 'desc_en': 'Heavy-duty, withstands repeated folding and unfolding'},
