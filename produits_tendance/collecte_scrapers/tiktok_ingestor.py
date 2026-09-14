@@ -1,8 +1,7 @@
 import asyncio
 import hashlib
 import json
-import os
-import httpx
+from api_sender import send_to_odoo
 
 from playwright.async_api import (
     async_playwright,
@@ -220,132 +219,108 @@ async def scrape_tiktok_trends():
             await context.close()
             await browser.close()
 
+def build_ad_data(item):
+    """Build TikTok advertisement data accepted by Odoo."""
 
-def build_ad_payload(item, api_key):
-    """Convert one extracted TikTok advertisement to the Odoo contract."""
+    required_fields = [
+        "ad_id",
+        "product_name",
+        "region",
+        "snapshot_url",
+    ]
 
-    product_identity = item["product_name"].strip().lower()
+    for field in required_fields:
+        if not item.get(field):
+            raise ValueError(
+                f"The TikTok item is missing {field}."
+            )
+
+    product_identity = (
+        item["product_name"].strip().lower()
+    )
 
     product_hash = hashlib.sha256(
         product_identity.encode("utf-8")
     ).hexdigest()[:16].upper()
 
     return {
-        "api_key": api_key,
-        "type": "ad",
-        "data": {
-            "ad_ref": f"TIKTOK-AD-{item['ad_id']}",
-            "product_ref": f"TIKTOK-PRODUCT-{product_hash}",
-            "product_name": item["product_name"],
-            "country": item["region"],
-            "social_network": "tiktok",
-            "likes_count": item["likes_count"],
-            "shares_count": 0,
-            "snapshot_url": item["snapshot_url"],
-            "platforms": "tiktok",
-            "is_active": True,
-        },
+        "ad_ref": f"TIKTOK-AD-{item['ad_id']}",
+        "product_ref": (
+            f"TIKTOK-PRODUCT-{product_hash}"
+        ),
+        "product_name": item["product_name"],
+        "country": item["region"],
+        "social_network": "tiktok",
+        "likes_count": item.get(
+            "likes_count",
+            0,
+        ),
+        "shares_count": 0,
+        "snapshot_url": item["snapshot_url"],
+        "platforms": "tiktok",
+        "is_active": True,
     }
 
 
-async def push_to_odoo(client, odoo_url, payload):
-    """Send one TikTok advertisement payload to Odoo."""
-
-    try:
-        response = await client.post(
-            odoo_url,
-            json=payload,
-        )
-
-        if response.status_code != 200:
-            print(
-                f"Odoo rejected {payload['data']['ad_ref']}: "
-                f"HTTP {response.status_code} - {response.text}"
-            )
-            return False
-
-        result = response.json()
-
-        if result.get("status") != "success":
-            print(
-                f"Odoo returned an error for "
-                f"{payload['data']['ad_ref']}: {result}"
-            )
-            return False
-
-        print(
-            f"Inserted {payload['data']['ad_ref']} "
-            f"with Odoo ID {result.get('id')}"
-        )
-
-        return True
-
-    except httpx.TimeoutException:
-        print(
-            f"Odoo request timed out for "
-            f"{payload['data']['ad_ref']}"
-        )
-        return False
-
-    except httpx.RequestError as error:
-        print(f"Could not connect to Odoo: {error}")
-        return False
-
-    except ValueError:
-        print(f"Odoo returned invalid JSON: {response.text}")
-        return False
-
-
 async def main():
+    """Collect and synchronize TikTok advertisements."""
+
     print("Starting TikTok scraper...")
 
     items = await scrape_tiktok_trends()
 
-    print(f"Number of collected items: {len(items)}")
-
-    if len(items) < 5:
-        print("Not enough TikTok ads were collected.")
-        return
-
-    api_key = os.getenv("ODOO_API_KEY")
-
-    odoo_url = os.getenv(
-        "ODOO_INGEST_URL",
-        "http://localhost:8069/api/trend/ingest",
+    print(
+        f"Number of collected items: {len(items)}"
     )
 
-    if not api_key:
-        print("ODOO_API_KEY is not configured.")
+    if len(items) < 5:
+        print(
+            "Not enough TikTok ads were collected."
+        )
         return
 
-    payloads = [
-        build_ad_payload(item, api_key)
-        for item in items
-    ]
+    ad_data_items = []
 
-    print(f"Number of generated payloads: {len(payloads)}")
+    for index, item in enumerate(items):
+        try:
+            ad_data = build_ad_data(item)
+            ad_data_items.append(ad_data)
+
+        except ValueError as error:
+            print(
+                f"Could not build TikTok ad data "
+                f"{index + 1}: {error}"
+            )
+
+    print(
+        f"Number of ad data items: "
+        f"{len(ad_data_items)}"
+    )
 
     successful_insertions = 0
 
-    async with httpx.AsyncClient(
-        timeout=httpx.Timeout(15.0)
-    ) as client:
-        for payload in payloads:
-            success = await push_to_odoo(
-                client,
-                odoo_url,
-                payload,
+    for ad_data in ad_data_items:
+        try:
+            success = await send_to_odoo(
+                data_type="ad",
+                data=ad_data,
             )
 
-            if success:
-                successful_insertions += 1
+        except ValueError as error:
+            print(
+                f"Sender validation failed: {error}"
+            )
+            break
+
+        if success:
+            successful_insertions += 1
 
     print(
         f"Successfully injected "
-        f"{successful_insertions}/{len(payloads)} "
+        f"{successful_insertions}/"
+        f"{len(ad_data_items)} "
         f"ads into Odoo."
     )
-
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -3,7 +3,10 @@ import os
 from urllib.parse import urlparse
 from decimal import Decimal, InvalidOperation
 import json
+
 import httpx
+
+from api_sender import send_to_odoo
 
 HTTP_TIMEOUT_SECONDS = 15.0
 SHOPIFY_PRODUCT_LIMIT = 20
@@ -180,11 +183,8 @@ def parse_shopify_product(product, shop_url):
         "is_active": is_available,
     }
 
-def build_product_payload(product, api_key, country):
-    """Bsuild the exact Odoo product payload."""
-
-    if not api_key:
-        raise ValueError("The Odoo API key is missing.")
+def build_product_data(product, country):
+    """Build the product data accepted by Odoo."""
 
     if not country:
         raise ValueError(
@@ -202,95 +202,20 @@ def build_product_payload(product, api_key, country):
         )
 
     return {
-        "api_key": api_key,
-        "type": "product",
-        "data": {
-            "name": product["product_name"],
-            "product_ref": product["product_ref"],
-            "category": (
-                product.get("category")
-                or "Uncategorized"
-            ),
-            "country": country.strip().upper(),
-            "source": "scraping",
-            "sales_count": 0,
-            "image_url": (
-                product.get("image_url") or None
-            ),
-            "price": product.get("price", 0.0),
-        },
+        "name": product["product_name"],
+        "product_ref": product["product_ref"],
+        "category": (
+            product.get("category")
+            or "Uncategorized"
+        ),
+        "country": country.strip().upper(),
+        "source": "scraping",
+        "sales_count": 0,
+        "image_url": (
+            product.get("image_url") or None
+        ),
+        "price": product.get("price", 0.0),
     }
-
-
-async def push_to_odoo(payload, ingest_url):
-    """Send one Shopify product payload to Odoo."""
-
-    product_ref = payload.get(
-        "data",
-        {},
-    ).get(
-        "product_ref",
-        "unknown-product",
-    )
-
-    try:
-        async with httpx.AsyncClient(
-            timeout=HTTP_TIMEOUT_SECONDS,
-        ) as client:
-            response = await client.post(
-                ingest_url,
-                json=payload,
-                headers={
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                },
-            )
-
-    except httpx.TimeoutException:
-        print(
-            f"Odoo request timed out for {product_ref}."
-        )
-        return False
-
-    except httpx.RequestError as error:
-        print(
-            f"Could not connect to Odoo for "
-            f"{product_ref}: {error}"
-        )
-        return False
-
-    try:
-        response_data = response.json()
-    except ValueError:
-        response_data = {}
-
-    if response.status_code >= 400:
-        error_message = (
-            response_data
-            if response_data
-            else response.text
-        )
-
-        print(
-            f"Odoo rejected {product_ref}: "
-            f"HTTP {response.status_code} - "
-            f"{error_message}"
-        )
-        return False
-
-    if response_data.get("status") != "success":
-        print(
-            f"Odoo returned an unexpected response "
-            f"for {product_ref}: {response_data}"
-        )
-        return False
-
-    print(
-        f"Synchronized {product_ref} "
-        f"with Odoo ID {response_data.get('id')}"
-    )
-
-    return True
 
 
 async def main():
@@ -299,23 +224,11 @@ async def main():
     print("Starting Shopify ingestor...")
 
     shop_url = os.getenv("SHOPIFY_STORE_URL")
-    api_key = os.getenv("ODOO_API_KEY")
     country = os.getenv("SHOPIFY_COUNTRY")
-    ingest_url = os.getenv(
-        "ODOO_INGEST_URL",
-        "http://localhost:8069/api/trend/ingest",
-    )
 
     if not shop_url:
         print(
             "Missing SHOPIFY_STORE_URL "
-            "environment variable."
-        )
-        return
-
-    if not api_key:
-        print(
-            "Missing ODOO_API_KEY "
             "environment variable."
         )
         return
@@ -354,40 +267,40 @@ async def main():
         f"{len(parsed_products)}"
     )
 
-    payloads = []
+    product_data_items = []
 
     for index, product in enumerate(
         parsed_products
     ):
         try:
-            payload = build_product_payload(
+            product_data = build_product_data(
                 product,
-                api_key,
                 country,
             )
-            payloads.append(payload)
+            product_data_items.append(product_data)
 
         except ValueError as error:
             print(
-                f"Could not build payload "
+                f"Could not build product data "
                 f"{index + 1}: {error}"
             )
 
     print(
-        f"Number of generated payloads: "
-        f"{len(payloads)}"
+        f"Number of product data items: "
+        f"{len(product_data_items)}"
     )
 
-    if payloads:
-        safe_payload = {
-            **payloads[0],
+    if product_data_items:
+        safe_preview = {
             "api_key": "***",
+            "type": "product",
+            "data": product_data_items[0],
         }
 
         print("\n--- FIRST ODOO PRODUCT PAYLOAD ---")
         print(
             json.dumps(
-                safe_payload,
+                safe_preview,
                 indent=2,
                 ensure_ascii=False,
             )
@@ -396,18 +309,26 @@ async def main():
 
     successful_injections = 0
 
-    for payload in payloads:
-        success = await push_to_odoo(
-            payload,
-            ingest_url,
-        )
+    for product_data in product_data_items:
+        try:
+            success = await send_to_odoo(
+                data_type="product",
+                data=product_data,
+            )
+
+        except ValueError as error:
+            print(
+                f"Sender validation failed: {error}"
+            )
+            break
 
         if success:
             successful_injections += 1
 
     print(
         f"Successfully synchronized "
-        f"{successful_injections}/{len(payloads)} "
+        f"{successful_injections}/"
+        f"{len(product_data_items)} "
         f"Shopify products with Odoo."
     )
 

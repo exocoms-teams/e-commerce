@@ -4,6 +4,8 @@ import time
 from datetime import datetime
 import urllib.parse
 
+from api_sender import send_to_odoo_sync
+
 def get_real_ebay_token(app_id, cert_id):
     """Génère le Token d'accès OAuth 2.0 pour eBay"""
     if not app_id or not cert_id:
@@ -68,47 +70,68 @@ def fetch_winning_products(keyword, token, attempt=1):
         return []
 
 def push_to_odoo(item, odoo_url, odoo_api_key):
-    """Envoie le produit vers Odoo selon le contrat JSON strict"""
-    seller_score = item.get("seller", {}).get("feedbackScore", 0.0)
-    sales_count = item.get("soldQuantity", 0) 
-    country_code = item.get("itemLocation", {}).get("country", "US")
-    image_url = item.get("image", {}).get("imageUrl", False)
-    categories_list = item.get("categories", [])
+    """Send one eBay product through the common Odoo sender."""
+
+    seller_score = item.get(
+        "seller",
+        {},
+    ).get("feedbackScore", 0.0)
+
+    sales_count = item.get("soldQuantity", 0)
+
+    country_code = item.get(
+        "itemLocation",
+        {},
+    ).get("country", "US")
+
+    image_url = item.get(
+        "image",
+        {},
+    ).get("imageUrl", False)
+
+    categories = item.get("categories", [])
+
+    if categories:
+        category = categories[0].get(
+            "categoryName",
+            "Tech & Gadgets",
+        )
+    else:
+        category = "Tech & Gadgets"
+
     price_raw = item.get("price", {}).get("value")
+
     try:
-        price = float(price_raw) if price_raw is not None else 0.0
+        price = (
+            float(price_raw)
+            if price_raw is not None
+            else 0.0
+        )
     except (TypeError, ValueError):
         price = 0.0
-    if categories_list and len(categories_list) > 0:
-        real_category = categories_list[0].get("categoryName", "Tech & Gadgets")
-    else:
-        real_category = "Tech & Gadgets"
-    
-    payload = {
-        "api_key": odoo_api_key,
-        "type": "product",
-        "data": {
-            "name": item.get("title", "Produit Inconnu")[:100],
-            "product_ref": item.get("itemId"),
-            "category": real_category,  # <-- Utilisation de la catégorie dynamique ici
-            "sales_count": sales_count,
-            "date": datetime.now().strftime("%Y-%m-%d"),
-            "score_site_x": seller_score, 
-            "country": country_code,
-            "source": "api",
-            "price": price,
-            "image_url": image_url
-        }
+
+    product_data = {
+        "name": item.get(
+            "title",
+            "Unknown product",
+        )[:100],
+        "product_ref": item.get("itemId"),
+        "category": category,
+        "sales_count": sales_count,
+        "date": datetime.now().strftime("%Y-%m-%d"),
+        "score_site_x": seller_score,
+        "country": country_code,
+        "source": "api",
+        "price": price,
+        "image_url": image_url,
     }
-    
-    try:
-        res = requests.post(odoo_url, json=payload, timeout=10)
-        if res.status_code != 200:
-            print(f"❌ Erreur Odoo : Code {res.status_code} - Détails : {res.text}")
-        return res.status_code == 200
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Erreur de connexion vers Odoo : {e}")
-        return False
+
+    return send_to_odoo_sync(
+        data_type="product",
+        data=product_data,
+        api_key=odoo_api_key,
+        odoo_url=odoo_url,
+    )
 
 def run_ingestion_for_keyword(keyword, app_id, cert_id, odoo_url, odoo_api_key):
     """Fonction principale appelée depuis le contrôleur Odoo"""

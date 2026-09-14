@@ -63,62 +63,79 @@ def calculate_days_active(start_time_str, stop_time_str=None):
         print(f"⚠️ Erreur de conversion de date : {e}")
         return 0, False
 
-def push_ad_to_odoo(ad, keyword, odoo_url, odoo_api_key):
-    """Envoie la publicité vers Odoo avec des valeurs 100% dynamiques."""
-    ad_id = ad.get('id')
+def push_ad_to_odoo(
+    ad,
+    keyword,
+    odoo_url,
+    odoo_api_key,
+):
+    """Send one Meta advertisement through the common Odoo sender."""
+
+    ad_id = ad.get("id")
+
     if not ad_id:
+        print("Meta advertisement has no ID.")
         return False
-        
-    normalized_product_ref = f"REF-{keyword.upper().replace(' ', '')}"
-    
-    # --- 1. DYNAMISME : Dates et statut d'activité ---
-    start_time = ad.get('ad_delivery_start_time')
-    stop_time = ad.get('ad_delivery_stop_time')
-    
-    days_active, ad_start_date = calculate_days_active(start_time, stop_time)
-    
-    # Si Meta nous donne une date de fin (stop_time), c'est que la pub n'est plus active
-    is_active_dynamic = False if stop_time else True
-    
-    # --- 2. DYNAMISME : Réseau social principal ---
-    raw_platforms = ad.get('publisher_platforms', [])
-    platforms_str = ", ".join(raw_platforms) if isinstance(raw_platforms, list) else "facebook"
-    
-    # Si la pub tourne UNIQUEMENT sur Instagram, on la tague Instagram, sinon Facebook
-    if isinstance(raw_platforms, list) and 'instagram' in raw_platforms and 'facebook' not in raw_platforms:
-        social_network_dynamic = 'instagram'
+
+    normalized_product_ref = (
+        f"REF-{keyword.upper().replace(' ', '')}"
+    )
+
+    start_time = ad.get("ad_delivery_start_time")
+    stop_time = ad.get("ad_delivery_stop_time")
+
+    days_active, ad_start_date = calculate_days_active(
+        start_time,
+        stop_time,
+    )
+
+    is_active = not bool(stop_time)
+
+    raw_platforms = ad.get(
+        "publisher_platforms",
+        [],
+    )
+
+    if isinstance(raw_platforms, list):
+        platforms = ", ".join(raw_platforms)
+
+        if (
+            "instagram" in raw_platforms
+            and "facebook" not in raw_platforms
+        ):
+            social_network = "instagram"
+        else:
+            social_network = "facebook"
     else:
-        social_network_dynamic = 'facebook'
-    
-    payload = {
-        "api_key": odoo_api_key,
-        "type": "ad",
-        "data": {
-            "ad_ref": f"META-AD-{ad_id}",
-            "product_ref": normalized_product_ref,
-            "product_name": keyword.capitalize(),
-            "country": "US",
-            
-            # Les champs dynamiques injectés ici :
-            "social_network": social_network_dynamic,
-            "is_active": is_active_dynamic,
-            
-            "days_active": days_active,
-            "ad_start_date": ad_start_date,
-            "competitor_page": ad.get('page_name', 'Boutique Inconnue'),
-            "snapshot_url": ad.get('ad_snapshot_url', ''),
-            "platforms": platforms_str
-        }
+        platforms = "facebook"
+        social_network = "facebook"
+
+    ad_data = {
+        "ad_ref": f"META-AD-{ad_id}",
+        "product_ref": normalized_product_ref,
+        "product_name": keyword.capitalize(),
+        "country": "US",
+        "social_network": social_network,
+        "is_active": is_active,
+        "days_active": days_active,
+        "ad_start_date": ad_start_date,
+        "competitor_page": ad.get(
+            "page_name",
+            "Unknown shop",
+        ),
+        "snapshot_url": ad.get(
+            "ad_snapshot_url",
+            "",
+        ),
+        "platforms": platforms,
     }
-    
-    try:
-        res = requests.post(odoo_url, json=payload, timeout=10)
-        if res.status_code != 200:
-            print(f"❌ Erreur Odoo (Ad) : Code {res.status_code} - {res.text}")
-        return res.status_code == 200
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Erreur de connexion vers Odoo (Meta Push) : {e}")
-        return False
+
+    return send_to_odoo_sync(
+        data_type="ad",
+        data=ad_data,
+        api_key=odoo_api_key,
+        odoo_url=odoo_url,
+    )
 
 def run_meta_ingestion(keyword, access_token, odoo_url, odoo_api_key):
     ads = fetch_meta_ads(keyword, access_token)
