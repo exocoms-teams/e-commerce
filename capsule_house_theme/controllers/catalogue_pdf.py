@@ -4,8 +4,6 @@ import os
 
 from odoo import http
 from odoo.http import request
-from odoo.modules.module import get_module_resource
-
 from ..data_definition import GAMMES_DATA
 
 
@@ -25,30 +23,6 @@ class CapsuleHouseCataloguePdf(http.Controller):
     simple manque d'icône).
     """
 
-    _FA_REGISTERED = None  # cache : None = pas encore tenté, True/False = résultat
-
-    def _register_fontawesome(self):
-        """Enregistre la police FontAwesome pour reportlab, une seule
-        fois par process. Retourne True si disponible, False sinon.
-        """
-        if CapsuleHouseCataloguePdf._FA_REGISTERED is not None:
-            return CapsuleHouseCataloguePdf._FA_REGISTERED
-        try:
-            from reportlab.pdfbase import pdfmetrics
-            from reportlab.pdfbase.ttfonts import TTFont
-            fa_path = get_module_resource(
-                'web', 'static', 'src', 'libs', 'fontawesome', 'fonts',
-                'fontawesome-webfont.ttf',
-            )
-            if fa_path and os.path.exists(fa_path):
-                pdfmetrics.registerFont(TTFont('FontAwesome', fa_path))
-                CapsuleHouseCataloguePdf._FA_REGISTERED = True
-            else:
-                CapsuleHouseCataloguePdf._FA_REGISTERED = False
-        except Exception:
-            CapsuleHouseCataloguePdf._FA_REGISTERED = False
-        return CapsuleHouseCataloguePdf._FA_REGISTERED
-
     @http.route('/nos-gammes/<string:slug>/catalogue.pdf', type='http',
                 auth='public', website=True, sitemap=False)
     def gamme_catalogue_pdf(self, slug, **kw):
@@ -61,7 +35,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
             return request.not_found()
 
         is_fr = request.env.lang == 'fr_FR'
-        has_fa = self._register_fontawesome()
+        has_fa = False
         buffer = io.BytesIO()
         c = canvas.Canvas(buffer, pagesize=A4)
         width, height = A4
