@@ -13,10 +13,11 @@ class CapsuleHouseCataloguePdf(http.Controller):
     à partir de GAMMES_DATA — toujours à jour (option B, décidée avec
     hamza03 le 2026-09-11).
 
-    Icônes dessinées directement en vectoriel avec reportlab (pas de
-    police FontAwesome externe, dont l'API de chargement s'est révélée
-    instable selon la version d'Odoo) : résultat visuellement proche
-    du site, sans dépendance fragile.
+    Icônes dessinées en vectoriel avec reportlab (pas de police
+    FontAwesome externe, API de chargement instable selon la version
+    d'Odoo) : formes redessinées pour ressembler visuellement aux
+    icônes réelles du site (cadenas, pinceau, flèches haut/bas,
+    baignoire, ampoule...).
     """
 
     @http.route('/nos-gammes/<string:slug>/catalogue.pdf', type='http',
@@ -45,7 +46,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
         LIGHT_BORDER = (0.85, 0.85, 0.85)
 
         # ------------------------------------------------------------------
-        # ICÔNES vectorielles (dessinées, jamais une police externe)
+        # ICÔNES vectorielles (redessinées pour ressembler aux vraies)
         # ------------------------------------------------------------------
         def icon_cube(x, y, size, color):
             c.setStrokeColorRGB(*color)
@@ -86,21 +87,35 @@ class CapsuleHouseCataloguePdf(http.Controller):
             c.drawPath(p, stroke=1, fill=0)
 
         def icon_bath(x, y, size, color):
+            """Baignoire : cuve arrondie + 2 pieds + robinet."""
             c.setStrokeColorRGB(*color)
             c.setLineWidth(1.3)
             s = size
-            c.roundRect(x, y, s, s * 0.45, s * 0.15, stroke=1, fill=0)
-            c.line(x + s * 0.15, y + s * 0.45, x + s * 0.15, y + s * 0.65)
-            c.circle(x + s * 0.15, y + s * 0.72, s * 0.07, stroke=1, fill=0)
+            tub_w = s * 0.9
+            tub_h = s * 0.4
+            tub_x = x + (s - tub_w) / 2
+            tub_y = y + s * 0.15
+            c.roundRect(tub_x, tub_y, tub_w, tub_h, tub_h * 0.5, stroke=1, fill=0)
+            c.line(tub_x + tub_w * 0.15, tub_y, tub_x + tub_w * 0.15, y)
+            c.line(tub_x + tub_w * 0.85, tub_y, tub_x + tub_w * 0.85, y)
+            c.line(tub_x + tub_w * 0.75, tub_y + tub_h, tub_x + tub_w * 0.75, tub_y + tub_h + s * 0.18)
+            c.line(tub_x + tub_w * 0.68, tub_y + tub_h + s * 0.18, tub_x + tub_w * 0.82, tub_y + tub_h + s * 0.18)
 
         def icon_bulb(x, y, size, color):
+            """Ampoule : cercle + filament en croix + socle à traits."""
             c.setStrokeColorRGB(*color)
             c.setLineWidth(1.2)
             s = size
-            c.circle(x + s * 0.5, y + s * 0.6, s * 0.32, stroke=1, fill=0)
-            c.line(x + s * 0.38, y + s * 0.18, x + s * 0.62, y + s * 0.18)
-            c.line(x + s * 0.4, y + s * 0.06, x + s * 0.6, y + s * 0.06)
-            c.line(x + s * 0.5, y, x + s * 0.5, y + s * 0.06)
+            cx = x + s * 0.5
+            cy = y + s * 0.62
+            r = s * 0.3
+            c.circle(cx, cy, r, stroke=1, fill=0)
+            c.line(cx - r * 0.35, cy - r * 0.15, cx + r * 0.35, cy + r * 0.35)
+            c.line(cx + r * 0.35, cy - r * 0.15, cx - r * 0.35, cy + r * 0.35)
+            base_top = cy - r
+            c.line(cx - r * 0.5, base_top - s * 0.02, cx + r * 0.5, base_top - s * 0.02)
+            c.line(cx - r * 0.4, base_top - s * 0.09, cx + r * 0.4, base_top - s * 0.09)
+            c.line(cx - r * 0.3, base_top - s * 0.16, cx + r * 0.3, base_top - s * 0.16)
 
         def icon_clock(x, y, size, color):
             c.setStrokeColorRGB(*color)
@@ -135,6 +150,30 @@ class CapsuleHouseCataloguePdf(http.Controller):
             ]:
                 c.line(cx, cy, cx + arm * dx, cy)
                 c.line(cx, cy, cx, cy + arm * dy)
+
+        def icon_arrows_v(x, y, size, color):
+            """Double flèche verticale (haut/bas) — remplace l'ancien
+            icon_expand mal adapté pour fa-arrows-v."""
+            c.setStrokeColorRGB(*color)
+            c.setFillColorRGB(*color)
+            c.setLineWidth(1.3)
+            s = size
+            cx = x + s * 0.5
+            top, bottom = y + s, y
+            c.line(cx, bottom + s * 0.15, cx, top - s * 0.15)
+            ah, aw = s * 0.16, s * 0.2
+            p = c.beginPath()
+            p.moveTo(cx, top)
+            p.lineTo(cx - aw / 2, top - ah)
+            p.lineTo(cx + aw / 2, top - ah)
+            p.close()
+            c.drawPath(p, stroke=0, fill=1)
+            p2 = c.beginPath()
+            p2.moveTo(cx, bottom)
+            p2.lineTo(cx - aw / 2, bottom + ah)
+            p2.lineTo(cx + aw / 2, bottom + ah)
+            p2.close()
+            c.drawPath(p2, stroke=0, fill=1)
 
         def icon_droplet(x, y, size, color):
             c.setStrokeColorRGB(*color)
@@ -171,6 +210,23 @@ class CapsuleHouseCataloguePdf(http.Controller):
             c.setStrokeColorRGB(*color)
             c.setLineWidth(1.3)
             c.roundRect(x, y, size, size, size * 0.15, stroke=1, fill=0)
+
+        def icon_lock(x, y, size, color):
+            """Cadenas : corps rectangle + anse en arc + trou de clé."""
+            c.setStrokeColorRGB(*color)
+            c.setLineWidth(1.3)
+            s = size
+            body_w, body_h = s * 0.6, s * 0.45
+            body_x = x + (s - body_w) / 2
+            body_y = y
+            c.roundRect(body_x, body_y, body_w, body_h, s * 0.06, stroke=1, fill=0)
+            c.circle(x + s * 0.5, body_y + body_h * 0.5, s * 0.05, stroke=1, fill=0)
+            shackle_r = s * 0.2
+            cx = x + s * 0.5
+            cy = body_y + body_h
+            c.arc(cx - shackle_r, cy - shackle_r * 0.1, cx + shackle_r, cy + shackle_r * 1.9, 0, 180)
+            c.line(cx - shackle_r, cy - shackle_r * 0.1 + shackle_r, cx - shackle_r, cy)
+            c.line(cx + shackle_r, cy - shackle_r * 0.1 + shackle_r, cx + shackle_r, cy)
 
         def icon_tree(x, y, size, color):
             c.setStrokeColorRGB(*color)
@@ -217,12 +273,19 @@ class CapsuleHouseCataloguePdf(http.Controller):
             c.line(x + s, y + s * 0.35, x + s * 0.7, y + s * 0.65)
 
         def icon_paint(x, y, size, color):
+            """Pinceau : manche diagonal + touffe de poils triangulaire."""
             c.setStrokeColorRGB(*color)
-            c.setLineWidth(1.3)
+            c.setFillColorRGB(*color)
             s = size
-            c.roundRect(x + s * 0.1, y + s * 0.5, s * 0.5, s * 0.35, s * 0.08, stroke=1, fill=0)
-            c.line(x + s * 0.35, y, x + s * 0.6, y + s * 0.5)
-            c.line(x + s * 0.6, y, x + s * 0.85, y + s * 0.5)
+            c.setLineWidth(2)
+            c.line(x + s * 0.8, y + s * 0.9, x + s * 0.35, y + s * 0.4)
+            p = c.beginPath()
+            p.moveTo(x + s * 0.4, y + s * 0.42)
+            p.lineTo(x + s * 0.08, y + s * 0.08)
+            p.lineTo(x + s * 0.22, y)
+            p.lineTo(x + s * 0.46, y + s * 0.2)
+            p.close()
+            c.drawPath(p, stroke=0, fill=1)
 
         ICON_MAP = {
             'fa-cubes': icon_cube, 'fa-cube': icon_cube,
@@ -234,6 +297,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
             'fa-clock-o': icon_clock,
             'fa-bolt': icon_bolt,
             'fa-arrows-alt': icon_expand,
+            'fa-arrows-v': icon_arrows_v,
             'fa-tint': icon_droplet,
             'fa-building-o': icon_building,
             'fa-truck': icon_truck,
@@ -245,7 +309,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
             'fa-volume-off': icon_volume_off,
             'fa-compress': icon_expand,
             'fa-paint-brush': icon_paint,
-            'fa-arrows-v': icon_expand,
+            'fa-lock': icon_lock,
         }
 
         def draw_icon(icon_key, x, y, size, color=TERRACOTTA):
@@ -253,10 +317,10 @@ class CapsuleHouseCataloguePdf(http.Controller):
             fn(x, y, size, color)
 
         def check_mark(x, y, size, color=GREEN):
-            """Coche verte dans un cercle plein, taille et alignement
-            calés sur la baseline du texte (identique au rendu du site)."""
+            """Coche verte, centrée par rapport à la ligne de texte
+            adjacente (baseline passée en y)."""
             c.setFillColorRGB(*color)
-            cy = y + size / 2
+            cy = y + size * 0.35  # centre du cercle ~ mi-hauteur des minuscules
             c.circle(x + size / 2, cy, size / 2, stroke=0, fill=1)
             c.setStrokeColorRGB(*WHITE)
             c.setLineWidth(1.1)
@@ -439,7 +503,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 x = margin + i * (col_w + col_gap)
                 c.setFont('Helvetica', 10)
                 for item in col:
-                    check_mark(x, yy - check_size * 0.32, check_size)
+                    check_mark(x, yy, check_size)
                     c.setFillColorRGB(*INK)
                     text_x = x + check_size + 0.3 * cm
                     max_text_w = col_w - check_size - 0.3 * cm
@@ -462,7 +526,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 y_end = min(y_end, yy)
             y = y_end - 0.3 * cm
 
-        # --- Options : alignées à gauche comme les autres sections ---
+        # --- Options : alignées à gauche ---
         options = (gamme.get('options_fr') if is_fr else gamme.get('options_en'))
         if options:
             y = section_title(y, 'Options')
