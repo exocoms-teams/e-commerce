@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import io
+import math
 
 from odoo import http
 from odoo.http import request
@@ -14,8 +15,8 @@ class CapsuleHouseCataloguePdf(http.Controller):
 
     Icônes dessinées directement en vectoriel avec reportlab (pas de
     police FontAwesome externe, dont l'API de chargement s'est révélée
-    instable selon la version d'Odoo — voir historique du fichier) :
-    résultat identique visuellement, sans dépendance fragile.
+    instable selon la version d'Odoo) : résultat visuellement proche
+    du site, sans dépendance fragile.
     """
 
     @http.route('/nos-gammes/<string:slug>/catalogue.pdf', type='http',
@@ -44,9 +45,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
         LIGHT_BORDER = (0.85, 0.85, 0.85)
 
         # ------------------------------------------------------------------
-        # ICÔNES vectorielles simples (dessinées, jamais une police externe)
-        # Chaque fonction dessine dans un carré de taille `size`, coin
-        # bas-gauche à (x, y) — même repère que text/rect de reportlab.
+        # ICÔNES vectorielles (dessinées, jamais une police externe)
         # ------------------------------------------------------------------
         def icon_cube(x, y, size, color):
             c.setStrokeColorRGB(*color)
@@ -96,11 +95,12 @@ class CapsuleHouseCataloguePdf(http.Controller):
 
         def icon_bulb(x, y, size, color):
             c.setStrokeColorRGB(*color)
-            c.setLineWidth(1.3)
+            c.setLineWidth(1.2)
             s = size
-            c.circle(x + s * 0.5, y + s * 0.62, s * 0.35, stroke=1, fill=0)
-            c.line(x + s * 0.35, y + s * 0.15, x + s * 0.65, y + s * 0.15)
-            c.line(x + s * 0.4, y, x + s * 0.6, y)
+            c.circle(x + s * 0.5, y + s * 0.6, s * 0.32, stroke=1, fill=0)
+            c.line(x + s * 0.38, y + s * 0.18, x + s * 0.62, y + s * 0.18)
+            c.line(x + s * 0.4, y + s * 0.06, x + s * 0.6, y + s * 0.06)
+            c.line(x + s * 0.5, y, x + s * 0.5, y + s * 0.06)
 
         def icon_clock(x, y, size, color):
             c.setStrokeColorRGB(*color)
@@ -185,7 +185,6 @@ class CapsuleHouseCataloguePdf(http.Controller):
             s = size
             cx, cy, r = x + s * 0.5, y + s * 0.5, s * 0.25
             c.circle(cx, cy, r, stroke=1, fill=0)
-            import math
             for i in range(8):
                 a = i * math.pi / 4
                 x1, y1 = cx + r * 1.3 * math.cos(a), cy + r * 1.3 * math.sin(a)
@@ -254,17 +253,16 @@ class CapsuleHouseCataloguePdf(http.Controller):
             fn(x, y, size, color)
 
         def check_mark(x, y, size, color=GREEN):
-            """Coche verte dans un cercle, identique au rendu du site
-            (fa-check-circle) — dessinée en vectoriel."""
-            c.setStrokeColorRGB(*color)
+            """Coche verte dans un cercle plein, taille et alignement
+            calés sur la baseline du texte (identique au rendu du site)."""
             c.setFillColorRGB(*color)
-            c.setLineWidth(0)
-            c.circle(x + size / 2, y + size / 2, size / 2, stroke=0, fill=1)
+            cy = y + size / 2
+            c.circle(x + size / 2, cy, size / 2, stroke=0, fill=1)
             c.setStrokeColorRGB(*WHITE)
-            c.setLineWidth(1.4)
+            c.setLineWidth(1.1)
             c.setLineCap(1)
-            c.line(x + size * 0.28, y + size * 0.5, x + size * 0.44, y + size * 0.34)
-            c.line(x + size * 0.44, y + size * 0.34, x + size * 0.74, y + size * 0.66)
+            c.line(x + size * 0.28, cy, x + size * 0.44, cy - size * 0.16)
+            c.line(x + size * 0.44, cy - size * 0.16, x + size * 0.72, cy + size * 0.18)
 
         # ------------------------------------------------------------------
         # MISE EN PAGE
@@ -304,7 +302,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
 
         y = new_page_header()
 
-        # --- Performances : cartes avec icône en haut-gauche, marge propre ---
+        # --- Performances ---
         if gamme.get('performances'):
             gender = gamme.get('gender')
             if is_fr:
@@ -337,7 +335,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 for perf in row:
                     c.setStrokeColorRGB(*LIGHT_BORDER)
                     c.setFillColorRGB(*WHITE)
-                    c.roundRect(x, y - card_h, card_w, card_h, 5, fill=1, stroke=1)
+                    c.roundRect(x, y - card_h, card_w, card_h, 4, fill=1, stroke=1)
                     draw_icon(perf.get('icon', ''), x + pad, y - pad - icon_size, icon_size)
                     c.setFillColorRGB(*INK)
                     c.setFont('Helvetica-Bold', 10.5)
@@ -365,7 +363,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 y -= card_h + 0.5 * cm
             y -= 0.3 * cm
 
-        # --- Formats : cartes centrées ---
+        # --- Formats ---
         if gamme.get('formats'):
             y = section_title(y, 'Formats')
             fmts = gamme['formats']
@@ -377,7 +375,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
             y = ensure_space(y, card_h + 0.3 * cm)
             for fmt in fmts:
                 c.setFillColorRGB(*PANEL)
-                c.roundRect(x, y - card_h, card_w, card_h, 5, fill=1, stroke=0)
+                c.roundRect(x, y - card_h, card_w, card_h, 4, fill=1, stroke=0)
                 c.setFillColorRGB(*INK)
                 c.setFont('Helvetica-Bold', 11)
                 c.drawCentredString(x + card_w / 2, y - 0.7 * cm, fmt['name'])
@@ -390,7 +388,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 x += card_w + gap
             y -= card_h + 0.9 * cm
 
-        # --- Spécifications : empilées Extérieur puis Intérieur ---
+        # --- Spécifications ---
         if gamme.get('specs_ext') or gamme.get('specs_int'):
             y = section_title(y, 'Spécifications techniques' if is_fr else 'Technical specifications')
             full_w = width - 2 * margin
@@ -424,7 +422,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 y = draw_spec_block(y, 'Intérieur' if is_fr else 'Interior', gamme['specs_int'])
             y -= 0.5 * cm
 
-        # --- Équipements : coche verte pleine, alignement propre ---
+        # --- Équipements ---
         equip = (gamme.get('equipements_fr') if is_fr else gamme.get('equipements_en'))
         if equip:
             y = section_title(y, 'Équipements inclus' if is_fr else 'Included equipment')
@@ -432,8 +430,8 @@ class CapsuleHouseCataloguePdf(http.Controller):
             col_w = (width - 2 * margin - col_gap) / 2
             mid = (len(equip) + 1) // 2
             cols = [equip[:mid], equip[mid:]]
-            check_size = 0.42 * cm
-            row_h = 0.75 * cm
+            check_size = 0.3 * cm
+            row_h = 0.7 * cm
             y_start = y
             y_end = y
             for i, col in enumerate(cols):
@@ -441,12 +439,11 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 x = margin + i * (col_w + col_gap)
                 c.setFont('Helvetica', 10)
                 for item in col:
-                    check_mark(x, yy - check_size * 0.75, check_size)
+                    check_mark(x, yy - check_size * 0.32, check_size)
                     c.setFillColorRGB(*INK)
                     text_x = x + check_size + 0.3 * cm
                     max_text_w = col_w - check_size - 0.3 * cm
                     if c.stringWidth(item, 'Helvetica', 10) > max_text_w:
-                        # coupe proprement sur 2 lignes plutôt que de chevaucher
                         words = item.split(' ')
                         l1, l2 = '', ''
                         for w in words:
@@ -465,43 +462,28 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 y_end = min(y_end, yy)
             y = y_end - 0.3 * cm
 
-        # --- Options : pastilles centrées ---
+        # --- Options : alignées à gauche comme les autres sections ---
         options = (gamme.get('options_fr') if is_fr else gamme.get('options_en'))
         if options:
-            y = section_title(y, 'Options', centered=True)
-            c.setFont('Helvetica', 9)
-            pill_h = 0.6 * cm
+            y = section_title(y, 'Options')
+            c.setFont('Helvetica', 9.5)
+            pill_h = 0.7 * cm
+            pad_h = 0.45 * cm
             gap = 0.35 * cm
-            widths = [c.stringWidth(opt, 'Helvetica', 9) + 0.7 * cm for opt in options]
-            total_w = sum(widths) + gap * (len(options) - 1)
-
-            def draw_pill_row(items, item_widths, y_pos):
-                xx = (width - sum(item_widths) - gap * (len(items) - 1)) / 2
-                for opt, pw in zip(items, item_widths):
-                    c.setFillColorRGB(*PANEL)
-                    c.roundRect(xx, y_pos - pill_h, pw, pill_h, pill_h / 2, fill=1, stroke=0)
-                    c.setFillColorRGB(*INK)
-                    c.drawCentredString(xx + pw / 2, y_pos - pill_h * 0.65, opt)
-                    xx += pw + gap
-
-            if total_w > width - 2 * margin:
-                # multi-lignes centrées si ça déborde
-                line_items, line_widths, line_w = [], [], 0
-                for opt, pw in zip(options, widths):
-                    if line_w + pw + gap > width - 2 * margin and line_items:
-                        y = ensure_space(y, pill_h + 0.35 * cm)
-                        draw_pill_row(line_items, line_widths, y)
-                        y -= pill_h + 0.35 * cm
-                        line_items, line_widths, line_w = [], [], 0
-                    line_items.append(opt)
-                    line_widths.append(pw)
-                    line_w += pw + gap
-                if line_items:
+            radius = 0.2 * cm
+            x = margin
+            y = ensure_space(y, pill_h + 0.3 * cm)
+            for opt in options:
+                pw = c.stringWidth(opt, 'Helvetica', 9.5) + 2 * pad_h
+                if x + pw > width - margin:
+                    x = margin
+                    y -= pill_h + gap
                     y = ensure_space(y, pill_h + 0.3 * cm)
-                    draw_pill_row(line_items, line_widths, y)
-            else:
-                y = ensure_space(y, pill_h + 0.3 * cm)
-                draw_pill_row(options, widths, y)
+                c.setFillColorRGB(*PANEL)
+                c.roundRect(x, y - pill_h, pw, pill_h, radius, fill=1, stroke=0)
+                c.setFillColorRGB(*INK)
+                c.drawCentredString(x + pw / 2, y - pill_h * 0.63, opt)
+                x += pw + gap
 
         c.showPage()
         c.save()
