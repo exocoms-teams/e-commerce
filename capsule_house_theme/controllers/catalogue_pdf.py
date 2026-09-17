@@ -8,9 +8,6 @@ from odoo.http import request
 from ..data_definition import GAMMES_DATA
 
 
-# Table des codepoints Unicode FontAwesome 4.7 (même version que celle
-# utilisée par le site, voir layout.xml : fontawesome-webfont.woff2 v4.7.0).
-# Référence officielle, stable : https://fontawesome.com/v4/cheatsheet/
 FA_CODEPOINTS = {
     'fa-square-o': u'\uf096', 'fa-lock': u'\uf023',
     'fa-lightbulb-o': u'\uf0eb', 'fa-bath': u'\uf2cd',
@@ -35,14 +32,24 @@ class CapsuleHouseCataloguePdf(http.Controller):
     à partir de GAMMES_DATA — toujours à jour (option B, décidée avec
     hamza03 le 2026-09-11).
 
-    Icônes rendues avec le VRAI fichier FontAwebood du module `web`
-    (celui déjà utilisé par le site, voir layout.xml), localisé via
-    get_module_path (fonction stable, contrairement à
-    get_module_resource, retirée dans cette version d'Odoo — voir
-    historique de ce fichier). Garantit des icônes pixel-identiques
-    entre toutes les gammes. Si le fichier n'est introuvable pour une
-    raison quelconque, repli silencieux sur un simple carré (jamais
-    d'erreur bloquante pour un manque d'icône).
+    Icônes rendues avec le vrai fichier FontAwesome du module `web`
+    (même fichier que le site), localisé via get_module_path.
+
+    BUG CORRIGÉ (v2) : après avoir dessiné une icône avec la police
+    FontAwesome, le canvas restait sur cette police — tout texte
+    normal dessiné juste après (ex: le libellé d'un équipement) était
+    donc rendu avec la police d'icônes au lieu de Helvetica, le
+    rendant invisible/illisible. Chaque fonction d'icône restaure
+    maintenant explicitement la police précédente avant de rendre la
+    main à l'appelant.
+
+    BUG CORRIGÉ (v2) : le titre "Formats" pouvait être imprimé en bas
+    d'une page tandis que les cartes de formats elles-mêmes
+    atterrissaient sur la page suivante (titre orphelin). Comme pour
+    les Spécifications techniques, la hauteur totale du bloc
+    (titre + contenu) est maintenant calculée AVANT de rien dessiner :
+    si elle ne tient pas entièrement dans l'espace restant, on saute
+    directement à une page neuve.
     """
 
     _FA_FONT_PATH = None
@@ -104,31 +111,33 @@ class CapsuleHouseCataloguePdf(http.Controller):
         WHITE = (1, 1, 1)
         LIGHT_BORDER = (0.85, 0.85, 0.85)
 
-        def draw_icon(icon_key, x, y, size, color=TERRACOTTA):
-            """Dessine l'icône FontAwesome réelle si la police a pu
-            être chargée (même fichier que le site, donc identique sur
-            toutes les gammes) ; sinon un simple carré de secours."""
+        DEFAULT_FONT = ('Helvetica', 10.5)
+
+        def draw_icon(icon_key, x, y, size, color=TERRACOTTA,
+                      restore_font=DEFAULT_FONT):
+            """Dessine l'icône FontAwesome réelle si possible, sinon un
+            carré de secours. Restaure TOUJOURS la police passée en
+            paramètre avant de rendre la main — c'est ce qui manquait
+            et cassait le texte dessiné juste après."""
             codepoint = FA_CODEPOINTS.get(icon_key)
             if has_fa and codepoint:
                 c.setFillColorRGB(*color)
-                c.setFont('FontAwesome', size / 0.028 * 0.01)  # taille approx. en pt
-                # drawString avec une police d'icônes se centre par la baseline :
-                # on ajuste pour aligner visuellement avec le texte à côté.
-                fsize = size * 28.35  # cm -> pt approximatif pour la hauteur voulue
-                c.setFont('FontAwesome', fsize * 0.85)
+                c.setFont('FontAwesome', size)
                 c.drawString(x, y, codepoint)
             else:
                 c.setStrokeColorRGB(*color)
                 c.setLineWidth(1.2)
                 c.roundRect(x, y, size, size, size * 0.15, stroke=1, fill=0)
+            c.setFont(*restore_font)
 
-        def check_mark(x, y, size, color=GREEN):
+        def check_mark(x, y, size, color=GREEN, restore_font=DEFAULT_FONT):
             """Coche verte — vraie icône fa-check-circle si dispo,
-            sinon cercle plein dessiné avec un trait blanc."""
+            sinon cercle plein avec trait blanc. Restaure la police
+            passée en paramètre avant de rendre la main (même
+            correction que draw_icon)."""
             if has_fa and 'fa-check-circle' in FA_CODEPOINTS:
                 c.setFillColorRGB(*color)
-                fsize = size * 28.35 * 0.85
-                c.setFont('FontAwesome', fsize)
+                c.setFont('FontAwesome', size)
                 c.drawString(x, y, FA_CODEPOINTS['fa-check-circle'])
             else:
                 c.setFillColorRGB(*color)
@@ -139,10 +148,10 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 c.setLineCap(1)
                 c.line(x + size * 0.28, cy, x + size * 0.44, cy - size * 0.16)
                 c.line(x + size * 0.44, cy - size * 0.16, x + size * 0.72, cy + size * 0.18)
+            c.setFont(*restore_font)
 
         # ------------------------------------------------------------------
-        # MISE EN PAGE — polices légèrement agrandies pour se rapprocher
-        # du rendu web (retour utilisateur : "augmente un peu la police")
+        # MISE EN PAGE
         # ------------------------------------------------------------------
         def new_page_header():
             c.setFillColorRGB(*INK)
@@ -160,13 +169,23 @@ class CapsuleHouseCataloguePdf(http.Controller):
             return height - 4.5 * cm
 
         def ensure_space(y_pos, needed):
+            """Saut de page simple (utilisé pour les lignes de tableau,
+            où une coupure au bon endroit est acceptable)."""
             if y_pos - needed < margin:
                 c.showPage()
                 return new_page_header()
             return y_pos
 
+        def ensure_block(y_pos, needed_height):
+            """Saut de page COMPLET si le bloc entier (titre + contenu)
+            ne tient pas dans l'espace restant — jamais de titre ou de
+            tableau coupé en deux."""
+            if y_pos - needed_height < margin:
+                c.showPage()
+                return new_page_header()
+            return y_pos
+
         def section_title(y_pos, text, centered=False):
-            y_pos = ensure_space(y_pos, 1.3 * cm)
             c.setFillColorRGB(*INK)
             c.setFont('Helvetica-Bold', 15)
             text_w = c.stringWidth(text, 'Helvetica-Bold', 15)
@@ -175,19 +194,31 @@ class CapsuleHouseCataloguePdf(http.Controller):
             c.setStrokeColorRGB(*TERRACOTTA)
             c.setLineWidth(2)
             c.line(x, y_pos - 0.15 * cm, x + text_w, y_pos - 0.15 * cm)
+            c.setFont(*DEFAULT_FONT)
             return y_pos - 1.05 * cm
 
         y = new_page_header()
 
         # --- Performances ---
         if gamme.get('performances'):
+            perfs = gamme['performances']
+            col_count = 2
+            gap = 0.6 * cm
+            card_w = (width - 2 * margin - gap * (col_count - 1)) / col_count
+            card_h = 3 * cm
+            pad = 0.4 * cm
+            icon_size = 0.6 * cm
+
+            # Bloc titre+sous-titre+1ère rangée : jamais séparé sur 2 pages
+            header_block_h = 2 * cm
+            y = ensure_block(y, header_block_h + card_h + 0.4 * cm)
+
             gender = gamme.get('gender')
             if is_fr:
                 article, adj = ('Une', 'pensée') if gender == 'f' else ('Un', 'pensé')
                 title = "%s %s %s pour le confort absolu" % (article, gamme['name'].lower(), adj)
             else:
                 title = "A %s designed for absolute comfort" % gamme['name'].lower()
-            y = ensure_space(y, 2 * cm)
             c.setFillColorRGB(*TERRACOTTA)
             c.setFont('Helvetica-Bold', 9.5)
             label = 'PERFORMANCES'
@@ -197,14 +228,8 @@ class CapsuleHouseCataloguePdf(http.Controller):
             c.setFont('Helvetica-Bold', 16)
             c.drawString((width - c.stringWidth(title, 'Helvetica-Bold', 16)) / 2, y, title)
             y -= 1.15 * cm
+            c.setFont(*DEFAULT_FONT)
 
-            perfs = gamme['performances']
-            col_count = 2
-            gap = 0.6 * cm
-            card_w = (width - 2 * margin - gap * (col_count - 1)) / col_count
-            card_h = 3 * cm
-            pad = 0.4 * cm
-            icon_size = 0.6 * cm
             for i in range(0, len(perfs), col_count):
                 row = perfs[i:i + col_count]
                 y = ensure_space(y, card_h + 0.4 * cm)
@@ -213,9 +238,9 @@ class CapsuleHouseCataloguePdf(http.Controller):
                     c.setStrokeColorRGB(*LIGHT_BORDER)
                     c.setFillColorRGB(*WHITE)
                     c.roundRect(x, y - card_h, card_w, card_h, 4, fill=1, stroke=1)
-                    draw_icon(perf.get('icon', ''), x + pad, y - pad - icon_size, icon_size)
+                    draw_icon(perf.get('icon', ''), x + pad, y - pad - icon_size, icon_size,
+                              restore_font=('Helvetica-Bold', 11))
                     c.setFillColorRGB(*INK)
-                    c.setFont('Helvetica-Bold', 11)
                     ptitle = perf['title_fr'] if is_fr else perf['title_en']
                     c.drawString(x + pad, y - pad - icon_size - 0.55 * cm, ptitle)
                     c.setFillColorRGB(*GRAY)
@@ -236,20 +261,23 @@ class CapsuleHouseCataloguePdf(http.Controller):
                     for line in lines[:3]:
                         c.drawString(x + pad, yy, line)
                         yy -= 0.4 * cm
+                    c.setFont(*DEFAULT_FONT)
                     x += card_w + gap
                 y -= card_h + 0.5 * cm
             y -= 0.3 * cm
 
-        # --- Formats ---
+        # --- Formats : titre + cartes jamais séparés sur 2 pages ---
         if gamme.get('formats'):
-            y = section_title(y, 'Formats')
             fmts = gamme['formats']
             gap = 0.5 * cm
             card_w = 4.7 * cm
             card_h = 2.6 * cm
+            title_block_h = 1.3 * cm
+            y = ensure_block(y, title_block_h + card_h + 0.9 * cm)
+
+            y = section_title(y, 'Formats')
             row_w = len(fmts) * card_w + (len(fmts) - 1) * gap
             x = (width - row_w) / 2
-            y = ensure_space(y, card_h + 0.3 * cm)
             for fmt in fmts:
                 c.setFillColorRGB(*PANEL)
                 c.roundRect(x, y - card_h, card_w, card_h, 4, fill=1, stroke=0)
@@ -263,26 +291,21 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 c.drawCentredString(x + card_w / 2, y - 1.4 * cm, surface)
                 c.drawCentredString(x + card_w / 2, y - 1.9 * cm, note)
                 x += card_w + gap
+            c.setFont(*DEFAULT_FONT)
             y -= card_h + 0.9 * cm
 
-        # --- Spécifications : NE JAMAIS COUPER, saut de page complet si besoin ---
+        # --- Spécifications : jamais coupées, saut de page complet si besoin ---
         if gamme.get('specs_ext') or gamme.get('specs_int'):
-            # Estimation de la hauteur totale nécessaire pour TOUT le bloc
-            # (titre + Extérieur + Intérieur) : si ça ne rentre pas
-            # intégralement dans l'espace restant, on saute directement à
-            # une page neuve plutôt que de couper le contenu au milieu.
             row_h_est = 0.68 * cm
             block_gap = 0.6 * cm
             n_ext = len(gamme.get('specs_ext') or [])
             n_int = len(gamme.get('specs_int') or [])
-            total_needed = 1.3 * cm  # titre de section
+            total_needed = 1.3 * cm
             if n_ext:
                 total_needed += 0.6 * cm + n_ext * row_h_est + block_gap
             if n_int:
                 total_needed += 0.6 * cm + n_int * row_h_est
-            if y - total_needed < margin:
-                c.showPage()
-                y = new_page_header()
+            y = ensure_block(y, total_needed)
 
             y = section_title(y, 'Spécifications techniques' if is_fr else 'Technical specifications')
             full_w = width - 2 * margin
@@ -312,27 +335,33 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 y -= block_gap
             if gamme.get('specs_int'):
                 y = draw_spec_block(y, 'Intérieur' if is_fr else 'Interior', gamme['specs_int'])
+            c.setFont(*DEFAULT_FONT)
             y -= 0.55 * cm
 
-        # --- Équipements ---
+        # --- Équipements : bug de police corrigé ici ---
         equip = (gamme.get('equipements_fr') if is_fr else gamme.get('equipements_en'))
         if equip:
-            y = section_title(y, 'Équipements inclus' if is_fr else 'Included equipment')
             col_gap = 1 * cm
             col_w = (width - 2 * margin - col_gap) / 2
             mid = (len(equip) + 1) // 2
             cols = [equip[:mid], equip[mid:]]
             check_size = 0.32 * cm
             row_h = 0.72 * cm
+
+            title_block_h = 1.3 * cm
+            rows_in_longest_col = max(len(cols[0]), len(cols[1]))
+            y = ensure_block(y, title_block_h + rows_in_longest_col * row_h)
+
+            y = section_title(y, 'Équipements inclus' if is_fr else 'Included equipment')
             y_start = y
             y_end = y
             for i, col in enumerate(cols):
                 yy = y_start
                 x = margin + i * (col_w + col_gap)
-                c.setFont('Helvetica', 10.5)
                 for item in col:
-                    check_mark(x, yy, check_size)
+                    check_mark(x, yy, check_size, restore_font=DEFAULT_FONT)
                     c.setFillColorRGB(*INK)
+                    c.setFont(*DEFAULT_FONT)
                     text_x = x + check_size + 0.35 * cm
                     max_text_w = col_w - check_size - 0.35 * cm
                     if c.stringWidth(item, 'Helvetica', 10.5) > max_text_w:
@@ -352,21 +381,20 @@ class CapsuleHouseCataloguePdf(http.Controller):
                         c.drawString(text_x, yy, item)
                     yy -= row_h
                 y_end = min(y_end, yy)
-            # Espace après équipements : ni collé, ni trop loin des options
             y = y_end + 0.1 * cm
 
         # --- Options ---
         options = (gamme.get('options_fr') if is_fr else gamme.get('options_en'))
         if options:
-            y -= 0.5 * cm  # juste milieu entre "trop proche" et "trop loin"
+            y -= 0.5 * cm
+            y = ensure_block(y, 1.3 * cm + 0.72 * cm)
             y = section_title(y, 'Options')
-            c.setFont('Helvetica', 10)
             pill_h = 0.72 * cm
             pad_h = 0.45 * cm
             gap = 0.35 * cm
             radius = 0.2 * cm
             x = margin
-            y = ensure_space(y, pill_h + 0.3 * cm)
+            c.setFont('Helvetica', 10)
             for opt in options:
                 pw = c.stringWidth(opt, 'Helvetica', 10) + 2 * pad_h
                 if x + pw > width - margin:
