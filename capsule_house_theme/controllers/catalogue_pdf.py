@@ -1,366 +1,394 @@
 # -*- coding: utf-8 -*-
-"""Catalogue PDF Capsule House — Platypus + FontAwesome (glyphes du site)."""
-
-import glob
+import io
 import os
-from html import escape
-from io import BytesIO
-
-from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.lib.units import mm
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import (
-    Flowable, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle,
-)
 
 from odoo import http
 from odoo.http import request
-from odoo.modules.module import get_module_path
 
 from ..data_definition import GAMMES_DATA
 
 
-# =====================================================================
-# FONTAWESOME — vrais glyphes du site, emplacement résilient aux
-# montées de version d'Odoo (recherche par glob, jamais de crash).
-# =====================================================================
-
+# Table des codepoints Unicode FontAwesome 4.7 (même version que celle
+# utilisée par le site, voir layout.xml : fontawesome-webfont.woff2 v4.7.0).
+# Référence officielle, stable : https://fontawesome.com/v4/cheatsheet/
 FA_CODEPOINTS = {
-    'fa-cubes': 0xF1B3, 'fa-cube': 0xF1B2,
-    'fa-industry': 0xF275, 'fa-square-o': 0xF096,
-    'fa-shield': 0xF132, 'fa-bath': 0xF2CD,
-    'fa-lightbulb-o': 0xF0EB, 'fa-clock-o': 0xF017,
-    'fa-bolt': 0xF0E7, 'fa-arrows-alt': 0xF0B2,
-    'fa-arrows-v': 0xF07D, 'fa-tint': 0xF043,
-    'fa-building-o': 0xF0F7, 'fa-truck': 0xF0D1,
-    'fa-refresh': 0xF021, 'fa-thermometer-half': 0xF2C9,
-    'fa-tree': 0xF1BB, 'fa-sun-o': 0xF185,
-    'fa-plug': 0xF1E6, 'fa-volume-off': 0xF026,
-    'fa-compress': 0xF066, 'fa-paint-brush': 0xF1FC,
-    'fa-lock': 0xF023, 'fa-check': 0xF00C,
+    'fa-square-o': u'\uf096', 'fa-lock': u'\uf023',
+    'fa-lightbulb-o': u'\uf0eb', 'fa-bath': u'\uf2cd',
+    'fa-sun-o': u'\uf185', 'fa-paint-brush': u'\uf1fc',
+    'fa-bolt': u'\uf0e7', 'fa-arrows-v': u'\uf07d',
+    'fa-building-o': u'\uf0f7', 'fa-cubes': u'\uf1b3',
+    'fa-industry': u'\uf275', 'fa-clock-o': u'\uf017',
+    'fa-arrows-alt': u'\uf0b2', 'fa-tint': u'\uf043',
+    'fa-refresh': u'\uf021', 'fa-thermometer-half': u'\uf2c9',
+    'fa-cube': u'\uf1b2', 'fa-truck': u'\uf0d1',
+    'fa-tree': u'\uf1bb', 'fa-shield': u'\uf132',
+    'fa-plug': u'\uf1e6', 'fa-volume-off': u'\uf026',
+    'fa-compress': u'\uf066', 'fa-check-circle': u'\uf058',
+    'fa-th-large': u'\uf009', 'fa-circle-o': u'\uf10c',
+    'fa-puzzle-piece': u'\uf12e', 'fa-inbox': u'\uf01c',
+    'fa-home': u'\uf015',
 }
 
-_FA_FONT_NAME = 'FA-Catalogue'
-_fa_ready = None
 
+class CapsuleHouseCataloguePdf(http.Controller):
+    """Génère un catalogue PDF à la volée pour chaque gamme (CH-35),
+    à partir de GAMMES_DATA — toujours à jour (option B, décidée avec
+    hamza03 le 2026-09-11).
 
-def _fa_ttf_path():
-    web = get_module_path('web')
-    if web:
-        for pattern in (
-            'static/lib/fontawesome/fonts/fontawesome-webfont.ttf',  # Odoo <= 15
-            'static/**/fontawesome*/fonts/*.ttf',
-            'static/**/FontAwesome*.ttf',
-        ):
-            found = glob.glob(os.path.join(web, pattern), recursive=True)
-            if found:
-                return found[0]
-    fa = get_module_path('base_fontawesome')  # OCA, toutes versions
-    if fa:
-        found = glob.glob(os.path.join(fa, 'static', '**', '*.ttf'),
-                          recursive=True)
-        for path in found:  # préférer la variante "solid"
-            if 'solid' in path.lower():
-                return path
-        if found:
-            return found[0]
-    return None
+    Icônes rendues avec le VRAI fichier FontAwebood du module `web`
+    (celui déjà utilisé par le site, voir layout.xml), localisé via
+    get_module_path (fonction stable, contrairement à
+    get_module_resource, retirée dans cette version d'Odoo — voir
+    historique de ce fichier). Garantit des icônes pixel-identiques
+    entre toutes les gammes. Si le fichier n'est introuvable pour une
+    raison quelconque, repli silencieux sur un simple carré (jamais
+    d'erreur bloquante pour un manque d'icône).
+    """
 
+    _FA_FONT_PATH = None
+    _FA_CHECKED = False
 
-def fa_font_ready():
-    """Enregistre la police une fois par worker. Jamais de crash."""
-    global _fa_ready
-    if _fa_ready is None:
+    def _get_fa_font_path(self):
+        if CapsuleHouseCataloguePdf._FA_CHECKED:
+            return CapsuleHouseCataloguePdf._FA_FONT_PATH
+        CapsuleHouseCataloguePdf._FA_CHECKED = True
         try:
-            path = _fa_ttf_path()
-            if path:
-                pdfmetrics.registerFont(TTFont(_FA_FONT_NAME, path))
-            _fa_ready = bool(path)
+            from odoo.modules.module import get_module_path
+            web_path = get_module_path('web')
+            candidate = os.path.join(
+                web_path, 'static', 'src', 'libs', 'fontawesome',
+                'fonts', 'fontawesome-webfont.ttf',
+            )
+            if os.path.exists(candidate):
+                CapsuleHouseCataloguePdf._FA_FONT_PATH = candidate
         except Exception:
-            _fa_ready = False
-    return _fa_ready
+            pass
+        return CapsuleHouseCataloguePdf._FA_FONT_PATH
 
+    def _register_fa(self):
+        path = self._get_fa_font_path()
+        if not path:
+            return False
+        try:
+            from reportlab.pdfbase import pdfmetrics
+            from reportlab.pdfbase.ttfonts import TTFont
+            if 'FontAwesome' not in pdfmetrics.getRegisteredFontNames():
+                pdfmetrics.registerFont(TTFont('FontAwesome', path))
+            return True
+        except Exception:
+            return False
 
-class Icon(Flowable):
-    """Glyphe FontAwesome, dessiné avec la police du site."""
+    @http.route('/nos-gammes/<string:slug>/catalogue.pdf', type='http',
+                auth='public', website=True, sitemap=False)
+    def gamme_catalogue_pdf(self, slug, **kw):
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.units import cm
+        from reportlab.pdfgen import canvas
 
-    def __init__(self, name, size=12 * mm, color=None):
-        super().__init__()
-        self.name = name
-        self.size = size
-        self.color = color or CapsuleCatalogueController.PRIMARY_COLOR
-        self.width = self.height = size
-
-    def draw(self):
-        c = self.canv
-        c.saveState()
-        if fa_font_ready() and self.name in FA_CODEPOINTS:
-            c.setFont(_FA_FONT_NAME, self.size * 0.85)
-            c.setFillColor(self.color)
-            c.drawString(self.size * 0.08, self.size * 0.08,
-                         chr(FA_CODEPOINTS[self.name]))
-        else:  # fallback : pastille neutre, jamais de PDF cassé
-            c.setStrokeColor(self.color)
-            c.setLineWidth(1.2)
-            c.circle(self.size / 2, self.size / 2, self.size * 0.38,
-                     stroke=1, fill=0)
-        c.restoreState()
-
-
-# =====================================================================
-# CONTRÔLEUR
-# =====================================================================
-
-class CapsuleCatalogueController(http.Controller):
-
-    # --- gabarit page ---
-    M_LEFT = M_RIGHT = 18 * mm
-    M_TOP = 22 * mm
-    M_BOTTOM = 18 * mm
-    CONTENT_W = A4[0] - M_LEFT - M_RIGHT  # 174 mm
-
-    # --- palette (alignée sur le site) ---
-    PRIMARY = colors.HexColor('#1d3557')
-    ACCENT = colors.HexColor('#c1442e')
-    BORDER = colors.HexColor('#d8dee9')
-    HEADER_BG = colors.HexColor('#e9eff7')
-    MUTED = colors.HexColor('#555555')
-    FOOT_MUTED = colors.HexColor('#777777')
-
-    _styles = None
-
-    # -------------------------------------------------------------
-    # ROUTES
-    # -------------------------------------------------------------
-
-    @http.route('/catalogues', type='http', auth='public', website=True,
-                sitemap=True)
-    def catalogues_index(self, **kwargs):
-        return request.render(
-            'capsule_house_theme.catalogues_page',
-            {'gammes': GAMMES_DATA},
-        )
-
-    @http.route('/catalogue/<string:slug>.pdf', type='http', auth='public',
-                website=True, sitemap=False)
-    def catalogue_pdf(self, slug, **kwargs):
-        gamme = next((g for g in GAMMES_DATA if g.get('slug') == slug), None)
+        gamme = next((g for g in GAMMES_DATA if g['slug'] == slug), None)
         if not gamme:
             return request.not_found()
 
-        is_fr = request.env.lang != 'en_US'
-        pdf = self._build_pdf(gamme, is_fr)
+        is_fr = request.env.lang == 'fr_FR'
+        has_fa = self._register_fa()
+        buffer = io.BytesIO()
+        c = canvas.Canvas(buffer, pagesize=A4)
+        width, height = A4
+        margin = 2 * cm
+
+        INK = (0.06, 0.09, 0.08)
+        TERRACOTTA = (0.82, 0.35, 0.22)
+        PANEL = (0.96, 0.92, 0.87)
+        GRAY = (0.42, 0.42, 0.42)
+        GREEN = (0.15, 0.55, 0.35)
+        WHITE = (1, 1, 1)
+        LIGHT_BORDER = (0.85, 0.85, 0.85)
+
+        def draw_icon(icon_key, x, y, size, color=TERRACOTTA):
+            """Dessine l'icône FontAwesome réelle si la police a pu
+            être chargée (même fichier que le site, donc identique sur
+            toutes les gammes) ; sinon un simple carré de secours."""
+            codepoint = FA_CODEPOINTS.get(icon_key)
+            if has_fa and codepoint:
+                c.setFillColorRGB(*color)
+                c.setFont('FontAwesome', size / 0.028 * 0.01)  # taille approx. en pt
+                # drawString avec une police d'icônes se centre par la baseline :
+                # on ajuste pour aligner visuellement avec le texte à côté.
+                fsize = size * 28.35  # cm -> pt approximatif pour la hauteur voulue
+                c.setFont('FontAwesome', fsize * 0.85)
+                c.drawString(x, y, codepoint)
+            else:
+                c.setStrokeColorRGB(*color)
+                c.setLineWidth(1.2)
+                c.roundRect(x, y, size, size, size * 0.15, stroke=1, fill=0)
+
+        def check_mark(x, y, size, color=GREEN):
+            """Coche verte — vraie icône fa-check-circle si dispo,
+            sinon cercle plein dessiné avec un trait blanc."""
+            if has_fa and 'fa-check-circle' in FA_CODEPOINTS:
+                c.setFillColorRGB(*color)
+                fsize = size * 28.35 * 0.85
+                c.setFont('FontAwesome', fsize)
+                c.drawString(x, y, FA_CODEPOINTS['fa-check-circle'])
+            else:
+                c.setFillColorRGB(*color)
+                cy = y + size * 0.35
+                c.circle(x + size / 2, cy, size / 2, stroke=0, fill=1)
+                c.setStrokeColorRGB(*WHITE)
+                c.setLineWidth(1.1)
+                c.setLineCap(1)
+                c.line(x + size * 0.28, cy, x + size * 0.44, cy - size * 0.16)
+                c.line(x + size * 0.44, cy - size * 0.16, x + size * 0.72, cy + size * 0.18)
+
+        # ------------------------------------------------------------------
+        # MISE EN PAGE — polices légèrement agrandies pour se rapprocher
+        # du rendu web (retour utilisateur : "augmente un peu la police")
+        # ------------------------------------------------------------------
+        def new_page_header():
+            c.setFillColorRGB(*INK)
+            c.rect(0, height - 3.5 * cm, width, 3.5 * cm, fill=1, stroke=0)
+            c.setFillColorRGB(*WHITE)
+            c.setFont('Helvetica-Bold', 21)
+            c.drawString(margin, height - 1.6 * cm, 'Capsule House')
+            c.setFillColorRGB(*TERRACOTTA)
+            c.setFont('Helvetica-Bold', 16)
+            c.drawString(margin, height - 2.4 * cm, gamme['name'])
+            c.setFillColorRGB(*WHITE)
+            c.setFont('Helvetica', 10.5)
+            tagline = gamme['tagline_fr'] if is_fr else gamme['tagline_en']
+            c.drawString(margin, height - 3.05 * cm, tagline)
+            return height - 4.5 * cm
+
+        def ensure_space(y_pos, needed):
+            if y_pos - needed < margin:
+                c.showPage()
+                return new_page_header()
+            return y_pos
+
+        def section_title(y_pos, text, centered=False):
+            y_pos = ensure_space(y_pos, 1.3 * cm)
+            c.setFillColorRGB(*INK)
+            c.setFont('Helvetica-Bold', 15)
+            text_w = c.stringWidth(text, 'Helvetica-Bold', 15)
+            x = (width - text_w) / 2 if centered else margin
+            c.drawString(x, y_pos, text)
+            c.setStrokeColorRGB(*TERRACOTTA)
+            c.setLineWidth(2)
+            c.line(x, y_pos - 0.15 * cm, x + text_w, y_pos - 0.15 * cm)
+            return y_pos - 1.05 * cm
+
+        y = new_page_header()
+
+        # --- Performances ---
+        if gamme.get('performances'):
+            gender = gamme.get('gender')
+            if is_fr:
+                article, adj = ('Une', 'pensée') if gender == 'f' else ('Un', 'pensé')
+                title = "%s %s %s pour le confort absolu" % (article, gamme['name'].lower(), adj)
+            else:
+                title = "A %s designed for absolute comfort" % gamme['name'].lower()
+            y = ensure_space(y, 2 * cm)
+            c.setFillColorRGB(*TERRACOTTA)
+            c.setFont('Helvetica-Bold', 9.5)
+            label = 'PERFORMANCES'
+            c.drawString((width - c.stringWidth(label, 'Helvetica-Bold', 9.5)) / 2, y, label)
+            y -= 0.65 * cm
+            c.setFillColorRGB(*INK)
+            c.setFont('Helvetica-Bold', 16)
+            c.drawString((width - c.stringWidth(title, 'Helvetica-Bold', 16)) / 2, y, title)
+            y -= 1.15 * cm
+
+            perfs = gamme['performances']
+            col_count = 2
+            gap = 0.6 * cm
+            card_w = (width - 2 * margin - gap * (col_count - 1)) / col_count
+            card_h = 3 * cm
+            pad = 0.4 * cm
+            icon_size = 0.6 * cm
+            for i in range(0, len(perfs), col_count):
+                row = perfs[i:i + col_count]
+                y = ensure_space(y, card_h + 0.4 * cm)
+                x = margin
+                for perf in row:
+                    c.setStrokeColorRGB(*LIGHT_BORDER)
+                    c.setFillColorRGB(*WHITE)
+                    c.roundRect(x, y - card_h, card_w, card_h, 4, fill=1, stroke=1)
+                    draw_icon(perf.get('icon', ''), x + pad, y - pad - icon_size, icon_size)
+                    c.setFillColorRGB(*INK)
+                    c.setFont('Helvetica-Bold', 11)
+                    ptitle = perf['title_fr'] if is_fr else perf['title_en']
+                    c.drawString(x + pad, y - pad - icon_size - 0.55 * cm, ptitle)
+                    c.setFillColorRGB(*GRAY)
+                    c.setFont('Helvetica', 9)
+                    pdesc = perf['desc_fr'] if is_fr else perf['desc_en']
+                    words = pdesc.split(' ')
+                    lines, cur = [], ''
+                    max_w = card_w - 2 * pad
+                    for w in words:
+                        test = (cur + ' ' + w).strip()
+                        if c.stringWidth(test, 'Helvetica', 9) > max_w:
+                            lines.append(cur)
+                            cur = w
+                        else:
+                            cur = test
+                    lines.append(cur)
+                    yy = y - pad - icon_size - 1.05 * cm
+                    for line in lines[:3]:
+                        c.drawString(x + pad, yy, line)
+                        yy -= 0.4 * cm
+                    x += card_w + gap
+                y -= card_h + 0.5 * cm
+            y -= 0.3 * cm
+
+        # --- Formats ---
+        if gamme.get('formats'):
+            y = section_title(y, 'Formats')
+            fmts = gamme['formats']
+            gap = 0.5 * cm
+            card_w = 4.7 * cm
+            card_h = 2.6 * cm
+            row_w = len(fmts) * card_w + (len(fmts) - 1) * gap
+            x = (width - row_w) / 2
+            y = ensure_space(y, card_h + 0.3 * cm)
+            for fmt in fmts:
+                c.setFillColorRGB(*PANEL)
+                c.roundRect(x, y - card_h, card_w, card_h, 4, fill=1, stroke=0)
+                c.setFillColorRGB(*INK)
+                c.setFont('Helvetica-Bold', 11.5)
+                c.drawCentredString(x + card_w / 2, y - 0.75 * cm, fmt['name'])
+                c.setFillColorRGB(*GRAY)
+                c.setFont('Helvetica', 9.5)
+                surface = fmt['surface_fr'] if is_fr else fmt['surface_en']
+                note = fmt['note_fr'] if is_fr else fmt['note_en']
+                c.drawCentredString(x + card_w / 2, y - 1.4 * cm, surface)
+                c.drawCentredString(x + card_w / 2, y - 1.9 * cm, note)
+                x += card_w + gap
+            y -= card_h + 0.9 * cm
+
+        # --- Spécifications : NE JAMAIS COUPER, saut de page complet si besoin ---
+        if gamme.get('specs_ext') or gamme.get('specs_int'):
+            # Estimation de la hauteur totale nécessaire pour TOUT le bloc
+            # (titre + Extérieur + Intérieur) : si ça ne rentre pas
+            # intégralement dans l'espace restant, on saute directement à
+            # une page neuve plutôt que de couper le contenu au milieu.
+            row_h_est = 0.68 * cm
+            block_gap = 0.6 * cm
+            n_ext = len(gamme.get('specs_ext') or [])
+            n_int = len(gamme.get('specs_int') or [])
+            total_needed = 1.3 * cm  # titre de section
+            if n_ext:
+                total_needed += 0.6 * cm + n_ext * row_h_est + block_gap
+            if n_int:
+                total_needed += 0.6 * cm + n_int * row_h_est
+            if y - total_needed < margin:
+                c.showPage()
+                y = new_page_header()
+
+            y = section_title(y, 'Spécifications techniques' if is_fr else 'Technical specifications')
+            full_w = width - 2 * margin
+
+            def draw_spec_block(y_pos, title, rows):
+                c.setFillColorRGB(*GRAY)
+                c.setFont('Helvetica-Bold', 9.5)
+                c.drawString(margin, y_pos, title.upper())
+                y_pos -= 0.6 * cm
+                c.setFont('Helvetica', 10.5)
+                for row in rows:
+                    label = row['label_fr'] if is_fr else row['label_en']
+                    value = row['value_fr'] if is_fr else row['value_en']
+                    c.setFillColorRGB(*GRAY)
+                    c.drawString(margin, y_pos, label)
+                    c.setFillColorRGB(*INK)
+                    c.setFont('Helvetica-Bold', 10.5)
+                    c.drawRightString(margin + full_w, y_pos, value)
+                    c.setFont('Helvetica', 10.5)
+                    c.setStrokeColorRGB(*LIGHT_BORDER)
+                    c.line(margin, y_pos - 0.18 * cm, margin + full_w, y_pos - 0.18 * cm)
+                    y_pos -= row_h_est
+                return y_pos
+
+            if gamme.get('specs_ext'):
+                y = draw_spec_block(y, 'Extérieur' if is_fr else 'Exterior', gamme['specs_ext'])
+                y -= block_gap
+            if gamme.get('specs_int'):
+                y = draw_spec_block(y, 'Intérieur' if is_fr else 'Interior', gamme['specs_int'])
+            y -= 0.55 * cm
+
+        # --- Équipements ---
+        equip = (gamme.get('equipements_fr') if is_fr else gamme.get('equipements_en'))
+        if equip:
+            y = section_title(y, 'Équipements inclus' if is_fr else 'Included equipment')
+            col_gap = 1 * cm
+            col_w = (width - 2 * margin - col_gap) / 2
+            mid = (len(equip) + 1) // 2
+            cols = [equip[:mid], equip[mid:]]
+            check_size = 0.32 * cm
+            row_h = 0.72 * cm
+            y_start = y
+            y_end = y
+            for i, col in enumerate(cols):
+                yy = y_start
+                x = margin + i * (col_w + col_gap)
+                c.setFont('Helvetica', 10.5)
+                for item in col:
+                    check_mark(x, yy, check_size)
+                    c.setFillColorRGB(*INK)
+                    text_x = x + check_size + 0.35 * cm
+                    max_text_w = col_w - check_size - 0.35 * cm
+                    if c.stringWidth(item, 'Helvetica', 10.5) > max_text_w:
+                        words = item.split(' ')
+                        l1, l2 = '', ''
+                        for w in words:
+                            test = (l1 + ' ' + w).strip()
+                            if c.stringWidth(test, 'Helvetica', 10.5) <= max_text_w:
+                                l1 = test
+                            else:
+                                l2 = (l2 + ' ' + w).strip()
+                        c.drawString(text_x, yy, l1)
+                        if l2:
+                            c.drawString(text_x, yy - 0.42 * cm, l2)
+                            yy -= 0.42 * cm
+                    else:
+                        c.drawString(text_x, yy, item)
+                    yy -= row_h
+                y_end = min(y_end, yy)
+            # Espace après équipements : ni collé, ni trop loin des options
+            y = y_end + 0.1 * cm
+
+        # --- Options ---
+        options = (gamme.get('options_fr') if is_fr else gamme.get('options_en'))
+        if options:
+            y -= 0.5 * cm  # juste milieu entre "trop proche" et "trop loin"
+            y = section_title(y, 'Options')
+            c.setFont('Helvetica', 10)
+            pill_h = 0.72 * cm
+            pad_h = 0.45 * cm
+            gap = 0.35 * cm
+            radius = 0.2 * cm
+            x = margin
+            y = ensure_space(y, pill_h + 0.3 * cm)
+            for opt in options:
+                pw = c.stringWidth(opt, 'Helvetica', 10) + 2 * pad_h
+                if x + pw > width - margin:
+                    x = margin
+                    y -= pill_h + gap
+                    y = ensure_space(y, pill_h + 0.3 * cm)
+                c.setFillColorRGB(*PANEL)
+                c.roundRect(x, y - pill_h, pw, pill_h, radius, fill=1, stroke=0)
+                c.setFillColorRGB(*INK)
+                c.drawCentredString(x + pw / 2, y - pill_h * 0.63, opt)
+                x += pw + gap
+
+        c.showPage()
+        c.save()
+        pdf_data = buffer.getvalue()
+        buffer.close()
+
         filename = 'catalogue-%s-%s.pdf' % (slug, 'fr' if is_fr else 'en')
-        return request.make_response(pdf, headers=[
-            ('Content-Type', 'application/pdf'),
-            ('Content-Disposition', 'attachment; filename="%s"' % filename),
-        ])
-
-    # -------------------------------------------------------------
-    # I18N
-    # -------------------------------------------------------------
-
-    @staticmethod
-    def _t(data, key, is_fr):
-        suffix = '_fr' if is_fr else '_en'
-        return data.get(key + suffix, data.get(key, ''))
-
-    # -------------------------------------------------------------
-    # STYLES (cachés au niveau classe)
-    # -------------------------------------------------------------
-
-    @classmethod
-    def _get_styles(cls):
-        if cls._styles:
-            return cls._styles
-        base = getSampleStyleSheet()
-        cls._styles = {
-            'cover_brand': ParagraphStyle(
-                'CoverBrand', parent=base['Title'], alignment=TA_CENTER,
-                fontSize=26, leading=30, textColor=colors.white),
-            'cover_title': ParagraphStyle(
-                'CoverTitle', parent=base['Title'], alignment=TA_CENTER,
-                fontSize=22, leading=26, textColor=colors.white,
-                spaceBefore=4),
-            'cover_tag': ParagraphStyle(
-                'CoverTag', parent=base['Normal'], alignment=TA_CENTER,
-                fontSize=11, leading=15, textColor=colors.white),
-            'section': ParagraphStyle(
-                'Section', parent=base['Heading2'], fontSize=15, leading=19,
-                textColor=cls.PRIMARY, spaceBefore=10, spaceAfter=6),
-            'body': ParagraphStyle(
-                'Body', parent=base['BodyText'], fontSize=9.5, leading=13),
-            'small': ParagraphStyle(
-                'Small', parent=base['BodyText'], fontSize=8.5, leading=11),
-            'muted_center': ParagraphStyle(
-                'MutedCenter', parent=base['BodyText'], alignment=TA_CENTER,
-                fontSize=8, textColor=cls.FOOT_MUTED),
-        }
-        return cls._styles
-
-    # -------------------------------------------------------------
-    # GÉNÉRATION
-    # -------------------------------------------------------------
-
-    def _build_pdf(self, gamme, is_fr):
-        buffer = BytesIO()
-        doc = SimpleDocTemplate(
-            buffer, pagesize=A4,
-            leftMargin=self.M_LEFT, rightMargin=self.M_RIGHT,
-            topMargin=self.M_TOP, bottomMargin=self.M_BOTTOM,
-            title='Catalogue %s' % gamme['name'],
-            author='Capsule House',
+        return request.make_response(
+            pdf_data,
+            headers=[
+                ('Content-Type', 'application/pdf'),
+                ('Content-Disposition', 'attachment; filename="%s"' % filename),
+            ],
         )
-        styles = self._get_styles()
-        story = self._cover(gamme, is_fr, styles)
-        self._append_performances(story, gamme, is_fr, styles)
-        self._append_formats(story, gamme, is_fr, styles)
-        self._append_specs(story, gamme, is_fr, styles)
-        self._append_list(story, gamme.get('equipements_fr' if is_fr
-                                            else 'equipements_en') or [],
-                          'Équipements inclus' if is_fr
-                          else 'Included equipment', styles)
-        self._append_list(story, gamme.get('options_fr' if is_fr
-                                           else 'options_en') or [],
-                          'Options', styles)
-        story.append(Spacer(1, 10 * mm))
-        story.append(Paragraph(
-            'Document informatif — caractéristiques confirmables '
-            'avec notre équipe.' if is_fr else
-            'Informational document — specifications can be confirmed '
-            'with our team.', styles['small']))
-        doc.build(story,
-                  onFirstPage=lambda c, d: self._page(c, d, gamme, True),
-                  onLaterPages=lambda c, d: self._page(c, d, gamme, False))
-        return buffer.getvalue()
-
-    # --- couverture : bandeau pleine largeau via un tableau déguisé ---
-    def _cover(self, gamme, is_fr, styles):
-        inner = [
-            Paragraph('CAPSULE HOUSE', styles['cover_brand']),
-            Spacer(1, 2 * mm),
-            Paragraph(escape(gamme.get('name', '')),
-                      styles['cover_title']),
-            Spacer(1, 2 * mm),
-            Paragraph(escape(self._t(gamme, 'tagline', is_fr)),
-                      styles['cover_tag']),
-        ]
-        band = Table([[inner]], colWidths=[self.CONTENT_W],
-                     rowHeights=[38 * mm])
-        band.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, -1), self.PRIMARY),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ]))
-        return [band, Spacer(1, 10 * mm)]
-
-    # --- sections ---
-    def _table(self, rows, widths, header=True):
-        t = Table(rows, colWidths=widths, repeatRows=1 if header else 0)
-        cmds = [
-            ('GRID', (0, 0), (-1, -1), 0.4, self.BORDER),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('PADDING', (0, 0), (-1, -1), 6),
-        ]
-        if header:
-            cmds += [
-                ('BACKGROUND', (0, 0), (-1, 0), self.HEADER_BG),
-                ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
-            ]
-        t.setStyle(TableStyle(cmds))
-        return t
-
-    def _append_performances(self, story, gamme, is_fr, styles):
-        perfs = gamme.get('performances') or []
-        if not perfs:
-            return
-        story.append(Paragraph(
-            'Points forts' if is_fr else 'Highlights', styles['section']))
-        rows = [[Icon(p.get('icon', '')),
-                 Paragraph('<b>%s</b><br/>%s' % (
-                     escape(self._t(p, 'title', is_fr)),
-                     escape(self._t(p, 'desc', is_fr))),
-                     styles['body'])] for p in perfs]
-        story += [self._table(rows, [18 * mm, self.CONTENT_W - 18 * mm],
-                              header=False), Spacer(1, 6 * mm)]
-
-    def _append_formats(self, story, gamme, is_fr, styles):
-        fmts = gamme.get('formats') or []
-        if not fmts:
-            return
-        story.append(Paragraph(
-            'Formats disponibles' if is_fr else 'Available formats',
-            styles['section']))
-        h = lambda s: Paragraph('<b>%s</b>' % s, styles['small'])
-        rows = [[h('Format' if is_fr else 'Format'),
-                 h('Surface' if is_fr else 'Area'),
-                 h('Note' if is_fr else 'Note')]]
-        for f in fmts:
-            rows.append([Paragraph(escape(f.get('name', '')), styles['small']),
-                         Paragraph(escape(self._t(f, 'surface', is_fr)),
-                                   styles['small']),
-                         Paragraph(escape(self._t(f, 'note', is_fr)),
-                                   styles['small'])])
-        story += [self._table(rows, [50 * mm, 50 * mm,
-                                     self.CONTENT_W - 100 * mm]),
-                  Spacer(1, 6 * mm)]
-
-    def _append_specs(self, story, gamme, is_fr, styles):
-        for key, label_fr, label_en in [
-                ('specs_ext', 'Spécifications extérieures',
-                 'Exterior specifications'),
-                ('specs_int', 'Spécifications intérieures',
-                 'Interior specifications')]:
-            specs = gamme.get(key) or []
-            if not specs:
-                continue
-            story.append(Paragraph(
-                label_fr if is_fr else label_en, styles['section']))
-            h = lambda s: Paragraph('<b>%s</b>' % s, styles['small'])
-            rows = [[h('Caractéristique' if is_fr else 'Characteristic'),
-                     h('Valeur' if is_fr else 'Value')]]
-            for item in specs:
-                rows.append([
-                    Paragraph(escape(self._t(item, 'label', is_fr)),
-                              styles['small']),
-                    Paragraph(escape(self._t(item, 'value', is_fr)),
-                              styles['small'])])
-            story += [self._table(rows, [self.CONTENT_W * 0.46,
-                                         self.CONTENT_W * 0.54]),
-                      Spacer(1, 4 * mm)]
-
-    def _append_list(self, story, items, title, styles):
-        if not items:
-            return
-        story.append(Paragraph(title, styles['section']))
-        rows = [[Icon('fa-check', size=6 * mm, color=self.ACCENT),
-                 Paragraph(escape(str(i)), styles['body'])] for i in items]
-        story += [self._table(rows, [8 * mm, self.CONTENT_W - 8 * mm],
-                              header=False), Spacer(1, 5 * mm)]
-
-    # -------------------------------------------------------------
-    # EN-TÊTE / PIED DE PAGE
-    # -------------------------------------------------------------
-
-    def _page(self, c, doc, gamme, first):
-        c.saveState()
-        if not first:  # rappel discret du nom de gamme en haut des pages 2+
-            c.setFillColor(self.PRIMARY)
-            c.rect(0, A4[1] - 12 * mm, A4[0], 12 * mm, fill=1, stroke=0)
-            c.setFillColor(colors.white)
-            c.setFont('Helvetica-Bold', 9)
-            c.drawString(self.M_LEFT, A4[1] - 8 * mm,
-                         'Capsule House — %s' % gamme.get('name', ''))
-        # pied de page commun
-        c.setStrokeColor(self.BORDER)
-        c.setLineWidth(0.5)
-        c.line(self.M_LEFT, 14 * mm, A4[0] - self.M_RIGHT, 14 * mm)
-        c.setFont('Helvetica', 8)
-        c.setFillColor(self.FOOT_MUTED)
-        c.drawString(self.M_LEFT, 9 * mm, 'Capsule House')
-        c.drawRightString(A4[0] - self.M_RIGHT, 9 * mm,
-                          'Page %d' % doc.page)
-        c.restoreState()
