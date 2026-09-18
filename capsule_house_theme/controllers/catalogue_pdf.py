@@ -2,8 +2,16 @@
 import io
 import os
 
+from reportlab.lib.colors import HexColor
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
+
 from odoo import http
 from odoo.http import request
+from odoo.modules.module import get_module_path
 
 from ..data_definition import GAMMES_DATA
 
@@ -37,6 +45,8 @@ class CapsuleHouseCataloguePdf(http.Controller):
     fichiers statiques embarqués dans ce module
     (static/src/fonts/Inter/static/) — rendu typographiquement
     identique au site plutôt qu'une approximation avec Helvetica.
+    Couleurs alignées sur les tokens du design system (variables.css).
+
     Repli automatique sur Helvetica si les fichiers sont introuvables.
     """
 
@@ -49,14 +59,21 @@ class CapsuleHouseCataloguePdf(http.Controller):
             return CapsuleHouseCataloguePdf._FA_FONT_PATH
         CapsuleHouseCataloguePdf._FA_CHECKED = True
         try:
-            from odoo.modules.module import get_module_path
             web_path = get_module_path('web')
-            candidate = os.path.join(
-                web_path, 'static', 'src', 'libs', 'fontawesome',
-                'fonts', 'fontawesome-webfont.ttf',
-            )
-            if os.path.exists(candidate):
-                CapsuleHouseCataloguePdf._FA_FONT_PATH = candidate
+            candidates = [
+                os.path.join(
+                    web_path, 'static', 'src', 'libs', 'fontawesome',
+                    'fonts', 'fontawesome-webfont.ttf',
+                ),
+                os.path.join(
+                    web_path, 'static', 'lib', 'fontawesome', 'fonts',
+                    'fontawesome-webfont.ttf',
+                ),
+            ]
+            for candidate in candidates:
+                if os.path.exists(candidate):
+                    CapsuleHouseCataloguePdf._FA_FONT_PATH = candidate
+                    break
         except Exception:
             pass
         return CapsuleHouseCataloguePdf._FA_FONT_PATH
@@ -66,8 +83,6 @@ class CapsuleHouseCataloguePdf(http.Controller):
         if not path:
             return False
         try:
-            from reportlab.pdfbase import pdfmetrics
-            from reportlab.pdfbase.ttfonts import TTFont
             if 'FontAwesome' not in pdfmetrics.getRegisteredFontNames():
                 pdfmetrics.registerFont(TTFont('FontAwesome', path))
             return True
@@ -78,8 +93,6 @@ class CapsuleHouseCataloguePdf(http.Controller):
         if CapsuleHouseCataloguePdf._INTER_REGISTERED is not None:
             return CapsuleHouseCataloguePdf._INTER_REGISTERED
         try:
-            from reportlab.pdfbase import pdfmetrics
-            from reportlab.pdfbase.ttfonts import TTFont
             base = os.path.join(
                 os.path.dirname(__file__), '..', 'static', 'src',
                 'fonts', 'Inter', 'static',
@@ -99,10 +112,6 @@ class CapsuleHouseCataloguePdf(http.Controller):
     @http.route('/nos-gammes/<string:slug>/catalogue.pdf', type='http',
                 auth='public', website=True, sitemap=False)
     def gamme_catalogue_pdf(self, slug, **kw):
-        from reportlab.lib.pagesizes import A4
-        from reportlab.lib.units import cm
-        from reportlab.pdfgen import canvas
-
         gamme = next((g for g in GAMMES_DATA if g['slug'] == slug), None)
         if not gamme:
             return request.not_found()
@@ -118,13 +127,14 @@ class CapsuleHouseCataloguePdf(http.Controller):
         width, height = A4
         margin = 2 * cm
 
-        INK = (0.04, 0.06, 0.05)
-        TERRACOTTA = (0.82, 0.35, 0.22)
-        PANEL = (0.96, 0.92, 0.87)
-        GRAY = (0.35, 0.35, 0.35)
-        GREEN = (0.15, 0.55, 0.35)
-        WHITE = (1, 1, 1)
-        LIGHT_BORDER = (0.82, 0.82, 0.82)
+        # Couleurs = tokens exacts du design system (variables.css)
+        INK = HexColor('#1F2421')         # --ch-ink
+        TERRACOTTA = HexColor('#C1694F')  # --ch-terracotta
+        PANEL = HexColor('#F6F1E9')       # --ch-panel
+        GRAY = HexColor('#7A7168')        # --ch-fog (texte secondaire)
+        GREEN = HexColor('#2E7D5B')       # --ch-green
+        WHITE = HexColor('#FFFFFF')       # --ch-white
+        LIGHT_BORDER = HexColor('#E9E2D4')  # --ch-gray-border
 
         DEFAULT_FONT = (FONT, 10.5)
 
@@ -146,25 +156,25 @@ class CapsuleHouseCataloguePdf(http.Controller):
                       restore_font=DEFAULT_FONT):
             codepoint = FA_CODEPOINTS.get(icon_key)
             if has_fa and codepoint:
-                c.setFillColorRGB(*color)
+                c.setFillColor(color)
                 c.setFont('FontAwesome', size)
                 c.drawString(x, y, codepoint)
             else:
-                c.setStrokeColorRGB(*color)
+                c.setStrokeColor(color)
                 c.setLineWidth(1.2)
                 c.roundRect(x, y, size, size, size * 0.15, stroke=1, fill=0)
             c.setFont(*restore_font)
 
         def check_mark(x, y, size, color=GREEN, restore_font=DEFAULT_FONT):
             if has_fa and 'fa-check-circle' in FA_CODEPOINTS:
-                c.setFillColorRGB(*color)
+                c.setFillColor(color)
                 c.setFont('FontAwesome', size)
                 c.drawString(x, y, FA_CODEPOINTS['fa-check-circle'])
             else:
-                c.setFillColorRGB(*color)
+                c.setFillColor(color)
                 cy = y + size * 0.35
                 c.circle(x + size / 2, cy, size / 2, stroke=0, fill=1)
-                c.setStrokeColorRGB(*WHITE)
+                c.setStrokeColor(WHITE)
                 c.setLineWidth(1.1)
                 c.setLineCap(1)
                 c.line(x + size * 0.28, cy, x + size * 0.44, cy - size * 0.16)
@@ -175,15 +185,15 @@ class CapsuleHouseCataloguePdf(http.Controller):
         # MISE EN PAGE
         # ------------------------------------------------------------------
         def new_page_header():
-            c.setFillColorRGB(*INK)
+            c.setFillColor(INK)
             c.rect(0, height - 3.5 * cm, width, 3.5 * cm, fill=1, stroke=0)
-            c.setFillColorRGB(*WHITE)
+            c.setFillColor(WHITE)
             c.setFont(FONT_BOLD, 21)
             c.drawString(margin, height - 1.6 * cm, 'Capsule House')
-            c.setFillColorRGB(*TERRACOTTA)
+            c.setFillColor(TERRACOTTA)
             c.setFont(FONT_BOLD, 16)
             c.drawString(margin, height - 2.4 * cm, gamme['name'])
-            c.setFillColorRGB(*WHITE)
+            c.setFillColor(WHITE)
             c.setFont(FONT, 10.5)
             tagline = gamme['tagline_fr'] if is_fr else gamme['tagline_en']
             c.drawString(margin, height - 3.05 * cm, tagline)
@@ -202,12 +212,12 @@ class CapsuleHouseCataloguePdf(http.Controller):
             return y_pos
 
         def section_title(y_pos, text, centered=False):
-            c.setFillColorRGB(*INK)
+            c.setFillColor(INK)
             c.setFont(FONT_BOLD, 15)
             text_w = c.stringWidth(text, FONT_BOLD, 15)
             x = (width - text_w) / 2 if centered else margin
             c.drawString(x, y_pos, text)
-            c.setStrokeColorRGB(*TERRACOTTA)
+            c.setStrokeColor(TERRACOTTA)
             c.setLineWidth(2)
             c.line(x, y_pos - 0.15 * cm, x + text_w, y_pos - 0.15 * cm)
             c.setFont(*DEFAULT_FONT)
@@ -234,12 +244,12 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 title = "%s %s %s pour le confort absolu" % (article, gamme['name'].lower(), adj)
             else:
                 title = "A %s designed for absolute comfort" % gamme['name'].lower()
-            c.setFillColorRGB(*TERRACOTTA)
+            c.setFillColor(TERRACOTTA)
             c.setFont(FONT_BOLD, 9.5)
             label = 'PERFORMANCES'
             c.drawString((width - c.stringWidth(label, FONT_BOLD, 9.5)) / 2, y, label)
             y -= 0.65 * cm
-            c.setFillColorRGB(*INK)
+            c.setFillColor(INK)
             c.setFont(FONT_BOLD, 16)
             c.drawString((width - c.stringWidth(title, FONT_BOLD, 16)) / 2, y, title)
             y -= 1.15 * cm
@@ -250,15 +260,15 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 y = ensure_space(y, card_h + 0.4 * cm)
                 x = margin
                 for perf in row:
-                    c.setStrokeColorRGB(*LIGHT_BORDER)
-                    c.setFillColorRGB(*WHITE)
+                    c.setStrokeColor(LIGHT_BORDER)
+                    c.setFillColor(WHITE)
                     c.roundRect(x, y - card_h, card_w, card_h, 4, fill=1, stroke=1)
                     draw_icon(perf.get('icon', ''), x + pad, y - pad - icon_size, icon_size,
                               restore_font=(FONT_BOLD, 11))
-                    c.setFillColorRGB(*INK)
+                    c.setFillColor(INK)
                     ptitle = perf['title_fr'] if is_fr else perf['title_en']
                     c.drawString(x + pad, y - pad - icon_size - 0.55 * cm, ptitle)
-                    c.setFillColorRGB(*GRAY)
+                    c.setFillColor(GRAY)
                     c.setFont(FONT, 9)
                     pdesc = perf['desc_fr'] if is_fr else perf['desc_en']
                     lines = wrap_text(pdesc, FONT, 9, card_w - 2 * pad)
@@ -285,12 +295,12 @@ class CapsuleHouseCataloguePdf(http.Controller):
             row_w = len(fmts) * card_w + (len(fmts) - 1) * gap
             x = (width - row_w) / 2
             for fmt in fmts:
-                c.setFillColorRGB(*PANEL)
+                c.setFillColor(PANEL)
                 c.roundRect(x, y - card_h, card_w, card_h, 4, fill=1, stroke=0)
-                c.setFillColorRGB(*INK)
+                c.setFillColor(INK)
                 c.setFont(FONT_BOLD, 11.5)
                 c.drawCentredString(x + card_w / 2, y - 0.75 * cm, fmt['name'])
-                c.setFillColorRGB(*GRAY)
+                c.setFillColor(GRAY)
                 c.setFont(FONT, 9.5)
                 surface = fmt['surface_fr'] if is_fr else fmt['surface_en']
                 note = fmt['note_fr'] if is_fr else fmt['note_en']
@@ -321,7 +331,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
             full_w = width - 2 * margin
 
             def draw_spec_block(y_pos, title, rows):
-                c.setFillColorRGB(*GRAY)
+                c.setFillColor(GRAY)
                 c.setFont(FONT_BOLD, 9.5)
                 c.drawString(margin, y_pos, title.upper())
                 y_pos -= 0.6 * cm
@@ -329,13 +339,13 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 for row in rows:
                     label = row['label_fr'] if is_fr else row['label_en']
                     value = row['value_fr'] if is_fr else row['value_en']
-                    c.setFillColorRGB(*GRAY)
+                    c.setFillColor(GRAY)
                     c.drawString(margin, y_pos, label)
-                    c.setFillColorRGB(*INK)
+                    c.setFillColor(INK)
                     c.setFont(FONT_BOLD, 10.5)
                     c.drawRightString(margin + full_w, y_pos, value)
                     c.setFont(FONT, 10.5)
-                    c.setStrokeColorRGB(*LIGHT_BORDER)
+                    c.setStrokeColor(LIGHT_BORDER)
                     c.line(margin, y_pos - 0.18 * cm, margin + full_w, y_pos - 0.18 * cm)
                     y_pos -= row_h_est
                 return y_pos
@@ -370,7 +380,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
                 x = margin + i * (col_w + col_gap)
                 for item in col:
                     check_mark(x, yy, check_size, restore_font=DEFAULT_FONT)
-                    c.setFillColorRGB(*INK)
+                    c.setFillColor(INK)
                     c.setFont(*DEFAULT_FONT)
                     text_x = x + check_size + 0.35 * cm
                     max_text_w = col_w - check_size - 0.35 * cm
@@ -401,9 +411,9 @@ class CapsuleHouseCataloguePdf(http.Controller):
                     x = margin
                     y -= pill_h + gap
                     y = ensure_space(y, pill_h + 0.3 * cm)
-                c.setFillColorRGB(*PANEL)
+                c.setFillColor(PANEL)
                 c.roundRect(x, y - pill_h, pw, pill_h, radius, fill=1, stroke=0)
-                c.setFillColorRGB(*INK)
+                c.setFillColor(INK)
                 c.drawCentredString(x + pw / 2, y - pill_h * 0.63, opt)
                 x += pw + gap
 
