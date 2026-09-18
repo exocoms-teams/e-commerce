@@ -2,16 +2,8 @@
 import io
 import os
 
-from reportlab.lib.colors import HexColor
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import cm
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
-
 from odoo import http
 from odoo.http import request
-from odoo.modules.module import get_module_path
 
 from ..data_definition import GAMMES_DATA
 
@@ -45,8 +37,7 @@ class CapsuleHouseCataloguePdf(http.Controller):
     fichiers statiques embarqués dans ce module
     (static/src/fonts/Inter/static/) — rendu typographiquement
     identique au site plutôt qu'une approximation avec Helvetica.
-    Couleurs alignées sur les tokens du design system (variables.css).
-
+    Couleurs en HexColor = tokens exacts du design system.
     Repli automatique sur Helvetica si les fichiers sont introuvables.
     """
 
@@ -59,21 +50,14 @@ class CapsuleHouseCataloguePdf(http.Controller):
             return CapsuleHouseCataloguePdf._FA_FONT_PATH
         CapsuleHouseCataloguePdf._FA_CHECKED = True
         try:
+            from odoo.modules.module import get_module_path
             web_path = get_module_path('web')
-            candidates = [
-                os.path.join(
-                    web_path, 'static', 'src', 'libs', 'fontawesome',
-                    'fonts', 'fontawesome-webfont.ttf',
-                ),
-                os.path.join(
-                    web_path, 'static', 'lib', 'fontawesome', 'fonts',
-                    'fontawesome-webfont.ttf',
-                ),
-            ]
-            for candidate in candidates:
-                if os.path.exists(candidate):
-                    CapsuleHouseCataloguePdf._FA_FONT_PATH = candidate
-                    break
+            candidate = os.path.join(
+                web_path, 'static', 'src', 'libs', 'fontawesome',
+                'fonts', 'fontawesome-webfont.ttf',
+            )
+            if os.path.exists(candidate):
+                CapsuleHouseCataloguePdf._FA_FONT_PATH = candidate
         except Exception:
             pass
         return CapsuleHouseCataloguePdf._FA_FONT_PATH
@@ -83,6 +67,8 @@ class CapsuleHouseCataloguePdf(http.Controller):
         if not path:
             return False
         try:
+            from reportlab.pdfbase import pdfmetrics
+            from reportlab.pdfbase.ttfonts import TTFont
             if 'FontAwesome' not in pdfmetrics.getRegisteredFontNames():
                 pdfmetrics.registerFont(TTFont('FontAwesome', path))
             return True
@@ -93,6 +79,8 @@ class CapsuleHouseCataloguePdf(http.Controller):
         if CapsuleHouseCataloguePdf._INTER_REGISTERED is not None:
             return CapsuleHouseCataloguePdf._INTER_REGISTERED
         try:
+            from reportlab.pdfbase import pdfmetrics
+            from reportlab.pdfbase.ttfonts import TTFont
             base = os.path.join(
                 os.path.dirname(__file__), '..', 'static', 'src',
                 'fonts', 'Inter', 'static',
@@ -112,6 +100,11 @@ class CapsuleHouseCataloguePdf(http.Controller):
     @http.route('/nos-gammes/<string:slug>/catalogue.pdf', type='http',
                 auth='public', website=True, sitemap=False)
     def gamme_catalogue_pdf(self, slug, **kw):
+        from reportlab.lib.colors import HexColor
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.units import cm
+        from reportlab.pdfgen import canvas
+
         gamme = next((g for g in GAMMES_DATA if g['slug'] == slug), None)
         if not gamme:
             return request.not_found()
@@ -128,13 +121,13 @@ class CapsuleHouseCataloguePdf(http.Controller):
         margin = 2 * cm
 
         # Couleurs = tokens exacts du design system (variables.css)
-        INK = HexColor('#1F2421')         # --ch-ink
-        TERRACOTTA = HexColor('#C1694F')  # --ch-terracotta
-        PANEL = HexColor('#F6F1E9')       # --ch-panel
-        GRAY = HexColor('#7A7168')        # --ch-fog (texte secondaire)
-        GREEN = HexColor('#2E7D5B')       # --ch-green
-        WHITE = HexColor('#FFFFFF')       # --ch-white
-        LIGHT_BORDER = HexColor('#E9E2D4')  # --ch-gray-border
+        INK = HexColor('#1F2421')          # --ch-ink
+        TERRACOTTA = HexColor('#C1694F')   # --ch-terracotta
+        PANEL = HexColor('#F6F1E9')        # --ch-panel
+        GRAY = HexColor('#7A7168')         # --ch-fog (texte secondaire)
+        GREEN = HexColor('#2E7D5B')        # --ch-green
+        WHITE = HexColor('#FFFFFF')        # --ch-white
+        LIGHT_BORDER = HexColor('#E9E2D4') # --ch-gray-border
 
         DEFAULT_FONT = (FONT, 10.5)
 
