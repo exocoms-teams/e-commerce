@@ -248,6 +248,30 @@ def _setup_livechat(env, website):
             )
 
 
+def _setup_newsletter(env, website):
+    """
+    SOURCE : CH-32 — Configuration Newsletter (Email Marketing)
+    Crée (ou retrouve) la liste de diffusion 'Capsule House - Newsletter'
+    si le module mass_mailing est installé, pour qu'elle survive aux
+    rebuilds au lieu d'être recréée manuellement à chaque environnement.
+    """
+    if 'mailing.list' not in env.registry:
+        _logger.warning(
+            "capsule_house_theme: module mass_mailing non installé — "
+            "liste newsletter non créée."
+        )
+        return
+    MailingList = env['mailing.list'].sudo()
+    mailing_list = MailingList.search([
+        ('name', '=', 'Capsule House - Newsletter'),
+    ], limit=1)
+    if not mailing_list:
+        MailingList.create({'name': 'Capsule House - Newsletter'})
+        _logger.info(
+            "capsule_house_theme: liste 'Capsule House - Newsletter' "
+            "créée pour le site id=%s.", website.id,
+        )
+
 def _setup_languages(env, website):
     """
     SOURCE : Exigence Bilinguisme (FR principal / EN secondaire)

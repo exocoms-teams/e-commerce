@@ -36,6 +36,7 @@ from .setup_utils import (
     _scope_layout_views,
     _reset_customized_views,
     _setup_livechat,
+    _setup_newsletter,
     _clean_demo_data,
     _setup_shop_categories,
     _setup_shop_display,
