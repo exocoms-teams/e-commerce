@@ -71,12 +71,20 @@
                         <span t-if="gamme['status'] != 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">To be confirmed</span>
                     </div>
                     <div class="ch-gamme-hero-actions" t-if="shop_category_url">
-                        <a t-att-href="shop_category_url" class="ch-btn ch-btn-primary" t-if="request.env.lang == 'fr_FR'">
-                            Voir dans la boutique <i class="fa fa-arrow-right"/>
+                        <div>    
+                            <a t-att-href="shop_category_url" class="ch-btn ch-btn-primary" t-if="request.env.lang == 'fr_FR'">
+                                Voir dans la boutique <i class="fa fa-arrow-right"/>
+                            </a>
+                            <a t-att-href="shop_category_url" class="ch-btn ch-btn-primary" t-if="request.env.lang != 'fr_FR'">
+                                View in shop <i class="fa fa-arrow-right"/>
+                            </a>
+                        </div>
+                        <a t-attf-href="/nos-gammes/#{ gamme['slug'] }/catalogue.pdf" class="ch-btn-dark" download="1" t-if="request.env.lang == 'fr_FR'">
+                            <i class="fa fa-download"/> Télécharger le catalogue PDF
                         </a>
-                        <a t-att-href="shop_category_url" class="ch-btn ch-btn-primary" t-if="request.env.lang != 'fr_FR'">
-                            View in shop <i class="fa fa-arrow-right"/>
-                        </a>
+                        <a t-attf-href="/nos-gammes/#{ gamme['slug'] }/catalogue.pdf" class="ch-btn-dark" download="1" t-if="request.env.lang != 'fr_FR'">
+                            <i class="fa fa-download"/> Download PDF catalogue
+                        </a>    
                     </div>
                 </div>
             </section>
