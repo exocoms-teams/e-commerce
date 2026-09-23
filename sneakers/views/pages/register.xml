@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="page_register" name="Sneakers Register">
+
+        <t t-call="website.layout">
+
+            <t t-set="title" t-value="'Create Account | SNEAKERS'"/>
+            <t t-set="description" t-value="'Create your SNEAKERS account.'"/>
+
+            <div class="oe_structure oe_empty"/>
+
+            <section class="sn-auth-page oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <div class="sn-auth-card">
+
+                        <div class="sn-auth-header">
+                            <h2>Create Account</h2>
+                            <p>Join SNEAKERS and start shopping.</p>
+                        </div>
+
+                        <t t-if="error">
+                            <div class="sn-auth-error">
+                                <t t-esc="error"/>
+                            </div>
+                        </t>
+
+                        <form method="POST" action="/my/register" class="sn-auth-form">
+
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="sn-form-group">
+                                <label>Full Name</label>
+                                <input type="text" name="name" placeholder="John Doe" required="required"/>
+                            </div>
+
+                            <div class="sn-form-group">
+                                <label>Email Address</label>
+                                <input type="email" name="email" placeholder="john@example.com" required="required"/>
+                            </div>
+
+                            <div class="sn-form-group">
+                                <label>Password</label>
+                                <div class="sn-pass-wrap">
+                                    <input type="password" name="password" placeholder="Min. 6 characters" required="required"/>
+                                    <button type="button" class="sn-pass-toggle" tabindex="-1" aria-label="Show password">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-open"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-closed" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="sn-btn-primary sn-auth-btn">
+                                Create Account
+                            </button>
+
+                        </form>
+
+                        <div class="sn-auth-footer">
+                            <p>Already have an account? <a href="/my/login">Sign in</a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <script>
+                document.querySelectorAll('.sn-pass-toggle').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var input = this.previousElementSibling;
+                        var isPass = input.type === 'password';
+                        input.type = isPass ? 'text' : 'password';
+                        this.querySelector('.eye-open').style.display = isPass ? 'none' : '';
+                        this.querySelector('.eye-closed').style.display = isPass ? '' : 'none';
+                    });
+                });
+            </script>
+
+        </t>
+
+    </template>
+
+</odoo>

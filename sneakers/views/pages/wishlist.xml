@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <template
+        id="page_wishlist"
+        name="Wishlist">
+
+        <t t-call="website.layout">
+
+            <div class="oe_structure oe_empty"/>
+
+            <div id="wrap" class="sn-wishlist">
+
+                <!-- Wishlist Header -->
+                <section class="sn-wishlist-header oe_structure oe_empty">
+
+                    <div class="mn-container">
+
+                        <div class="sn-section-header">
+
+                            <span class="sn-section-subtitle">
+                                Wishlist
+                            </span>
+
+                            <h2>
+                                Your Favorite Sneakers
+                            </h2>
+
+                            <p>
+                                Save your favorite sneakers in one place and easily move them
+                                to your shopping cart whenever you're ready.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- Wishlist Products -->
+                <section class="sn-wishlist-products oe_structure oe_empty">
+
+                    <div class="mn-container">
+
+                        <div class="sn-wishlist-top">
+
+                            <div>
+
+                                <h3>
+                                    Saved Items
+                                </h3>
+
+                                <p>
+                                    <t t-out="len(wishlist_products)"/>
+                                    products saved in your wishlist.
+                                </p>
+
+                            </div>
+
+                            <a href="/shop-sneakers" class="sn-btn-outline-wl">
+                                Continue Shopping →
+                            </a>
+                            
+
+                        </div>
+
+                        <div class="sn-products-grid">
+
+                            <t t-foreach="wishlist_products" t-as="product">
+
+                                <t t-set="wish"
+                                t-value="wishes.filtered(lambda w: w.product_id.id == product.id)[:1]"/>
+
+                                <t t-set="wish_id"
+                                t-value="wish.id if wish else ''"/>
+
+                                <t t-set="wishlist_page"
+                                t-value="True"/>
+
+                                <t t-call="sneakers.product_card"/>
+
+                            </t>
+
+                        </div>
+
+                    </div>
+
+                </section>
+                
+                <!-- ========================================================= -->
+                <!-- NEWSLETTER                                                 -->
+                <!-- ========================================================= -->
+
+                <!-- Newsletter -->
+                <section class="sn-newsletter oe_structure oe_empty">
+
+                    <div class="mn-container">
+
+                        <div class="sn-newsletter-content">
+
+                            <div class="sn-newsletter-text">
+
+                                <span class="sn-section-subtitle">
+
+                                    Newsletter
+
+                                </span>
+
+                                <h2>
+
+                                    Stay Updated with Our Latest Sneakers
+
+                                </h2>
+
+                                <p>
+
+                                    Subscribe to receive exclusive offers, new arrivals,
+                                    limited editions and special discounts directly in your inbox.
+
+                                </p>
+
+                            </div>
+
+                            <div class="sn-newsletter-form">
+
+                                <form action="#" method="post">
+
+                                    <input
+                                        type="email"
+                                        placeholder="Enter your email address"
+                                        required="required"/>
+
+                                    <button type="submit">Subscribe</button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <t t-if="wishlist_products">
+
+                <section class="sn-wishlist-summary oe_structure oe_empty">
+
+                    <div class="mn-container">
+
+                        <div class="sn-summary-box">
+
+                            <div>
+                                <h3>Love these sneakers?</h3>
+                                <p>
+                                    Move your favorite items to your shopping cart and complete
+                                    your purchase in just a few clicks.
+                                </p>
+                            </div>
+
+                            <a href="/shop/cart" class="sn-btn-primary">
+
+                                View Cart
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                </t>
+            </div>
+
+        </t>
+
+    </template>
+
+</odoo>
