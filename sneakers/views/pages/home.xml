@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Home Page-->
+
+    <template id="page_home" name="Sneakers Home">
+
+        <t t-call="website.layout">
+
+            <div class="oe_structure oe_empty"/>
+
+            <!-- HERO SLIDER  -->
+            <section class="sn-hero oe_structure oe_empty">
+                <div class="sn-hero-slider">
+
+                    <!-- Slide 1  -->
+                    <article class="sn-slide active">
+
+                        <img class="sn-slide-bg"
+                            src="/sneakers/static/src/img/hero/hero-1.jpg"
+                            alt="Sneakers Hero"/>
+
+                        <div class="sn-slide-overlay"/>
+
+                        <div class="mn-container sn-slide-inner">
+                            <div class="sn-slide-text">
+
+                                <span class="sn-badge">New Collection 2026</span>
+
+                                <h1>Discover the Future<span>of Sneakers</span></h1>
+
+                                <p>Discover premium sneakers from the world's
+                                   leading brands. Performance, comfort and
+                                   modern style in one place.</p>
+
+                                <div class="sn-buttons">
+                                    <a href="/shop-sneakers" class="sn-btn-primary">Shop Now</a>
+                                    <a href="#categories" class="sn-btn-outline">Explore Collection</a>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </article>
+
+                    <!-- Slide 2 -->
+                    <article class="sn-slide">
+
+                        <img class="sn-slide-bg"
+                            src="/sneakers/static/src/img/hero/hero-2.jpg"
+                            alt="Running Shoes"/>
+
+                        <div class="sn-slide-overlay"/>
+
+                        <div class="mn-container sn-slide-inner">
+                            <div class="sn-slide-text">
+
+                                <span class="sn-badge">Limited Edition</span>
+
+                                <h1>Run Faster<span>Every Day</span></h1>
+
+                                <p>Designed for athletes and everyday comfort.
+                                   Lightweight, durable and stylish.</p>
+
+                                <div class="sn-buttons">
+                                    <a href="/shop-sneakers?category=running" class="sn-btn-primary">Shop Running</a>
+                                    <a href="/shop-sneakers" class="sn-btn-outline">Learn More</a>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </article>
+
+                    <!-- Slide 3 -->
+                    <article class="sn-slide">
+
+                        <img class="sn-slide-bg"
+                            src="/sneakers/static/src/img/hero/hero-3.jpg"
+                            alt="Sale Sneakers"/>
+
+                        <div class="sn-slide-overlay"/>
+
+                        <div class="mn-container sn-slide-inner">
+                            <div class="sn-slide-text">
+
+                                <span class="sn-badge">Up To 50% OFF</span>
+
+                                <h1>Summer Sale<span>Starts Today</span></h1>
+
+                                <p>Take advantage of exclusive discounts on
+                                   the biggest sneaker brands before stocks
+                                   run out.</p>
+
+                                <div class="sn-buttons">
+                                    <a href="/shop-sneakers?category=sale" class="sn-btn-primary">Shop Sale</a>
+                                    <a href="/shop-sneakers" class="sn-btn-outline">View Offers</a>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </article>
+
+                </div>
+
+                <button class="sn-slider-prev" type="button" aria-label="Previous slide">&#10094;</button>
+                <button class="sn-slider-next" type="button" aria-label="Next slide">&#10095;</button>
+
+                <div class="sn-slider-dots">
+                    <span class="active"></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+            </section>
+
+            <!-- CATEGORIES SECTION -->
+
+            <section id="categories" class="sn-categories oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <!-- Section Header -->
+
+                    <div class="sn-section-header">
+
+                        <span class="sn-section-subtitle">
+                            Shop by Category
+                        </span>
+
+                        <h2>
+                            Find Your Perfect Pair
+                        </h2>
+
+                        <p>Browse our carefully selected collections for every
+                            lifestyle and activity.</p>
+
+                    </div>
+
+                    <!-- Categories Grid -->
+
+                    <div class="sn-categories-grid">
+
+                            <t t-foreach="categories" t-as="category">
+
+                                <a t-att-href="
+                                    category.parent_id
+                                    and '/shop-sneakers?subcategory=%s' % category.id
+                                    or '/shop-sneakers?category=%s' % category.name.lower()
+                                "
+                                class="sn-category-card">
+
+                                    <img t-att-src="'/web/image/product.public.category/%s/image' % category.id"
+                                        t-att-alt="category.name"/>
+
+                                    <div class="sn-category-overlay">
+
+                                        <h3>
+                                            <t t-out="category.name"/>
+                                        </h3>
+
+                                        <span>
+                                            Explore Collection
+                                        </span>
+
+                                    </div>
+
+                                </a>
+
+                            </t>
+
+                            </div>
+
+                </div>
+
+            </section>
+
+            <!-- POPULAR PRODUCTS -->
+            <section class="sn-popular-products oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <!-- Section Header -->
+                    <div class="sn-section-header">
+
+                        <span class="sn-section-subtitle">
+                            Best Sellers
+                        </span>
+
+                        <h2>
+                            Popular Products
+                        </h2>
+
+                        <p>
+                            Discover our customers' favorite sneakers combining
+                            comfort, performance and style.
+                        </p>
+
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="sn-products-grid">
+
+                        <t t-foreach="popular_products" t-as="product">
+
+                            <t t-call="sneakers.product_card"/>
+
+                        </t>
+
+                    </div>
+
+                    <!-- Button -->
+                    <div class="sn-products-button">
+
+                        <a href="/shop-sneakers" class="sn-btn-primary">View All Products</a>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- WHY CHOOSE US / FEATURES -->
+
+            <section class="sn-features oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <!-- Section Header -->
+                    <div class="sn-section-header">
+
+                        <span class="sn-section-subtitle">
+                            Why Choose Us
+                        </span>
+
+                        <h2>
+                            Shopping Made Easy
+                        </h2>
+
+                        <p>
+                            We provide premium products and exceptional service to
+                            make every purchase a great experience.
+                        </p>
+
+                    </div>
+
+                    <!-- Features Grid -->
+
+                    <div class="sn-features-grid">
+
+                        <!-- Feature 1 -->
+                        <div class="sn-feature-card">
+
+                            <div class="sn-feature-icon">
+
+                                <i class="fa fa-truck"/>
+
+                            </div>
+
+                            <h3>Free Shipping</h3>
+
+                            <p>
+                                Enjoy free delivery on all orders above $100.
+                            </p>
+
+                        </div>
+
+                        <!-- Feature 2 -->
+                        <div class="sn-feature-card">
+
+                            <div class="sn-feature-icon">
+
+                                <i class="fa fa-refresh"/>
+
+                            </div>
+
+                            <h3>Easy Returns</h3>
+
+                            <p>
+                                Return your products within 30 days with no hassle.
+                            </p>
+
+                        </div>
+
+                        <!-- Feature 3 -->
+                        <div class="sn-feature-card">
+
+                            <div class="sn-feature-icon">
+
+                                <i class="fa fa-lock"/>
+
+                            </div>
+
+                            <h3>Secure Payment</h3>
+
+                            <p>
+                                Your payments are protected with secure encryption.
+                            </p>
+
+                        </div>
+
+                        <!-- Feature 4 -->
+                        <div class="sn-feature-card">
+
+                            <div class="sn-feature-icon">
+
+                                <i class="fa fa-headphones"/>
+
+                            </div>
+
+                            <h3>24/7 Support</h3>
+
+                            <p>
+                                Our support team is available anytime you need help.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- BRANDS SECTION -->
+
+            <section class="sn-brands oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <!-- Section Header -->
+                    <div class="sn-section-header">
+
+                        <span class="sn-section-subtitle">
+                            Trusted Brands
+                        </span>
+
+                        <h2>
+                            Our Top Brands
+                        </h2>
+
+                        <p>
+                            We collaborate with the world's leading sneaker brands
+                            to provide authentic and premium-quality products.
+                        </p>
+
+                    </div>
+
+                    <!-- Brands Grid -->
+                    <div class="sn-brands-grid">
+
+
+                        <t t-foreach="brands" t-as="brand">
+
+
+                            <div class="sn-brand-card">
+
+
+                                <img 
+                                    t-att-src="
+                                    '/web/image/product.brand/%s/logo' % brand.id"
+                                    t-att-alt="brand.name"/>
+
+
+                            </div>
+
+                        </t>
+
+
+                        </div>
+
+                </div>
+
+            </section>
+
+            <!-- NEWSLETTER -->
+
+            <section class="sn-newsletter oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <div class="sn-newsletter-content">
+
+                        <div class="sn-newsletter-text">
+
+                            <span class="sn-section-subtitle">
+                                Newsletter
+                            </span>
+
+                            <h2>
+                                Stay Updated With Our Latest Offers
+                            </h2>
+
+                            <p>
+                                Subscribe to receive exclusive promotions,
+                                new arrivals and limited edition sneaker releases.
+                            </p>
+
+                        </div>
+
+                        <div class="sn-newsletter-form">
+
+                            <form action="#" method="post">
+
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email address"
+                                    required="required"/>
+
+                                <button type="submit">Subscribe</button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </t>
+
+    </template>
+
+</odoo>

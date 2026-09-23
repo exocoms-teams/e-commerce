@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="page_orders" name="Sneakers Order History">
+
+        <t t-call="website.layout">
+
+            <t t-set="title" t-value="'Order History | SNEAKERS'"/>
+            <t t-set="description" t-value="'View your past orders.'"/>
+
+            <div class="oe_structure oe_empty"/>
+
+            <section class="sn-account-page oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <!-- ACCOUNT SIDEBAR -->
+                    <div class="sn-account-layout">
+
+                        <aside class="sn-account-sidebar">
+
+                            <div class="sn-account-user">
+                                <div class="sn-account-avatar">
+                                    <t t-esc="request.env.user.partner_id.name[:1]"/>
+                                </div>
+                                <div>
+                                    <h4 t-esc="request.env.user.partner_id.name"/>
+                                    <p t-esc="request.env.user.partner_id.email"/>
+                                </div>
+                            </div>
+
+                            <nav class="sn-account-nav">
+                                <a href="/my/account">My Profile</a>
+                                <a href="/my/orders" class="active">Order History</a>
+                                <a href="/my/logout">Sign Out</a>
+                            </nav>
+
+                        </aside>
+
+                        <!-- ORDERS CONTENT -->
+                        <div class="sn-account-content">
+
+                            <h3>Order History</h3>
+
+                            <t t-if="orders">
+                                <div class="sn-orders-list">
+
+                                    <t t-foreach="orders" t-as="order">
+                                        <div class="sn-order-card">
+
+                                            <div class="sn-order-header">
+                                                <div>
+                                                    <strong t-esc="order.name"/>
+                                                    <span class="sn-order-date" t-esc="order.date_order.strftime('%B %d, %Y') if order.date_order else ''"/>
+                                                </div>
+                                                <span class="sn-order-status"
+                                                      t-att-class="'sn-status-%s' % order.state">
+                                                    <t t-if="order.state == 'draft'">Quotation</t>
+                                                    <t t-elif="order.state == 'sent'">Quotation Sent</t>
+                                                    <t t-elif="order.state == 'sale'">Sales Order</t>
+                                                    <t t-elif="order.state == 'done'">Locked</t>
+                                                    <t t-elif="order.state == 'cancel'">Cancelled</t>
+                                                    <t t-else="">Unknown</t>
+                                                </span>
+                                            </div>
+
+                                            <div class="sn-order-items">
+                                                <t t-foreach="order.order_line" t-as="line">
+                                                    <div class="sn-order-item">
+                                                        <img t-if="line.product_id.image_256"
+                                                             t-att-src="'/web/image/product.product/%d/image_64' % line.product_id.id"
+                                                             t-att-alt="line.product_id.name"/>
+                                                        <div>
+                                                            <span t-esc="line.name"/>
+                                                            <span class="sn-order-item-qty">x<t t-esc="line.product_uom_qty"/></span>
+                                                        </div>
+                                                        <span t-esc="'%.2f $' % line.price_subtotal"/>
+                                                    </div>
+                                                </t>
+                                            </div>
+
+                                            <div class="sn-order-footer">
+                                                <span>Total: <strong t-esc="'%.2f $' % order.amount_total"/></span>
+                                            </div>
+
+                                        </div>
+                                    </t>
+
+                                </div>
+                            </t>
+
+                            <t t-else="">
+                                <div class="sn-orders-empty">
+                                    <i class="fa fa-shopping-bag"></i>
+                                    <h4>No orders yet</h4>
+                                    <p>Start shopping to see your orders here.</p>
+                                    <a href="/shop-sneakers" class="sn-btn-primary">Browse Shop</a>
+                                </div>
+                            </t>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </t>
+
+    </template>
+
+</odoo>

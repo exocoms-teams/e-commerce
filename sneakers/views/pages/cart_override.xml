@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Override Odoo's cart template to show our custom design -->
+    <template id="cart_override" inherit_id="website_sale.cart" name="Sneakers Cart Override">
+        <xpath expr="//t[@t-call='website_sale.checkout_layout']" position="replace">
+            <t t-set="order" t-value="website_sale_order"/>
+            <t t-set="delivery_price" t-value="0"/>
+            <t t-set="delivery_methods" t-value="[]"/>
+            <t t-set="order_total" t-value="website_sale_order.amount_total if website_sale_order else 0"/>
+            <t t-call="website.layout">
+                <t t-call="sneakers.page_cart_content"/>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>
