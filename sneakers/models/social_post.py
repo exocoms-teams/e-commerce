@@ -2,7 +2,7 @@ from odoo import models, fields
 
 
 class SocialPost(models.Model):
-    _name = 'social.post'
+    _name = 'sneakers.social.post'
     _description = 'Social Media Post'
     _order = 'create_date desc'
 
@@ -26,7 +26,7 @@ class SocialPost(models.Model):
     def action_mark_published(self, url=False):
         self.write({
             'state': 'published',
-            'published_date': fields.Datetime.now,
+            'published_date': fields.Datetime.now(),
             'post_url': url,
         })
 
