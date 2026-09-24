@@ -307,10 +307,9 @@ class RevolutBusinessConnection(models.Model):
         ])
         for journal in journals:
             try:
-                journal.action_revolut_sync()
-                self.env.cr.commit()  # Keep the lines already imported if a later journal fails.
+                with self.env.cr.savepoint():
+                    journal.action_revolut_sync()
             except Exception:  # noqa: BLE001 - one journal must not break the whole cron.
-                self.env.cr.rollback()
                 _logger.exception(
                     "Revolut synchronisation failed for journal %s.", journal.display_name
                 )
