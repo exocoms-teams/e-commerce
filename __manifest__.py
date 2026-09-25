@@ -26,6 +26,7 @@
             'monetique_theme/static/src/css/pages.css',
             'monetique_theme/static/src/css/shop.css',
             'monetique_theme/static/src/js/main.js',
+            'monetique_theme/static/src/css/header_optimized.css',
         ],
     },
     'installable': True,
