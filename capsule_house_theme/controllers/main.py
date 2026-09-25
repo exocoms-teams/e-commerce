@@ -137,6 +137,7 @@ class CapsuleHouseWebsite(Website):
                 'product': product,
                 'name': product.name,
                 'url': product.website_url,
+                'id': product.id,
                 'variant_id': product.product_variant_id.id,
                 'price': product.list_price,
                 'currency': product.currency_id,
@@ -296,6 +297,7 @@ class CapsuleHouseWebsite(Website):
             'published_products_count': published_products_count,
             'units_installed_count': units_installed_count,
             'featured_products': featured_json,
+            'cart_product_id': cart_product_id,
             'cart_variant_id': cart_variant_id,
             'csrf_token': request.csrf_token(),
         }
