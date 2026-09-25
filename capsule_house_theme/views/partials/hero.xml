@@ -163,19 +163,17 @@
                          /capsule-house/hero-data.json — squelette statique
                          vide ici, rien ne s'affiche tant que le JS n'a pas
                          reçu de vrais produits publiés (aucune donnée
-                         fabriquée). Route du formulaire native website_sale
-                         (/shop/cart/update), CSRF token injecté par le JS. -->
+                         fabriquée). Ajout au panier via /shop/cart/add en JSON-RPC (voir
+                         addToCartJsonRpc() dans main.js — un simple submit de formulaire est
+                         rejeté par cette route depuis Odoo 19). -->
                     <div class="ch-hero-float-cards" data-ch-float-cards="1" data-ch-label-new="Nouveau" data-ch-label-promo="Promo"/>
 
-                    <form action="/shop/cart/update" method="post"
-                          class="ch-hero-cart-shortcut d-none" data-ch-cart-shortcut="1">
-                        <input type="hidden" name="csrf_token" value=""/>
-                        <input type="hidden" name="product_id" value=""/>
-                        <input type="hidden" name="add_qty" value="1"/>
-                        <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Ajouter au panier">
-                            <i class="fa fa-plus"/> Ajouter au panier
-                        </button>
-                    </form>
+                    <button type="button"
+                            class="ch-btn ch-btn-black ch-hero-cart-btn d-none"
+                            data-ch-cart-shortcut="1"
+                            title="Ajouter au panier">
+                        <i class="fa fa-plus"/> Ajouter au panier
+                    </button>
                 </div>
             </div>
 
@@ -266,15 +264,12 @@
                          panier construits côté client par le JS. -->
                     <div class="ch-hero-float-cards" data-ch-float-cards="1" data-ch-label-new="New" data-ch-label-promo="Sale"/>
 
-                    <form action="/shop/cart/update" method="post"
-                          class="ch-hero-cart-shortcut d-none" data-ch-cart-shortcut="1">
-                        <input type="hidden" name="csrf_token" value=""/>
-                        <input type="hidden" name="product_id" value=""/>
-                        <input type="hidden" name="add_qty" value="1"/>
-                        <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Add to cart">
-                            <i class="fa fa-plus"/> Add to cart
-                        </button>
-                    </form>
+                    <button type="button"
+                            class="ch-btn ch-btn-black ch-hero-cart-btn d-none"
+                            data-ch-cart-shortcut="1"
+                            title="Add to cart">
+                        <i class="fa fa-plus"/> Add to cart
+                    </button>
                 </div>
             </div>
 

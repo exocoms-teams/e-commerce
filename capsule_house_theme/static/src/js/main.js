@@ -96,6 +96,39 @@
         }
     }
 
+        /**
+     * Ajoute un produit au panier via /shop/cart/add en JSON-RPC (route
+     * native website_sale, type='jsonrpc' depuis Odoo 19 — un simple
+     * <form method="post"> classique est rejeté avec "Unsupported Media
+     * Type"). Voir raccourci "Ajouter au panier" du hero,
+     * data-ch-cart-shortcut.
+     */
+    function addToCartJsonRpc(templateId, variantId) {
+        fetch('/shop/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: Date.now(),
+                jsonrpc: '2.0',
+                method: 'call',
+                params: {
+                    product_template_id: templateId,
+                    product_id: variantId,
+                    quantity: 1,
+                    product_custom_attribute_values: [],
+                },
+            }),
+        })
+            .then(function (response) { return response.json(); })
+            .then(function () {
+                window.location.reload();
+            })
+            .catch(function () {
+                // Silencieux : dégradation gracieuse, cohérent avec le
+                // reste de ce fichier.
+            });
+    }
+
     function applyHeroFloatCards(hero, data) {
         var container = hero.querySelector('[data-ch-float-cards]');
         var products = data.featured_products || [];
@@ -145,14 +178,13 @@
             container.appendChild(card);
         });
 
-        if (data.cart_product_id) {
-            var cartForm = hero.querySelector('[data-ch-cart-shortcut]');
-            if (cartForm) {
-                var productIdInput = cartForm.querySelector('[name="product_id"]');
-                var csrfInput = cartForm.querySelector('[name="csrf_token"]');
-                if (productIdInput) productIdInput.value = data.cart_product_id;
-                if (csrfInput) csrfInput.value = data.csrf_token || '';
-                cartForm.classList.remove('d-none');
+        if (data.cart_product_id && data.cart_variant_id) {
+            var cartButton = hero.querySelector('[data-ch-cart-shortcut]');
+            if (cartButton) {
+                cartButton.addEventListener('click', function () {
+                    addToCartJsonRpc(data.cart_product_id, data.cart_variant_id);
+                });
+                cartButton.classList.remove('d-none');
             }
         }
     }

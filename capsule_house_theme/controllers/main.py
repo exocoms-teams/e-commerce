@@ -137,7 +137,7 @@ class CapsuleHouseWebsite(Website):
                 'product': product,
                 'name': product.name,
                 'url': product.website_url,
-                'id': product.id,
+                'variant_id': product.product_variant_id.id,
                 'price': product.list_price,
                 'currency': product.currency_id,
                 'compare_price': compare_price if has_discount else 0,
@@ -283,6 +283,7 @@ class CapsuleHouseWebsite(Website):
         } for item in hero_products]
 
         cart_product_id = hero_products[1]['id'] if len(hero_products) > 1 else None
+        cart_variant_id = hero_products[1]['variant_id'] if len(hero_products) > 1 else None
 
         try:
             units_installed_count = int(units_installed_count) if units_installed_count else None
@@ -295,7 +296,7 @@ class CapsuleHouseWebsite(Website):
             'published_products_count': published_products_count,
             'units_installed_count': units_installed_count,
             'featured_products': featured_json,
-            'cart_product_id': cart_product_id,
+            'cart_variant_id': cart_variant_id,
             'csrf_token': request.csrf_token(),
         }
         return request.make_response(
