@@ -8,7 +8,7 @@
                 <div class="mn-header-container">
                     <!-- Logo -->
                     <a href="/" class="mn-logo">monetiques<span class="mn-logo-dot">.fr</span></a>
-                    
+                   
                     <!-- Navigation principale -->
                     <nav class="mn-nav">
                         <a href="/" class="mn-nav-link">Home</a>
@@ -16,13 +16,37 @@
                         <a href="/contactus" class="mn-nav-link">Contact</a>
                     </nav>
 
-                    <!-- Actions à droite (Panier simple, Connexion) -->
+                    <!-- Actions à droite (Panier, Connexion / Profil utilisateur) -->
                     <div class="mn-actions">
                         <a href="/shop/cart" class="mn-cart-icon" title="Panier">
                             <i class="fa fa-shopping-cart"></i>
                         </a>
-                        <a href="/web/login" class="mn-btn-login">Connexion</a>
-                        
+
+                        <!-- Si l'utilisateur est déconnecté -->
+                        <t t-if="request.env.user._is_public()">
+                            <a href="/web/login" class="mn-btn-login">Connexion</a>
+                        </t>
+
+                        <!-- Si l'utilisateur est connecté -->
+                        <t t-else="">
+                            <div class="mn-user-dropdown">
+                                <a href="/my#" class="mn-user-toggle" title="Mon compte">
+                                    <i class="fa fa-user-circle"></i>
+                                    <span class="mn-user-name"><t t-esc="request.env.user.name"/></span>
+                                    <i class="fa fa-angle-down mn-dropdown-arrow"></i>
+                                </a>
+                                <div class="mn-dropdown-menu">
+                                    <a href="/my/home" class="mn-dropdown-item">
+                                        <i class="fa fa-id-card-o"></i> My Account
+                                    </a>
+                                    <div class="mn-dropdown-divider"></div>
+                                    <a href="/web/session/logout" class="mn-dropdown-item mn-logout">
+                                        <i class="fa fa-sign-out"></i> Logout
+                                    </a>
+                                </div>
+                            </div>
+                        </t>
+                       
                         <!-- Bouton Burger Mobile -->
                         <button class="mn-burger-btn" aria-label="Menu mobile" onclick="document.querySelector('.mn-mobile-drawer').classList.toggle('is-open')">
                             <span></span>
@@ -38,7 +62,14 @@
                         <a href="/" class="mn-mobile-link">Home</a>
                         <a href="/shop" class="mn-mobile-link">Shop</a>
                         <a href="/contactus" class="mn-mobile-link">Contact</a>
-                        <a href="/web/login" class="mn-mobile-link mn-mobile-login">Connexion</a>
+                        
+                        <t t-if="request.env.user._is_public()">
+                            <a href="/web/login" class="mn-mobile-link mn-mobile-login">Connexion</a>
+                        </t>
+                        <t t-else="">
+                            <a href="/my/home" class="mn-mobile-link">My Account</a>
+                            <a href="/web/session/logout" class="mn-mobile-link mn-mobile-logout">Logout</a>
+                        </t>
                     </div>
                 </div>
             </header>
