@@ -2,25 +2,50 @@
 <odoo>
 
     <template id="layout" name="monetiques.fr Layout" inherit_id="website.layout" customize_show="False">
-        <!-- Remplacement du Header -->
+        <!-- Remplacement du Header (Optimisé) -->
         <xpath expr="//header" position="replace">
-            <header class="mq-header" id="top">
+            <header class="mq-header" id="top" role="banner">
                 <div class="mq-container">
-                    <a href="/" class="mq-logo">EXOCOMS</a>
-                    <ul class="mq-nav" id="mqNav">
-                        <li class="mq-nav-item"><a href="/" class="mq-nav-link">Accueil</a></li>
-                        <li class="mq-nav-item"><a href="/shop" class="mq-nav-link">Boutique</a></li>
-                        <li class="mq-nav-item"><a href="/solutions" class="mq-nav-link">Solutions</a></li>
-                        <li class="mq-nav-item"><a href="/contact" class="mq-nav-link">Contact</a></li>
-                    </ul>
+                    <a href="/" class="mq-logo" aria-label="Accueil">EXO<span style="color:#1E40AF">COMS</span></a>
+
+                    <nav id="mqNav" aria-label="Menu principal">
+                        <ul class="mq-nav">
+                            <li class="mq-nav-item"><a href="/" class="mq-nav-link">Accueil</a></li>
+                            <li class="mq-nav-item"><a href="/shop" class="mq-nav-link">Boutique</a></li>
+                            <li class="mq-nav-item"><a href="/contactus" class="mq-nav-link">Contact</a></li>
+                            <li class="mq-nav-item mq-mobile-only" style="display:none;"><a href="/shop/cart" class="mq-nav-link">Panier</a></li>
+                            <li class="mq-nav-item mq-mobile-only" style="display:none;"><a href="/web/login" class="mq-nav-link">Connexion</a></li>
+                        </ul>
+                    </nav>
+
                     <div class="mq-nav-actions">
-                        <a href="/shop/cart" class="mq-nav-cart">
-                            <i class="fa fa-shopping-cart"/>
+                        <a href="/shop/cart" class="mq-nav-cart" aria-label="Mon panier">
+                            <i class="fa fa-shopping-cart" aria-hidden="true"/>
                         </a>
                         <a href="/web/login" class="mq-btn-secondary">Connexion</a>
+                        <button class="mq-burger" id="mqBurger" aria-label="Menu" aria-expanded="false" aria-controls="mqNav">
+                            <span/><span/><span/>
+                        </button>
                     </div>
                 </div>
             </header>
+
+            <!-- Script JS pour activer le menu Burger (3 tirets) -->
+            <script type="text/javascript">
+                document.addEventListener("DOMContentLoaded", function() {
+                    const burger = document.getElementById('mqBurger');
+                    const nav = document.getElementById('mqNav');
+                    
+                    if (burger &amp;&amp; nav) {
+                        burger.addEventListener('click', function() {
+                            const isExpanded = burger.getAttribute('aria-expanded') === 'true';
+                            burger.setAttribute('aria-expanded', !isExpanded);
+                            nav.classList.toggle('active');
+                            burger.classList.toggle('toggle');
+                        });
+                    }
+                });
+            </script>
         </xpath>
 
         <xpath expr="//footer" position="replace">

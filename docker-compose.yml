@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16
+    container_name: exocoms_db
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo_password
+    volumes:
+      - exocoms_db_data:/var/lib/postgresql/data
+    networks:
+      - exocoms-net
+
+  web:
+    image: odoo:19.0
+    container_name: exocoms_web
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo_password
+    volumes:
+      - ./e-commerce-Exocoms:/mnt/extra-addons
+    networks:
+      - exocoms-net
+
+volumes:
+  exocoms_db_data:
+
+networks:
+  exocoms-net:
+    driver: bridge
