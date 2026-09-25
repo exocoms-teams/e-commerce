@@ -103,7 +103,12 @@
      * Type"). Voir raccourci "Ajouter au panier" du hero,
      * data-ch-cart-shortcut.
      */
-    function addToCartJsonRpc(templateId, variantId) {
+    function addToCartJsonRpc(templateId, variantId, button) {
+        if (button) {
+            button.disabled = true;
+            button.dataset.chOriginalHtml = button.innerHTML;
+            button.innerHTML = '<i class="fa fa-spinner fa-spin"/> Ajout...';
+        }
         fetch('/shop/cart/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -121,11 +126,18 @@
         })
             .then(function (response) { return response.json(); })
             .then(function () {
-                window.location.reload();
+                if (button) {
+                    button.innerHTML = '<i class="fa fa-check"/> Ajouté !';
+                }
+                setTimeout(function () {
+                    window.location.reload();
+                }, 700);
             })
             .catch(function () {
-                // Silencieux : dégradation gracieuse, cohérent avec le
-                // reste de ce fichier.
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = button.dataset.chOriginalHtml;
+                }
             });
     }
 
@@ -183,7 +195,7 @@
             if (cartButton && !cartButton.dataset.chBound) {
                 cartButton.dataset.chBound = '1';
                 cartButton.addEventListener('click', function () {
-                    addToCartJsonRpc(data.cart_product_id, data.cart_variant_id);
+                    addToCartJsonRpc(data.cart_product_id, data.cart_variant_id, cartButton);
                 });
             }
             if (cartButton) {
