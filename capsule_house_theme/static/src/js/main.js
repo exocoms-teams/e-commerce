@@ -180,10 +180,13 @@
 
         if (data.cart_product_id && data.cart_variant_id) {
             var cartButton = hero.querySelector('[data-ch-cart-shortcut]');
-            if (cartButton) {
+            if (cartButton && !cartButton.dataset.chBound) {
+                cartButton.dataset.chBound = '1';
                 cartButton.addEventListener('click', function () {
                     addToCartJsonRpc(data.cart_product_id, data.cart_variant_id);
                 });
+            }
+            if (cartButton) {
                 cartButton.classList.remove('d-none');
             }
         }
