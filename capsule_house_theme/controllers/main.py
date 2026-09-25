@@ -659,8 +659,8 @@ class CapsuleHouseWebsite(Website):
             env['mail.mail'].sudo().create({
                 'subject': '[Capsule House] Nouvelle inscription newsletter',
                 'body_html': '<p>Nouvelle inscription newsletter : %s</p>' % email,
-                'email_from': website.email or 'contact@capsule-house.fr',
-                'email_to': website.email or 'contact@capsule-house.fr',
+                'email_from': website.company_id.email or 'contact@capsule-house.fr',
+                'email_to': website.company_id.email or 'contact@capsule-house.fr',
             }).send()
 
         return request.redirect('/?newsletter=ok')
