@@ -15,6 +15,7 @@
         'data/rating_data.xml',
 
         'views/templates/layout.xml',
+        'data/website_scope.xml',
         'views/templates/header.xml',
         'views/templates/footer.xml',
         'views/templates/product_card.xml',
