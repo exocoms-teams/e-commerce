@@ -1,0 +1,214 @@
+/* --- HEADER HAUT DE GAMME (AVEC EFFET BLUR FORCÉ) --- */
+.mn-header {
+    background: rgba(255, 255, 255, 0.75) !important; /* Fond translucide pour laisser passer le blur */
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    padding: 0.6rem 2.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: all 0.3s ease;
+}
+
+.mn-header-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Logo stylisé */
+.mn-logo {
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #0f172a;
+    text-decoration: none;
+    letter-spacing: -0.7px;
+    flex-shrink: 0;
+}
+
+.mn-logo-dot {
+    color: #3b82f6;
+}
+
+/* Navigation Centrale */
+.mn-nav {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background: rgba(248, 250, 252, 0.8);
+    padding: 0.3rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.mn-nav-link {
+    color: #475569;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.4rem 1.25rem;
+    border-radius: 999px;
+    transition: all 0.2s ease;
+}
+
+.mn-nav-link:hover,
+.mn-nav-link.active {
+    color: #2563eb;
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Actions Droite (Panier & Connexion) */
+.mn-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-shrink: 0;
+}
+
+/* Icône Panier */
+.mn-cart-icon {
+    position: relative;
+    color: #1e293b;
+    font-size: 1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(248, 250, 252, 0.9);
+    border-radius: 10px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    width: 40px;
+    height: 40px;
+    transition: all 0.2s ease;
+}
+
+.mn-cart-icon:hover {
+    color: #2563eb;
+    border-color: #cbd5e1;
+    background: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+/* Bouton Connexion */
+.mn-btn-login {
+    color: #1e293b;
+    background: rgba(248, 250, 252, 0.9);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.mn-btn-login:hover {
+    color: #2563eb;
+    border-color: #cbd5e1;
+    background: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+/* Bouton Burger Mobile */
+.mn-burger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 26px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1100;
+}
+
+.mn-burger-btn span {
+    display: block;
+    width: 100%;
+    height: 2.5px;
+    background-color: #0f172a;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Tiroir de Navigation Mobile */
+.mn-mobile-drawer {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+    padding: 1.25rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.mn-mobile-drawer.is-open {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mn-mobile-drawer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mn-mobile-link {
+    color: #1e293b;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+.mn-mobile-link:hover {
+    background: #f1f5f9;
+    color: #2563eb;
+}
+
+.mn-mobile-login {
+    background: #2563eb;
+    color: white;
+    text-align: center;
+}
+
+.mn-mobile-login:hover {
+    background: #1d4ed8;
+    color: white;
+}
+
+/* --- RESPONSIVITÉ --- */
+@media (max-width: 991px) {
+    .mn-header {
+        padding: 0.6rem 1rem;
+    }
+
+    .mn-nav {
+        display: none;
+    }
+
+    .mn-btn-login {
+        display: none;
+    }
+
+    .mn-burger-btn {
+        display: flex;
+    }
+}

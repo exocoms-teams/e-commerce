@@ -2,62 +2,101 @@
 <odoo>
 
     <template id="layout" name="monetiques.fr Layout" inherit_id="website.layout" customize_show="False">
-        <xpath expr="//footer" position="replace">
-            <t t-call="monetique_theme.footer"/>
-        </xpath>
-    </template>
+        <!-- Remplacement du Header -->
+        <xpath expr="//header" position="replace">
+            <header class="mn-header">
+                <div class="mn-header-container">
+                    <!-- Logo -->
+                    <a href="/" class="mn-logo">monetiques<span class="mn-logo-dot">.fr</span></a>
+                    
+                    <!-- Navigation principale -->
+                    <nav class="mn-nav">
+                        <a href="/" class="mn-nav-link">Home</a>
+                        <a href="/shop" class="mn-nav-link">Shop</a>
+                        <a href="/contactus" class="mn-nav-link">Contact</a>
+                    </nav>
 
-    <template id="footer" name="monetiques.fr Footer">
-        <footer class="mn-footer">
-            <div class="mn-footer__top">
-                <div class="mn-container">
-                    <div class="mn-footer__grid">
-                        <div class="mn-footer__brand">
-                            <a href="/" class="mn-footer__logo">monetiques<span style="color:#3B82F6">.fr</span></a>
-                            <p>Infrastructure de paiement securisee depuis 2005.</p>
-                            <div class="mn-footer__badges">
-                                <span class="mn-badge">PCI DSS</span>
-                                <span class="mn-badge">NF525</span>
-                                <span class="mn-badge">ISO 27001</span>
+                    <!-- Actions à droite (Panier simple, Connexion) -->
+                    <div class="mn-actions">
+                        <a href="/shop/cart" class="mn-cart-icon" title="Panier">
+                            <i class="fa fa-shopping-cart"></i>
+                        </a>
+                        <a href="/web/login" class="mn-btn-login">Connexion</a>
+                        
+                        <!-- Bouton Burger Mobile -->
+                        <button class="mn-burger-btn" aria-label="Menu mobile" onclick="document.querySelector('.mn-mobile-drawer').classList.toggle('is-open')">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tiroir de Navigation Mobile -->
+                <div class="mn-mobile-drawer">
+                    <div class="mn-mobile-drawer-content">
+                        <a href="/" class="mn-mobile-link">Home</a>
+                        <a href="/shop" class="mn-mobile-link">Shop</a>
+                        <a href="/contactus" class="mn-mobile-link">Contact</a>
+                        <a href="/web/login" class="mn-mobile-link mn-mobile-login">Connexion</a>
+                    </div>
+                </div>
+            </header>
+        </xpath>
+
+        <!-- Remplacement du Footer -->
+        <xpath expr="//footer" position="replace">
+            <footer class="mn-footer">
+                <div class="mn-footer__top">
+                    <div class="mn-container">
+                        <div class="mn-footer__grid">
+                            <div class="mn-footer__brand">
+                                <a href="/" class="mn-footer__logo">monetiques<span style="color:#3B82F6">.fr</span></a>
+                                <p>Infrastructure de paiement securisee depuis 2005.</p>
+                                <div class="mn-footer__badges">
+                                    <span class="mn-badge">PCI DSS</span>
+                                    <span class="mn-badge">NF525</span>
+                                    <span class="mn-badge">ISO 27001</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="mn-footer__col">
-                            <h4>Solutions</h4>
-                            <ul>
-                                <li><a href="/shop">Boutique</a></li>
-                                <li><a href="/solutions/tpe">Terminaux TPE</a></li>
-                                <li><a href="/solutions/encaissement">Encaissement</a></li>
-                            </ul>
-                        </div>
-                        <div class="mn-footer__col">
-                            <h4>Services</h4>
-                            <ul>
-                                <li><a href="/support">Support 7j/7</a></li>
-                                <li><a href="/support">Maintenance</a></li>
-                            </ul>
-                        </div>
-                        <div class="mn-footer__col">
-                            <h4>Entreprise</h4>
-                            <ul>
-                                <li><a href="/a-propos">A propos</a></li>
-                                <li><a href="/emplois">Emplois</a></li>
-                                <li><a href="/contact">Contact</a></li>
-                            </ul>
+                            <div class="mn-footer__col">
+                                <h4>Solutions</h4>
+                                <ul>
+                                    <li><a href="/shop">Boutique</a></li>
+                                    <li><a href="/solutions/tpe">Terminaux TPE</a></li>
+                                    <li><a href="/solutions/encaissement">Encaissement</a></li>
+                                </ul>
+                            </div>
+                            <div class="mn-footer__col">
+                                <h4>Services</h4>
+                                <ul>
+                                    <li><a href="/support">Support 7j/7</a></li>
+                                    <li><a href="/support">Maintenance</a></li>
+                                </ul>
+                            </div>
+                            <div class="mn-footer__col">
+                                <h4>Entreprise</h4>
+                                <ul>
+                                    <li><a href="/a-propos">A propos</a></li>
+                                    <li><a href="/emplois">Emplois</a></li>
+                                    <li><a href="/contactus">Contact</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="mn-footer__bottom">
-                <div class="mn-container">
-                    <p>&#169; 2025 monetiques.fr SAS. Tous droits reserves.</p>
-                    <nav>
-                        <a href="/mentions-legales">Mentions legales</a>
-                        <a href="/confidentialite">Confidentialite</a>
-                        <a href="/cgv">CGV</a>
-                    </nav>
+                <div class="mn-footer__bottom">
+                    <div class="mn-container">
+                        <p>&#169; 2025 monetiques.fr SAS. Tous droits reserves.</p>
+                        <nav>
+                            <a href="/mentions-legales">Mentions legales</a>
+                            <a href="/confidentialite">Confidentialite</a>
+                            <a href="/cgv">CGV</a>
+                        </nav>
+                    </div>
                 </div>
-            </div>
-        </footer>
+            </footer>
+        </xpath>
     </template>
 
 </odoo>
