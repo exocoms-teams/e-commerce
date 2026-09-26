@@ -125,8 +125,14 @@
             }),
         })
             .then(function (response) { return response.json(); })
-            .then(function (json) {
-                console.log('DEBUG réponse complète:', json);
+            .then(function (result) {
+                console.log('DEBUG résultat JSON complet:', result);
+                if (button) {
+                    button.innerHTML = '<i class="fa fa-check"/> Ajouté !';
+                }
+                setTimeout(function () {
+                    window.location.reload();
+                }, 3000);
             })
             .catch(function () {
                 if (button) {
