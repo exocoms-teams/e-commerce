@@ -7,4 +7,4 @@ from . import trend_submission
 from . import trend_webhook_queue
 from . import trend_score_alert
 from . import product_template
-from . import account_move
+#from . import account_move
