@@ -44,14 +44,14 @@
 
 .ch-legal-title {
     font-family: var(--font-head);
-    font-size: var(--fs-title-responsive);
+    font-size: var(--fs-h1);
     font-weight: 800;
     color: var(--ch-ink);
     margin-bottom: 12px;
 }
 
 .ch-legal-lead {
-    font-size: var(--fs-15);
+    font-size: var(--fs-body);
     color: var(--ch-fog);
     line-height: 1.65;
     padding-bottom: 28px;
@@ -65,9 +65,13 @@
 }
 .ch-legal-lead a:hover { color: var(--ch-terracotta-mid); }
 
+/* Chaque <h2> est un article numéroté du document (liseré terracotta) :
+   c'est un titre de section, donc --fs-h2. Le liseré de 3px reste
+   d'origine — il porte l'identification des articles, pas la
+   hiérarchie de taille. */
 .ch-legal-body h2 {
     font-family: var(--font-head);
-    font-size: var(--fs-19);
+    font-size: var(--fs-h2);
     font-weight: 700;
     color: var(--ch-ink);
     margin: 36px 0 12px;
@@ -78,7 +82,7 @@
 .ch-legal-body h2:first-of-type { margin-top: 28px; }
 
 .ch-legal-body p {
-    font-size: var(--fs-15);
+    font-size: var(--fs-body);
     line-height: 1.75;
     color: var(--ch-fog);
     margin-bottom: 14px;
@@ -96,5 +100,8 @@
 
 @media (max-width: 640px) {
     .ch-legal-wrap { padding: 24px 16px 64px; }
-    .ch-legal-body h2 { font-size: var(--fs-17); margin-top: 28px; }
+    /* Plus de font-size sur h2 ici : le clamp() de --fs-h2 descend déjà
+       à 23px sur mobile, on ne fige plus une valeur qui divergeait de
+       celle du reste du site. */
+    .ch-legal-body h2 { margin-top: 28px; }
 }

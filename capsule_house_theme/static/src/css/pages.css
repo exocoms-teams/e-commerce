@@ -46,7 +46,7 @@
 
 .ch-avis-hero-title {
     font-family: var(--font-head);
-    font-size: var(--fs-title-responsive-lg);
+    font-size: var(--fs-h1);
     font-weight: 800;
     color: var(--ch-ink);
     line-height: 1.15;
@@ -54,7 +54,7 @@
 }
 
 .ch-avis-hero-sub {
-    font-size: var(--fs-16);
+    font-size: var(--fs-body);
     color: var(--ch-fog);
     line-height: 1.6;
     margin: 0 0 28px;
@@ -297,13 +297,13 @@
 
 .ch-avis-form-title {
     font-family: var(--font-head);
-    font-size: var(--fs-title-responsive-md);
+    font-size: var(--fs-h2);
     font-weight: 800;
     color: var(--ch-ink);
     margin: 0 0 10px;
 }
 
-.ch-avis-form-sub { font-size: var(--fs-14); color: var(--ch-fog); }
+.ch-avis-form-sub { font-size: var(--fs-body); color: var(--ch-fog); }
 
 .ch-avis-form-card {
     background: var(--ch-panel);
@@ -326,7 +326,7 @@
     display: flex; align-items: center; justify-content: center;
     font-size: var(--fs-24); color: var(--ch-white); margin: 0 auto 20px;
 }
-.ch-avis-success-title { font-size: var(--fs-22); font-weight: 800; color: var(--ch-ink); margin-bottom: 10px; }
+.ch-avis-success-title { font-size: var(--fs-h3); font-weight: 800; color: var(--ch-ink); margin-bottom: 10px; }
 .ch-avis-success-text { font-size: var(--fs-14); color: var(--ch-fog); line-height: 1.7; }
 
 .ch-avis-star-picker-wrap { margin-bottom: 24px; }
@@ -453,28 +453,36 @@
 .ch-aide-sidebar-link.active { background: var(--ch-terracotta); color: var(--ch-white); }
 
 /* ── CONTENU COMMUN ── */
+/* .ch-aide-title porte le <h1> de page sur /livraison, /retours,
+   /garantie, /faq, /a-propos, /le-concept ET le <h1> du hero de gamme
+   sur /nos-gammes/<slug> — d'où une seule valeur pour les 8 pages. */
 .ch-aide-title {
     font-family: var(--font-head);
-    font-size: var(--fs-title-responsive);
+    font-size: var(--fs-h1);
     font-weight: 800;
     color: var(--ch-ink);
     margin-bottom: 12px;
 }
 .ch-aide-subtitle {
-    font-size: var(--fs-15);
+    font-size: var(--fs-body);
     color: var(--ch-fog);
     line-height: 1.65;
     max-width: 640px;
     margin-bottom: 28px;
 }
 
-/* Modificateurs de taille pour les h2 de section (design system) —
-   tailles auparavant portées en style="font-size:…" inline (hors
-   tokens) : pages Entreprise (24px À propos / 22px Le concept) et
-   h2 d'étape des pages Aide (17px). */
-.ch-aide-title.ch-aide-title-lg { font-size: var(--fs-24); }
-.ch-aide-title.ch-aide-title-md { font-size: var(--fs-22); }
-.ch-aide-card-title.ch-aide-h2 { font-size: var(--fs-17); }
+/* Chapeaux de section : ce sont des <h2>, donc --fs-h2. Les anciens
+   modificateurs -lg (24px, "Nos valeurs" / "Notre histoire") et -md
+   (22px, "De l'atelier à votre terrain" / "Coupe technique") ont
+   disparu : ils n étaient que des hauteurs de passe, deux niveaux
+   sous le H1 et au-dessus du niveau des autres sections du site, sans
+   raison graphique. Idem .ch-aide-h2 (17px, "Comment déclarer un
+   sinistre") qui devient un vrai H2 comme ses homologues. */
+.ch-aide-title.ch-aide-title-lg,
+.ch-aide-title.ch-aide-title-md,
+.ch-aide-card-title.ch-aide-h2 {
+    font-size: var(--fs-h2);
+}
 
 /* Encart callout (info livraison / alerte retours / chiffre garantie) */
 .ch-aide-callout {
@@ -533,7 +541,7 @@
     margin-bottom: 14px;
 }
 .ch-aide-timeline-title {
-    font-size: var(--fs-15-5);
+    font-size: var(--fs-h3);
     font-weight: 700;
     color: var(--ch-ink);
     margin-bottom: 6px;
@@ -583,7 +591,7 @@
     padding: 22px 20px;
 }
 .ch-aide-card-title {
-    font-size: var(--fs-15-5);
+    font-size: var(--fs-h3);
     font-weight: 700;
     color: var(--ch-ink);
     margin-bottom: 8px;
@@ -647,7 +655,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: var(--fs-15);
+    font-size: var(--fs-h3);
     font-weight: 700;
     margin-bottom: 14px;
 }
@@ -788,7 +796,11 @@
     align-items: center;
     margin-bottom: 48px;
 }
-.ch-entreprise-hero .ch-aide-title { font-size: var(--fs-34); margin-bottom: 16px; }
+/* Le <h1> du hero À propos / Le concept NE redimensionne plus rien :
+   il hérite de --fs-h1 via .ch-aide-title, comme les 7 autres pages.
+   L'ancien --fs-34 était le 3e largest H1 du site (après 46px
+   accueil et 48px avis) sans raison de le maintenir. */
+.ch-entreprise-hero .ch-aide-title { margin-bottom: 16px; }
 .ch-entreprise-accent { color: var(--ch-terracotta); }
 .ch-entreprise-hero-visual { display: flex; justify-content: center; }
 
@@ -1019,7 +1031,7 @@
 
 .ch-gamme-card-name {
     font-family: var(--font-head);
-    font-size: var(--fs-16);
+    font-size: var(--fs-h3);
     font-weight: 800;
     color: var(--ch-ink);
     text-decoration: none;
@@ -1104,9 +1116,16 @@
     padding-bottom: 16px;
 }
 
+/* Les 5 sections de la page détail d'une gamme ("Formats",
+   "Spécifications techniques", "Équipements inclus", "Options", plus
+   le chapeau "Performances") sont toutes des <h2> : elles passent à
+   --fs-h2. Avant, la page avait un H1 à 28→38px puis des H2 à 18px et
+   22px — les sections paraissaient plus petites que le titre de
+   section d'une page Aide, et les deux premières se différenciaient
+   entre elles sans motif. */
 .ch-gamme-section-title {
     font-family: var(--font-head);
-    font-size: var(--fs-18);
+    font-size: var(--fs-h2);
     font-weight: 800;
     color: var(--ch-ink);
     margin: 0 0 20px;
@@ -1132,7 +1151,7 @@
    détail, grille de cartes icône + titre + description. */
 .ch-gamme-perf-title {
     font-family: var(--font-head);
-    font-size: var(--fs-22);
+    font-size: var(--fs-h2);
     font-weight: 800;
     color: var(--ch-ink);
     margin: 10px 0 28px;
@@ -1159,7 +1178,7 @@
     font-family: var(--font-head);
     font-weight: 800;
     color: var(--ch-ink);
-    font-size: var(--fs-14-5);
+    font-size: var(--fs-h3);
     margin-bottom: 4px;
 }
 .ch-gamme-perf-desc {
@@ -1188,7 +1207,7 @@
     font-family: var(--font-head);
     font-weight: 800;
     color: var(--ch-ink);
-    font-size: var(--fs-15);
+    font-size: var(--fs-h3);
 }
 .ch-gamme-format-surface, .ch-gamme-format-note {
     font-size: var(--fs-12-5);
