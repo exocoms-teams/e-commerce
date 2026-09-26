@@ -185,9 +185,18 @@
         });
 
         if (data.cart_product_id && data.cart_variant_id) {
-    
+            var cartButton = hero.querySelector('[data-ch-cart-shortcut]');
+            if (cartButton && !cartButton.dataset.chBound) {
+                cartButton.dataset.chBound = '1';
+                cartButton.addEventListener('click', function () {
+                    addToCartJsonRpc(data.cart_product_id, data.cart_variant_id, cartButton);
+                });
+            }
+            if (cartButton) {
+                cartButton.classList.remove('d-none');
+            }
+        }
     }
-
     /**
      * Section "avis clients" de l'accueil (v19.0.1.0.100, voir
      * views/partials/home_testimonials.xml). Même principe que
@@ -322,14 +331,3 @@
     }
     document.addEventListener('page:loaded', init);
 })();
-        var cartButton = hero.querySelector('[data-ch-cart-shortcut]');
-            if (cartButton && !cartButton.dataset.chBound) {
-                cartButton.dataset.chBound = '1';
-                cartButton.addEventListener('click', function () {
-                    addToCartJsonRpc(data.cart_product_id, data.cart_variant_id, cartButton);
-                });
-            }
-            if (cartButton) {
-                cartButton.classList.remove('d-none');
-            }
-        }
