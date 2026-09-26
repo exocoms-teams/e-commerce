@@ -124,21 +124,15 @@
                 },
             }),
         })
-            .then(function (response) { return response.json(); })
-            .then(function () {
+            .then(function (resp) {
+                console.log('DEBUG succès add to cart:', resp);
                 if (button) {
                     button.innerHTML = '<i class="fa fa-check"/> Ajouté !';
                 }
-                setTimeout(function () {
-                    window.location.reload();
-                }, 700);
             })
-            .catch(function () {
-                if (button) {
-                    button.disabled = false;
-                    button.innerHTML = button.dataset.chOriginalHtml;
-                }
-            });
+            .catch(function (err) {
+                console.log('DEBUG erreur add to cart:', err);
+            })
     }
 
     function applyHeroFloatCards(hero, data) {
@@ -191,17 +185,7 @@
         });
 
         if (data.cart_product_id && data.cart_variant_id) {
-            var cartButton = hero.querySelector('[data-ch-cart-shortcut]');
-            if (cartButton && !cartButton.dataset.chBound) {
-                cartButton.dataset.chBound = '1';
-                cartButton.addEventListener('click', function () {
-                    addToCartJsonRpc(data.cart_product_id, data.cart_variant_id, cartButton);
-                });
-            }
-            if (cartButton) {
-                cartButton.classList.remove('d-none');
-            }
-        }
+    
     }
 
     /**
@@ -338,3 +322,14 @@
     }
     document.addEventListener('page:loaded', init);
 })();
+        var cartButton = hero.querySelector('[data-ch-cart-shortcut]');
+            if (cartButton && !cartButton.dataset.chBound) {
+                cartButton.dataset.chBound = '1';
+                cartButton.addEventListener('click', function () {
+                    addToCartJsonRpc(data.cart_product_id, data.cart_variant_id, cartButton);
+                });
+            }
+            if (cartButton) {
+                cartButton.classList.remove('d-none');
+            }
+        }
