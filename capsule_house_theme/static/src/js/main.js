@@ -124,14 +124,15 @@
                 },
             }),
         })
-            .then(function (resp) {
-                console.log('DEBUG succès add to cart:', resp);
-                if (button) {
-                    button.innerHTML = '<i class="fa fa-check"/> Ajouté !';
-                }
+            .then(function (response) { return response.json(); })
+            .then(function (json) {
+                console.log('DEBUG réponse complète:', json);
             })
-            .catch(function (err) {
-                console.log('DEBUG erreur add to cart:', err);
+            .catch(function () {
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = button.dataset.chOriginalHtml;
+                }
             })
     }
 
