@@ -107,7 +107,7 @@
         if (button) {
             button.disabled = true;
             button.dataset.chOriginalHtml = button.innerHTML;
-            button.innerHTML = '<i class="fa fa-spinner fa-spin"/> Ajout...';
+            button.innerHTML = '<i class="fa fa-check"/> Ajouté !';
         }
         fetch('/shop/cart/add', {
             method: 'POST',
@@ -125,13 +125,20 @@
             }),
         })
             .then(function (response) { return response.json(); })
-            .then(function (result) {
-                console.log('DEBUG résultat JSON complet:', result);
-                if (button) {
-                    button.innerHTML = '<i class="fa fa-check"/> Ajouté !';
+            .then(function (resp) {
+                var qty = resp && resp.result && resp.result.cart_quantity;
+                if (qty != null) {
+                    var badges = document.querySelectorAll('.my_cart_quantity');
+                    badges.forEach(function (badge) {
+                        badge.textContent = qty;
+                        badge.classList.remove('d-none');
+                    });
                 }
                 setTimeout(function () {
-                    window.location.reload();
+                    if (button) {
+                        button.disabled = false;
+                        button.innerHTML = button.dataset.chOriginalHtml;
+                    }
                 }, 3000);
             })
             .catch(function () {
@@ -139,7 +146,7 @@
                     button.disabled = false;
                     button.innerHTML = button.dataset.chOriginalHtml;
                 }
-            })
+            });
     }
 
     function applyHeroFloatCards(hero, data) {
