@@ -145,6 +145,38 @@
                 <link rel="stylesheet" t-attf-href="/capsule_house_theme/static/src/css/#{ch_css_file}?v=#{ch_theme_version}"/>
             </t>
         </xpath>
+        <xpath expr="//footer" position="before">
+            <!--
+                CH-156 — Mini-panier (panneau latéral). Squelette 100% statique
+                (masqué par défaut, .ch-minicart-panel + .ch-minicart-overlay
+                avec d-none), peuplé dynamiquement par static/src/js/main.js
+                (openMiniCart) à chaque ajout au panier ou clic sur l'icône
+                panier du header — même principe que les cartes flottantes du
+                hero (aucune donnée fabriquée dans l'arch).
+                Placé ici (layout global) plutôt que dans home.xml : le panneau
+                doit être accessible sur TOUTE page où un ajout au panier est
+                possible (accueil, boutique, fiche produit), pas seulement
+                l'accueil.
+            -->
+            <div class="ch-minicart-overlay d-none" data-ch-minicart-overlay="1"/>
+            <aside class="ch-minicart-panel d-none" data-ch-minicart-panel="1" aria-hidden="true">
+                <div class="ch-minicart-header">
+                    <span class="ch-minicart-title">Votre panier</span>
+                    <button type="button" class="ch-minicart-close" data-ch-minicart-close="1" aria-label="Fermer">
+                        <i class="fa fa-times"/>
+                    </button>
+                </div>
+                <div class="ch-minicart-subtotal">
+                    <span>Sous-total</span>
+                    <span data-ch-minicart-subtotal="1">$0,00</span>
+                </div>
+                <a href="/shop/cart" class="ch-btn ch-btn-cta ch-minicart-goto-cart">Aller au panier</a>
+                <div class="ch-minicart-lines" data-ch-minicart-lines="1">
+                    <!-- Lignes injectées dynamiquement par le JS -->
+                </div>
+                <p class="ch-minicart-empty d-none" data-ch-minicart-empty="1">Votre panier est vide.</p>
+            </aside>
+        </xpath>
         <xpath expr="//footer" position="replace">
             <t t-call="capsule_house_theme.theme_footer"/>
         </xpath>
