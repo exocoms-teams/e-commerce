@@ -87,7 +87,7 @@ header#top .navbar-brand.logo img {
 header#top #top_menu.navbar-nav {
     display: flex !important;
     align-items: center !important;
-    gap: 4px !important;
+    gap: 10px !important;
     padding: 0 !important;
     flex: 1 !important;
 }
@@ -95,7 +95,10 @@ header#top #top_menu.navbar-nav {
 header#top #top_menu .nav-item .nav-link {
     display: flex !important;
     align-items: center !important;
-    padding: 10px 16px !important;
+    justify-content: center !important;
+    position: relative !important;
+    min-height: 40px !important;
+    padding: 0 12px !important;
     font-family: var(--font-body) !important;
     font-size: var(--fs-13-5) !important;
     font-weight: 500 !important;
@@ -104,11 +107,28 @@ header#top #top_menu .nav-item .nav-link {
     transition: background 0.2s ease, color 0.2s ease !important;
 }
 
-header#top #top_menu .nav-item .nav-link:hover,
-header#top #top_menu .nav-item .nav-link.active {
+header#top #top_menu .nav-item .nav-link:hover:not(.active) {
     background: var(--ch-panel) !important;
     color: var(--ch-ink) !important;
     text-decoration: none !important;
+}
+
+header#top #top_menu .nav-item .nav-link.active {
+    background: transparent !important;
+    color: var(--ch-terracotta) !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+}
+
+header#top #top_menu .nav-item .nav-link.active::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    bottom: 3px;
+    left: 12px;
+    height: 2px;
+    border-radius: var(--r-pill);
+    background: var(--ch-terracotta);
 }
 
 /* "Tous les pods" (/shop) en pastille pleine, comme sur la maquette —
@@ -343,15 +363,21 @@ header#top .o_header_mobile button[data-bs-toggle="offcanvas"] {
 }
 
 header#top .o_navbar_mobile .nav-link {
+    border-left: 3px solid transparent !important;
     color: var(--ch-ink) !important;
     font-weight: 500 !important;
     font-size: var(--fs-14) !important;
 }
 
-header#top .o_navbar_mobile .nav-link:hover,
-header#top .o_navbar_mobile .nav-link.active {
+header#top .o_navbar_mobile .nav-link:hover:not(.active) {
     background: var(--ch-panel) !important;
-    color: var(--ch-ink) !important;
+}
+
+header#top .o_navbar_mobile .nav-link.active {
+    background: var(--ch-highlight) !important;
+    border-left-color: var(--ch-terracotta) !important;
+    color: var(--ch-terracotta) !important;
+    font-weight: 700 !important;
 }
 
 @media (max-width: 480px) {
