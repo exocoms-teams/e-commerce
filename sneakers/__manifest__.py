@@ -1,8 +1,8 @@
 {
-    'name': 'monetiques.fr — Infrastructure de Paiement',
+    'name': 'Sneakers',
     'version': '19.0.1.0.5',
     'category': 'Website',
-    'author': 'monetiques.fr',
+    'author': 'Exocoms',
     'license': 'LGPL-3',
     'depends': ['website', 'website_sale', 'website_sale_wishlist', 'sale_loyalty', 'website_sale_loyalty', 'stock', 'delivery'],
 
