@@ -64,4 +64,4 @@ class CapsuleHouseShopSearch(WebsiteSale):
         if not categories:
             return None
 
-        return Domain('public_categ_ids', 'parent_of', categories.ids)
+        return Domain('public_categ_ids', 'child_of', categories.ids)
