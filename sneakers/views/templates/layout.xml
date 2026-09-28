@@ -6,12 +6,24 @@
         inherit_id="website.layout"
         name="Sneakers Layout">
 
-        <xpath expr="//header" position="replace">
-            <t t-call="sneakers.header"/>
+        <xpath expr="//header" position="attributes">
+            <attribute name="t-attf-class" add="#{'d-none' if website.x_sneakers_theme else ''}" separator=" "/>
         </xpath>
 
-        <xpath expr="//footer" position="replace">
-            <t t-call="sneakers.footer"/>
+        <xpath expr="//header" position="after">
+            <t t-if="website.x_sneakers_theme">
+                <t t-call="sneakers.header"/>
+            </t>
+        </xpath>
+
+        <xpath expr="//footer" position="attributes">
+            <attribute name="t-attf-class" add="#{'d-none' if website.x_sneakers_theme else ''}" separator=" "/>
+        </xpath>
+
+        <xpath expr="//footer" position="after">
+            <t t-if="website.x_sneakers_theme">
+                <t t-call="sneakers.footer"/>
+            </t>
         </xpath>
 
     </template>
