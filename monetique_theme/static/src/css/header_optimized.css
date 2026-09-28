@@ -52,15 +52,29 @@
     font-weight: 600;
     font-size: 0.875rem;
     padding: 0.45rem 1.35rem;
-    border-radius: 999px; /* Forme pilule ultra-arrondie pour chaque lien (dont Shop) */
+    border-radius: 999px;
     transition: all 0.2s ease;
 }
 
-.mn-nav-link:hover,
+/* Style par défaut au survol */
+.mn-nav-link:hover {
+    color: #2563eb;
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Si la page est active, la pilule s'affiche en permanence */
 .mn-nav-link.active {
     color: #2563eb;
     background-color: #ffffff;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Astuce UX : Si on survole le bloc de nav, la pilule active s'efface temporairement au profit de celle survolée */
+.mn-nav:hover .mn-nav-link.active:not(:hover) {
+    color: #475569;
+    background-color: transparent;
+    box-shadow: none;
 }
 
 /* Actions Droite (Panier & Connexion) */
@@ -71,7 +85,7 @@
     flex-shrink: 0;
 }
 
-/* Icône Panier (Plus arrondie) */
+/* Icône Panier */
 .mn-cart-icon {
     position: relative;
     color: #1e293b;
@@ -81,7 +95,7 @@
     align-items: center;
     justify-content: center;
     background: rgba(248, 250, 252, 0.9);
-    border-radius: 14px; /* Plus arrondi */
+    border-radius: 14px;
     border: 1px solid rgba(226, 232, 240, 0.8);
     width: 42px;
     height: 42px;
@@ -95,7 +109,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
 }
 
-/* Bouton Connexion (Style pilule ultra-arrondi) */
+/* Bouton Connexion */
 .mn-btn-login {
     color: #1e293b;
     background: rgba(248, 250, 252, 0.9);
@@ -104,7 +118,7 @@
     font-weight: 600;
     font-size: 0.875rem;
     padding: 0.55rem 1.4rem;
-    border-radius: 999px; /* Arrondi total type pilule */
+    border-radius: 999px;
     transition: all 0.2s ease;
 }
 
@@ -115,7 +129,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
 }
 
-/* --- MENU DÉROULANT UTILISATEUR CONNECTÉ (Plus arrondi) --- */
+/* --- MENU DÉROULANT UTILISATEUR CONNECTÉ --- */
 .mn-user-dropdown {
     position: relative;
 }
@@ -131,7 +145,7 @@
     font-weight: 600;
     font-size: 0.875rem;
     padding: 0.45rem 1.15rem;
-    border-radius: 999px; /* Style pilule unifié */
+    border-radius: 999px;
     transition: all 0.2s ease;
 }
 
@@ -159,7 +173,6 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
 }
 
-/* Affichage du dropdown */
 .mn-user-dropdown:hover .mn-dropdown-menu {
     opacity: 1;
     visibility: visible;
@@ -177,7 +190,7 @@
     width: 210px;
     background: #ffffff;
     border: 1px solid rgba(226, 232, 240, 0.9);
-    border-radius: 16px; /* Coins du menu déroulant plus doux */
+    border-radius: 16px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
     padding: 0.5rem;
     opacity: 0;
@@ -196,7 +209,7 @@
     text-decoration: none;
     font-weight: 500;
     font-size: 0.875rem;
-    border-radius: 10px; /* Éléments internes arrondis */
+    border-radius: 10px;
     transition: background 0.15s ease, color 0.15s ease;
 }
 

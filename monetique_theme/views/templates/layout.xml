@@ -11,9 +11,9 @@
                     
                     <!-- Navigation principale -->
                     <nav class="mn-nav">
-                        <a href="/" class="mn-nav-link">Home</a>
-                        <a href="/shop" class="mn-nav-link">Shop</a>
-                        <a href="/contactus" class="mn-nav-link">Contact</a>
+                        <a href="/" t-attf-class="mn-nav-link #{'active' if request.httprequest.path == '/' else ''}">Home</a>
+                        <a href="/shop" t-attf-class="mn-nav-link #{'active' if request.httprequest.path.startswith('/shop') else ''}">Shop</a>
+                        <a href="/contactus" t-attf-class="mn-nav-link #{'active' if request.httprequest.path == '/contactus' else ''}">Contact</a>
                     </nav>
 
                     <!-- Actions à droite (Panier, Connexion / Profil utilisateur) -->
