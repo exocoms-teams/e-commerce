@@ -317,9 +317,14 @@ a.o_wish_rm {
     border-radius: var(--r-lg);
     box-shadow: var(--shadow-sm);
 }
+/* Étapes du tunnel (/shop/cart, /shop/checkout) : le <h3> du bloc
+   "My Cart"/"Payment" garde la taille de l'élément qu'il porte, désormais
+   alignée sur --fs-h3 par les règles sémantiques de base.css. On la fixe
+   explicitement pour ne pas dépendre du tag choisi par le template natif. */
 .checkout_step_title,
 .card-title {
     font-family: var(--font-head);
+    font-size: var(--fs-h3);
     font-weight: 700;
     color: var(--ch-ink);
 }
@@ -372,6 +377,10 @@ form.s_website_form .form-control:focus {
    PORTAIL CLIENT (/my/*) — Mes commandes, Mon compte
    ======================================== */
 
+/* Les titres du portail (/my/*) ne redéfinissent AUCUNE taille : ils
+   héritent de --fs-h1/--fs-h2/--fs-h3 (base.css) comme le reste du
+   site, pour qu'un <h1> du portail ne soit pas plus petit qu'un <h1>
+   d'une page du thème. */
 .o_portal_wrap h1,
 .o_portal_wrap h2,
 .o_portal_wrap h3 {
