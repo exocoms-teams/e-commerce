@@ -4,19 +4,23 @@
 @import url("shop.css");
 @import url("responsive.css");
 
-/*  RESET  */
+/*  RESET — scoped to the sneaker theme (body.o_sneakers)  */
 
-*{
+html:has(:where(body.o_sneakers)){
+    scroll-behavior:smooth;
+}
+
+:where(.o_sneakers) *{
     margin:0;
     padding:0;
     box-sizing:border-box;
 }
 
-html{
-    scroll-behavior:smooth;
-}
+body:where(.o_sneakers){
 
-body{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 
     font-family:var(--font-body);
     font-size:var(--fs-normal);
@@ -27,14 +31,14 @@ body{
 
 }
 
-img{
+:where(.o_sneakers) img{
 
     max-width:100%;
     display:block;
 
 }
 
-a{
+:where(.o_sneakers) a{
 
     text-decoration:none;
     color:inherit;
@@ -42,43 +46,43 @@ a{
 
 }
 
-button{
+:where(.o_sneakers) button{
 
     cursor:pointer;
     transition:var(--transition);
 
 }
 
-button:focus,
-a:focus,
-input:focus,
-select:focus,
-textarea:focus,
-.btn:focus,
-.o_wevent_event_spinner:focus{
+:where(.o_sneakers) button:focus,
+:where(.o_sneakers) a:focus,
+:where(.o_sneakers) input:focus,
+:where(.o_sneakers) select:focus,
+:where(.o_sneakers) textarea:focus,
+:where(.o_sneakers) .btn:focus,
+:where(.o_sneakers) .o_wevent_event_spinner:focus{
     outline:none !important;
     box-shadow:none !important;
 }
 
-ul{
+:where(.o_sneakers) ul{
 
     list-style:none;
 
 }
 
-.container{
+:where(.o_sneakers) .container{
 
     width:min(var(--container-width),92%);
     margin:auto;
 
 }
 
-section{
+:where(.o_sneakers) section{
 
     padding:var(--section-padding) 0;
 
 }
 
-a, a:hover, a:visited, a:focus {
+:where(.o_sneakers) a, :where(.o_sneakers) a:hover, :where(.o_sneakers) a:visited, :where(.o_sneakers) a:focus {
     text-decoration: none !important;
 }

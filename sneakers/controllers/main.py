@@ -2,6 +2,21 @@ from odoo import http, fields, _
 from odoo.http import request
 from odoo.addons.website_sale.controllers import main as website_sale_main
 from odoo.addons.sale.controllers.portal import CustomerPortal
+from werkzeug.urls import url_encode, url_parse
+
+
+def _serve_website_fallback():
+    """Serve the current website's own content instead of sneaker pages.
+
+    Used when the sneaker theme is disabled on the current website:
+    sneaker routes behave as if they did not exist, letting the regular
+    ``ir.http`` fallback chain serve this website's page, attachment or
+    redirect, and returning a 404 when none matches.
+    """
+    response = request.env['ir.http']._serve_fallback()
+    if response:
+        return response
+    return request.not_found()
 
 
 def _is_module_installed(module_name):
@@ -39,7 +54,10 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
     never bounce via the Odoo default /shop URL.
     """
 
+    @http.route()
     def pricelist(self, promo, reward_id=None, **post):
+        if not request.website.x_sneakers_theme:
+            return super().pricelist(promo, reward_id=reward_id, **post)
         if not (order_sudo := request.cart):
             return request.redirect(post.get('r', '/shop/cart'))
         _clear_order_coupons(order_sudo)
@@ -90,13 +108,15 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
                 order._remove_delivery_line()
         return True
 
+    @http.route()
     def activate_coupon(self, code, r='/shop-sneakers', **kw):
+        if not request.website.x_sneakers_theme:
+            return super().activate_coupon(code, **kw)
         if not (order_sudo := request.cart):
             return request.redirect(r)
         _clear_order_coupons(order_sudo)
         request.session['pending_coupon_code'] = code
         result = order_sudo._try_pending_coupon()
-        from werkzeug.urls import url_parse, url_encode
         url_parts = url_parse(r)
         url_query = url_parts.decode_query()
         if isinstance(result, dict) and 'error' in result:
@@ -114,6 +134,8 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
 
     @http.route('/shop-sneakers', type='http', auth='public', website=True)
     def shop_sneakers(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
 
         # ==========================
         # Catégories principales
@@ -417,7 +439,10 @@ def _get_product_ratings(products):
 
 class SneakersController(CustomerPortal):
 
+    @http.route()
     def portal_my_orders(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return super().portal_my_orders(**kwargs)
         partner = request.env.user.partner_id
         orders = request.env['sale.order'].sudo().search([
             ('partner_id', '=', partner.id),
@@ -427,7 +452,10 @@ class SneakersController(CustomerPortal):
             'orders': orders,
         })
 
-    def home(self):
+    @http.route()
+    def home(self, **kw):
+        if not request.website.x_sneakers_theme:
+            return super().home(**kw)
 
         popular_products = request.env['product.template'].sudo().search(
             [
@@ -480,6 +508,8 @@ class SneakersController(CustomerPortal):
         }
     @http.route('/product/<int:product_id>', type='http', auth='public', website=True)
     def product_page(self, product_id, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
 
         product = request.env['product.template'].sudo().browse(product_id)
 
@@ -731,6 +761,8 @@ class SneakersController(CustomerPortal):
 
     @http.route('/confirmation', type='http', auth='public', website=True, sitemap=True)
     def confirmation(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
         order_id = kwargs.get('order_id')
         order = False
         tx = False
@@ -754,10 +786,14 @@ class SneakersController(CustomerPortal):
 
     @http.route('/payment', type='http', auth='user', website=True, methods=['POST'])
     def payment_post(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
         return request.redirect('/shop/payment')
 
     @http.route('/wishlist', type='http', auth='user', website=True)
     def wishlist(self):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
 
         partner = request.env.user.partner_id
 
@@ -781,6 +817,8 @@ class SneakersController(CustomerPortal):
 
     @http.route('/contact', type='http', auth='public', website=True)
     def contact(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
         company = request.website.company_id
         return request.render('sneakers.page_contact', {
             'company_name': company.name,
@@ -791,30 +829,44 @@ class SneakersController(CustomerPortal):
 
     @http.route('/terms', type='http', auth='public', website=True)
     def terms(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
         return request.render('sneakers.page_terms', {})
 
     @http.route('/about', type='http', auth='public', website=True)
     def about(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
         return request.render('sneakers.page_about', {})
 
     @http.route('/faq', type='http', auth='public', website=True)
     def faq(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
         return request.render('sneakers.page_faq', {})
 
     @http.route('/careers', type='http', auth='public', website=True)
     def careers(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
         return request.render('sneakers.page_careers', {})
 
     @http.route('/shipping', type='http', auth='public', website=True)
     def shipping(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
         return request.render('sneakers.page_shipping', {})
 
     @http.route('/returns', type='http', auth='public', website=True)
     def returns(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
         return request.render('sneakers.page_returns', {})
 
     @http.route('/privacy-policy', type='http', auth='public', website=True)
     def privacy_policy(self, **kwargs):
+        if not request.website.x_sneakers_theme:
+            return _serve_website_fallback()
         return request.render('sneakers.page_privacy_policy', {})
 
     @http.route('/newsletter/subscribe', type='jsonrpc', auth='public', csrf=False)
