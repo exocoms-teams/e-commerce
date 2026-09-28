@@ -138,6 +138,7 @@ class CapsuleHouseWebsite(Website):
                 'name': product.name,
                 'url': product.website_url,
                 'id': product.id,
+                'variant_id': product.product_variant_id.id,
                 'price': product.list_price,
                 'currency': product.currency_id,
                 'compare_price': compare_price if has_discount else 0,
@@ -283,6 +284,7 @@ class CapsuleHouseWebsite(Website):
         } for item in hero_products]
 
         cart_product_id = hero_products[1]['id'] if len(hero_products) > 1 else None
+        cart_variant_id = hero_products[1]['variant_id'] if len(hero_products) > 1 else None
 
         try:
             units_installed_count = int(units_installed_count) if units_installed_count else None
@@ -296,7 +298,56 @@ class CapsuleHouseWebsite(Website):
             'units_installed_count': units_installed_count,
             'featured_products': featured_json,
             'cart_product_id': cart_product_id,
+            'cart_variant_id': cart_variant_id,
             'csrf_token': request.csrf_token(),
+        }
+        return request.make_response(
+            json.dumps(data),
+            headers=[('Content-Type', 'application/json')],
+        )
+
+    @http.route('/capsule-house/cart-data.json', type='http', auth='public',
+            website=True, sitemap=False)
+    def cart_data(self, **kw):
+        """Contenu actuel du panier, en JSON — récupéré côté client par
+        static/src/js/main.js (mini-panier CH-156) à chaque ouverture du
+        panneau (après un ajout, ou via un clic sur l'icône panier du
+        header). Route custom plutôt que /shop/cart natif : ce dernier est
+        type='http' et rend une page HTML complète, pas du JSON (vérifié
+        dans website_sale/controllers/cart.py) — même situation que
+        /shop/cart/update en CH-126, mais ici aucune route JSON-RPC native
+        équivalente n'existe pour juste LIRE le panier (seulement pour le
+        modifier), d'où cette route dédiée.
+        """
+        order_sudo = request.cart
+        lines = []
+        if order_sudo:
+            for line in order_sudo.order_line:
+                if not line.product_id:
+                    continue
+                lines.append({
+                    'line_id': line.id,
+                    'product_id': line.product_id.id,
+                    'template_id': line.product_id.product_tmpl_id.id,
+                    'name': line.product_id.name,
+                    'image_url': '/web/image/product.product/%d/image_128' % line.product_id.id,
+                    'price_unit': line.price_unit,
+                    'price_total': line.price_total,
+                    'price_formatted': self._format_price_display(
+                        order_sudo.currency_id, line.price_total
+                    ),
+                    'quantity': line.product_uom_qty,
+                })
+
+        data = {
+            'lines': lines,
+            'cart_quantity': order_sudo.cart_quantity if order_sudo else 0,
+            'amount_total': order_sudo.amount_total if order_sudo else 0,
+            'amount_total_formatted': self._format_price_display(
+                order_sudo.currency_id, order_sudo.amount_total
+            ) if order_sudo else self._format_price_display(
+                request.website.currency_id, 0
+            ),
         }
         return request.make_response(
             json.dumps(data),
@@ -659,8 +710,8 @@ class CapsuleHouseWebsite(Website):
             env['mail.mail'].sudo().create({
                 'subject': '[Capsule House] Nouvelle inscription newsletter',
                 'body_html': '<p>Nouvelle inscription newsletter : %s</p>' % email,
-                'email_from': website.email or 'contact@capsule-house.fr',
-                'email_to': website.email or 'contact@capsule-house.fr',
+                'email_from': website.company_id.email or 'contact@capsule-house.fr',
+                'email_to': website.company_id.email or 'contact@capsule-house.fr',
             }).send()
 
         return request.redirect('/?newsletter=ok')

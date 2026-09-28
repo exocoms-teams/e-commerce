@@ -96,6 +96,280 @@
         }
     }
 
+        /**
+     * Ajoute un produit au panier via /shop/cart/add en JSON-RPC (route
+     * native website_sale, type='jsonrpc' depuis Odoo 19 — un simple
+     * <form method="post"> classique est rejeté avec "Unsupported Media
+     * Type"). Voir raccourci "Ajouter au panier" du hero,
+     * data-ch-cart-shortcut.
+     */
+    function addToCartJsonRpc(templateId, variantId, button) {
+        if (button) {
+            button.disabled = true;
+            button.dataset.chOriginalHtml = button.innerHTML;
+            button.innerHTML = '<i class="fa fa-check"/> Ajouté !';
+        }
+        fetch('/shop/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: Date.now(),
+                jsonrpc: '2.0',
+                method: 'call',
+                params: {
+                    product_template_id: templateId,
+                    product_id: variantId,
+                    quantity: 1,
+                    product_custom_attribute_values: [],
+                },
+            }),
+        })
+            .then(function (response) { return response.json(); })
+            .then(function () {
+                fetchAndOpenMiniCart();
+                setTimeout(function () {
+                    if (button) {
+                        button.disabled = false;
+                        button.innerHTML = button.dataset.chOriginalHtml;
+                    }
+                }, 2000);
+            })
+            .catch(function () {
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = button.dataset.chOriginalHtml;
+                }
+            });
+    }
+
+    /**
+     * CH-156 — Mini-panier (panneau latéral). Squelette statique dans
+     * templates/layout.xml (.ch-minicart-panel / .ch-minicart-overlay),
+     * peuplé ici à partir de /capsule-house/cart-data.json (route
+     * custom, voir main.py : aucune route JSON-RPC native n'existe pour
+     * juste LIRE le panier, seulement pour le modifier — /shop/cart
+     * natif est type='http' et rend une page HTML complète).
+     * S'ouvre : après un ajout réussi (hero, ou add_to_cart_event
+     * natif déclenché par website_sale sur tout autre bouton d'ajout),
+     * ou via un clic sur l'icône panier du header natif.
+     * +/- et suppression appellent /shop/cart/update (JSON-RPC natif,
+     * même route que le panier natif utilise) et ne rafraîchissent que
+     * le panneau, jamais toute la page.
+     */
+    function getMiniCartEls() {
+        return {
+            overlay: document.querySelector('[data-ch-minicart-overlay]'),
+            panel: document.querySelector('[data-ch-minicart-panel]'),
+            linesEl: document.querySelector('[data-ch-minicart-lines]'),
+            subtotalEl: document.querySelector('[data-ch-minicart-subtotal]'),
+            emptyEl: document.querySelector('[data-ch-minicart-empty]'),
+        };
+    }
+
+    function openMiniCartPanel() {
+        var els = getMiniCartEls();
+        if (!els.panel || !els.overlay) return;
+        els.overlay.classList.remove('d-none');
+        els.panel.classList.remove('d-none');
+        // Forcer un reflow avant d'ajouter la classe d'ouverture, pour
+        // que la transition CSS (transform/opacity) se joue bien au
+        // lieu de sauter directement à l'état final.
+        void els.panel.offsetWidth;
+        els.overlay.classList.add('ch-minicart-open');
+        els.panel.classList.add('ch-minicart-open');
+        els.panel.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('ch-minicart-locked');
+    }
+
+    function closeMiniCartPanel() {
+        var els = getMiniCartEls();
+        if (!els.panel || !els.overlay) return;
+        els.overlay.classList.remove('ch-minicart-open');
+        els.panel.classList.remove('ch-minicart-open');
+        els.panel.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('ch-minicart-locked');
+        setTimeout(function () {
+            els.overlay.classList.add('d-none');
+            els.panel.classList.add('d-none');
+        }, 300);
+    }
+
+    function renderMiniCart(data) {
+        var els = getMiniCartEls();
+        if (!els.linesEl) return;
+        els.linesEl.innerHTML = '';
+
+        var lines = data.lines || [];
+        if (!lines.length) {
+            if (els.emptyEl) els.emptyEl.classList.remove('d-none');
+        } else {
+            if (els.emptyEl) els.emptyEl.classList.add('d-none');
+        }
+
+        lines.forEach(function (line) {
+            var lineEl = document.createElement('div');
+            lineEl.className = 'ch-minicart-line';
+            lineEl.dataset.lineId = line.line_id;
+
+            var imgWrap = document.createElement('div');
+            imgWrap.className = 'ch-minicart-line-img';
+            var img = document.createElement('img');
+            img.src = line.image_url;
+            img.alt = line.name;
+            imgWrap.appendChild(img);
+            lineEl.appendChild(imgWrap);
+
+            var body = document.createElement('div');
+            body.className = 'ch-minicart-line-body';
+
+            var nameEl = document.createElement('span');
+            nameEl.className = 'ch-minicart-line-name';
+            nameEl.textContent = line.name;
+            body.appendChild(nameEl);
+
+            var priceEl = document.createElement('span');
+            priceEl.className = 'ch-minicart-line-price';
+            priceEl.textContent = line.price_formatted;
+            body.appendChild(priceEl);
+
+            var controls = document.createElement('div');
+            controls.className = 'ch-minicart-line-controls';
+
+            var qtyWrap = document.createElement('div');
+            qtyWrap.className = 'ch-minicart-qty';
+
+            var minusBtn = document.createElement('button');
+            minusBtn.type = 'button';
+            minusBtn.innerHTML = '<i class="fa fa-minus"/>';
+            minusBtn.addEventListener('click', function () {
+                updateMiniCartLine(line.line_id, line.product_id, line.quantity - 1);
+            });
+            qtyWrap.appendChild(minusBtn);
+
+            var qtySpan = document.createElement('span');
+            qtySpan.textContent = line.quantity;
+            qtyWrap.appendChild(qtySpan);
+
+            var plusBtn = document.createElement('button');
+            plusBtn.type = 'button';
+            plusBtn.innerHTML = '<i class="fa fa-plus"/>';
+            plusBtn.addEventListener('click', function () {
+                updateMiniCartLine(line.line_id, line.product_id, line.quantity + 1);
+            });
+            qtyWrap.appendChild(plusBtn);
+
+            controls.appendChild(qtyWrap);
+
+            var deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'ch-minicart-line-delete';
+            deleteBtn.innerHTML = '<i class="fa fa-trash"/>';
+            deleteBtn.addEventListener('click', function () {
+                updateMiniCartLine(line.line_id, line.product_id, 0);
+            });
+            controls.appendChild(deleteBtn);
+
+            body.appendChild(controls);
+            lineEl.appendChild(body);
+            els.linesEl.appendChild(lineEl);
+        });
+
+        if (els.subtotalEl) {
+            els.subtotalEl.textContent = data.amount_total_formatted || '';
+        }
+
+        var badges = document.querySelectorAll('.my_cart_quantity');
+        badges.forEach(function (badge) {
+            badge.textContent = data.cart_quantity || 0;
+            if (data.cart_quantity) {
+                badge.classList.remove('d-none');
+            }
+        });
+    }
+
+    function fetchAndRenderMiniCart() {
+        return fetch('/capsule-house/cart-data.json', { headers: { 'Accept': 'application/json' } })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                renderMiniCart(data);
+                return data;
+            });
+    }
+
+    function fetchAndOpenMiniCart() {
+        fetchAndRenderMiniCart().then(function () {
+            openMiniCartPanel();
+        });
+    }
+
+    function updateMiniCartLine(lineId, productId, quantity) {
+        fetch('/shop/cart/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: Date.now(),
+                jsonrpc: '2.0',
+                method: 'call',
+                params: {
+                    line_id: lineId,
+                    product_id: productId,
+                    quantity: Math.max(0, quantity),
+                },
+            }),
+        })
+            .then(function () {
+                fetchAndRenderMiniCart();
+            })
+            .catch(function () {
+                // Silencieux : dégradation gracieuse, cohérent avec le
+                // reste de ce fichier.
+            });
+    }
+
+    function initMiniCart() {
+        var els = getMiniCartEls();
+        if (!els.panel || !els.overlay) return;
+
+        var closeBtn = document.querySelector('[data-ch-minicart-close]');
+        if (closeBtn && !closeBtn.dataset.chBound) {
+            closeBtn.dataset.chBound = '1';
+            closeBtn.addEventListener('click', closeMiniCartPanel);
+        }
+
+        if (!els.overlay.dataset.chBound) {
+            els.overlay.dataset.chBound = '1';
+            els.overlay.addEventListener('click', closeMiniCartPanel);
+        }
+
+        // Icône panier du header natif Odoo : on intercepte son clic
+        // pour ouvrir notre panneau au lieu de naviguer directement
+        // vers /shop/cart (l'utilisateur peut toujours y aller via le
+        // bouton "Aller au panier" du panneau, ou en cliquant deux
+        // fois si jamais il préfère la page complète).
+        var cartIcon = document.querySelector('li.o_wsale_my_cart a, .o_wsale_my_cart');
+        if (cartIcon && !cartIcon.dataset.chBound) {
+            cartIcon.dataset.chBound = '1';
+            cartIcon.addEventListener('click', function (ev) {
+                ev.preventDefault();
+                fetchAndOpenMiniCart();
+            });
+        }
+
+        // Déclenché par website_sale (cart_service.js) à chaque ajout
+        // réussi, peu importe le bouton d'origine (fiche produit,
+        // carousel Meilleures ventes) — voir _trackProducts() côté
+        // natif. On l'utilise ici comme simple signal ("un ajout vient
+        // d'avoir lieu"), pas pour son contenu (tracking_info, pas les
+        // lignes du panier).
+        var saleRoot = document.querySelector('.oe_website_sale');
+        if (saleRoot && !saleRoot.dataset.chMinicartBound) {
+            saleRoot.dataset.chMinicartBound = '1';
+            saleRoot.addEventListener('add_to_cart_event', function () {
+                fetchAndOpenMiniCart();
+            });
+        }
+    }
+
     function applyHeroFloatCards(hero, data) {
         var container = hero.querySelector('[data-ch-float-cards]');
         var products = data.featured_products || [];
@@ -145,18 +419,19 @@
             container.appendChild(card);
         });
 
-        if (data.cart_product_id) {
-            var cartForm = hero.querySelector('[data-ch-cart-shortcut]');
-            if (cartForm) {
-                var productIdInput = cartForm.querySelector('[name="product_id"]');
-                var csrfInput = cartForm.querySelector('[name="csrf_token"]');
-                if (productIdInput) productIdInput.value = data.cart_product_id;
-                if (csrfInput) csrfInput.value = data.csrf_token || '';
-                cartForm.classList.remove('d-none');
+        if (data.cart_product_id && data.cart_variant_id) {
+            var cartButton = hero.querySelector('[data-ch-cart-shortcut]');
+            if (cartButton && !cartButton.dataset.chBound) {
+                cartButton.dataset.chBound = '1';
+                cartButton.addEventListener('click', function () {
+                    addToCartJsonRpc(data.cart_product_id, data.cart_variant_id, cartButton);
+                });
+            }
+            if (cartButton) {
+                cartButton.classList.remove('d-none');
             }
         }
     }
-
     /**
      * Section "avis clients" de l'accueil (v19.0.1.0.100, voir
      * views/partials/home_testimonials.xml). Même principe que
@@ -282,6 +557,7 @@
         initHeroDynamicContent();
         initTestimonialsSection();
         initPaymentMethodsSection();
+        initMiniCart();
     }
 
     if (document.readyState === 'loading') {
