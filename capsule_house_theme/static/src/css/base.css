@@ -121,6 +121,63 @@ h1, h2, h3 {
     padding: 0 24px;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   RYTHME VERTICAL — l'unique source d'espacement entre les blocs
+   ══════════════════════════════════════════════════════════════════
+   Un seul écart entre deux blocs : --space-section (48 / 64 / 80px).
+   Chaque bloc le porte en `padding-bottom`, le premier bloc de la page
+   l'ajoute en `padding-top` : l'écart vaut exactement le token, pas le
+   double. Un `padding: ... 0 ...` sur les deux côtés ferait 96 à 160px.
+
+   `padding` et non `margin` parce que les sections portent leur fond :
+   en `margin` le trou laisserait voir la couleur du parent.
+
+   La liste sert de modèle de blocs. Un `section` générique n'est pas
+   possible ici : le module n'a pas de conteneur commun, et sur
+   l'accueil les 12 .ch-usage-card sont des <section> frères directs
+   dans une grille — un espacement de section sur chacune ferait
+   exploser les rangées. Sont aussi absents la barre sticky
+   .ch-avis-filters et les wrappers de blocs, dont .ch-gammes-content
+   qui enveloppe les .ch-gamme-section (sinon +80px en bas de page).
+   Les sections principales de /avis suivent aussi ce rythme, mais pas
+   sa barre de filtres sticky, qui conserve son espacement compact.
+
+   Les feuilles de composants arrivent après base.css et utilisent
+   parfois `padding: 0` pour déléguer l'espacement à ces règles. Le scope
+    `#wrapwrap` augmente leur spécificité pour que ces remises à zéro
+    ne neutralisent pas le rythme commun. C'est le wrapper commun
+    réellement présent dans le layout Odoo. */
+
+#wrapwrap .ch-aide-layout .oe_structure > section,
+#wrapwrap .ch-entreprise-wrap .oe_structure > section,
+#wrapwrap .ch-legal-wrap .oe_structure > section,
+#wrapwrap .ch-gammes-zone,
+#wrapwrap .ch-usages-zone,
+#wrapwrap .ch-bestsellers,
+#wrapwrap .ch-testi-section,
+#wrapwrap .ch-avis-stats-section,
+#wrapwrap .ch-avis-form-section {
+    padding-bottom: var(--space-section);
+}
+
+/* Ouverture de page : le même espacement au-dessus du premier contenu. */
+#wrapwrap .ch-aide-layout .oe_structure > section:first-child,
+#wrapwrap .ch-entreprise-wrap .oe_structure > section:first-child,
+#wrapwrap .ch-legal-wrap .oe_structure > section:first-child,
+#wrapwrap .ch-avis-stats-section,
+#wrapwrap .ch-gamme-section,
+#wrapwrap .ch-avis-form-section {
+    padding-top: var(--space-section);
+}
+
+#wrapwrap .ch-hero,
+#wrapwrap .ch-shop-hero,
+#wrapwrap .ch-avis-hero,
+#wrapwrap .ch-gammes-hero {
+    padding-bottom: var(--space-hero);
+    padding-top: var(--space-hero);
+}
+
 .ch-section-title {
     font-family: var(--font-head);
     font-size: var(--fs-h2);

@@ -402,22 +402,11 @@
 .ch-aide-layout {
     max-width: var(--container);
     margin: 0 auto;
-    padding: 24px 24px 80px;
+    padding: 24px 24px 0;
     display: grid;
     grid-template-columns: 260px 1fr;
     gap: 40px;
     align-items: start;
-}
-
-/* Espacement entre blocs éditables (v19.0.1.0.86) : chaque page Aide /
-   Entreprise a été découpée en plusieurs <section> indépendantes (une
-   par bloc du Website Builder : intro, encadré, tableau, etc.) au lieu
-   d'un seul bloc contenant tout. Combinateur de fratrie adjacente
-   (section + section), pas de dépendance à :first-child/:first-of-type
-   (piège déjà rencontré sur les pages gammes, v19.0.1.0.83). */
-.ch-aide-layout .oe_structure > section + section,
-.ch-entreprise-wrap .oe_structure > section + section {
-    margin-top: 40px;
 }
 
 /* ── SIDEBAR (aide_sidebar.xml, partagée sur les 4 pages) ── */
@@ -782,7 +771,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
 .ch-entreprise-wrap {
     max-width: var(--container);
     margin: 0 auto;
-    padding: 24px 24px 80px;
+    padding: 24px 24px 0;
 }
 
 /* Nav en onglets (entreprise_nav.xml, partagée par les 2 pages) */
@@ -969,7 +958,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
    horizontal sur l'index (demande client), gabarit détaillé (formats,
    spécifications, équipements, options) sur la page détail par gamme. ── */
 .ch-gammes-hero {
-    padding: 40px 0;
+    padding: 0;
     background: var(--ch-panel);
 }
 
@@ -1004,7 +993,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     gap: 16px;
     max-width: var(--container);
     margin: 0 auto;
-    padding: 40px 24px 72px;
+    padding: 0 24px;
 }
 
 .ch-gammes-title-block {
@@ -1155,23 +1144,6 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     color: var(--ch-ink);
     margin: 0 0 20px;
 }
-/* v19.0.1.0.83 : BUG trouvé dans le correctif 19.0.1.0.82 — chaque
-   titre est seul dans son propre <div>, donc `:first-of-type` (qui
-   regarde le premier enfant DE SON PARENT, pas de la page) matchait
-   TOUS les titres sauf "Formats", pas seulement le vrai premier.
-   Résultat : le padding-top/border-top ne s'appliquait qu'à "Formats"
-   (déjà correct visuellement), jamais à "Technical specifications",
-   "Included equipment" ou "Options" — exactement ce que montrait la
-   capture du client ("c'est le haut qui est collé").
-   Fix : chaque wrapper de section porte maintenant la classe
-   .ch-gamme-section (voir nos_gammes.xml) ; le sélecteur de fratrie
-   général (~) cible alors correctement "toute section précédée d'au
-   moins une autre section", quelle que soit la structure DOM interne
-   de chacune. */
-.ch-gamme-section ~ .ch-gamme-section {
-    margin-top: 32px;
-}
-
 /* Section Performances (v19.0.1.0.80) — points forts en tête de page
    détail, grille de cartes icône + titre + description. */
 .ch-gamme-perf-title {
