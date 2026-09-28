@@ -72,9 +72,35 @@ h1 {
 }
 h2 { font-size: var(--fs-h2); }
 h3 { font-size: var(--fs-h3); }
-h4, h5, h6 { font-size: var(--fs-15); }
 
-p { font-size: var(--fs-body); }
+/* Paragraphe de contenu — même token, mais SCOPÉ, et à spécificité
+   nulle à dessein. L'ancien `p { font-size: var(--fs-body) }` global
+   était doublement inutile puis nuisible : inutile parce que `body`
+   porte déjà --fs-body et qu'un <p> sans règle hérite de la taille de
+   son parent ; nuisible parce qu'il écrasait aussi les <p> des
+   composants NATIFS Odoo (résumés de panier, aides du portail,
+   descripteurs de formulaire), qui sont dimensionnés par leurs propres
+   classes et n'appartiennent pas à l'échelle éditoriale du site.
+
+   `:where()` met la sélection hors calcul de spécificité : la règle
+   se comporte comme un simple *défaut* (0,0,1 — comme le `p` nu
+   d'avant), donc n'importe quelle classe de composant la surpasse
+   sans avoir besoin de !important. `.oe_structure` est le conteneur
+   des blocs éditables du Website Builder sur toutes les pages du
+   thème : c'est exactement le cas que la règle globale voulait
+   couvrir, et le seul qui mérite --fs-body. */
+:where(.oe_structure) p { font-size: var(--fs-body); }
+
+/* Niveaux 4 à 6 — VOLONTAIREMENT hors de l'échelle du site.
+   Aucun contenu du thème ne les utilise (les seuls <h4> existants
+   sont les libellés de colonne du footer, dimensionnés par leur
+   propre classe .ch-footer-col h4) et surtout le ticket ne définit
+   qu'une échelle H1 / H2 / H3 / paragraphe. On leur retire donc
+   toute taille propre : ils héritent du paragraphe, exactement
+   comme n'importe quel texte — ce qui évite d'annoncer un « niveau 4 »
+   qui n'en est pas un (il valait 15px, soit la taille du corps : le
+   seul « palier » de l'échelle où deux niveaux voisins ne se
+   distinguaient plus). */
 
 /* Lisibilité des titres en haut de page :
    - `text-wrap: balance` évite qu'un H1 long se casse en laissant un

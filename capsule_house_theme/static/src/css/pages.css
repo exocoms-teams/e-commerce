@@ -454,11 +454,25 @@
 
 /* ── CONTENU COMMUN ── */
 /* .ch-aide-title porte le <h1> de page sur /livraison, /retours,
-   /garantie, /faq, /a-propos, /le-concept ET le <h1> du hero de gamme
-   sur /nos-gammes/<slug> — d'où une seule valeur pour les 8 pages. */
+   /garantie, /faq, /a-propos, /le-concept, le <h1> du hero de gamme
+   sur /nos-gammes/<slug> ET les <h2> de section "Nos valeurs" /
+   "Notre histoire" / "De l'atelier à votre terrain" / "Coupe
+   technique" — d'où une seule classe pour ces pages.
+
+   AUCUNE taille ici, et c'est délibéré (19.0.1.0.105) : la classe
+   apportait `--fs-h1`, ce qui voulait dire qu'un <h2> prenait la
+   taille d'un H1 — et qu'il n'était correct que grâce aux trois
+   modificateurs d'alias `.ch-aide-title-lg` / `-md` / `.ch-aide-h2`
+   présents dans les templates. Un seul modificateur oublié, et un H2
+   s'affichait à 46px : la hiérarchie tenait à une convention de
+   nommage plutôt qu'à la structure du document.
+
+   Dorénavant c'est le TAG qui décide du niveau (base.css : h1 →
+   --fs-h1, h2 → --fs-h2) et la classe ne porte plus que la couleur et
+   l'espacement. Un titre hors échelle devient donc impossible, puisqu'il
+   n'y a plus de valeur locale susceptible de diverger. */
 .ch-aide-title {
     font-family: var(--font-head);
-    font-size: var(--fs-h1);
     font-weight: 800;
     color: var(--ch-ink);
     margin-bottom: 12px;
@@ -471,18 +485,14 @@
     margin-bottom: 28px;
 }
 
-/* Chapeaux de section : ce sont des <h2>, donc --fs-h2. Les anciens
-   modificateurs -lg (24px, "Nos valeurs" / "Notre histoire") et -md
-   (22px, "De l'atelier à votre terrain" / "Coupe technique") ont
-   disparu : ils n étaient que des hauteurs de passe, deux niveaux
-   sous le H1 et au-dessus du niveau des autres sections du site, sans
-   raison graphique. Idem .ch-aide-h2 (17px, "Comment déclarer un
-   sinistre") qui devient un vrai H2 comme ses homologues. */
-.ch-aide-title.ch-aide-title-lg,
-.ch-aide-title.ch-aide-title-md,
-.ch-aide-card-title.ch-aide-h2 {
-    font-size: var(--fs-h2);
-}
+/* Chapeaux de section : ce sont des <h2>, leur taille vient donc du tag
+   (base.css) — plus aucun modificateur de taille. Les anciens
+   modificateurs -lg (24px, "Nos valeurs" / "Notre histoire"), -md
+   (22px, "De l'atelier à votre terrain" / "Coupe technique") et
+   .ch-aide-h2 (17px, "Comment déclarer un sinistre") n'étaient que des
+   hauteurs de passe, deux niveaux sous le H1 et sans raison graphique :
+   ils sont retirés des templates et d'ici, au profit de l'échelle
+   unique. */
 
 /* Encart callout (info livraison / alerte retours / chiffre garantie) */
 .ch-aide-callout {
@@ -590,12 +600,19 @@
     border-radius: var(--r-lg);
     padding: 22px 20px;
 }
+/* Titre de carte — deux usages distincts, deux niveaux distincts :
+   - sur un <div> (voir entreprise_apropos.xml, "Design intemporel") :
+     pas un titre du document, mais une hiérarchie visuelle locale
+     au-dessus du texte de la carte → token H3 ;
+   - sur un <h2> (aide_garantie.xml, "Comment déclarer un sinistre") :
+     un vrai titre de section, le niveau du document prime. */
 .ch-aide-card-title {
     font-size: var(--fs-h3);
     font-weight: 700;
     color: var(--ch-ink);
     margin-bottom: 8px;
 }
+h2.ch-aide-card-title { font-size: var(--fs-h2); }
 .ch-aide-card-text {
     font-size: var(--fs-13-5);
     color: var(--ch-fog);
@@ -710,7 +727,14 @@
     border-bottom: 1px solid var(--ch-gray-border);
 }
 .ch-aide-faq .accordion-button {
-    font-size: var(--fs-15);
+    /* Les questions sont des <h3 class="accordion-header">
+       (voir aide_faq.xml) : c'est le seul H3 de la page, mais la
+       règle forçait --fs-15 sur le bouton — donc la FAQ n'avait
+       AUCUN niveau H3 visible, la question s'affichait exactement
+       à la taille d'un paragraphe et le lecteur n'avait plus aucun
+       repère entre le titre de page et le texte. On aligne sur le
+       token du niveau qu'il occupe réellement. */
+    font-size: var(--fs-h3);
     font-weight: 700;
     color: var(--ch-ink);
     background: transparent;
