@@ -52,13 +52,15 @@
     --font-body:        'Inter', sans-serif;
 
     /* Échelle typographique (design system) — référencée par toutes les
-       feuilles via var(--fs-*). Rôles principaux :
-       46px hero H1 · 34px hero Entreprise · 30px hero boutique ·
-       26px H2 section (21px mobile) · 24px / 22px H2 bloc ·
-       19px H3 carte / colonne footer · 17px prix produit ·
-       16px sous-titre · 15px corps · 14px interface · 13px secondaire ·
-       12px méta · 11px / 10px micro · 72px chiffre Avis.
-       Titres responsives sous clamp() tokenisés séparément. */
+       feuilles via var(--fs-*). Les TITRES et le CORPS de texte ne
+       doivent PAS être pris dans cette liste : ils passent par
+       --fs-h1/--fs-h2/--fs-h3/--fs-body (voir plus bas, échelle
+       sémantique), et le chapeau d'introduction par --fs-lead. Les
+       tokens ci-dessous sont réservés à l'interface et aux
+       micro-typographies :
+       72px chiffre Avis · 44px bandeau garantie · 17px prix produit ·
+       16px chapeau · 15px corps · 14px interface · 13px secondaire ·
+       12px méta · 11px / 10px micro. */
     --fs-10:            10px;
     --fs-10-5:          10.5px;
     --fs-11:            11px;
@@ -87,9 +89,69 @@
     --fs-44:            44px;
     --fs-46:            46px;
     --fs-72:            72px;
-    --fs-title-responsive:    clamp(28px, 3.5vw, 38px);
-    --fs-title-responsive-lg: clamp(32px, 4.5vw, 48px);
-    --fs-title-responsive-md: clamp(24px, 3vw, 32px);
+
+    /* ── ÉCHELLE SÉMANTIQUE H1 / H2 / H3 / PARAGRAPHE ──
+       SOURCE UNIQUE de la hiérarchie de titres du site. Ces 4 tokens
+       sont les SEULS à utiliser pour un titre ou un paragraphe de
+       contenu, sur toutes les pages (accueil, boutique, nos gammes,
+       avis, aide, entreprise, pages légales, devis).
+
+       Pourquoi un clamp() et pas une valeur fixe : le titre principal
+       doit rester bien visible en haut sur mobile comme sur grand
+       écran. Un 46px fixe déborde sur téléphone, un 30px fixe devient
+       invisible sur grand écran. Le clamp() garantit un plancher lisible
+       (32px sur téléphone) ET un plafond de présence (46px sur desktop,
+       valeur de la maquette de référence) sans media query à maintenir.
+
+       ── Complément 19.0.1.0.105 : les TROIS niveaux sont en clamp() ──
+       H3 était resté sur une valeur fixe (19px) alors que H1 et H2
+       réagissaient à la largeur d'écran. Conséquence mesurée sur
+       téléphone (360px) : H1=32 / H2=23 / H3=19 / corps=15, soit un
+       rapport H2:H3 de 1,21 seulement — les deux niveaux de titre
+       se confondaient visuellement, alors qu'ils sont bien séparés sur
+       desktop (30:19 = 1,58). La hiérarchie n'était donc cohérente
+       qu'à une seule largeur. En passant H3 en clamp() et en relevant
+       le plancher du H2 de 23 à 24px, l'échelle tient ses deux bornes :
+
+         téléphone (360px) : 32 / 24 / 18 / 15  →  1,33 · 1,33 · 1,20
+         desktop  (1440px) : 46 / 30 / 20 / 15  →  1,53 · 1,50 · 1,33
+
+       Un ratio d'environ 1,3 entre deux niveaux consécutifs est la
+       pratique admise : en dessous de ~1,2 le lecteur ne distingue
+       plus deux titres voisins, au-dessus de ~1,6 la marche devient
+       trop heurtée et le niveau inférieur paraît appartenir à une autre
+       page.
+
+       Report des anciennes valeurs par rôle (19.0.1.0.105) :
+         H1 — 46px accueil, 34px entreprise, 30px boutique,
+              28→38px aide/gammes/légales, 32→48px avis  ⇒ tous unifiés
+          H2 — 32→24px avis, 24px section/usages, 22px entreprise,
+               19px légal, 18px gammes                          ⇒ tous unifiés
+          H3 — 22px footer/avis, 19px, 16px gamme, 15.5px aide,
+               14.5px performance                          ⇒ tous unifiés
+        Aucun écart de hiérarchie ne subsiste entre deux pages. */
+    --fs-h1:   clamp(32px, 4.2vw, 46px);   /* H1 — titre principal de page */
+    --fs-h2:   clamp(24px, 2.8vw, 30px);   /* H2 — titre de section */
+    --fs-h3:   clamp(18px, 1.5vw, 20px);   /* H3 — titre de carte / sous-bloc */
+    --fs-body: var(--fs-15);               /* paragraphe / texte courant */
+
+    /* Chapeau d'introduction — le texte qui suit immédiatement un H1
+       (sous-titre du hero d'accueil, accroche de formulaire, chapeau
+       de page Aide/Entreprise). N'EST PAS un paragraphe de contenu :
+       c'est le rôle typographique du "lead", entre le titre et le
+       corps. Le distinguer évite deux dérives opposées — soit de
+       figer 16px "en dur" dans une règle sans raison lisible, soit de
+       le confondre avec le corps et de le ramener à 15px. */
+    --fs-lead: var(--fs-16);
+
+    /* Tokens --fs-title-responsive* : REMPLACÉS par --fs-h1/--fs-h2/
+       --fs-h3 en 19.0.1.0.105 (ils donnaient à chaque page une taille de
+       titre différente — 28/32/38/48px selon la page). Conservés pour
+       backward-compat uniquement : plus aucune feuille du thème ni aucun
+       template ne les référence. */
+    --fs-title-responsive:    clamp(28px, 3.5vw, 38px);   /* @deprecated */
+    --fs-title-responsive-lg: clamp(32px, 4.5vw, 48px);   /* @deprecated */
+    --fs-title-responsive-md: clamp(24px, 3vw, 32px);     /* @deprecated */
 
     /* Rayons */
     --r-sm:             6px;

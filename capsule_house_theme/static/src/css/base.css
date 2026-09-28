@@ -8,7 +8,7 @@
 
 body {
     font-family: var(--font-body);
-    font-size: var(--fs-15);
+    font-size: var(--fs-body);
     line-height: 1.6;
     color: var(--ch-ink);
     background: var(--ch-white);
@@ -54,6 +54,67 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--ch-ink);
 }
 
+/* Hiérarchie sémantique — ÉCHELLE UNIQUE DU SITE.
+   Ces règles sont le filet de sécurité : elles s'appliquent aux
+   <h1>/<h2>/<h3> et <p> qui n'ont pas (ou plus) de classe dédiée —
+   typiquement les pages Odoo natives (/contactus, /panier, fiche
+   produit, checkout) et le template de devis. Chaque page du thème
+   applique les MÊMES tokens via sa classe, donc la hiérarchie est
+   identique partout. Voir --fs-h1/h2/h3/body dans variables.css.
+
+   `margin-top: 0` sur le h1 : le titre principal ouvre toujours sa
+   section, on annule donc le margin-top variable qu'Odoo applique
+   nativement — l'espacement au-dessus du titre est décidé uniquement
+   par le padding du conteneur, identique sur toutes les pages. */
+h1 {
+    font-size: var(--fs-h1);
+    margin-top: 0;
+}
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+
+/* Paragraphe de contenu — même token, mais SCOPÉ, et à spécificité
+   nulle à dessein. L'ancien `p { font-size: var(--fs-body) }` global
+   était doublement inutile puis nuisible : inutile parce que `body`
+   porte déjà --fs-body et qu'un <p> sans règle hérite de la taille de
+   son parent ; nuisible parce qu'il écrasait aussi les <p> des
+   composants NATIFS Odoo (résumés de panier, aides du portail,
+   descripteurs de formulaire), qui sont dimensionnés par leurs propres
+   classes et n'appartiennent pas à l'échelle éditoriale du site.
+
+   `:where()` met la sélection hors calcul de spécificité : la règle
+   se comporte comme un simple *défaut* (0,0,1 — comme le `p` nu
+   d'avant), donc n'importe quelle classe de composant la surpasse
+   sans avoir besoin de !important. `.oe_structure` est le conteneur
+   des blocs éditables du Website Builder sur toutes les pages du
+   thème : c'est exactement le cas que la règle globale voulait
+   couvrir, et le seul qui mérite --fs-body. */
+:where(.oe_structure) p { font-size: var(--fs-body); }
+
+/* Niveaux 4 à 6 — VOLONTAIREMENT hors de l'échelle du site.
+   Aucun contenu du thème ne les utilise (les seuls <h4> existants
+   sont les libellés de colonne du footer, dimensionnés par leur
+   propre classe .ch-footer-col h4) et surtout le ticket ne définit
+   qu'une échelle H1 / H2 / H3 / paragraphe. On leur retire donc
+   toute taille propre : ils héritent du paragraphe, exactement
+   comme n'importe quel texte — ce qui évite d'annoncer un « niveau 4 »
+   qui n'en est pas un (il valait 15px, soit la taille du corps : le
+   seul « palier » de l'échelle où deux niveaux voisins ne se
+   distinguaient plus). */
+
+/* Lisibilité des titres en haut de page :
+   - `text-wrap: balance` évite qu'un H1 long se casse en laissant un
+     mot seul sur la dernière ligne (accentue visuellement le titre) ;
+   - `overflow-wrap: break-word` empêche un mot long (nom de gamme,
+     référence) de déborder de la colonne et de rogner le titre.
+   Les deux sont des propriétés modernes : ignorées sans conséquence
+   sur les navigateurs anciens, aucun display: none / height fixe
+   caché derrière. */
+h1, h2, h3 {
+    text-wrap: balance;
+    overflow-wrap: break-word;
+}
+
 .container {
     max-width: var(--container);
     margin: 0 auto;
@@ -62,7 +123,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .ch-section-title {
     font-family: var(--font-head);
-    font-size: var(--fs-24);
+    font-size: var(--fs-h2);
     font-weight: 800;
     color: var(--ch-ink);
     margin: 0;
@@ -193,6 +254,6 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 400;
 }
 
-@media (max-width: 992px) {
-    .ch-section-title { font-size: var(--fs-21); }
-}
+/* Plus aucun media query sur .ch-section-title : le clamp() de
+   --fs-h2 gère déjà le responsive (plancher 23px sur mobile, plafond
+   30px sur desktop) sans valeur dupliquée à maintenir. */

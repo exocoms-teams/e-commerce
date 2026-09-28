@@ -50,7 +50,7 @@
 
 .ch-hero-title {
     font-family: var(--font-head);
-    font-size: var(--fs-46);
+    font-size: var(--fs-h1);
     font-weight: 800;
     color: var(--ch-ink);
     line-height: 1.15;
@@ -62,8 +62,14 @@
     color: var(--ch-terracotta);
 }
 
+/* Chapeau du hero — le texte qui suit immédiatement le H1 sur la page
+   d'accueil. Rôle typographique du "lead" (--fs-lead), à ne pas
+   confondre avec le paragraphe de contenu : c'est de la une
+   commerciale, pas de la prose. Partout ailleurs sur le site, le
+   sous-titre d'une page (Aide, Entreprise, Avis, Boutique, pages
+   légales) est un paragraphe et reste en --fs-body. */
 .ch-hero-subtitle {
-    font-size: var(--fs-16);
+    font-size: var(--fs-lead);
     color: var(--ch-fog);
     line-height: 1.7;
     max-width: 460px;
@@ -580,7 +586,7 @@
 
 .ch-usages-title {
     font-family: var(--font-head);
-    font-size: var(--fs-24);
+    font-size: var(--fs-h2);
     font-weight: 800;
     color: var(--ch-ink);
     margin-top: 8px;
@@ -608,7 +614,7 @@
 
 .ch-usage-name {
     font-family: var(--font-head);
-    font-size: var(--fs-15);
+    font-size: var(--fs-h3);
     font-weight: 800;
     color: var(--ch-ink);
     margin-bottom: 8px;
@@ -753,7 +759,8 @@
 
 @media (max-width: 768px) {
     .ch-hero { padding: 40px 0 56px; }
-    .ch-hero-title { font-size: var(--fs-32); }
+    /* Plus de .ch-hero-title ici : le clamp() de --fs-h1 descend déjà à
+       32px sous 768px (et le explicite à 32px en dessous). */
     .ch-hero-stats { gap: 24px; flex-wrap: wrap; }
     .ch-hero-search { flex-direction: column; }
     .ch-bestsellers-grid { grid-template-columns: 1fr; }
