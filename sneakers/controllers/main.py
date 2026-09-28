@@ -108,7 +108,9 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
 
     @http.route('/shop', type='http', auth='public', website=True)
     def shop(self, **kwargs):
-        return request.redirect('/shop-sneakers', code=301)
+        if not request.website.x_sneakers_theme:
+            return super().shop(**kwargs)
+        return request.redirect('/shop-sneakers', code=302)
 
     @http.route('/shop-sneakers', type='http', auth='public', website=True)
     def shop_sneakers(self, **kwargs):
@@ -425,7 +427,6 @@ class SneakersController(CustomerPortal):
             'orders': orders,
         })
 
-    @http.route('/', type='http', auth='public', website=True)
     def home(self):
 
         popular_products = request.env['product.template'].sudo().search(
@@ -834,3 +835,15 @@ class SneakersController(CustomerPortal):
                 'state': 'subscribed',
             })
         return {'success': True}
+
+
+from odoo.addons.website.controllers.main import Website
+
+
+class SneakersWebsite(Website):
+
+    @http.route()
+    def index(self, **kw):
+        if request.website.x_sneakers_theme:
+            return SneakersController().home()
+        return super().index(**kw)
