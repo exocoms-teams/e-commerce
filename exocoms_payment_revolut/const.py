@@ -42,6 +42,8 @@ PAYMENT_METHODS_MAPPING = {
 }
 
 # Types Revolut normalises avant recherche du moyen de paiement Odoo.
+# Apple Pay et Google Pay n'existent pas comme `payment.method` dans Odoo :
+# ce sont des portefeuilles adosses a une carte, rapportes comme telles.
 PAYMENT_METHOD_TYPE_NORMALIZATION = {
     'revolut_pay_card': 'revolut_pay',
     'revolut_pay_account': 'revolut_pay',

@@ -12,6 +12,33 @@ Fournisseur de paiement **Revolut Business** pour Odoo 19 (Merchant API `2026-08
 - Webhooks signés (HMAC-SHA256, tolérance de rejeu de 5 minutes, rotation de secret gérée).
 - Bascule automatique Sandbox / Production selon l'état du fournisseur (`Test` / `Activé`).
 
+## Moyens de paiement
+
+Le paiement se fait sur la page hébergée Revolut : ce qui s'affiche au client est piloté
+par la configuration du compte marchand Revolut, pas par Odoo. Tous les moyens activés
+côté Revolut fonctionnent, y compris ceux qu'Odoo ne sait pas nommer.
+
+Côté Odoo, le fournisseur déclare :
+
+| Moyen Revolut | Moyen Odoo | Remarque |
+| --- | --- | --- |
+| Carte (Visa, Mastercard, Maestro, Amex) | `card` + marques | Activés par défaut |
+| Revolut Pay | `revolut_pay` | Activé par défaut |
+| Apple Pay | `card` | Odoo n'a pas de moyen `apple_pay` : rapporté comme carte |
+| Google Pay | `card` | Odoo n'a pas de moyen `google_pay` : rapporté comme carte |
+| Pay by Bank / Virement Open Banking | `open_banking` | Odoo 19 le restreint au Royaume-Uni / GBP |
+| SEPA Direct Debit | `sepa_direct_debit` | À activer si vous l'ouvrez chez Revolut |
+
+Deux conséquences à connaître :
+
+- Un paiement Apple Pay ou Google Pay apparaît comme **Carte** dans les rapports Odoo.
+  C'est le comportement correct : ce sont des portefeuilles adossés à une carte, et Odoo
+  ne dispose d'aucun moyen de paiement dédié pour eux.
+- Le moyen `open_banking` d'Odoo est limité au Royaume-Uni et au GBP dans les données
+  standard. Pour un marchand français en EUR, Odoo le filtre donc du tunnel de commande,
+  même si Revolut le propose sur sa page. Le contournement consiste à élargir les pays et
+  devises du moyen `open_banking` dans Odoo, ce que le module ne fait pas d'office.
+
 ## Installation
 
 ```bash

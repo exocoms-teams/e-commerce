@@ -214,6 +214,20 @@ class TestRevolutTransaction(RevolutCommon):
                 normalized = const.PAYMENT_METHOD_TYPE_NORMALIZATION.get(revolut_type)
                 self.assertEqual(normalized, 'revolut_pay')
 
+    def test_wallet_payments_are_reported_as_card(self):
+        """Apple Pay and Google Pay have no `payment.method` of their own in Odoo."""
+        for wallet in ('apple_pay', 'google_pay'):
+            with self.subTest(wallet=wallet):
+                self.assertEqual(
+                    const.PAYMENT_METHOD_TYPE_NORMALIZATION.get(wallet), 'card'
+                )
+
+    def test_pay_by_bank_maps_to_open_banking(self):
+        """Revolut calls it `pay_by_bank`; Odoo calls it `open_banking`."""
+        self.assertEqual(const.PAYMENT_METHODS_MAPPING['open_banking'], 'pay_by_bank')
+        method = self.env['payment.method'].search([('code', '=', 'open_banking')], limit=1)
+        self.assertIn(method, self.provider.payment_method_ids)
+
     def test_decline_reason_is_surfaced_in_the_error(self):
         tx = self._create_transaction(flow='redirect')
         tx._apply_updates(self._build_order_data(
