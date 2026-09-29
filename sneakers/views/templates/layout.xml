@@ -6,21 +6,28 @@
         inherit_id="website.layout"
         name="Sneakers Layout">
 
-        <xpath expr="//header" position="attributes">
+        <xpath expr="//body" position="attributes">
+            <attribute name="t-att-class">(body_classname or '') + (' o_sneakers' if website.x_sneakers_theme else '')</attribute>
+        </xpath>
+
+        <!-- Scope by id: other modules (e.g. produits_tendance) may insert their
+             own <header>/<footer> before the real ones; a bare //header would
+             match theirs first and trap our injections in their t-if blocks. -->
+        <xpath expr="//header[@id='top']" position="attributes">
             <attribute name="t-attf-class" add="#{'d-none' if website.x_sneakers_theme else ''}" separator=" "/>
         </xpath>
 
-        <xpath expr="//header" position="after">
+        <xpath expr="//header[@id='top']" position="after">
             <t t-if="website.x_sneakers_theme">
                 <t t-call="sneakers.header"/>
             </t>
         </xpath>
 
-        <xpath expr="//footer" position="attributes">
+        <xpath expr="//footer[@id='bottom']" position="attributes">
             <attribute name="t-attf-class" add="#{'d-none' if website.x_sneakers_theme else ''}" separator=" "/>
         </xpath>
 
-        <xpath expr="//footer" position="after">
+        <xpath expr="//footer[@id='bottom']" position="after">
             <t t-if="website.x_sneakers_theme">
                 <t t-call="sneakers.footer"/>
             </t>
