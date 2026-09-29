@@ -1,6 +1,6 @@
 {
     'name': 'Sneakers',
-    'version': '19.0.1.0.5',
+    'version': '19.0.1.0.6',
     'category': 'Website',
     'author': 'Exocoms',
     'license': 'LGPL-3',
@@ -39,6 +39,8 @@
 
         'views/delivery_carrier_views.xml',
         'views/sendcloud_shipping_method_views.xml',
+
+        'views/website_views.xml',
     ],
 
     'assets': {
