@@ -217,7 +217,12 @@
                             <!-- Action Buttons -->
                             <div class="sn-buttons">
                                 <t t-if="stock_state == 'out_of_stock' and not allow_out_of_stock_order">
-                                    <button style="width:50%" class="sn-btn-primary sn-add-cart" disabled="disabled">
+                                    <button style="width:50%"
+                                        class="sn-btn-primary sn-add-cart"
+                                        disabled="disabled"
+                                        t-att-data-template-id="product.id"
+                                        t-att-data-stock="str(stock_qty)"
+                                        data-cart-qty="0">
                                         Out of Stock
                                     </button>
                                 </t>

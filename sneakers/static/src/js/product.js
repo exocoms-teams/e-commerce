@@ -47,6 +47,19 @@ function updateAddCartButton(button){
     ) || 0;
 
 
+    // Out of stock — même garde que les cartes homepage (initAddToCartCards).
+    // Exclut le bouton "Backorder" : jamais censuré ici (décision Eric en attente).
+    if(!isNaN(stock) && stock <= 0 && !button.textContent.includes("Backorder")){
+
+        button.disabled = true;
+
+        button.textContent =
+            "Out of stock";
+
+        return;
+
+    }
+
 
     if(!isNaN(stock) && cartQty >= stock){
 
