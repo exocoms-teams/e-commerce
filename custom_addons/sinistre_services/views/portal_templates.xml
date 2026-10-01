@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Carte « Mes interventions » sur la page d'accueil de l'espace client (/my) -->
+    <template id="portal_my_home_interventions" name="Mes interventions"
+              inherit_id="portal.portal_my_home" customize_show="True" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Mes interventions</t>
+                <t t-set="url" t-value="'/my/interventions'"/>
+                <t t-set="text">Suivez vos demandes d'intervention</t>
+                <t t-set="placeholder_count" t-value="'intervention_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Liste des interventions du client -->
+    <template id="portal_my_interventions" name="Mes interventions">
+        <t t-call="portal.portal_layout">
+            <h3 class="mt-4 mb-3">Mes interventions</h3>
+            <p t-if="not missions">Vous n'avez pas encore de demande d'intervention.</p>
+            <t t-if="missions" t-call="portal.portal_table">
+                <thead>
+                    <tr>
+                        <th>Référence</th>
+                        <th>Type</th>
+                        <th>Adresse</th>
+                        <th>Date</th>
+                        <th>État</th>
+                        <th/>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="missions" t-as="m">
+                        <td t-out="m.reference"/>
+                        <td t-field="m.type_intervention"/>
+                        <td t-out="m.adresse_intervention"/>
+                        <td t-field="m.date_reception" t-options="{'widget': 'date'}"/>
+                        <td><span class="badge text-bg-light" t-field="m.state"/></td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-primary" t-attf-href="/suivi/#{m.token_api}">Suivre</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </t>
+        </t>
+    </template>
+</odoo>

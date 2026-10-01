@@ -199,6 +199,28 @@ class SinistreWebsite(http.Controller):
             )
         return bool(post.get('nom', '').strip() and post.get('email', '').strip())
 
+    def _creer_compte_client(self, env, partner):
+        """Crée un compte portail au client et lui envoie l'email
+        d'invitation pour choisir son mot de passe. Ne fait rien s'il a
+        déjà un compte. Une erreur ici ne doit jamais bloquer la demande."""
+        try:
+            email = (partner.email or '').strip()
+            if not email or partner.user_ids:
+                return
+            # Un compte existe déjà avec cet email (rattaché à un autre contact)
+            if env['res.users'].with_context(active_test=False).search_count([
+                ('login', '=ilike', email),
+            ]):
+                return
+            wizard = env['portal.wizard'].create({
+                'partner_ids': [(6, 0, [partner.id])],
+            })
+            wizard.user_ids.action_grant_access()
+            _logger.info("[WEBSITE] Compte client créé pour %s", email)
+        except Exception as e:
+            _logger.warning("[WEBSITE] Création compte client impossible (%s) : %s",
+                            partner.email, e)
+
     @http.route('/demande-intervention/send', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)
     def demande_send(self, **post):
@@ -288,6 +310,10 @@ class SinistreWebsite(http.Controller):
         except Exception as e:
             _logger.error("[WEBSITE] Erreur création mission web: %s", e)
             return self._demande_render(error=True, success=False, form_data=post)
+
+        # Compte client (pas pour les assurances : l'email est celui du gestionnaire)
+        if source != 'assurance':
+            self._creer_compte_client(env, partner)
 
         try:
             mail_vals = {

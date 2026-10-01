@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Sinistre Services',
-    'version': '19.0.2.7.6',
+    'version': '19.0.2.7.7',
     'category': 'Services',
     'summary': 'Gestion des interventions sinistres — assurances, particuliers, entreprises',
     'author': 'exocoms',
@@ -32,6 +32,7 @@
         'data/website_data.xml',
         # Website
         'views/website_homepage.xml',
+        'views/portal_templates.xml',
         'views/website_seo.xml',
         'views/page_intervenant_login.xml',
         'views/website_pages.xml',
