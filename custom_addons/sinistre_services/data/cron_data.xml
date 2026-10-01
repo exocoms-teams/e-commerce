@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Chaque minute : les propositions de plus de 15 min expirent
+         et la mission passe à la vague suivante -->
+    <record id="ir_cron_propositions_expirees" model="ir.cron">
+        <field name="name">Sinistres : propositions expirées → vague suivante</field>
+        <field name="model_id" ref="model_sinistre_mission"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_propositions_expirees()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+    </record>
+</odoo>
