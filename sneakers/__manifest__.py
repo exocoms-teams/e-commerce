@@ -4,7 +4,7 @@
     'category': 'Website',
     'author': 'Exocoms',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale', 'website_sale_wishlist', 'sale_loyalty', 'website_sale_loyalty', 'stock', 'delivery'],
+    'depends': ['website', 'website_sale', 'website_sale_wishlist', 'sale_loyalty', 'website_sale_loyalty', 'stock', 'delivery', 'website_blog'],
 
     'data': [
         'security/ir.model.access.csv',
