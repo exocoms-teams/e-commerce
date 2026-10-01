@@ -202,24 +202,32 @@ class SinistreWebsite(http.Controller):
     def _creer_compte_client(self, env, partner):
         """Crée un compte portail au client et lui envoie l'email
         d'invitation pour choisir son mot de passe. Ne fait rien s'il a
-        déjà un compte. Une erreur ici ne doit jamais bloquer la demande."""
+        déjà un compte. Une erreur ici ne doit jamais bloquer la demande.
+        Même méthode que l'inscription Odoo sur le site (auth_signup),
+        prévue pour fonctionner sans utilisateur connecté."""
         try:
             email = (partner.email or '').strip()
             if not email or partner.user_ids:
                 return
+            Users = env['res.users'].with_context(no_reset_password=True)
             # Un compte existe déjà avec cet email (rattaché à un autre contact)
-            if env['res.users'].with_context(active_test=False).search_count([
+            if Users.with_context(active_test=False).search_count([
                 ('login', '=ilike', email),
             ]):
                 return
-            wizard = env['portal.wizard'].create({
-                'partner_ids': [(6, 0, [partner.id])],
+            # Copie du modèle « utilisateur portail » d'Odoo, rattachée au contact
+            user = Users._create_user_from_template({
+                'name': partner.name,
+                'login': email,
+                'email': email,
+                'partner_id': partner.id,
             })
-            wizard.user_ids.action_grant_access()
+            # Email « Choisissez votre mot de passe »
+            user.with_context(create_user=True).action_reset_password()
             _logger.info("[WEBSITE] Compte client créé pour %s", email)
-        except Exception as e:
-            _logger.warning("[WEBSITE] Création compte client impossible (%s) : %s",
-                            partner.email, e)
+        except Exception:
+            _logger.exception("[WEBSITE] Création compte client impossible (%s)",
+                              partner.email)
 
     @http.route('/demande-intervention/send', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)
