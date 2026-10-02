@@ -4,8 +4,8 @@
     <template id="page_home" name="monetiques.fr Accueil">
         <t t-call="website.layout">
 
+            <!-- Hero Section -->
             <section class="mn-hero">
-                <!-- Arrière-plan décoratif et dynamique (Performance GPU) -->
                 <div class="mn-hero__bg-grid"></div>
                 <div class="mn-hero__glow mn-hero__glow--1"></div>
                 <div class="mn-hero__glow mn-hero__glow--2"></div>
@@ -39,7 +39,7 @@
                             </div>
                         </div>
 
-                        <!-- Visual Right (Card + TPE Mockup 3D Glassmorphism) -->
+                        <!-- Visual Right -->
                         <div class="mn-hero__visual">
                             <div class="mn-visual-card">
                                 <svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg" fill="none" class="mn-visual-svg">
@@ -63,7 +63,7 @@
                                     <!-- Main Container Card -->
                                     <rect x="50" y="20" width="380" height="320" rx="28" fill="#FFFFFF" filter="url(#sh-main)"/>
                                     
-                                    <!-- Floating Credit Card (Glassmorphism Effect) -->
+                                    <!-- Floating Credit Card -->
                                     <g class="mn-anim-float-slow">
                                         <rect x="70" y="70" width="160" height="100" rx="12" fill="url(#grad-card)" filter="url(#sh-card)"/>
                                         <rect x="88" y="90" width="28" height="20" rx="4" fill="#FCE7F3" opacity="0.8"/>
@@ -80,7 +80,7 @@
                                     <text x="310" y="95" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11" fill="#94A3B8" font-weight="500">Montant à payer</text>
                                     <text x="310" y="128" text-anchor="middle" font-family="'Inter', sans-serif" font-size="28" font-weight="800" fill="#FFFFFF">45,60 €</text>
 
-                                    <!-- NFC Signal Waves Animated -->
+                                    <!-- NFC Signal Waves -->
                                     <g class="mn-anim-pulse-waves">
                                         <path d="M295 150 Q310 142 325 150" stroke="#60A5FA" stroke-width="2.5" stroke-linecap="round"/>
                                         <path d="M290 156 Q310 145 330 156" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round"/>
@@ -110,12 +110,13 @@
 
             <t t-call="monetique_theme.stats_section"/>
 
+            <!-- Products Section Liquid Glass -->
             <section class="mn-section mn-products">
                 <div class="mn-container">
                     <div class="mn-section__header">
                         <span class="mn-eyebrow">Nos produits</span>
-                        <h2>Nos solutions les plus demandees</h2>
-                        <p>Equipements certifies, prets a deployer. Livraison et installation incluses.</p>
+                        <h2>Nos solutions les plus demandées</h2>
+                        <p>Équipements certifiés, prêts à déployer. Livraison et installation incluses.</p>
                     </div>
                     <div class="mn-products__grid">
                         <t t-set="products" t-value="website.sale_product_domain()"/>
@@ -123,63 +124,103 @@
                             <a t-attf-href="/shop/#{product.id}" class="mn-product-card">
                                 <div class="mn-product-card__img">
                                     <t t-if="product.image_512">
-                                        <img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name" style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;"/>
+                                        <img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name" class="mn-product-img"/>
                                     </t>
                                     <t t-else="">
-                                        <div class="mn-product-card__no-img"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="10" width="36" height="26" rx="4" stroke="#94A3B8" stroke-width="2"/><path d="M6 18h36" stroke="#94A3B8" stroke-width="2"/><rect x="14" y="22" width="20" height="8" rx="2" fill="#94A3B8" opacity="0.3"/></svg></div>
+                                        <div class="mn-product-card__no-img">
+                                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="10" width="36" height="26" rx="4" stroke="#94A3B8" stroke-width="2"/><path d="M6 18h36" stroke="#94A3B8" stroke-width="2"/><rect x="14" y="22" width="20" height="8" rx="2" fill="#94A3B8" opacity="0.3"/></svg>
+                                        </div>
                                     </t>
                                 </div>
                                 <div class="mn-product-card__body">
                                     <h3 t-esc="product.name"/>
                                     <div class="mn-product-card__footer">
                                         <span class="mn-product-card__price" t-esc="'%.2f € HT' % product.list_price"/>
-                                        <span class="mn-btn mn-btn--primary mn-btn--sm">Voir</span>
+                                        <span class="mn-btn mn-btn--glass mn-btn--sm">Voir</span>
                                     </div>
                                 </div>
                             </a>
                         </t>
                     </div>
                     <div class="mn-section__footer">
-                        <a href="/shop" class="mn-btn mn-btn--outline">Voir tous nos produits &#8594;</a>
+                        <a href="/shop" class="mn-btn mn-btn--glass-pill">
+                            <span>Voir tous nos produits</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
                     </div>
                 </div>
             </section>
 
+            <!-- Testimonials Section Liquid Glass -->
             <section class="mn-reviews mn-section">
                 <div class="mn-container">
                     <div class="mn-section__header">
-                        <span class="mn-eyebrow">Temoignages</span>
+                        <span class="mn-eyebrow">Témoignages</span>
                         <h2>Ce que disent nos clients</h2>
                     </div>
                     <div class="mn-grid mn-grid--3">
                         <article class="mn-review">
-                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Installation rapide, equipe tres reactive. 12 terminaux sans interruption depuis 2 ans.</blockquote>
-                            <footer class="mn-review__author"><div class="mn-avatar">ML</div><div><strong>Marie L.</strong><span>Directrice - Restauration, Lyon</span></div></footer>
+                            <div class="mn-review__header">
+                                <div class="mn-review__stars">★★★★★</div>
+                                <span class="mn-review__badge">Vérifié</span>
+                            </div>
+                            <blockquote>« Installation rapide, équipe très réactive. 12 terminaux sans interruption depuis 2 ans. »</blockquote>
+                            <footer class="mn-review__author">
+                                <div class="mn-avatar">ML</div>
+                                <div class="mn-author-info">
+                                    <strong>Marie L.</strong>
+                                    <span>Directrice - Restauration, Lyon</span>
+                                </div>
+                            </footer>
                         </article>
                         <article class="mn-review">
-                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Support 7j/7 nous a depannes un dimanche en moins de 2h. Indispensable.</blockquote>
-                            <footer class="mn-review__author"><div class="mn-avatar">TB</div><div><strong>Thomas B.</strong><span>Gerant - Supermarche, Paris</span></div></footer>
+                            <div class="mn-review__header">
+                                <div class="mn-review__stars">★★★★★</div>
+                                <span class="mn-review__badge">Vérifié</span>
+                            </div>
+                            <blockquote>« Support 7j/7 nous a dépannés un dimanche en moins de 2h. Indispensable. »</blockquote>
+                            <footer class="mn-review__author">
+                                <div class="mn-avatar">TB</div>
+                                <div class="mn-author-info">
+                                    <strong>Thomas B.</strong>
+                                    <span>Gérant - Supermarché, Paris</span>
+                                </div>
+                            </footer>
                         </article>
                         <article class="mn-review">
-                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Migration de 45 caisses sans interruption. Serieux et professionnel.</blockquote>
-                            <footer class="mn-review__author"><div class="mn-avatar">SM</div><div><strong>Sophie M.</strong><span>DSI - Franchise, Bordeaux</span></div></footer>
+                            <div class="mn-review__header">
+                                <div class="mn-review__stars">★★★★★</div>
+                                <span class="mn-review__badge">Vérifié</span>
+                            </div>
+                            <blockquote>« Migration de 45 caisses sans interruption. Sérieux et professionnel. »</blockquote>
+                            <footer class="mn-review__author">
+                                <div class="mn-avatar">SM</div>
+                                <div class="mn-author-info">
+                                    <strong>Sophie M.</strong>
+                                    <span>DSI - Franchise, Bordeaux</span>
+                                </div>
+                            </footer>
                         </article>
                     </div>
-                    <div class="mn-reviews__score"><div class="mn-reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><strong>4,8 / 5</strong> &#8212; 312 avis verifies</div>
+                    <div class="mn-reviews__score">
+                        <div class="mn-score-card">
+                            <div class="mn-reviews__stars">★★★★★</div>
+                            <div class="mn-score-text"><strong>4,8 / 5</strong> &#8212; 312 avis vérifiés</div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
+            <!-- Call to Action Section -->
             <section class="mn-cta">
+                <div class="mn-cta__glow"></div>
                 <div class="mn-container">
                     <div class="mn-cta__inner">
                         <h2>Votre infrastructure de paiement commence par une conversation.</h2>
                         <p>Audit gratuit &#183; Devis sous 48h &#183; Sans engagement</p>
                         <div class="mn-cta__actions">
-                            <a href="/contact" class="mn-btn mn-btn--white mn-btn--lg">Demander un audit gratuit</a>
-                            <a href="/shop" class="mn-btn mn-btn--lg" style="border:2px solid rgba(255,255,255,0.4);color:white">Voir la boutique</a>
+                            <a href="/contactus" class="mn-btn mn-btn--white mn-btn--lg">Demander un audit gratuit</a>
+                            <a href="/shop" class="mn-btn mn-btn--glass-light mn-btn--lg">Voir la boutique</a>
                         </div>
                     </div>
                 </div>
