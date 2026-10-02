@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="contactus_theme_inherit"
+              name="Capsule House - Navigation du contact natif"
+              inherit_id="website.contactus">
+        <xpath expr="//div[@id='wrap']/*[1]" position="before">
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                <a href="/">Accueil</a>
+                <span class="sep">/</span>
+                <span>Entreprise</span>
+                <span class="sep">/</span>
+                <span>Contact</span>
+            </div>
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                <a href="/">Home</a>
+                <span class="sep">/</span>
+                <span>Company</span>
+                <span class="sep">/</span>
+                <span>Contact</span>
+            </div>
+            <div class="ch-entreprise-wrap">
+                <t t-call="capsule_house_theme.entreprise_nav"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

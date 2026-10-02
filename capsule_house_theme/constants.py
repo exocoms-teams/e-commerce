@@ -84,12 +84,12 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.aide_retours_page',
     'capsule_house_theme.aide_garantie_page',
     'capsule_house_theme.aide_faq_page',
-    # Ajoutés en 19.0.1.0.47 (pages Entreprise : À propos/Le concept,
-    # colonne "Entreprise" du footer — "Contact" reste natif /contactus,
-    # jamais construit par ce module — voir README).
+    # Pages Entreprise. contactus_theme_inherit hérite du template natif
+    # website.contactus et ne remplace pas son formulaire.
     'capsule_house_theme.entreprise_nav',
     'capsule_house_theme.entreprise_apropos_page',
     'capsule_house_theme.entreprise_concept_page',
+    'capsule_house_theme.contactus_theme_inherit',
     # Ajoutés en 19.0.1.0.64 (pages légales : Mentions légales/CGV/
     # Confidentialité — liens du footer cassés depuis le début du projet,
     # détecté par l'outil SEO natif d'Odoo — voir README).

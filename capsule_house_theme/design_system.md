@@ -221,9 +221,11 @@ principal de la page, « H2 » / « H3 » ceux des sections et sous-blocs.
 | **Intégration Odoo / formulaires / portail / checkout** | `odoo-integration.css` | inherited | inherited | `--fs-h3` | ✓ |
 | **Devis** (`devis_template.xml`) | (base) | inherited | inherited | inherited | ✓ via `base.css` |
 
-Les pages **Odoo natives** non couvertes par une page du thème (`/contactus`,
-fiche produit, panier, checkout, `/my/*`) n'ont pas de template ici : elles
-récupèrent l'échelle par les règles élément `h1`/`h2`/`h3`/`p` de `base.css`.
+La page `/contactus` conserve le template et le formulaire natifs d'Odoo ;
+une vue héritée ajoute le fil d'Ariane et la navigation Entreprise, et
+`odoo-integration.css` habille les contrôles du formulaire. Les autres pages
+Odoo natives (fiche produit, panier, checkout, `/my/*`) récupèrent l'échelle
+par les règles élément `h1`/`h2`/`h3`/`p` de `base.css`.
 
 ### 4.1 Écarts corrigés en 19.0.1.0.105 — hiérarchie des titres
 

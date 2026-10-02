@@ -1046,7 +1046,7 @@ absente jusqu'ici de `variables.css` — le reste de la palette
 `--ch-green`) existait déjà et correspond exactement aux couleurs
 demandées, réutilisée telle quelle.
 
-## Pages Entreprise — À propos, Le concept, Contact natif (v19.0.1.0.47)
+## Pages Entreprise — À propos, Le concept, Contact natif (v19.0.1.0.47, contact intégré en v19.0.1.0.106)
 
 Les liens de la colonne "Entreprise" du footer mènent maintenant à de
 vraies pages, livrées d'après une maquette fournie par le client :
@@ -1062,20 +1062,16 @@ vraies pages, livrées d'après une maquette fournie par le client :
   terrain" (matériaux/fabrication/contrôle qualité/transport & pose),
   schéma "Coupe technique" (même illustration SVG que le hero,
   stylisée en contour pointillé avec libellés superposés).
-- **Contact : décision explicite du client — "tout les contact de mes
-  pages doive etre dirigé vers la pages contacts native odoo"**. Ce
-  module ne construit AUCUNE page de contact. Tous les liens "Contact"
-  du site (nav en pills `entreprise_nav.xml`, colonne "Entreprise" du
-  footer, bouton "Contacter le service client" de `/retours`) pointent
-  vers `/contactus`, la page de contact native du module `website`
-  (déjà dans les dépendances de ce thème) — confirmée par le code local
-  d'`exocoms_theme` qui l'utilise aussi tel quel (`footer.xml`).
+- **Contact** : tous les liens pointent vers `/contactus`, dont le
+  formulaire et le contenu restent natifs au module `website`. Depuis la
+  v19.0.1.0.106, une vue héritée ajoute le fil d'Ariane et réutilise la
+  navigation Entreprise ; le formulaire n'est ni remplacé ni dupliqué.
 
-Nav en onglets "pills" partagée par les 2 pages (`entreprise_nav.xml`),
+Nav en onglets "pills" partagée par les pages (`entreprise_nav.xml`),
 même principe que `aide_sidebar.xml` : état actif calculé dynamiquement
-depuis l'URL réelle, jamais codé en dur par page. L'onglet "Contact" de
-cette nav n'est jamais marqué actif (il ne pointe pas vers une page à
-nous). Contenu bilingue FR/EN, même convention que le reste du thème.
+depuis l'URL réelle, jamais codé en dur par page. L'onglet "Contact" est
+actif sur `/contactus`. Contenu bilingue FR/EN, même convention que le
+reste du thème.
 CSS (`.ch-entreprise-*` dans `pages.css`) réutilise volontairement les
 classes `.ch-aide-*` existantes (titre, sous-titre, cartes, tableau)
 plutôt que dupliquer un système parallèle.

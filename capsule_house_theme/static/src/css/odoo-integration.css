@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    INTÉGRATION ODOO NATIF — pages/éléments non custom du thème
    ============================================================
    Contrairement à shop.css (page /shop, notre bannière + la grille
@@ -341,16 +341,18 @@ a.o_wish_rm {
    FORMULAIRES NATIFS (contact, newsletter native, portail)
    ======================================== */
 
+/* ========================================
+   FORMULAIRES NATIFS (panier, checkout, portail)
+   ======================================== */
+
 .oe_website_sale .form-control,
-.o_portal_wrap .form-control,
-form.s_website_form .form-control {
+.o_portal_wrap .form-control {
     border: 1px solid var(--ch-gray-border);
     border-radius: var(--r-md);
     font-family: var(--font-body);
 }
 .oe_website_sale .form-control:focus,
-.o_portal_wrap .form-control:focus,
-form.s_website_form .form-control:focus {
+.o_portal_wrap .form-control:focus {
     border-color: var(--ch-terracotta);
     box-shadow: 0 0 0 3px rgba(193, 105, 79, 0.12);
 }
@@ -359,6 +361,251 @@ form.s_website_form .form-control:focus {
     border-color: var(--ch-terracotta);
 }
 
+/* ============================================================
+   FORMULAIRE DE CONTACT (/contactus)
+   ============================================================
+    /contactus conserve la page et le formulaire NATIFS d'Odoo. Une vue
+    héritée ajoute uniquement le fil d'Ariane et la navigation Entreprise.
+    Le formulaire est habillé par les classes
+   du snippet `s_website_form`, relevées sur le DOM réellement servi
+   (et non supposées) :
+
+     <section class="s_website_form">        <- le porteur
+       <form id="contactus_form">              <- SANS s_website_form
+         .s_website_form_field                 <- un champ
+           label.s_website_form_label          <- libelle (width:200px
+                                                  en style INLINE)
+             span.s_website_form_label_content <- texte du libelle
+             span.s_website_form_mark          <- la "*" obligatoire
+           input.form-control.s_website_form_input
+         .s_website_form_submit
+           <a class="btn btn-primary s_website_form_send">Submit</a>
+           span#s_website_form_result
+
+   ATTENTION — trois pieges corriges ici, tous invisibles a l'ecran
+   parce qu'ils ne cassaient rien, ils ne stylingaient RIEN :
+
+   1. `s_website_form` est porte par le <section>, PAS par le <form>.
+      Un selecteur `form.s_website_form` ne matche donc aucun noeud.
+      C'etait l'erreur de la premiere version de ce bloc : les
+      regles legacy portaient `form.s_website_form .form-control`
+      et n'ont jamais rien style — le formulaire natif n'a jamais
+      recu ni bordure, ni rayon, ni police. Le selecteur correct
+      est `.s_website_form`.
+
+   2. Les libelles ne portent PAS `.form-label` mais
+      `.s_website_form_label` (+ `.s_website_form_label_content`).
+
+   3. Le bouton n'est pas un <button type="submit"> mais une
+      <a class="s_website_form_send"> (Odoo intercepte le clic en JS
+      pour un envoi AJAX vers /website/form/). Cibler
+      `button[type="submit"]` ne matchait rien non plus.
+
+    Portée : #contactus_form cible uniquement le formulaire de contact
+    natif ; les autres formulaires du site ne sont pas affectés.
+   ============================================================ */
+
+/* --- LIBELLES ---------------------------------------------------
+   Odoo habille le libelle en colonne de 200px via un style INLINE
+   (`style="width: 200px"` stocke dans le contenu de la page), avec
+   un texte aligne a droite cote Odoo.
+
+   On repasse en libelle empile AU-DESSUS du champ, ce qui est :
+     - la mise en page de TOUS les formulaires du theme
+       (.ch-avis-form-label, pages.css) ;
+     - le seul layout tenable en mobile, ou une colonne de 200px
+       fixe laissait le champ dans ~150px sur un ecran de 360px ;
+     - lisible, un libelle de 200px de large avec "Phone Number"
+       dedans devient une ou deux lignes etranglees.
+
+   `width: auto !important` est unavoidable ici : la largeur vient
+   d'un style inline, donc seule une declaration !important peut
+   la surcharger depuis une feuille de style. Le meme principe
+   (!important cible) est deja employe dans layout.css. */
+#contactus_form .s_website_form_label {
+    display: block;
+    width: auto !important;
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: var(--fs-13);
+    font-weight: 600;
+    color: var(--ch-ink);
+    margin-bottom: 7px;
+    padding: 0;
+}
+/* Le `<div style="width:200px" class="s_website_form_label">` vide qui
+   precede le bouton sert d'epaisseur dans le layout Odoo d'origine.
+   Les libelles etant desormais empiles, ce spacer decalait le bouton
+   de 200px vers la droite, sans raison : on le neutralise. */
+#contactus_form .s_website_form_submit > .s_website_form_label {
+    display: none;
+}
+/* Etoile des champs obligatoires — meme convention que
+   .ch-avis-req sur /avis. */
+#contactus_form .s_website_form_mark {
+    color: var(--ch-terracotta);
+    font-weight: 700;
+}
+
+/* --- CHAMPS -----------------------------------------------------
+   Gabarit .ch-avis-input (pages.css) : meme padding, meme taille,
+   meme couleur, et on aligne l'epaisseur de trait (1.5px) pour que
+   les deux formulaires du site n'aient pas le meme poids. */
+#contactus_form .s_website_form_input,
+#contactus_form .form-control {
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: var(--fs-14);
+    color: var(--ch-ink);
+    background-color: var(--ch-white);
+    border: 1.5px solid var(--ch-gray-border);
+    border-radius: var(--r-md);
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color var(--transition);
+}
+/* Odoo repeint le fond au focus ; on l'annule pour que seule la
+   bordure terracotta + le halo se voient. */
+#contactus_form .s_website_form_input:focus,
+#contactus_form .form-control:focus {
+    border-color: var(--ch-terracotta);
+    box-shadow: 0 0 0 3px rgba(193, 105, 79, 0.12);
+    background-color: var(--ch-white);
+    color: var(--ch-ink);
+}
+#contactus_form .form-control::placeholder {
+    color: var(--ch-gray-border);
+}
+/* Zone de message : Odoo pose rows="8", mais la hauteur libre rend
+   la saisie plus confortable et le redimensionnement vertical
+   autorise (comme .ch-avis-textarea). */
+#contactus_form textarea.form-control {
+    resize: vertical;
+    min-height: 160px;
+}
+
+/* --- MESSAGES D'ERREUR -----------------------------------------
+   Mecanisme relu dans website/static/src/snippets/s_website_form/
+   form.js et xml/website_form.xml (Odoo 19) :
+
+     - form.js `checkErrorFields()` pose `.o_has_error` sur le
+       .s_website_form_field et `.is-invalid` sur le controle ;
+     - `updateStatusInline()` insere le message via le template
+       `website.s_website_form_status_custom_error`, qui rend :
+         <span class="s_website_form_custom_error me-2 small
+                      text-danger"><i class="fa fa-close"/>...</span>
+     - `updateStatus()` rend le message global dans
+       <span id="s_website_form_result" class="me-2 small
+                        text-danger|text-success">.
+
+   Donc NI `.alert-danger` NI `.invalid-feedback` : ces deux classes
+   n'apparaissent jamais dans ce formulaire. C'est pourquoi aucun
+   message d'erreur n'etaitStyle avant ce bloc — le champ fautif
+   gardait sa bordure neutre, et rien n'indiquait visuellement
+   quelle saisie etait rejetee. On habille les vraies classes.
+
+   Pas de `display` sur `.s_website_form_custom_error` : Odoo
+   l'injecte uniquement en cas d'erreur reelle (il est cree puis
+   supprime par `registerCleanup`), donc aucun risque de bloc vide
+   au chargement — contrairement a un `.invalid-feedback` statique
+   qu'il aurait fallu laisser en `display:none`. */
+#contactus_form .o_has_error .form-control,
+#contactus_form .form-control.is-invalid {
+    border-color: var(--ch-red);
+    background-image: none;
+}
+#contactus_form .o_has_error .form-control:focus,
+#contactus_form .form-control.is-invalid:focus {
+    border-color: var(--ch-red);
+    box-shadow: 0 0 0 3px rgba(180, 85, 63, 0.12);
+    background-color: var(--ch-white);
+}
+#contactus_form .s_website_form_custom_error {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--fs-13);
+    font-weight: 500;
+    color: var(--ch-red);
+    margin: 7px 0 0;
+}
+#contactus_form .s_website_form_custom_error .fa {
+    margin-right: 4px;
+}
+/* Message global de resultat (succes / echec d'envoi), injecte par
+   updateStatus() dans #s_website_form_result. Odoo ne le pose pas en
+   .alert : on lui donne la forme du site (liseré + fond tinté), sans
+   toucher aux .alert-* globaux plus bas, qui servent au panier et
+   au checkout. */
+#contactus_form #s_website_form_result {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--fs-13);
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: var(--r-md);
+    border-left: 4px solid transparent;
+}
+#contactus_form #s_website_form_result.text-success {
+    color: var(--ch-green);
+    border-left-color: var(--ch-green);
+    background: rgba(46, 125, 91, 0.07);
+}
+#contactus_form #s_website_form_result.text-danger {
+    color: var(--ch-red);
+    border-left-color: var(--ch-red);
+    background: rgba(180, 85, 63, 0.07);
+}
+
+/* --- BOUTON D'ENVOI --------------------------------------------
+   `<a class="btn btn-primary s_website_form_send">`. On le rend
+   identique a .ch-btn-cta (base.css), valeurs recopiees a la
+   lettre : on ne peut pas ajouter la classe .ch-btn-cta au
+   template natif, le module ne doit pas modifier /contactus. Si
+   .ch-btn-cta evolue, resynchroniser ici.
+
+   Specificite (0,2,0) > .btn-primary global (0,1,0) et
+   > .btn.btn-primary (0,2,0) par ordre de cascade : ces
+   regles viennent apres dans le fichier, donc elles l'emportent,
+   sans !important. */
+#contactus_form .s_website_form_send,
+#contactus_form a.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-family: var(--font-body);
+    font-size: var(--fs-14);
+    font-weight: 700;
+    color: var(--ch-white);
+    background: var(--ch-terracotta);
+    border: 2px solid var(--ch-terracotta);
+    border-radius: var(--r-pill);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all var(--transition);
+}
+/* Le snippet Odoo applique .text-end sur .s_website_form_submit ;
+   les libelles etant desormais empiles a gauche, le bouton doit
+   s'aligner sur les champs, pas flotter a droite. */
+#contactus_form .s_website_form_submit {
+    text-align: left;
+}
+#contactus_form .s_website_form_send:hover,
+#contactus_form a.btn-primary:hover {
+    color: var(--ch-white);
+    background: var(--ch-terracotta-mid);
+    border-color: var(--ch-terracotta-mid);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+}
+#contactus_form .s_website_form_send:focus-visible,
+#contactus_form a.btn-primary:focus-visible {
+    outline: 3px solid var(--ch-ink);
+    outline-offset: 3px;
+}
 /* ========================================
    ALERTES (messages panier/checkout/portail)
    ======================================== */
