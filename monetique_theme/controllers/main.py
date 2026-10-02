@@ -32,64 +32,8 @@ class Monetique(http.Controller):
             'error': False, 'success': False, 'reference': None, 'form_data': {},
         })
 
-    @http.route('/demande-intervention/send', type='http', auth='public',
-                website=True, methods=['POST'], csrf=True)
-    def demande_send(self, **post):
-        nom = post.get('nom', '').strip()
-        telephone = post.get('telephone', '').strip()
-        type_intervention = post.get('type_intervention', '').strip()
-        adresse = post.get('adresse', '').strip()
-        description = post.get('description', '').strip()
-
-        if not (telephone and type_intervention and adresse):
-            return request.render('sinistre_services.page_demande', {
-                'error': True, 'success': False, 'form_data': post,
-                'type_pre': '', 'urgence_pre': '', 'reference': None,
-            })
-
-        reference = None
-        try:
-            client = request.env['res.partner'].sudo().create({
-                'name': nom or 'Client Web',
-                'phone': telephone,
-                'email': post.get('email', ''),
-            })
-            mission = request.env['sinistre.mission'].sudo().create({
-                'source': post.get('source', 'particulier'),
-                'client_id': client.id,
-                'type_intervention': type_intervention,
-                'urgence': post.get('urgence', 'normale'),
-                'description_sinistre': description,
-                'adresse_intervention': adresse,
-                'tel_sur_place': telephone,
-                'state': 'nouveau',
-            })
-            reference = mission.reference
-
-            mail_vals = {
-                'subject': f'[Sinistre Services] Nouvelle demande {reference}',
-                'body_html': f'''
-                    <h3>Nouvelle demande d\'intervention</h3>
-                    <p><b>Reference :</b> {reference}</p>
-                    <p><b>Client :</b> {nom or "Non renseigne"}</p>
-                    <p><b>Tel :</b> {telephone}</p>
-                    <p><b>Type :</b> {type_intervention}</p>
-                    <p><b>Urgence :</b> {post.get("urgence", "normale")}</p>
-                    <p><b>Adresse :</b> {adresse}</p>
-                    <p><b>Description :</b> {description}</p>
-                ''',
-                'email_from': request.website.email or 'noreply@sinistre-services.fr',
-                'email_to': request.website.email or 'contact@sinistre-services.fr',
-            }
-            request.env['mail.mail'].sudo().create(mail_vals).send()
-        except Exception as e:
-            _logger.warning(f"Demande send failed: {e}")
-
-        return request.render('sinistre_services.page_demande', {
-            'error': False, 'success': True,
-            'reference': reference,
-            'type_pre': '', 'urgence_pre': '', 'form_data': {},
-        })
+    # Route /demande-intervention/send gérée par sinistre_services
+    # (website_controller.py) : création de la mission + compte client.
 
     # Routes /rejoindre-le-reseau → sinistre_services/controllers/website_controller.py
 
@@ -181,16 +125,7 @@ class Monetique(http.Controller):
             'error': False, 'success': True, 'form_data': {},
         })
 
-    # ── SUIVI DOSSIER ────────────────────────────────────────────────
-    @http.route('/suivi/<string:token>', type='http', auth='public', website=True)
-    def suivi_dossier(self, token, **kw):
-        mission = request.env['sinistre.mission'].sudo().search(
-            [('token_api', '=', token)], limit=1)
-        if not mission:
-            return request.render('sinistre_services.page_404', {
-                'message': "Dossier introuvable. Verifiez le lien recu.",
-            })
-        return request.render('sinistre_services.page_suivi', {'mission': mission})
+    # Route /suivi/<token> gérée par sinistre_services (website_controller.py).
 
     # ── RAPPEL ───────────────────────────────────────────────────────
     @http.route('/rappel', type='http', auth='public', website=True, methods=['POST'], csrf=True)
