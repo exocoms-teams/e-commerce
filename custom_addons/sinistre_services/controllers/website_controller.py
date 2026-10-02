@@ -336,7 +336,7 @@ class SinistreWebsite(http.Controller):
                     <p><strong>Description :</strong><br/>{post.get('description', '')}</p>
                 """,
                 'email_from': email,
-                'email_to': request.website.email or 'contact@sinistre-services.fr',
+                'email_to': request.website.company_id.email or 'contact@sinistre-services.fr',
             }
             if source == 'assurance':
                 mail_vals['body_html'] += f"""
@@ -387,7 +387,7 @@ class SinistreWebsite(http.Controller):
                     <p><strong>Message :</strong><br/>{message}</p>
                 """,
                 'email_from': email,
-                'email_to': request.website.email or 'contact@sinistre-services.fr',
+                'email_to': request.website.company_id.email or 'contact@sinistre-services.fr',
             }
             request.env['mail.mail'].sudo().create(mail_vals).send()
         except Exception as e:
@@ -491,8 +491,8 @@ class SinistreWebsite(http.Controller):
                     'subject': '[Sinistre Services] Demande de rappel',
                     'body_html': f'<p><strong>Nom :</strong> {name or "Non renseigné"}</p>'
                                  f'<p><strong>Téléphone :</strong> {phone}</p>',
-                    'email_from': request.website.email or 'contact@sinistre-services.fr',
-                    'email_to': request.website.email or 'contact@sinistre-services.fr',
+                    'email_from': request.website.company_id.email or 'contact@sinistre-services.fr',
+                    'email_to': request.website.company_id.email or 'contact@sinistre-services.fr',
                 }
                 request.env['mail.mail'].sudo().create(mail_vals).send()
             except Exception as e:
@@ -650,7 +650,7 @@ class SinistreWebsite(http.Controller):
                     <p><i>Documents disponibles dans le back-office → Annuaire → Candidatures.</i></p>
                 """,
                 'email_from': email,
-                'email_to': request.website.email or 'artisans@sinistre-services.fr',
+                'email_to': request.website.company_id.email or 'artisans@sinistre-services.fr',
             }
             request.env['mail.mail'].sudo().create(mail_vals).send()
         except Exception as e:
