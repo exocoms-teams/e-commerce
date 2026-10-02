@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import secrets
+from datetime import timedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
@@ -8,6 +9,8 @@ _logger = logging.getLogger(__name__)
 
 TAUX_COMMISSION_VIREMENT = 0.5
 MONTANT_GARANTIE_DEFAUT = 150.0
+DELAI_REPONSE_MINUTES = 15   # temps laissé aux artisans pour répondre
+TAILLE_VAGUE = 0             # 0 = tous les artisans éligibles en même temps
 
 
 class SinistreMission(models.Model):
@@ -82,6 +85,13 @@ class SinistreMission(models.Model):
     date_rdv            = fields.Datetime(string='Date RDV', tracking=True)
     date_debut_travaux  = fields.Datetime(string='Début des Travaux')
     date_cloture        = fields.Datetime(string='Date Clôture', readonly=True)
+
+    # ── Propositions aux artisans (tous en même temps, 15 min) ───────
+    proposition_ids = fields.One2many('sinistre.proposition', 'mission_id', string='Propositions')
+    sans_reponse    = fields.Boolean(
+        string='Sans réponse', default=False, tracking=True,
+        help="Aucun artisan éligible n'a accepté la mission.",
+    )
 
     # ── Intervenant ──────────────────────────────────────────────────
     intervenant_id = fields.Many2one('sinistre.intervenant', string='Intervenant', tracking=True)
@@ -237,7 +247,7 @@ class SinistreMission(models.Model):
         if not self.env.context.get('skip_mission_push'):
             for mission in missions:
                 if mission.state == 'nouveau' and not mission.intervenant_id:
-                    mission._notifier_artisans_zone()
+                    mission._proposer_vague_suivante()
                 mission._envoyer_email_creation_client()
         return missions
 
@@ -299,7 +309,8 @@ class SinistreMission(models.Model):
 
     # ── Actions workflow ─────────────────────────────────────────────
     def action_assigner(self):
-        self.write({'state': 'assigne'})
+        self._annuler_propositions_en_attente()
+        self.write({'state': 'assigne', 'sans_reponse': False})
         self.message_post(body=f"Mission assignée à {self.intervenant_id.name}")
 
     def action_planifier_rdv(self):
@@ -515,6 +526,119 @@ class SinistreMission(models.Model):
             return facture
 
         raise UserError(_("Impossible de générer une facture pour cette mission."))
+
+    # ── Propositions par vagues ──────────────────────────────────────
+    def _get_intervenants_eligibles(self):
+        """Artisans disponibles, du secteur, de la bonne spécialité,
+        classés du meilleur au moins bon.
+        TODO : classer par distance quand la géolocalisation existera."""
+        self.ensure_one()
+        adresse = self.adresse_intervention or ''
+        intervenants = self.env['sinistre.intervenant'].sudo().search([
+            ('disponible', '=', True),
+            ('actif', '=', True),
+        ])
+        intervenants = intervenants.filtered(lambda iv: iv.couvre_adresse(adresse))
+        if self.type_intervention:
+            by_specialite = intervenants.filtered(
+                lambda iv: any(
+                    s.type_intervention == self.type_intervention
+                    for s in iv.specialites
+                )
+            )
+            if by_specialite:
+                intervenants = by_specialite
+        # Pour l'instant : meilleure note client d'abord
+        return intervenants.sorted(lambda iv: iv.note_moyenne_client or 0, reverse=True)
+
+    def _proposer_vague_suivante(self):
+        """Propose la mission, en même temps, à tous les artisans éligibles
+        qui ne l'ont pas encore eue (ou aux TAILLE_VAGUE meilleurs si > 0).
+        Le premier qui accepte la prend.
+        S'il n'en reste plus : la mission passe « sans réponse »."""
+        Proposition = self.env['sinistre.proposition'].sudo()
+        for mission in self:
+            if mission.state != 'nouveau' or mission.intervenant_id:
+                continue
+            # Une vague est encore en cours (quelqu'un n'a pas répondu) → on attend
+            if Proposition.search_count([
+                ('mission_id', '=', mission.id),
+                ('state', '=', 'en_attente'),
+            ]):
+                continue
+            deja_proposes = Proposition.search([
+                ('mission_id', '=', mission.id),
+            ]).mapped('intervenant_id')
+            suivants = mission._get_intervenants_eligibles() - deja_proposes
+            if not suivants:
+                mission.sans_reponse = True
+                mission.message_post(body=_(
+                    "⏰ Aucun artisan n'a accepté la mission. "
+                    "Utilisez « Reproposer aux artisans » ou assignez-la à la main."
+                ))
+                continue
+            vague = suivants[:TAILLE_VAGUE] if TAILLE_VAGUE else suivants
+            date_limite = fields.Datetime.now() + timedelta(minutes=DELAI_REPONSE_MINUTES)
+            for artisan in vague:
+                Proposition.create({
+                    'mission_id': mission.id,
+                    'intervenant_id': artisan.id,
+                    'date_limite': date_limite,
+                })
+                mission._envoyer_push_proposition(artisan)
+            mission.message_post(body=_(
+                "📨 Mission proposée à %(noms)s (%(min)s min pour répondre).",
+                noms=', '.join(vague.mapped('name')), min=DELAI_REPONSE_MINUTES,
+            ))
+
+    def _envoyer_push_proposition(self, artisan):
+        """Notification push à UN artisan."""
+        self.ensure_one()
+        if not artisan.fcm_token:
+            _logger.info("[sinistre] %s : pas de token FCM, pas de push", artisan.name)
+            return
+        self.env['sinistre.message'].sudo()._push_notification(
+            artisan.fcm_token,
+            title=f"🚨 Nouvelle mission {'URGENTE' if self.urgence != 'normale' else ''}",
+            body=f"{self.type_intervention} — {self.adresse_intervention or ''} "
+                 f"({DELAI_REPONSE_MINUTES} min pour répondre)",
+            data={'type': 'new_mission', 'mission_id': str(self.id)},
+            data_only=True,
+        )
+
+    def _annuler_propositions_en_attente(self):
+        """Annule la proposition en cours (ex. : assignation manuelle)."""
+        self.env['sinistre.proposition'].sudo().search([
+            ('mission_id', 'in', self.ids),
+            ('state', '=', 'en_attente'),
+        ]).write({'state': 'annule'})
+
+    @api.model
+    def _cron_propositions_expirees(self):
+        """Lancée chaque minute : les propositions dépassées expirent
+        et la mission passe à la vague suivante."""
+        expirees = self.env['sinistre.proposition'].sudo().search([
+            ('state', '=', 'en_attente'),
+            ('date_limite', '<', fields.Datetime.now()),
+        ])
+        if not expirees:
+            return
+        expirees.write({'state': 'expire'})
+        for prop in expirees:
+            prop.mission_id.message_post(body=_(
+                "⌛ %s n'a pas répondu à temps.", prop.intervenant_id.name,
+            ))
+        expirees.mapped('mission_id')._proposer_vague_suivante()
+
+    def action_relancer_proposition(self):
+        """Nouveau tour : les anciennes propositions sont archivées,
+        tout le monde peut de nouveau recevoir la mission."""
+        for mission in self:
+            mission._annuler_propositions_en_attente()
+            mission.proposition_ids.write({'active': False})
+            mission.sans_reponse = False
+            mission.message_post(body=_("🔁 Nouveau tour de propositions."))
+            mission._proposer_vague_suivante()
 
     def _notifier_artisans_zone(self):
         """Envoie une notification push aux artisans disponibles dans le secteur."""

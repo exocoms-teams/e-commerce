@@ -212,18 +212,41 @@ def _get_intervenant_by_fcm(fcm_token):
     ], limit=1)
 
 
+def _proposition_en_attente(intervenant, mission):
+    """La proposition en cours de cette mission pour cet artisan (ou vide)."""
+    return request.env['sinistre.proposition'].sudo().search([
+        ('mission_id', '=', mission.id),
+        ('intervenant_id', '=', intervenant.id),
+        ('state', '=', 'en_attente'),
+    ], limit=1)
+
+
 def _mission_reponse_intervenant(intervenant, mission, reponse):
     """Traite acceptation ou refus. Retourne (ok: bool, payload_or_error)."""
+    from odoo import fields
     reponse = (reponse or '').strip().lower()
+    if reponse not in ('accepte', 'refuse'):
+        return False, "Réponse invalide"
+    if not mission:
+        return False, "Mission introuvable"
+    # Seul l'artisan à qui la mission est proposée peut répondre, et dans le délai
+    proposition = _proposition_en_attente(intervenant, mission)
+    if not proposition:
+        return False, "Cette mission ne vous est pas (ou plus) proposée"
+    if proposition.date_limite < fields.Datetime.now():
+        return False, "Délai de réponse dépassé"
     if reponse == 'accepte':
-        if not mission or mission.state != 'nouveau' or mission.intervenant_id:
+        if mission.state != 'nouveau' or mission.intervenant_id:
             return False, "Mission introuvable ou déjà assignée"
         specialite_types = _intervenant_specialite_types(intervenant)
         if specialite_types and not _mission_matches_specialites(mission, specialite_types):
             return False, "Cette mission ne correspond pas à vos spécialités"
         if not _mission_matches_zone(mission, intervenant):
             return False, "Cette mission est hors de votre secteur d'intervention"
-        mission.sudo().write({'intervenant_id': intervenant.id, 'state': 'assigne'})
+        mission.sudo().write({'intervenant_id': intervenant.id, 'state': 'assigne', 'sans_reponse': False})
+        proposition.write({'state': 'accepte', 'date_reponse': fields.Datetime.now()})
+        # Les autres artisans de la vague n'ont plus besoin de répondre
+        mission.sudo()._annuler_propositions_en_attente()
         mission.message_post(body=_(f"✅ Mission acceptée par {intervenant.name}."))
         _enregistrer_proposition_reponse(intervenant, mission, 'accepte')
         return True, {
@@ -234,10 +257,13 @@ def _mission_reponse_intervenant(intervenant, mission, reponse):
             'reponse':          'accepte',
         }
     if reponse == 'refuse':
-        if not mission or mission.state != 'nouveau':
+        if mission.state != 'nouveau':
             return False, "Mission introuvable"
+        proposition.write({'state': 'refuse', 'date_reponse': fields.Datetime.now()})
         mission.message_post(body=_(f"❌ Mission refusée par {intervenant.name}."))
         _enregistrer_proposition_reponse(intervenant, mission, 'refuse')
+        # S'il était le dernier de la vague à répondre, on passe à la vague suivante
+        mission.sudo()._proposer_vague_suivante()
         return True, {
             'success':          True,
             'reponse':          'refuse',
@@ -1331,17 +1357,17 @@ class SinistrePWAController(http.Controller):
         intervenant = _get_intervenant()
         if not intervenant:
             return _err(403, "Accès non autorisé")
-        missions = request.env['sinistre.mission'].sudo().search([
-            ('state', '=', 'nouveau'),
-            ('intervenant_id', '=', False),
-        ], order='urgence desc, date_reception asc', limit=50)
-        specialite_types = _intervenant_specialite_types(intervenant)
-        missions = missions.filtered(lambda m: _mission_matches_zone(m, intervenant))
-        if specialite_types:
-            missions = missions.filtered(
-                lambda m: _mission_matches_specialites(m, specialite_types)
-            )
-        missions = missions[:20]
+        from odoo import fields
+        # Uniquement les missions proposées à CET artisan, encore dans le délai
+        propositions = request.env['sinistre.proposition'].sudo().search([
+            ('intervenant_id', '=', intervenant.id),
+            ('state', '=', 'en_attente'),
+            ('date_limite', '>', fields.Datetime.now()),
+            ('mission_id.state', '=', 'nouveau'),
+            ('mission_id.intervenant_id', '=', False),
+        ], order='date_limite asc', limit=20)
+        limites = {p.mission_id.id: p.date_limite for p in propositions}
+        missions = propositions.mapped('mission_id')
         result = [{
             'id':                 m.id,
             'reference':          m.reference,
@@ -1356,6 +1382,8 @@ class SinistrePWAController(http.Controller):
             'montant_estime':     m.montant_estime or 0,
             'montant_estime_max': m.montant_estime_max or 0,
             'source':             m.source,
+            # Date limite en UTC (format ISO) pour le compte à rebours de la PWA
+            'date_limite_reponse': limites[m.id].isoformat() + 'Z',
         } for m in missions]
         return _ok({'success': True, 'missions': result})
 

@@ -199,6 +199,36 @@ class SinistreWebsite(http.Controller):
             )
         return bool(post.get('nom', '').strip() and post.get('email', '').strip())
 
+    def _creer_compte_client(self, env, partner):
+        """Crée un compte portail au client et lui envoie l'email
+        d'invitation pour choisir son mot de passe. Ne fait rien s'il a
+        déjà un compte. Une erreur ici ne doit jamais bloquer la demande.
+        Même méthode que l'inscription Odoo sur le site (auth_signup),
+        prévue pour fonctionner sans utilisateur connecté."""
+        try:
+            email = (partner.email or '').strip()
+            if not email or partner.user_ids:
+                return
+            Users = env['res.users'].with_context(no_reset_password=True)
+            # Un compte existe déjà avec cet email (rattaché à un autre contact)
+            if Users.with_context(active_test=False).search_count([
+                ('login', '=ilike', email),
+            ]):
+                return
+            # Copie du modèle « utilisateur portail » d'Odoo, rattachée au contact
+            user = Users._create_user_from_template({
+                'name': partner.name,
+                'login': email,
+                'email': email,
+                'partner_id': partner.id,
+            })
+            # Email « Choisissez votre mot de passe »
+            user.with_context(create_user=True).action_reset_password()
+            _logger.info("[WEBSITE] Compte client créé pour %s", email)
+        except Exception:
+            _logger.exception("[WEBSITE] Création compte client impossible (%s)",
+                              partner.email)
+
     @http.route('/demande-intervention/send', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)
     def demande_send(self, **post):
@@ -289,6 +319,10 @@ class SinistreWebsite(http.Controller):
             _logger.error("[WEBSITE] Erreur création mission web: %s", e)
             return self._demande_render(error=True, success=False, form_data=post)
 
+        # Compte client (pas pour les assurances : l'email est celui du gestionnaire)
+        if source != 'assurance':
+            self._creer_compte_client(env, partner)
+
         try:
             mail_vals = {
                 'subject': f'[Sinistre Services] Nouvelle demande {source} — {mission.reference}',
@@ -302,7 +336,7 @@ class SinistreWebsite(http.Controller):
                     <p><strong>Description :</strong><br/>{post.get('description', '')}</p>
                 """,
                 'email_from': email,
-                'email_to': request.website.email or 'contact@sinistre-services.fr',
+                'email_to': request.website.company_id.email or 'contact@sinistre-services.fr',
             }
             if source == 'assurance':
                 mail_vals['body_html'] += f"""
@@ -353,7 +387,7 @@ class SinistreWebsite(http.Controller):
                     <p><strong>Message :</strong><br/>{message}</p>
                 """,
                 'email_from': email,
-                'email_to': request.website.email or 'contact@sinistre-services.fr',
+                'email_to': request.website.company_id.email or 'contact@sinistre-services.fr',
             }
             request.env['mail.mail'].sudo().create(mail_vals).send()
         except Exception as e:
@@ -457,8 +491,8 @@ class SinistreWebsite(http.Controller):
                     'subject': '[Sinistre Services] Demande de rappel',
                     'body_html': f'<p><strong>Nom :</strong> {name or "Non renseigné"}</p>'
                                  f'<p><strong>Téléphone :</strong> {phone}</p>',
-                    'email_from': request.website.email or 'contact@sinistre-services.fr',
-                    'email_to': request.website.email or 'contact@sinistre-services.fr',
+                    'email_from': request.website.company_id.email or 'contact@sinistre-services.fr',
+                    'email_to': request.website.company_id.email or 'contact@sinistre-services.fr',
                 }
                 request.env['mail.mail'].sudo().create(mail_vals).send()
             except Exception as e:
@@ -616,7 +650,7 @@ class SinistreWebsite(http.Controller):
                     <p><i>Documents disponibles dans le back-office → Annuaire → Candidatures.</i></p>
                 """,
                 'email_from': email,
-                'email_to': request.website.email or 'artisans@sinistre-services.fr',
+                'email_to': request.website.company_id.email or 'artisans@sinistre-services.fr',
             }
             request.env['mail.mail'].sudo().create(mail_vals).send()
         except Exception as e:

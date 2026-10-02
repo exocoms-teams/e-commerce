@@ -13,6 +13,7 @@
                     <button name="action_terminer" string="Clôturer" type="object" class="btn-success" invisible="state not in ('travaux_en_cours','en_cours','devis_refuse')"/>
                     <button name="action_creer_facture_assurance" string="Facturer Assurance" type="object" class="btn-secondary" invisible="state != 'termine' or source != 'assurance' or facture_assurance_id"/>
                     <button name="action_creer_facture_client" string="Facturer Reste à Charge" type="object" class="btn-secondary" invisible="state not in ('termine','facture') or reste_a_charge &lt;= 0 or facture_client_id"/>
+                    <button name="action_relancer_proposition" string="Reproposer aux artisans" type="object" class="btn-warning" invisible="state != 'nouveau' or intervenant_id"/>
                     <button name="action_annuler" string="Annuler" type="object" invisible="state in ('clos','annule','facture')"/>
                     <button name="%(action_sinistre_note_wizard)d" string="Note interne" type="action" class="btn-secondary"/>
                     <button name="%(action_sinistre_message_wizard)d" string="Message plateforme" type="action" class="btn-secondary"/>
@@ -42,6 +43,7 @@
                         </group>
                         <group string="Dates">
                             <field name="date_reception"/>
+                            <field name="sans_reponse" invisible="not sans_reponse"/>
                             <field name="date_rdv"/>
                             <field name="date_debut_travaux" readonly="1"/>
                             <field name="date_cloture" readonly="1"/>
@@ -78,6 +80,20 @@
                     <notebook>
                         <page string="Description">
                             <field name="description_sinistre" placeholder="Décrivez le sinistre..."/>
+                        </page>
+                        <page string="Propositions">
+                            <field name="proposition_ids" readonly="1">
+                                <list decoration-warning="state == 'en_attente'"
+                                      decoration-success="state == 'accepte'"
+                                      decoration-muted="state in ('expire','annule')"
+                                      decoration-danger="state == 'refuse'">
+                                    <field name="intervenant_id"/>
+                                    <field name="date_envoi"/>
+                                    <field name="date_limite"/>
+                                    <field name="date_reponse"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
                         </page>
                         <page string="Financier">
                             <group string="Estimation (visible artisan avant acceptation)">
