@@ -1046,7 +1046,7 @@ absente jusqu'ici de `variables.css` — le reste de la palette
 `--ch-green`) existait déjà et correspond exactement aux couleurs
 demandées, réutilisée telle quelle.
 
-## Pages Entreprise — À propos, Le concept, Contact natif (v19.0.1.0.47, contact intégré en v19.0.1.0.106)
+## Pages Entreprise — À propos, Le concept, Contact natif (v19.0.1.0.47, contact intégré en v19.0.1.0.105)
 
 Les liens de la colonne "Entreprise" du footer mènent maintenant à de
 vraies pages, livrées d'après une maquette fournie par le client :
@@ -1064,7 +1064,7 @@ vraies pages, livrées d'après une maquette fournie par le client :
   stylisée en contour pointillé avec libellés superposés).
 - **Contact** : tous les liens pointent vers `/contactus`, dont le
   formulaire et le contenu restent natifs au module `website`. Depuis la
-  v19.0.1.0.106, une vue héritée ajoute le fil d'Ariane et réutilise la
+  v19.0.1.0.105, une vue héritée ajoute le fil d'Ariane et réutilise la
   navigation Entreprise ; le formulaire n'est ni remplacé ni dupliqué.
 
 Nav en onglets "pills" partagée par les pages (`entreprise_nav.xml`),

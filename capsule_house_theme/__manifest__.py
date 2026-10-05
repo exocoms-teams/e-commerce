@@ -8,7 +8,7 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.106',
+    'version': '19.0.1.0.105',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
@@ -102,7 +102,7 @@ Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gamme
         'views/pages/aide_faq.xml',
         # Pages Entreprise : la vue héritée du contact conserve le
         # formulaire natif website.contactus, mais ajoute la navigation
-        # partagée et le fil d'Ariane (19.0.1.0.106).
+        # partagée et le fil d'Ariane (19.0.1.0.105).
         'views/partials/entreprise_nav.xml',
         'views/pages/entreprise_apropos.xml',
         'views/pages/entreprise_concept.xml',

@@ -131,8 +131,8 @@
                 bundle à partir de ce point, y compris nos règles .ch-* pourtant
                 bien enregistrées.
 
-                On charge donc aussi nos 5 fichiers CSS directement en <link>
-                individuels : chacun est un fichier complet et valide en soi,
+                On charge donc aussi les feuilles CSS du thème directement en
+                <link> individuels : chacune est un fichier complet et valide en soi,
                 servi tel quel par Odoo (fichier statique du module), donc
                 totalement indépendant du bundle partagé et de son bug — notre
                 thème s'affiche correctement quel que soit l'état de ce bundle.
@@ -141,7 +141,7 @@
                 README), pour invalider le cache navigateur à chaque mise à jour.
             -->
             <t t-set="ch_theme_version" t-value="request.env['ir.module.module'].sudo().search([('name', '=', 'capsule_house_theme')], limit=1).installed_version or '1'"/>
-            <t t-foreach="['variables.css', 'base.css', 'layout.css', 'homepage.css', 'shop.css', 'odoo-integration.css']" t-as="ch_css_file">
+            <t t-foreach="['variables.css', 'base.css', 'layout.css', 'homepage.css', 'shop.css', 'odoo-integration.css', 'pages.css']" t-as="ch_css_file">
                 <link rel="stylesheet" t-attf-href="/capsule_house_theme/static/src/css/#{ch_css_file}?v=#{ch_theme_version}"/>
             </t>
         </xpath>

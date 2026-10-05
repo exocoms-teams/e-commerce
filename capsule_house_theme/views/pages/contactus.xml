@@ -3,6 +3,118 @@
     <template id="contactus_theme_inherit"
               name="Capsule House - Navigation du contact natif"
               inherit_id="website.contactus">
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="class" add="ch-contact-page" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@id='wrap']/section[1]" position="attributes">
+            <attribute name="class" add="ch-contact-hero" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@id='wrap']/section[hasclass('s_text_block')]" position="attributes">
+            <attribute name="class" add="ch-contact-content" separator=" "/>
+        </xpath>
+        <xpath expr="//section[hasclass('ch-contact-hero')]//div[hasclass('container')]/h1" position="before">
+            <p class="ch-contact-eyebrow" t-if="request.env.lang == 'fr_FR'">Capsule House · Contact</p>
+            <p class="ch-contact-eyebrow" t-if="request.env.lang != 'fr_FR'">Capsule House · Get in touch</p>
+        </xpath>
+        <xpath expr="//section[hasclass('ch-contact-hero')]//div[hasclass('container')]/h1" position="after">
+            <p class="ch-contact-hero-lead" t-if="request.env.lang == 'fr_FR'">Un lieu à imaginer, un projet à partager. Échangeons autour de votre futur pod.</p>
+            <p class="ch-contact-hero-lead" t-if="request.env.lang != 'fr_FR'">A space to imagine, a project to share. Let's talk about your future pod.</p>
+        </xpath>
+        <xpath expr="//section[hasclass('s_text_block')]//div[hasclass('col-lg-7')]/p[hasclass('lead')]" position="replace">
+            <div class="ch-contact-form-intro" t-if="request.env.lang == 'fr_FR'">
+                <span class="ch-contact-section-label">Un échange personnalisé</span>
+                <h2>Parlons de votre projet</h2>
+                <p>Quelques détails sur vos envies et votre espace nous aideront à vous conseiller avec justesse.</p>
+            </div>
+            <div class="ch-contact-form-intro" t-if="request.env.lang != 'fr_FR'">
+                <span class="ch-contact-section-label">A personal conversation</span>
+                <h2>Let's discuss your project</h2>
+                <p>A few details about your plans and space will help us offer thoughtful guidance.</p>
+            </div>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//textarea/ancestor::div[hasclass('s_website_form_field')]//span[hasclass('s_website_form_label_content')]" position="replace">
+            <span class="s_website_form_label_content" t-if="request.env.lang == 'fr_FR'">Message</span>
+            <span class="s_website_form_label_content" t-if="request.env.lang != 'fr_FR'">Message</span>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//a[hasclass('s_website_form_send')]" position="inside">
+            <span class="ch-contact-send-label" t-if="request.env.lang == 'fr_FR'">Envoyer le message</span>
+            <span class="ch-contact-send-label" t-if="request.env.lang != 'fr_FR'">Send message</span>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//a[hasclass('s_website_form_send')]" position="attributes">
+            <attribute name="t-att-aria-label">'Envoyer le message' if request.env.lang == 'fr_FR' else 'Send message'</attribute>
+        </xpath>
+        <xpath expr="//section[hasclass('s_text_block')]//div[hasclass('col-lg-4', 'offset-lg-1')]" position="replace">
+            <div class="col-lg-4 offset-lg-1 mt-4 mt-lg-0 ch-contact-aside" t-if="request.env.lang == 'fr_FR'">
+                <div class="ch-contact-info-card">
+                    <span class="ch-contact-info-eyebrow">Capsule House</span>
+                    <h2>Un projet unique mérite une attention particulière.</h2>
+                    <p>Du choix du modèle à son installation, échangeons sur les détails qui feront la différence.</p>
+                    <div class="ch-contact-proof">
+                        <div class="ch-contact-proof-item">
+                            <i class="fa fa-check"/>
+                            <span>Un échange dédié à votre projet</span>
+                        </div>
+                        <div class="ch-contact-proof-item">
+                            <i class="fa fa-check"/>
+                            <span>Des conseils sur le choix du modèle</span>
+                        </div>
+                        <div class="ch-contact-proof-item">
+                            <i class="fa fa-check"/>
+                            <span>Un accompagnement de la conception à l'installation</span>
+                        </div>
+                    </div>
+                    <address class="ch-contact-details">
+                        <div class="ch-contact-detail">
+                            <span class="ch-contact-detail-icon"><i class="fa fa-map-marker" aria-hidden="true"/></span>
+                            <div><span class="ch-contact-detail-label">Adresse</span><span>58 Rue de Monceau<br/>75008 Paris</span></div>
+                        </div>
+                        <div class="ch-contact-detail">
+                            <span class="ch-contact-detail-icon"><i class="fa fa-phone" aria-hidden="true"/></span>
+                            <div><span class="ch-contact-detail-label">Téléphone</span><a href="tel:+33184793755">01 84 79 37 55</a></div>
+                        </div>
+                        <div class="ch-contact-detail">
+                            <span class="ch-contact-detail-icon"><i class="fa fa-envelope" aria-hidden="true"/></span>
+                            <div><span class="ch-contact-detail-label">E-mail</span><a href="mailto:contact@capsule-house.fr">contact@capsule-house.fr</a></div>
+                        </div>
+                    </address>
+                </div>
+            </div>
+            <div class="col-lg-4 offset-lg-1 mt-4 mt-lg-0 ch-contact-aside" t-if="request.env.lang != 'fr_FR'">
+                <div class="ch-contact-info-card">
+                    <span class="ch-contact-info-eyebrow">Capsule House</span>
+                    <h2>A unique project deserves personal attention.</h2>
+                    <p>From choosing your model to installation, let's discuss the details that make the difference.</p>
+                    <div class="ch-contact-proof">
+                        <div class="ch-contact-proof-item">
+                            <i class="fa fa-check"/>
+                            <span>A conversation focused on your project</span>
+                        </div>
+                        <div class="ch-contact-proof-item">
+                             <i class="fa fa-check"/>
+                            <span>Guidance in choosing your model</span>
+                        </div>
+                        <div class="ch-contact-proof-item">
+                            <i class="fa fa-check"/>
+                            <span>Support from concept to installation</span>
+                        </div>
+                    </div>
+                    <address class="ch-contact-details">
+                        <div class="ch-contact-detail">
+                            <span class="ch-contact-detail-icon"><i class="fa fa-map-marker" aria-hidden="true"/></span>
+                            <div><span class="ch-contact-detail-label">Address</span><span>58 Rue de Monceau<br/>75008 Paris, France</span></div>
+                        </div>
+                        <div class="ch-contact-detail">
+                            <span class="ch-contact-detail-icon"><i class="fa fa-phone" aria-hidden="true"/></span>
+                            <div><span class="ch-contact-detail-label">Phone</span><a href="tel:+33184793755">+33 1 84 79 37 55</a></div>
+                        </div>
+                        <div class="ch-contact-detail">
+                            <span class="ch-contact-detail-icon"><i class="fa fa-envelope" aria-hidden="true"/></span>
+                            <div><span class="ch-contact-detail-label">Email</span><a href="mailto:contact@capsule-house.fr">contact@capsule-house.fr</a></div>
+                        </div>
+                    </address>
+                </div>
+            </div>
+        </xpath>
         <xpath expr="//div[@id='wrap']/*[1]" position="before">
             <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
                 <a href="/">Accueil</a>

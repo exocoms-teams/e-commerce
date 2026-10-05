@@ -49,6 +49,7 @@ THEME_ASSETS = {
     'odoo-integration.css': 'capsule_house_theme/static/src/css/odoo-integration.css',
     'pages.css': 'capsule_house_theme/static/src/css/pages.css',
     'legal.css': 'capsule_house_theme/static/src/css/legal.css',
+    'contact.css': 'capsule_house_theme/static/src/css/contact.css',
     'main.js': 'capsule_house_theme/static/src/js/main.js',
 }
 
