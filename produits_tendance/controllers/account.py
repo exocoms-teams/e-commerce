@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import http
 from odoo.http import request
+from werkzeug.exceptions import NotFound
 
 class AccountController(http.Controller):
 
@@ -27,6 +28,7 @@ class AccountController(http.Controller):
 
     @http.route(['/compte/profil'], type='http', auth='user', website=True, methods=['GET', 'POST'])
     def account_profile(self, **post):
+        self._check_website()
         user = request.env.user
         values = {
             'user': user,
@@ -54,7 +56,9 @@ class AccountController(http.Controller):
         '/compte/export',
         '/compte/aide'
     ], type='http', auth='user', website=True)
+
     def account_coming_soon(self, **kw):
+        self._check_website()
         path = request.httprequest.path.split('/')[-1]
         labels = {
             'parametres': 'Paramètres',
@@ -70,3 +74,7 @@ class AccountController(http.Controller):
             'page_title': labels.get(path, 'Espace Compte'),
         }
         return request.render('produits_tendance.account_coming_soon_page', values)
+
+    def _check_website(self):
+        if not request.website or request.website.name != "Winners":
+            raise NotFound()

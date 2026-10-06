@@ -7,10 +7,16 @@ from odoo.http import request
 from ..collecte_scrapers.ebay_ingestor import run_ingestion_for_keyword
 from ..collecte_scrapers.meta_ingestor import run_meta_ingestion
 from .dashboard_api import TrendDashboardAPI
+from odoo.addons.website.controllers.main import Website
+from werkzeug.exceptions import NotFound
 
 # -----------------------------------------------------------
 # 1. CONTROLEUR DU FORMULAIRE WEB (Frontend)
 # -----------------------------------------------------------
+def require_winners_website():
+    if not request.website or request.website.name != "Winners":
+        raise NotFound()
+
 class TrendSubmissionController(http.Controller):
 
     @http.route('/submit-trend', type='http', auth='public', website=True)
@@ -395,9 +401,6 @@ class TrendStaticPagesController(http.Controller):
 
     # --- PAGES LEGALES (Lien depuis le Footer) ---
     # Route de la Home Page
-    @http.route('/', type='http', auth='public', website=True)
-    def winners_home(self, **kwargs):
-        return request.render('produits_tendance.winners_home_page', {})
     
     @http.route('/mentions-legales', type='http', auth='public', website=True)
     def mentions_legales(self, **kwargs):
@@ -434,4 +437,16 @@ class TrendStaticPagesController(http.Controller):
 
     @http.route('/analytics', type='http', auth='user', website=True)
     def page_analytics(self, **kwargs):
-        return request.render('produits_tendance.template_empty_analytics', {})   
+        return request.render('produits_tendance.template_empty_analytics', {})
+
+class WinnersWebsite(Website):
+
+    @http.route()
+    def index(self, **kwargs):
+        if request.website and request.website.name == "Winners":
+            return request.render(
+                "produits_tendance.winners_home_page",
+                {},
+            )
+
+        return super().index(**kwargs)  
