@@ -673,11 +673,101 @@ img { max-width: 100%; display: block; }
   flex-wrap: wrap;
 }
 
+/* Services page */
+.mn-home-services {
+  background: #F1F5F9;
+  padding: 72px 0;
+}
+
+.mn-home-services__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  background: linear-gradient(120deg, #0B0F19 0%, #122A65 100%);
+  border: 1px solid rgba(96, 165, 250, .25);
+  border-radius: var(--mn-radius-lg);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, .18);
+  padding: 48px 52px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mn-home-services__inner::after {
+  background: radial-gradient(circle, rgba(59, 130, 246, .32) 0%, transparent 68%);
+  content: '';
+  height: 300px;
+  pointer-events: none;
+  position: absolute;
+  right: -105px;
+  top: -145px;
+  width: 300px;
+}
+
+.mn-services-band__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.mn-home-services h2 {
+  color: #FFFFFF;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 12px 0 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.mn-home-services p { color: #CBD5E1; max-width: 680px; position: relative; z-index: 1; }
+.mn-home-services .mn-eyebrow { position: relative; z-index: 1; }
+.mn-home-services__button { flex: 0 0 auto; min-width: 220px; position: relative; z-index: 1; }
+
+.mn-services-hero {
+  background: #0B0F19;
+  color: #FFFFFF;
+  overflow: hidden;
+  padding: 130px 0 110px;
+  position: relative;
+  text-align: center;
+}
+
+.mn-services-hero__inner { max-width: 840px; position: relative; z-index: 1; }
+.mn-services-hero h1 { font-size: 56px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; margin: 18px 0 22px; }
+.mn-services-hero h1 span { color: #60A5FA; }
+.mn-services-hero p { color: #CBD5E1; font-size: 19px; line-height: 1.65; margin: 0 auto 34px; max-width: 690px; }
+
+.mn-eyebrow--light { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.16); color: #BFDBFE; }
+.mn-services { background: linear-gradient(180deg, #F8FAFC 0%, #EEF2F6 100%); }
+.mn-services__grid { display: grid; gap: 24px; grid-template-columns: repeat(4, 1fr); }
+
+.mn-service-card {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: var(--mn-radius);
+  box-shadow: var(--glass-shadow);
+  padding: 30px 26px;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.mn-service-card:hover { box-shadow: var(--glass-shadow-hover); transform: translateY(-6px); }
+.mn-service-card__icon { align-items: center; background: rgba(37, 99, 235, .1); border-radius: 14px; color: var(--mn-blue); display: flex; height: 48px; justify-content: center; margin-bottom: 22px; width: 48px; }
+.mn-service-card__icon svg { height: 25px; width: 25px; }
+.mn-service-card h3 { color: var(--mn-dark); font-size: 20px; font-weight: 750; margin-bottom: 12px; }
+.mn-service-card p { color: var(--mn-gray-500); font-size: 15px; line-height: 1.65; }
+
+.mn-services-band { background: linear-gradient(135deg, #0B0F19 0%, #1E3A8A 100%); color: #FFFFFF; padding: 70px 0; }
+.mn-services-band h2 { font-size: 34px; font-weight: 800; letter-spacing: -.02em; margin: 14px 0 8px; }
+.mn-services-band p { color: #BFDBFE; }
+
 /* Responsive Design */
 @media(max-width: 1024px) {
   .mn-hero__title { font-size: 44px; }
   .mn-products__grid { grid-template-columns: repeat(2, 1fr); }
   .mn-grid--3 { grid-template-columns: 1fr; }
+  .mn-services__grid { grid-template-columns: repeat(2, 1fr); }
   .mn-cta__inner h2 { font-size: 36px; }
 }
 
@@ -688,5 +778,15 @@ img { max-width: 100%; display: block; }
   .mn-hero__title { font-size: 36px; }
   .mn-stats__grid { grid-template-columns: repeat(2, 1fr); }
   .mn-products__grid { grid-template-columns: 1fr; }
+  .mn-services__grid { grid-template-columns: 1fr; }
+  .mn-home-services { padding: 48px 0; }
+  .mn-home-services__inner { align-items: stretch; margin: 0 18px; padding: 34px 26px; text-align: center; }
+  .mn-home-services__inner, .mn-services-band__inner { flex-direction: column; }
+  .mn-home-services h2 { font-size: 28px; }
+  .mn-home-services__button { min-width: 0; width: 100%; }
+  .mn-services-band__inner { align-items: flex-start; }
+  .mn-services-hero { padding: 105px 0 85px; }
+  .mn-services-hero h1 { font-size: 38px; }
+  .mn-services-hero p { font-size: 17px; }
   .mn-section__header h2 { font-size: 32px; }
 }

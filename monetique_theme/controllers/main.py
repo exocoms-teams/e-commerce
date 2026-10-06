@@ -7,3 +7,7 @@ class Monetique(http.Controller):
     @http.route('/', type='http', auth='public', website=True, sitemap=True)
     def home(self, **kw):
         return request.render('monetique_theme.page_home', {})
+
+    @http.route('/services', type='http', auth='public', website=True, sitemap=True)
+    def services(self, **kw):
+        return request.render('monetique_theme.page_services', {})
