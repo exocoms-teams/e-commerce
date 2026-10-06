@@ -21,6 +21,14 @@ rendez-vous illicites ont été supprimés (`.ch-aide-title` en H1 sur des `<h2>
 questions de FAQ en `<h3>` affichées à la taille du paragraphe). Voir §3.1, §3.2
 et §4.1.
 
+**Intégration de `/contactus`.** Le template et le formulaire restent natifs à
+`website.contactus`. La vue héritée garde leurs classes et leur comportement,
+ajoute le fil d'Ariane et la navigation Entreprise, puis adapte le titre,
+l'introduction et la carte de contact. Les coordonnées configurées sur la
+société du site priment ; les champs vides reprennent les coordonnées déjà
+publiées dans les mentions légales. Le style des contrôles et états d'envoi
+reste séparé dans `odoo-integration.css`.
+
 ---
 
 ## 1. Couleurs — palette officielle (hex)
@@ -215,16 +223,21 @@ principal de la page, « H2 » / « H3 » ceux des sections et sous-blocs.
 | **Nos gammes** — détail (`nos_gammes.xml`) | `pages.css` | `--fs-h1` | `--fs-h2` | `--fs-h3` / `--fs-body` | ✓ |
 | **Entreprise — Concept** (`entreprise_concept.xml`) | `pages.css` | `--fs-h1` | `--fs-h2` | `--fs-h3` | ✓ |
 | **Entreprise — À propos** (`entreprise_apropos.xml`) | `pages.css` | `--fs-h1` | `--fs-h2` | `--fs-h3` | ✓ |
+| **Entreprise — Contact** (`contactus.xml`, natif) | `contact.css` | `--fs-h1` | `--fs-h2` | `--fs-body` | ✓ |
 | **Aide — Garantie / FAQ / Retours / Livraison** | `pages.css` | `--fs-h1` | `--fs-h2` | `--fs-h3` / `--fs-body` | ✓ |
 | **Avis** (`avis.xml`) | `pages.css` | `--fs-h1` | `--fs-h2` | `--fs-h3` / `--fs-body` | ✓ `--fs-72` score, `--ch-amber` étoiles |
 | **Pages légales** (`mentions_legales`, `cgv`, `confidentialite`) | `legal.css` | `--fs-h1` | `--fs-h2` | `--fs-body` | ✓ |
 | **Intégration Odoo / formulaires / portail / checkout** | `odoo-integration.css` | inherited | inherited | `--fs-h3` | ✓ |
 | **Devis** (`devis_template.xml`) | (base) | inherited | inherited | inherited | ✓ via `base.css` |
 
-La page `/contactus` conserve le template et le formulaire natifs d'Odoo ;
-une vue héritée ajoute le fil d'Ariane et la navigation Entreprise, et
-`odoo-integration.css` habille les contrôles du formulaire. Les autres pages
-Odoo natives (fiche produit, panier, checkout, `/my/*`) récupèrent l'échelle
+La page `/contactus` conserve son template et le snippet de formulaire natifs
+d'Odoo. La vue héritée (`views/pages/contactus.xml`) ajoute le fil d'Ariane,
+la navigation Entreprise et la structure de présentation bilingue ; la carte
+de contact lit les coordonnées de `res_company` au rendu et utilise les
+coordonnées publiées dans les mentions légales en secours. `contact.css` gère
+le hero, les surfaces des cartes et leur comportement responsive ;
+`odoo-integration.css` reste responsable des contrôles et états du formulaire.
+Les autres pages Odoo natives (fiche produit, panier, checkout, `/my/*`) récupèrent l'échelle
 par les règles élément `h1`/`h2`/`h3`/`p` de `base.css`.
 
 ### 4.1 Écarts corrigés en 19.0.1.0.105 — hiérarchie des titres
@@ -303,8 +316,30 @@ Second passage, sur la même version :
 - `h4` / `h5` / `h6` : hors échelle, héritent du paragraphe (voir §3.2).
 - `.ch-aide-faq-category` (12px capitales) : sur-titre de groupe au-dessus des
   questions, pas un niveau de titre — même rôle que `.ch-avis-section-eyebrow`.
+- `/contactus` utilise `--fs-h1` / `--fs-h2` / `--fs-body` comme les autres
+  pages ; le formulaire conserve ses libellés et son comportement natifs.
 - `--fs-30` / `--fs-34` / `--fs-26` / `--fs-21` : plus référencés par le thème,
   conservés dans `variables.css` pour compatibilité.
+
+### 4.3 `/contactus` — présentation du contact et formulaire natif
+
+`website.contactus` reste la source du formulaire `s_website_form` : action,
+champs, validation et retour d'envoi restent gérés par Odoo. La vue héritée
+`views/pages/contactus.xml` conserve cette structure et :
+
+- ajoute le fil d'Ariane et la navigation Entreprise ;
+- présente une invitation bilingue à parler au responsable du site ;
+- remplace le texte de présentation par une introduction claire au formulaire ;
+- affiche l'adresse, l'e-mail et le téléphone de la société courante, avec
+  des liens `mailto:` et `tel:` ; si un champ de la société est vide, elle
+  reprend les informations déjà publiées dans les mentions légales.
+
+`contact.css` est chargé après les feuilles de base et de pages, mais ses
+sélecteurs sont tous préfixés par `#wrapwrap #wrap.ch-contact-page` : la grille
+et les cartes ne modifient donc que `/contactus` sur Capsule House. Les champs,
+erreurs et états d'envoi restent ciblés séparément par `#contactus_form` dans
+`odoo-integration.css`. Sur mobile, la grille Bootstrap empile le formulaire et
+la carte latérale ; les paddings sont réduits sous 560 px.
 
 ---
 

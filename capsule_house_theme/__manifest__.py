@@ -15,7 +15,7 @@
 
 Ce module ne doit jamais impacter les autres sites de la base partagée : pas d'assets globaux (le CSS/JS est enregistré dynamiquement via ir.asset scopé website_id), et tous les hooks retrouvent notre site uniquement via son id mémorisé (ir.config_parameter), jamais par nom.
 
-Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gammes (détail par gamme sur /nos-gammes/<slug>, pas d'index séparé), Boutique, Avis clients (/avis), Aide (Livraison /livraison, Retours /retours, Garantie /garantie, FAQ /faq), Entreprise (À propos /a-propos, Le concept /le-concept, Contact natif Odoo /contactus), pages légales (Mentions légales /mentions-legales, CGV /cgv, Confidentialité /confidentialite). Le formulaire de contact reste celui d'Odoo et reçoit uniquement les éléments de navigation et le style du thème. /nos-modeles a existé de la 19.0.1.0.67 à la 19.0.1.0.75 puis a été retirée (redirect vers l'accueil conservé).
+Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gammes (détail par gamme sur /nos-gammes/<slug>, pas d'index séparé), Boutique, Avis clients (/avis), Aide (Livraison /livraison, Retours /retours, Garantie /garantie, FAQ /faq), Entreprise (À propos /a-propos, Le concept /le-concept, Contact /contactus), pages légales (Mentions légales /mentions-legales, CGV /cgv, Confidentialité /confidentialite). La page Contact garde le formulaire natif d'Odoo ; le thème affiche les coordonnées de la société configurée, avec les coordonnées Capsule House des mentions légales en valeurs de secours. /nos-modeles a existé de la 19.0.1.0.67 à la 19.0.1.0.75 puis a été retirée (redirect vers l'accueil conservé).
 """,
     'author': 'Exocoms Group',
     'website': 'https://capsule-house.fr',
@@ -102,7 +102,8 @@ Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gamme
         'views/pages/aide_faq.xml',
         # Pages Entreprise : la vue héritée du contact conserve le
         # formulaire natif website.contactus, mais ajoute la navigation
-        # partagée et le fil d'Ariane (19.0.1.0.105).
+        # partagée et le fil d'Ariane (19.0.1.0.105), puis ajoute une
+        # introduction et une carte de contact autour du formulaire natif.
         'views/partials/entreprise_nav.xml',
         'views/pages/entreprise_apropos.xml',
         'views/pages/entreprise_concept.xml',

@@ -438,7 +438,6 @@ a.o_wish_rm {
    autorise (comme .ch-avis-textarea). */
 #contactus_form textarea.form-control {
     resize: vertical;
-    min-height: 160px;
 }
 
 /* --- MESSAGES D'ERREUR -----------------------------------------
@@ -514,54 +513,15 @@ a.o_wish_rm {
 }
 
 /* --- BOUTON D'ENVOI --------------------------------------------
-   `<a class="btn btn-primary s_website_form_send">`. On le rend
-   identique a .ch-btn-cta (base.css), valeurs recopiees a la
-   lettre : on ne peut pas ajouter la classe .ch-btn-cta au
-   template natif, le module ne doit pas modifier /contactus. Si
-   .ch-btn-cta evolue, resynchroniser ici.
-
-   Specificite (0,2,0) > .btn-primary global (0,1,0) et
-   > .btn.btn-primary (0,2,0) par ordre de cascade : ces
-   regles viennent apres dans le fichier, donc elles l'emportent,
-   sans !important. */
-#contactus_form .s_website_form_send,
-#contactus_form a.btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 20px;
-    font-family: var(--font-body);
-    font-size: var(--fs-14);
-    font-weight: 700;
-    color: var(--ch-white);
+   Le template ajoute deja .ch-btn-cta ; seules les couleurs du
+   bouton Contact diffèrent de ce style partagé. */
+#contactus_form .s_website_form_send {
     background: var(--ch-ink);
     border: 2px solid var(--ch-ink);
-    border-radius: var(--r-pill);
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-    text-decoration: none;
-    transition: all var(--transition);
 }
-/* Le snippet Odoo applique .text-end sur .s_website_form_submit ;
-   les libelles etant desormais empiles a gauche, le bouton doit
-   s'aligner sur les champs, pas flotter a droite. */
-#contactus_form .s_website_form_submit {
-    text-align: left;
-}
-#contactus_form .s_website_form_send:hover,
-#contactus_form a.btn-primary:hover {
-    color: var(--ch-white);
+#contactus_form .s_website_form_send:hover {
     background: var(--ch-ink-soft);
     border-color: var(--ch-ink-soft);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    text-decoration: none;
-}
-#contactus_form .s_website_form_send:focus-visible,
-#contactus_form a.btn-primary:focus-visible {
-    outline: 3px solid var(--ch-ink);
-    outline-offset: 3px;
 }
 /* ========================================
    ALERTES (messages panier/checkout/portail)
@@ -628,19 +588,13 @@ a.o_wish_rm {
    règle globale ne s'applique QUE là où rien de plus spécifique
    n'existe déjà — donc uniquement sur les pages natives non couvertes,
    sans risque de régression sur le reste du site. */
-.btn-primary,
-.btn.btn-primary,
-a.btn-primary,
-button.btn-primary {
+.btn-primary {
     background: var(--ch-terracotta);
     border-color: var(--ch-terracotta);
     color: var(--ch-white);
 }
 
-.btn-primary:hover,
-.btn.btn-primary:hover,
-a.btn-primary:hover,
-button.btn-primary:hover {
+.btn-primary:hover {
     background: var(--ch-terracotta-mid);
     border-color: var(--ch-terracotta-mid);
     color: var(--ch-white);

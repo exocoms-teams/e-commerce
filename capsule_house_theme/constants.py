@@ -85,8 +85,8 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.aide_retours_page',
     'capsule_house_theme.aide_garantie_page',
     'capsule_house_theme.aide_faq_page',
-    # Pages Entreprise. contactus_theme_inherit hérite du template natif
-    # website.contactus et ne remplace pas son formulaire.
+    # Pages Entreprise. contactus_theme_inherit enrichit la présentation du
+    # template website.contactus sans remplacer son formulaire natif.
     'capsule_house_theme.entreprise_nav',
     'capsule_house_theme.entreprise_apropos_page',
     'capsule_house_theme.entreprise_concept_page',
