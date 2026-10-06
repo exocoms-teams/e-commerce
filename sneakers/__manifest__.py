@@ -1,6 +1,6 @@
 {
     'name': 'Sneakers',
-    'version': '19.0.1.0.8',
+    'version': '19.0.1.0.9',
     'category': 'Website',
     'author': 'Exocoms',
     'license': 'LGPL-3',
