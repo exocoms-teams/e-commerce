@@ -2,19 +2,16 @@
 <odoo>
     <!--
         Navigation en onglets "pills" partagée par les pages Entreprise
-        (À propos, Le concept) — pendant du menu latéral aide_sidebar.xml
+        (À propos, Le concept et le contact natif) — pendant du menu latéral aide_sidebar.xml
         pour les pages Aide, même principe : bloc réutilisable t-call-é
         depuis chaque page, état actif calculé DYNAMIQUEMENT depuis l'URL
         réelle (request.httprequest.path, comparaison par suffixe — même
         technique que aide_sidebar.xml et [href$="/shop"], v19.0.1.0.40),
         jamais codé en dur par page.
 
-        "Contact" ne pointe PAS vers une page à nous : c'est la page de
-        contact NATIVE d'Odoo (/contactus, module website — vérifiée dans
-        exocoms_theme, qui l'utilise aussi tel quel). Cet onglet n'est
-        donc jamais marqué actif depuis ce bloc (si on est réellement sur
-        /contactus, ce n'est pas une de nos pages, donc ce partiel n'y est
-        de toute façon pas affiché).
+        "Contact" pointe vers la page native Odoo (/contactus). Le
+        formulaire reste natif ; seule sa présentation reçoit la nav
+        partagée via une vue héritée.
 
         Scopée à notre site via _scope_layout_views() (external id
         capsule_house_theme.entreprise_nav).
@@ -36,7 +33,12 @@
                t-attf-class="ch-entreprise-pill #{'active' if ch_ent_path.endswith('/le-concept') else ''}"
                t-if="request.env.lang != 'fr_FR'">The concept</a>
 
-            <a href="/contactus" class="ch-entreprise-pill">Contact</a>
+            <a href="/contactus"
+               t-attf-class="ch-entreprise-pill #{'active' if ch_ent_path.endswith('/contactus') else ''}"
+               t-if="request.env.lang == 'fr_FR'">Contact</a>
+            <a href="/contactus"
+               t-attf-class="ch-entreprise-pill #{'active' if ch_ent_path.endswith('/contactus') else ''}"
+               t-if="request.env.lang != 'fr_FR'">Contact</a>
         </nav>
     </template>
 </odoo>

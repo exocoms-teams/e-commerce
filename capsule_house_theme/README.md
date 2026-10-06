@@ -1046,7 +1046,7 @@ absente jusqu'ici de `variables.css` — le reste de la palette
 `--ch-green`) existait déjà et correspond exactement aux couleurs
 demandées, réutilisée telle quelle.
 
-## Pages Entreprise — À propos, Le concept, Contact natif (v19.0.1.0.47)
+## Pages Entreprise — À propos, Le concept, Contact natif (navigation en v19.0.1.0.105)
 
 Les liens de la colonne "Entreprise" du footer mènent maintenant à de
 vraies pages, livrées d'après une maquette fournie par le client :
@@ -1062,20 +1062,19 @@ vraies pages, livrées d'après une maquette fournie par le client :
   terrain" (matériaux/fabrication/contrôle qualité/transport & pose),
   schéma "Coupe technique" (même illustration SVG que le hero,
   stylisée en contour pointillé avec libellés superposés).
-- **Contact : décision explicite du client — "tout les contact de mes
-  pages doive etre dirigé vers la pages contacts native odoo"**. Ce
-  module ne construit AUCUNE page de contact. Tous les liens "Contact"
-  du site (nav en pills `entreprise_nav.xml`, colonne "Entreprise" du
-  footer, bouton "Contacter le service client" de `/retours`) pointent
-  vers `/contactus`, la page de contact native du module `website`
-  (déjà dans les dépendances de ce thème) — confirmée par le code local
-  d'`exocoms_theme` qui l'utilise aussi tel quel (`footer.xml`).
+- **Contact** : tous les liens pointent vers `/contactus`, dont le
+  formulaire reste natif au module `website`. Depuis la v19.0.1.0.105,
+  une vue héritée ajoute le fil d'Ariane et réutilise la navigation
+  Entreprise ; elle enrichit aussi le hero, l'introduction
+  du formulaire et la carte de contact. Les coordonnées configurées sur la
+  société associée au site sont prioritaires ; les valeurs de secours
+  reprennent les mentions légales Capsule House.
 
-Nav en onglets "pills" partagée par les 2 pages (`entreprise_nav.xml`),
+Nav en onglets "pills" partagée par les pages (`entreprise_nav.xml`),
 même principe que `aide_sidebar.xml` : état actif calculé dynamiquement
-depuis l'URL réelle, jamais codé en dur par page. L'onglet "Contact" de
-cette nav n'est jamais marqué actif (il ne pointe pas vers une page à
-nous). Contenu bilingue FR/EN, même convention que le reste du thème.
+depuis l'URL réelle, jamais codé en dur par page. L'onglet "Contact" est
+actif sur `/contactus`. Contenu bilingue FR/EN, même convention que le
+reste du thème.
 CSS (`.ch-entreprise-*` dans `pages.css`) réutilise volontairement les
 classes `.ch-aide-*` existantes (titre, sous-titre, cartes, tableau)
 plutôt que dupliquer un système parallèle.
@@ -1087,6 +1086,28 @@ nouvelle couleur : la palette existante (`--ch-panel`, `--ch-ink`,
 `--ch-terracotta`, `--ch-fog`, `--ch-tan-1`) couvre entièrement le
 brief — ce brief-ci ne demandait d'ailleurs pas de rouge (contrairement
 aux pages Aide).
+
+### Intégration de `/contactus`
+
+La page conserve le template et le formulaire natifs de `website.contactus`.
+La vue héritée ajoute le fil d'Ariane et la navigation Entreprise, puis
+remplace le titre et l'introduction par un message bilingue orienté prise de
+contact. Elle transforme la colonne latérale en carte dédiée au responsable
+du site ; les coordonnées affichées utilisent d'abord les champs de la
+société liée au site, puis les informations déjà publiées dans les mentions
+légales (58 Rue de Monceau, 75008 Paris, +33 1 84 79 37 55,
+contact@capsule-house.fr) si un champ est vide. Les champs, le traitement de
+l'envoi et les messages de retour restent ceux du snippet natif Odoo
+`s_website_form`.
+
+`static/src/css/contact.css` habille le hero, les deux cartes et leurs
+dispositions responsive en réutilisant les variables du thème. Les règles des
+champs, erreurs et états d'envoi restent isolées dans
+`static/src/css/odoo-integration.css`, sous `#contactus_form`.
+
+`entreprise_nav.xml` : les 2 liens « Contact » étaient indentés 4 espaces
+de plus que les 4 autres onglets (vestige de l'ajout en 19.0.1.0.105) —
+aligné sur les autres. Aucun changement de rendu.
 
 ## Blocs non éditables comme sur exocoms_theme (v19.0.1.0.48)
 

@@ -73,59 +73,6 @@
     margin-bottom: 28px;
 }
 
-.ch-hero-search {
-    display: flex;
-    gap: 10px;
-    max-width: 480px;
-    margin-bottom: 20px;
-}
-
-.ch-hero-search input {
-    flex: 1;
-    padding: 13px 18px;
-    border: 1.5px solid var(--ch-gray-border);
-    border-radius: var(--r-pill);
-    font-family: var(--font-body);
-    font-size: var(--fs-14);
-    outline: none;
-    background: var(--ch-white);
-    color: var(--ch-ink);
-}
-
-.ch-hero-search input:focus {
-    border-color: var(--ch-ink);
-}
-
-.ch-hero-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 32px;
-}
-
-.ch-hero-stats {
-    display: flex;
-    gap: 40px;
-    margin-bottom: 28px;
-}
-
-.ch-hero-stat {
-    display: flex;
-    flex-direction: column;
-}
-
-.ch-hero-stat-number {
-    font-family: var(--font-head);
-    font-size: var(--fs-22);
-    font-weight: 800;
-    color: var(--ch-ink);
-}
-
-.ch-hero-stat-label {
-    font-size: var(--fs-12-5);
-    color: var(--ch-fog);
-}
-
 .ch-trust-row {
     display: flex;
     flex-wrap: wrap;
@@ -299,8 +246,10 @@
 
 /* Illustration du pod : SVG validé par le client (voir hero.xml), ombre au
    sol déjà incluse dans le SVG lui-même (ellipse). Remplace l'ancienne
-   version en CSS pur (.ch-pod-shape / .ch-pod-circle-main / .ch-pod-circle-
-   small + pseudo-élément ::after pour l'ombre). */
+   version en CSS pur (ch-pod-shape / ch-pod-circle-main / ch-pod-circle-
+   small + pseudo-élément ::after pour l'ombre) — aucune de ces trois
+   classes ne subsiste dans les CSS du thème, elles n'ont existé que pour
+   le pod dessiné en CSS avant la validation du SVG. */
 .ch-pod-illustration-svg {
     display: block;
     max-width: 420px;
@@ -761,29 +710,106 @@
 }
 .ch-payment-badge i { color: var(--ch-terracotta); }
 
-/* ── RESPONSIVE HOMEPAGE ── */
+/* ── RESPONSIVE HOMEPAGE ───────────────────────────────────────────────
+   Trois paliers : 1100px (bascule 2 colonnes), 768px (tablette/téléphone),
+   480px (petit téléphone). Les mêmes valeurs sont déjà utilisées par
+   pages.css / shop.css, pour qu'une règle Media se lise pareil partout.
+
+   Règle appliquée sur tous les paliers : le TEXTE du hero passe AVANT
+   l'illustration. L'ancien `order: -1` sur .ch-hero-visual remontait
+   l'image au-dessus du H1, ce qui repoussait le titre et les deux
+   boutons d'action sous la ligne de flottaison sur téléphone — l'inverse
+   de l'objectif « action visible dès l'arrivée ». L'image reste en tête
+   de lecture sur grand écran grâce à son ordre naturel dans la grille
+   (c'est la colonne de droite), sans dépendre d'un `order`. ── */
+
 @media (max-width: 1100px) {
+    /* Une seule colonne : la colonne de texte passe en premier (ordre
+       naturel du DOM), l'illustration en second. */
     .ch-hero-grid { grid-template-columns: 1fr; }
-    .ch-hero-visual { min-height: 320px; order: -1; }
-    .ch-hero-illustration { min-height: 320px; }
+    .ch-hero-visual { min-height: 320px; }
+
+    /* `.ch-hero-illustration` est une balise <img> (hero.xml:137), pas un
+       conteneur : `min-height` l'étirait hors-ratio. On impose un ratio
+       fixe + object-fit pour qu'elle occupe une hauteur prévisible et
+       régulière sur toutes les largeurs. */
+    .ch-hero-illustration {
+        min-height: 0;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+    }
+
     .ch-bestsellers-grid { grid-template-columns: repeat(2, 1fr); }
     .ch-testi-grid { grid-template-columns: repeat(2, 1fr); }
+
+    /* Flèches du carousel : ramenées à l'intérieur du conteneur au lieu
+       de déborder à -20px (au-delà de 1100px elles sortent de la zone
+       visible). */
     .ch-bestsellers-arrow-prev { left: 0; }
     .ch-bestsellers-arrow-next { right: 0; }
 }
 
 @media (max-width: 768px) {
-    .ch-hero { padding: 0; }
-    /* Plus de .ch-hero-title ici : le clamp() de --fs-h1 descend déjà à
-       32px sous 768px (et le explicite à 32px en dessous). */
-    .ch-hero-stats { gap: 24px; flex-wrap: wrap; }
-    .ch-hero-search { flex-direction: column; }
+    /* Le gap de 48px du hero est prévu pour deux colonnes côte à côte ;
+       une fois empilées, il devient un vide vertical de 48px entre le
+       bloc de boutons et l'image. */
+    .ch-hero-grid { gap: 28px; }
+
+    /* Boutons d'action : le H1, le chapeau et les 2 boutons doivent
+       tenir dans le premier écran. */
+    .ch-hero-btn-action { gap: 12px; }
+
+    .ch-hero-subtitle { margin-bottom: 22px; }
+
+    /* La note de réassurance sous les boutons est une ligne secondaire :
+       on resserre sa séparation plutôt que de la supprimer. */
+    .ch-hero-div-note { margin-top: 12px; }
+    .ch-trust-row {
+        margin-top: 20px;
+        padding-top: 16px;
+        gap: 12px 20px;
+    }
+
     .ch-bestsellers-grid { grid-template-columns: 1fr; }
     .ch-bestsellers-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+
+    /* Cible tactile : les flèches font 40px, sous le minimum recommandé
+       de 44px, et se posent sur les première/last cartes. */
+    .ch-bestsellers-arrow {
+        width: 44px;
+        height: 44px;
+        font-size: var(--fs-15);
+        box-shadow: var(--shadow-lg);
+    }
+
     .ch-usages-zone { grid-template-columns: 1fr 1fr; }
     .ch-testi-grid { grid-template-columns: 1fr; }
     .ch-payment-inner { flex-direction: column; align-items: flex-start; }
 }
+
 @media (max-width: 480px) {
     .ch-usages-zone { grid-template-columns: 1fr; }
+
+    /* En dessous de 480px les deux boutons côte à côte se réduisent à un
+       texte illisible sur deux lignes chacun : on les empile en pleine
+       largeur, le principal en premier. */
+    .ch-hero-btn-action {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ch-hero-btn-action .ch-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Les 3 arguments de réassurance passent en colonne : sur 360px de
+       largeur, `flex-wrap` les coupait au milieu d'un libellé. */
+    .ch-trust-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .ch-bestsellers-arrow { display: none; }
 }

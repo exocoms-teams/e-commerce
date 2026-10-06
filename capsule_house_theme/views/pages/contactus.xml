@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- La page et son formulaire restent ceux de website.contactus. Le thème
+         enrichit la présentation, conserve le snippet de formulaire natif et
+         affiche les coordonnées de la société courante (multi-site). -->
+    <template id="contactus_theme_inherit"
+              name="Capsule House - Présentation de la page Contact"
+              inherit_id="website.contactus">
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="class" add="ch-contact-page" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@id='wrap']/section[1]" position="attributes">
+            <attribute name="class" add="ch-contact-hero" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@id='wrap']/section[hasclass('s_text_block')]" position="attributes">
+            <attribute name="class" add="ch-contact-content" separator=" "/>
+        </xpath>
+        <xpath expr="//section[hasclass('ch-contact-hero')]//h1" position="replace">
+            <h1 class="ch-contact-title">
+                <t t-if="request.env.lang == 'fr_FR'">Parlons de votre projet</t>
+                <t t-else="">Let's talk about your project</t>
+            </h1>
+        </xpath>
+        <xpath expr="//section[hasclass('ch-contact-hero')]//h1" position="before">
+            <p class="ch-contact-eyebrow" t-if="request.env.lang == 'fr_FR'">Capsule House · Contact</p>
+            <p class="ch-contact-eyebrow" t-else="">Capsule House · Get in touch</p>
+        </xpath>
+        <xpath expr="//section[hasclass('ch-contact-hero')]//h1" position="after">
+            <p class="ch-contact-hero-lead" t-if="request.env.lang == 'fr_FR'">
+                Maison modulaire, terrain ou livraison : décrivez votre besoin et nous vous orienterons vers le bon interlocuteur.
+            </p>
+            <p class="ch-contact-hero-lead" t-else="">
+                Modular home, land, or delivery: tell us what you need and we will point you in the right direction.
+            </p>
+        </xpath>
+        <xpath expr="//section[hasclass('s_text_block')]//div[hasclass('col-lg-7')]/p[hasclass('lead')]" position="replace">
+            <div class="ch-contact-form-intro" t-if="request.env.lang == 'fr_FR'">
+                <span class="ch-contact-section-label">Votre demande</span>
+                <h2 id="ch-contact-form-title">Écrivez-nous</h2>
+                <p>Choisissez le sujet de votre message. Le téléphone est facultatif si vous préférez une réponse par e-mail.</p>
+            </div>
+            <div class="ch-contact-form-intro" t-else="">
+                <span class="ch-contact-section-label">Your enquiry</span>
+                <h2 id="ch-contact-form-title">Send us a message</h2>
+                <p>Choose a topic for your message. Phone is optional if you prefer a reply by email.</p>
+            </div>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']" position="attributes">
+            <attribute name="aria-labelledby">ch-contact-form-title</attribute>
+        </xpath>
+        <!-- Le champ Subject natif reste requis par l'envoi mail Odoo, mais
+             devient un choix de qualification plutôt qu'une saisie libre. -->
+        <xpath expr="//form[@id='contactus_form']//div[hasclass('s_website_form_field')][.//input[@name='subject']]//label" position="attributes">
+            <attribute name="for">ch-contact-subject</attribute>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//div[hasclass('s_website_form_field')][.//input[@name='subject']]//label/span[hasclass('s_website_form_label_content')]" position="replace">
+            <span class="s_website_form_label_content">
+                <t t-if="request.env.lang == 'fr_FR'">Votre demande concerne</t>
+                <t t-else="">What is your enquiry about?</t>
+            </span>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//input[@name='subject']" position="replace">
+            <select id="ch-contact-subject" name="subject" class="form-control s_website_form_input" required="required">
+                <option value="" selected="selected" disabled="disabled">
+                    <t t-if="request.env.lang == 'fr_FR'">Choisissez un sujet</t>
+                    <t t-else="">Choose a topic</t>
+                </option>
+                <option t-if="request.env.lang == 'fr_FR'" value="Je cherche un modèle">Je cherche un modèle</option>
+                <option t-else="" value="I'm looking for a model">I'm looking for a model</option>
+                <option t-if="request.env.lang == 'fr_FR'" value="J'ai déjà un terrain">J'ai déjà un terrain</option>
+                <option t-else="" value="I already have land">I already have land</option>
+                <option t-if="request.env.lang == 'fr_FR'" value="Question sur la livraison">Question sur la livraison</option>
+                <option t-else="" value="Question about delivery">Question about delivery</option>
+                <option t-if="request.env.lang == 'fr_FR'" value="Autre demande">Autre demande</option>
+                <option t-else="" value="Other enquiry">Other enquiry</option>
+            </select>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//div[hasclass('s_website_form_field')][.//input[@name='company']]" position="replace"/>
+        <xpath expr="//form[@id='contactus_form']//div[hasclass('s_website_form_field')][.//input[@name='name' or @name='email_from' or @name='phone']]" position="attributes">
+            <attribute name="class" remove="col-lg-6" add="col-12" separator=" "/>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//input[@name='name']" position="attributes">
+            <attribute name="t-att-placeholder">request.env.lang == 'fr_FR' and 'Ex. : Camille Martin' or 'e.g. Camille Martin'</attribute>
+            <attribute name="autocomplete">name</attribute>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//input[@name='email_from']" position="attributes">
+            <attribute name="placeholder">name@example.com</attribute>
+            <attribute name="autocomplete">email</attribute>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//input[@name='phone']" position="attributes">
+            <attribute name="t-att-placeholder">request.env.lang == 'fr_FR' and 'Facultatif' or 'Optional'</attribute>
+            <attribute name="autocomplete">tel</attribute>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//textarea[@name='description']" position="attributes">
+            <attribute name="t-att-placeholder">request.env.lang == 'fr_FR' and 'Ex. : je cherche une maison de 40 m² pour un terrain en Bretagne.' or 'e.g. I’m looking for a 40 m² home for a plot in Brittany.'</attribute>
+            <attribute name="rows">5</attribute>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//textarea[@name='description']/preceding-sibling::label/span[hasclass('s_website_form_label_content')]" position="replace">
+            <span class="s_website_form_label_content">
+                <t t-if="request.env.lang == 'fr_FR'">Votre message</t>
+                <t t-else="">Your message</t>
+            </span>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//a[hasclass('s_website_form_send')]" position="replace">
+            <a href="#" role="button" class="ch-btn ch-btn-cta s_website_form_send">
+                <t t-if="request.env.lang == 'fr_FR'">Envoyer mon projet</t>
+                <t t-else="">Send my project</t>
+            </a>
+        </xpath>
+        <xpath expr="//form[@id='contactus_form']//span[@id='s_website_form_result']" position="after">
+            <div class="ch-contact-reassurance" t-if="request.env.lang == 'fr_FR'">
+                <p>Nous vous répondrons dès que possible.</p>
+                <p>Vos informations servent à traiter votre demande. <a href="/confidentialite">Lire notre politique de confidentialité</a>.</p>
+            </div>
+            <div class="ch-contact-reassurance" t-else="">
+                <p>We’ll get back to you as soon as possible.</p>
+                <p>Your details are used to handle your enquiry. <a href="/confidentialite">Read our privacy policy</a>.</p>
+            </div>
+        </xpath>
+        <xpath expr="//section[hasclass('s_text_block')]//div[hasclass('col-lg-4', 'offset-lg-1')]" position="replace">
+            <aside class="col-lg-4 offset-lg-1 mt-4 mt-lg-0 ch-contact-aside" aria-labelledby="ch-contact-manager-title">
+                <!-- Coordonnées déjà publiées dans les mentions légales ; les
+                     valeurs de la société courante restent prioritaires. -->
+                <t t-set="ch_contact_email" t-value="res_company.email or 'contact@capsule-house.fr'"/>
+                <t t-set="ch_contact_phone" t-value="res_company.phone or '+33 1 84 79 37 55'"/>
+                <t t-set="ch_has_company_address" t-value="res_company.partner_id.street or res_company.partner_id.zip or res_company.partner_id.city"/>
+                <div class="ch-contact-info-card">
+                    <span class="ch-contact-info-eyebrow" t-if="request.env.lang == 'fr_FR'">Contact direct</span>
+                    <span class="ch-contact-info-eyebrow" t-else="">Direct contact</span>
+                    <h2 id="ch-contact-manager-title" t-if="request.env.lang == 'fr_FR'">Contactez notre responsable</h2>
+                    <h2 id="ch-contact-manager-title" t-else="">Contact our manager</h2>
+                    <p t-if="request.env.lang == 'fr_FR'">Pour un premier échange, contactez directement l'équipe Capsule House par téléphone ou par e-mail.</p>
+                    <p t-else="">For a first conversation, reach the Capsule House team directly by phone or email.</p>
+
+                    <address class="ch-contact-details">
+                        <div class="ch-contact-detail">
+                            <span class="ch-contact-detail-icon" aria-hidden="true"><i class="fa fa-map-marker"/></span>
+                            <div>
+                                <span class="ch-contact-detail-label" t-if="request.env.lang == 'fr_FR'">Adresse</span>
+                                <span class="ch-contact-detail-label" t-else="">Address</span>
+                                <span t-if="ch_has_company_address">
+                                    <t t-if="res_company.partner_id.street"><t t-out="res_company.partner_id.street"/><br/></t>
+                                    <t t-if="res_company.partner_id.zip or res_company.partner_id.city">
+                                        <t t-if="res_company.partner_id.zip"><t t-out="res_company.partner_id.zip"/></t>
+                                        <t t-if="res_company.partner_id.zip and res_company.partner_id.city"> </t>
+                                        <t t-if="res_company.partner_id.city"><t t-out="res_company.partner_id.city"/></t>
+                                    </t>
+                                    <t t-if="res_company.partner_id.country_id"><br/><t t-out="res_company.partner_id.country_id.name"/></t>
+                                </span>
+                                <span t-else="">58 Rue de Monceau<br/>75008 Paris, France</span>
+                            </div>
+                        </div>
+                        <div class="ch-contact-detail">
+                            <span class="ch-contact-detail-icon" aria-hidden="true"><i class="fa fa-phone"/></span>
+                            <div>
+                                <span class="ch-contact-detail-label" t-if="request.env.lang == 'fr_FR'">Téléphone</span>
+                                <span class="ch-contact-detail-label" t-else="">Phone</span>
+                                <a t-att-href="'tel:%s' % ch_contact_phone.replace(' ', '').replace('-', '')" t-out="ch_contact_phone"/>
+                            </div>
+                        </div>
+                        <div class="ch-contact-detail">
+                            <span class="ch-contact-detail-icon" aria-hidden="true"><i class="fa fa-envelope"/></span>
+                            <div>
+                                <span class="ch-contact-detail-label" t-if="request.env.lang == 'fr_FR'">E-mail</span>
+                                <span class="ch-contact-detail-label" t-else="">Email</span>
+                                <a t-att-href="'mailto:%s' % ch_contact_email" t-out="ch_contact_email"/>
+                            </div>
+                        </div>
+                    </address>
+
+                </div>
+            </aside>
+        </xpath>
+        <xpath expr="//div[@id='wrap']/*[1]" position="before">
+            <div class="ch-aide-breadcrumb">
+                <a href="/">
+                    <t t-if="request.env.lang == 'fr_FR'">Accueil</t>
+                    <t t-else="">Home</t>
+                </a>
+                <span class="sep">/</span>
+                <span>
+                    <t t-if="request.env.lang == 'fr_FR'">Entreprise</t>
+                    <t t-else="">Company</t>
+                </span>
+                <span class="sep">/</span>
+                <span>Contact</span>
+            </div>
+            <div class="ch-entreprise-wrap">
+                <t t-call="capsule_house_theme.entreprise_nav"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
