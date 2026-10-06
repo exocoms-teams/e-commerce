@@ -24,6 +24,7 @@
         'views/dashboard_templates.xml',
         'views/empty_state_templates.xml',
         'views/account_templates.xml',
+        'views/navigation_templates.xml',
         #'data/subscription_plans.xml',           # WIN-66
         #'data/subscription_products.xml',        # WIN-66
         #'views/subscription_templates.xml',      # WIN-66

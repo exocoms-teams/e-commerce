@@ -21,7 +21,7 @@
                     <li>
                         <details
                             class="o_winners_sidebar_menu__group"
-                            t-att-open="'open' if current_path == '/submit-trend' or current_path.startswith('/product/') else None"
+                            t-att-open="'open' if current_path in ('/dashboard', '/submit-trend') or current_path.startswith('/product/') else None"
                         >
                             <summary
                                 t-att-class="'o_winners_sidebar_menu__toggle' + (' o_winners_sidebar_menu__link--active' if current_path == '/submit-trend' or current_path.startswith('/product/') else '')">
@@ -29,6 +29,13 @@
                             </summary>
 
                             <ul class="o_winners_sidebar_menu__submenu">
+                                <li>
+                                    <a href="/dashboard"
+                                       t-att-class="'o_winners_sidebar_menu__link' + (' o_winners_sidebar_menu__link--active' if current_path == '/dashboard' else '')"
+                                       t-att-aria-current="'page' if current_path == '/dashboard' else None">
+                                        Classement des produits
+                                    </a>
+                                </li>
                                 <li>
                                     <a href="/submit-trend"
                                        t-att-class="'o_winners_sidebar_menu__link' + (' o_winners_sidebar_menu__link--active' if current_path == '/submit-trend' else '')"
@@ -41,9 +48,11 @@
                     </li>
 
                     <t t-set="sidebar_links" t-value="[
+                        ('Publicités', '/publicites'),
                         ('Analytics', '/analytics'),
                         ('Alertes', '/alertes'),
                         ('Collections', '/collections'),
+                        ('Sources', '/sources'),
                         ('Comparaison', '/comparaison'),
                         ('Favoris', '/favoris'),
                         ('Historique', '/historique')
@@ -64,13 +73,13 @@
     </template>
 
     <template id="template_app_layout" name="Winners application layout">
-    <t t-call="website.layout">
-        <div id="wrap" class="o_winners_app_layout">
-            <t t-call="produits_tendance.template_sidebar"/>
-            <div class="o_winners_app_layout__content">
-                <t t-out="0"/>
+        <t t-call="website.layout">
+            <div id="wrap" class="o_winners_app_layout">
+                <t t-call="produits_tendance.template_sidebar"/>
+                <div class="o_winners_app_layout__content">
+                    <t t-out="0"/>
+                </div>
             </div>
-        </div>
-    </t>
-</template>
+        </t>
+    </template>
 </odoo>
