@@ -20,6 +20,10 @@
         'views/trend_submission_templates.xml',
         'views/auth_templates.xml',   # WIN-47
         'views/trend_product_detail_templates.xml',
+        'views/sidebar_templates.xml',
+        'views/dashboard_templates.xml',
+        'views/empty_state_templates.xml',
+        'views/account_templates.xml',
         #'data/subscription_plans.xml',           # WIN-66
         #'data/subscription_products.xml',        # WIN-66
         #'views/subscription_templates.xml',      # WIN-66
@@ -43,6 +47,7 @@
             'produits_tendance/static/src/scss/trend_submission_form.scss',
             'produits_tendance/static/src/scss/trend_product_detail.scss',
             'produits_tendance/static/src/scss/trend_chart.scss',
+            'produits_tendance/static/src/scss/sidebar.scss',
             # WIN-52 : Chart.js + adaptateur Luxon, déjà bundlés par Odoo (web).
             'web/static/lib/luxon/luxon.js',
             'web/static/lib/Chart/Chart.js',
@@ -54,6 +59,9 @@
             'produits_tendance/static/src/scss/footer.scss',
             'produits_tendance/static/src/scss/product_card.scss',
             'produits_tendance/static/src/scss/home_page.scss',
+            'produits_tendance/static/src/scss/empty_states.scss',
+            'produits_tendance/static/src/js/coming_soon_toast.js',
+            'produits_tendance/static/src/scss/account_pages.scss',
             'produits_tendance/static/src/js/dashboard_filters.js',
         ],
     },

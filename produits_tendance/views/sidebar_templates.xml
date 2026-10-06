@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="template_sidebar" name="Winners sidebar">
+        <aside
+            t-if="website and website.name == 'Winners' and not request.env.user._is_public()"
+            class="o_winners_sidebar"
+        >
+            <t t-set="current_path"
+               t-value="request.httprequest.path.rstrip('/') or '/'"/>
+
+            <nav aria-label="Navigation Winners">
+                <ul class="o_winners_sidebar_menu">
+                    <li>
+                        <a href="/dashboard"
+                           t-att-class="'o_winners_sidebar_menu__link' + (' o_winners_sidebar_menu__link--active' if current_path == '/dashboard' else '')"
+                           t-att-aria-current="'page' if current_path == '/dashboard' else None">
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li>
+                        <details
+                            class="o_winners_sidebar_menu__group"
+                            t-att-open="'open' if current_path == '/submit-trend' or current_path.startswith('/product/') else None"
+                        >
+                            <summary
+                                t-att-class="'o_winners_sidebar_menu__toggle' + (' o_winners_sidebar_menu__link--active' if current_path == '/submit-trend' or current_path.startswith('/product/') else '')">
+                                Produits tendance
+                            </summary>
+
+                            <ul class="o_winners_sidebar_menu__submenu">
+                                <li>
+                                    <a href="/submit-trend"
+                                       t-att-class="'o_winners_sidebar_menu__link' + (' o_winners_sidebar_menu__link--active' if current_path == '/submit-trend' else '')"
+                                       t-att-aria-current="'page' if current_path == '/submit-trend' else None">
+                                        Soumettre un produit
+                                    </a>
+                                </li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <t t-set="sidebar_links" t-value="[
+                        ('Analytics', '/analytics'),
+                        ('Alertes', '/alertes'),
+                        ('Collections', '/collections'),
+                        ('Comparaison', '/comparaison'),
+                        ('Favoris', '/favoris'),
+                        ('Historique', '/historique')
+                    ]"/>
+
+                    <t t-foreach="sidebar_links" t-as="sidebar_link">
+                        <li>
+                            <a t-att-href="sidebar_link[1]"
+                               t-att-class="'o_winners_sidebar_menu__link' + (' o_winners_sidebar_menu__link--active' if current_path == sidebar_link[1] else '')"
+                               t-att-aria-current="'page' if current_path == sidebar_link[1] else None">
+                                <t t-out="sidebar_link[0]"/>
+                            </a>
+                        </li>
+                    </t>
+                </ul>
+            </nav>
+        </aside>
+    </template>
+
+    <template id="template_app_layout" name="Winners application layout">
+    <t t-call="website.layout">
+        <div id="wrap" class="o_winners_app_layout">
+            <t t-call="produits_tendance.template_sidebar"/>
+            <div class="o_winners_app_layout__content">
+                <t t-out="0"/>
+            </div>
+        </div>
+    </t>
+</template>
+</odoo>
