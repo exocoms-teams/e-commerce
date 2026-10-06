@@ -63,6 +63,9 @@
             var scoreValue = (typeof p.score === 'number') ? p.score : 0.0;
             var scoreTier = scoreValue >= 75 ? '--high' : (scoreValue >= 50 ? '--mid' : '--low');
             var scoreText = scoreValue.toFixed(1);
+            var decliningHtml = p.is_declining
+                ? '<span class="o_winners_score_badge o_winners_score_badge--declining">En baisse</span>'
+                : '';
 
             // Structure alignée sur produits_tendance.template_product_cards
             // (mêmes classes, y compris le modificateur de palier de score)
@@ -71,10 +74,13 @@
                 '<a href="/product/' + encodeURIComponent(p.id) + '" class="o_winners_product_card">' +
                     categoryHtml +
                     '<h3 class="o_winners_product_card__name">' + escapeHtml(p.name) + '</h3>' +
-                    '<div class="o_winners_product_card__footer">' +
-                        '<span class="o_winners_product_card__score o_winners_product_card__score' + scoreTier + '">' +
-                            scoreText +
-                        '</span>' +
+                   '<div class="o_winners_product_card__footer">' +
+                        '<div class="o_winners_product_card__score_group">' +
+                            '<span class="o_winners_product_card__score o_winners_product_card__score' + scoreTier + '">' +
+                                scoreText +
+                            '</span>' +
+                            decliningHtml +
+                        '</div>' +
                         countryHtml +
                     '</div>' +
                 '</a>';

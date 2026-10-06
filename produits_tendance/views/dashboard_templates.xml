@@ -180,12 +180,25 @@
                     <!-- Nom du produit -->
                     <h3 class="o_winners_product_card__name"><t t-esc="p['name']"/></h3>
 
-                    <!-- Footer dynamique : Score + Pays -->
+                   <!-- Footer dynamique : Score + statut + Pays -->
                     <div class="o_winners_product_card__footer">
-                        <span t-attf-class="o_winners_product_card__score #{'o_winners_product_card__score--high' if _score >= 75 else ('o_winners_product_card__score--mid' if _score >= 50 else 'o_winners_product_card__score--low')}">
-                            <t t-esc="'%.1f' % _score"/>
-                        </span>
-                        <span class="o_winners_product_card__country" t-if="p.get('country')">
+                        <div class="o_winners_product_card__score_group">
+                            <span t-attf-class="o_winners_product_card__score #{'o_winners_product_card__score--high' if _score >= 75 else ('o_winners_product_card__score--mid' if _score >= 50 else 'o_winners_product_card__score--low')}">
+                                <t t-esc="'%.1f' % _score"/>
+                            </span>
+
+                            <span
+                                t-if="p.get('is_declining')"
+                                class="o_winners_score_badge o_winners_score_badge--declining"
+                            >
+                                En baisse
+                            </span>
+                        </div>
+
+                        <span
+                            class="o_winners_product_card__country"
+                            t-if="p.get('country')"
+                        >
                             <t t-esc="p['country']"/>
                         </span>
                     </div>

@@ -1,7 +1,10 @@
 import asyncio
 import hashlib
 import json
-from api_sender import send_to_odoo
+if __package__:
+    from .api_sender import send_to_odoo
+else:
+    from api_sender import send_to_odoo
 
 from playwright.async_api import (
     async_playwright,

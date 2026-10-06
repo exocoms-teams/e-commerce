@@ -4,7 +4,12 @@ import time
 from datetime import datetime
 import urllib.parse
 
-from api_sender import send_to_odoo_sync
+if __package__:
+    # Odoo imports the collector as part of its package.
+    from .api_sender import send_to_odoo_sync
+else:
+    # The collector is executed directly.
+    from api_sender import send_to_odoo_sync
 
 def get_real_ebay_token(app_id, cert_id):
     """Génère le Token d'accès OAuth 2.0 pour eBay"""

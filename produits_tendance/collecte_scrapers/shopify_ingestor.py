@@ -6,7 +6,10 @@ import json
 
 import httpx
 
-from api_sender import send_to_odoo
+try:
+    from .api_sender import send_to_odoo
+except ImportError:
+    from api_sender import send_to_odoo
 
 HTTP_TIMEOUT_SECONDS = 15.0
 SHOPIFY_PRODUCT_LIMIT = 20
