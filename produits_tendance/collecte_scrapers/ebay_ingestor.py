@@ -77,11 +77,6 @@ def fetch_winning_products(keyword, token, attempt=1):
 def push_to_odoo(item, odoo_url, odoo_api_key):
     """Send one eBay product through the common Odoo sender."""
 
-    seller_score = item.get(
-        "seller",
-        {},
-    ).get("feedbackScore", 0.0)
-
     sales_count = item.get("soldQuantity", 0)
 
     country_code = item.get(
@@ -115,6 +110,8 @@ def push_to_odoo(item, odoo_url, odoo_api_key):
     except (TypeError, ValueError):
         price = 0.0
 
+    # eBay seller.feedbackScore is an aggregate feedback count,
+    # not a bounded rating. Do not map it to score_site_x or divide by 10.
     product_data = {
         "name": item.get(
             "title",
@@ -124,7 +121,6 @@ def push_to_odoo(item, odoo_url, odoo_api_key):
         "category": category,
         "sales_count": sales_count,
         "date": datetime.now().strftime("%Y-%m-%d"),
-        "score_site_x": seller_score,
         "country": country_code,
         "source": "api",
         "price": price,
