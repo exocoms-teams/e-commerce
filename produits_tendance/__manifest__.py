@@ -5,10 +5,12 @@
     'author': 'winners',
     'license': 'LGPL-3',
     'depends': [
-    'website',
-    'website_sale',
-    'auth_signup',
-],   # WIN-66 #WIN-69
+        'website',
+        'website_sale',
+        'auth_signup',
+        'sale_subscription',
+        'website_sale_subscription',
+    ],   # WIN-66 #WIN-69
     'data': [
         'security/security_groups.xml',
         'security/ir.model.access.csv',
@@ -25,9 +27,9 @@
         'views/empty_state_templates.xml',
         'views/account_templates.xml',
         'views/navigation_templates.xml',
-        #'data/subscription_plans.xml',           # WIN-66
-        #'data/subscription_products.xml',        # WIN-66
-        #'views/subscription_templates.xml',      # WIN-66
+        'data/subscription_plans.xml',           # WIN-66
+        'data/subscription_products.xml',        # WIN-66
+        'views/subscription_templates.xml',      # WIN-66
         'views/legal_templates.xml',   # WIN-102
         'data/webhook_queue_cron.xml',      # WIN-67
         'data/scoring_cron.xml',
