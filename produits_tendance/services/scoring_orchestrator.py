@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from .google_trends import fetch_search_volume
 
 
 class TrendScoringOrchestrator(models.AbstractModel):
@@ -34,10 +35,21 @@ class TrendScoringOrchestrator(models.AbstractModel):
             current_metrics=current_metrics,
         )
         
+        scoring_datetime = fields.Datetime.to_datetime(
+            computed_at or fields.Datetime.now()
+        )
+
+        search_volume = fetch_search_volume(
+            product_name=product.name,
+            country=product.country,
+            computed_at=scoring_datetime,
+        )
+
         score_values = {
             'product_id': product.id,
             'computed_score': score_value,
-            'computed_at': computed_at or fields.Datetime.now(),
+            'computed_at': scoring_datetime,
+            'search_volume': search_volume,
             'metric_sales': current_metrics['ventes'],
             'metric_likes': current_metrics['likes'],
             'metric_shares': current_metrics['partages'],

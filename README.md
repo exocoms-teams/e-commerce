@@ -34,3 +34,15 @@ to a different or older implementation.
 Future collectors supplying ratings must document their metric
 and scale before those ratings are used in scoring. Previously
 stored eBay values have not been converted by this change.
+
+### Google Trends indicator
+
+Daily scoring collects Google Trends search interest by product name
+and country and stores the scoring day's value in `trend.score.search_volume`.
+
+The value is a relative index from 0–100, not an absolute search count.
+The current day's reading may be partial. Missing data or collection
+failures are logged and stored as 0.
+
+This indicator does not affect `computed_score` or ranking.
+Four automated tests passed, and a live collection stored an index of 73.

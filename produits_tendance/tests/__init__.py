@@ -16,3 +16,4 @@ from . import test_temporal_traceability
 from . import test_score_ingestion
 from . import test_submission_form_ui
 from . import test_scoring_orchestrator
+from . import test_google_trends
