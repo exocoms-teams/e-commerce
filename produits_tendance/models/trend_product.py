@@ -46,6 +46,15 @@ class TrendProduct(models.Model):
         store=True,
         help="Reflète toujours le dernier score calculé pour ce produit."
     )
+
+    last_positive_score_at = fields.Datetime(
+    string="Last positive score date",
+    readonly=True,
+    index=True,
+    copy=False,
+    help="Last date when this product received a score greater than zero.",
+    )
+
     rank_number = fields.Integer(
         string="Classement",
         compute="_compute_rank_number",

@@ -1,7 +1,9 @@
 # controllers/dashboard_api.py
 import json
 from collections import defaultdict
+from datetime import timedelta
 
+from odoo import fields
 from werkzeug.exceptions import NotFound
 from ..models.trend_ad import latest_ads_by_ref
 
@@ -25,7 +27,37 @@ class TrendDashboardAPI:
     # ------------------------------------------------------------------
     # Garde-fou abonnement (WIN-66)
     # ------------------------------------------------------------------
-    @staticmethod
+
+    def _get_grace_period_settings(self):
+        """Return the dashboard visibility domain and grace cutoff date."""
+
+        raw_hours = self.env['ir.config_parameter'].sudo().get_param(
+            'winners.grace_period_hours',
+            '24',
+        )
+
+        try:
+            grace_period_hours = float(raw_hours)
+            if grace_period_hours < 0:
+                raise ValueError
+        except (TypeError, ValueError):
+            grace_period_hours = 24.0
+
+        grace_cutoff = (
+            fields.Datetime.now()
+            - timedelta(hours=grace_period_hours)
+        )
+
+        visibility_domain = [
+            '|',
+            ('current_score', '>', 0),
+            '&',
+            ('current_score', '=', 0),
+            ('last_positive_score_at', '>=', grace_cutoff),
+        ]
+
+        return visibility_domain, grace_cutoff
+
     def is_pro_user(env):
         """Garde-fou réutilisable pour toute future fonctionnalité réservée
         aux abonnés Pro (ex: données prédictives du dashboard, WIN-66).
@@ -52,8 +84,14 @@ class TrendDashboardAPI:
         groupe group_trend_free implique group_trend_user (lecture seule),
         donc cette requête fonctionne aussi bien pour un compte Freemium.
         """
+        visibility_domain, _grace_cutoff = (
+    self._get_grace_period_settings()
+        )
+
         return self.env['trend.product'].search(
-            [], order='current_score desc', limit=limit
+            visibility_domain,
+            order='current_score desc',
+            limit=limit,
         )
 
     # ------------------------------------------------------------------
@@ -166,7 +204,10 @@ class TrendDashboardAPI:
             return []
 
         env = self.env(su=True)
-        domain = []
+
+        domain, grace_cutoff = (
+            self._get_grace_period_settings()
+        )
 
         if category_id:
             domain.append(('category_id', '=', int(category_id)))
@@ -194,6 +235,11 @@ class TrendDashboardAPI:
                 'country': product.country or '',
                 'score': round(product.current_score, 1),
                 'sales_count': product.sales_count,
+                'is_declining': bool(
+                product.current_score == 0
+                and product.last_positive_score_at
+                and product.last_positive_score_at >= grace_cutoff
+            ),
             }
             for product in products
         ]

@@ -2,3 +2,5 @@ from . import main
 from . import auth
 from . import subscription
 from . import legal
+from . import account
+from . import navigation

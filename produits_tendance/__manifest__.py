@@ -5,8 +5,12 @@
     'author': 'winners',
     'license': 'LGPL-3',
     'depends': [
-        'website', 'website_sale', 'auth_signup','sale_subscription', 'website_sale_subscription',
-    ],   # WIN-66
+        'website',
+        'website_sale',
+        'auth_signup',
+        'sale_subscription',
+        'website_sale_subscription',
+    ],   # WIN-66 #WIN-69
     'data': [
         'security/security_groups.xml',
         'security/ir.model.access.csv',
@@ -15,16 +19,21 @@
         'views/trend_product_views.xml',
         'views/trend_submission_views.xml',
         'views/winners_dashboard.xml',
+        'views/sidebar_templates.xml',
         'views/trend_submission_templates.xml',
         'views/auth_templates.xml',   # WIN-47
         'views/trend_product_detail_templates.xml',
+        'views/dashboard_templates.xml',
+        'views/empty_state_templates.xml',
+        'views/account_templates.xml',
+        'views/navigation_templates.xml',
         'data/subscription_plans.xml',           # WIN-66
         'data/subscription_products.xml',        # WIN-66
         'views/subscription_templates.xml',      # WIN-66
-        'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
         'views/legal_templates.xml',   # WIN-102
         'data/webhook_queue_cron.xml',      # WIN-67
         'data/scoring_cron.xml',
+        'data/grace_period_config.xml',
     ],
 
 
@@ -40,6 +49,7 @@
             'produits_tendance/static/src/scss/trend_submission_form.scss',
             'produits_tendance/static/src/scss/trend_product_detail.scss',
             'produits_tendance/static/src/scss/trend_chart.scss',
+            'produits_tendance/static/src/scss/sidebar.scss',
             # WIN-52 : Chart.js + adaptateur Luxon, déjà bundlés par Odoo (web).
             'web/static/lib/luxon/luxon.js',
             'web/static/lib/Chart/Chart.js',
@@ -51,6 +61,9 @@
             'produits_tendance/static/src/scss/footer.scss',
             'produits_tendance/static/src/scss/product_card.scss',
             'produits_tendance/static/src/scss/home_page.scss',
+            'produits_tendance/static/src/scss/empty_states.scss',
+            'produits_tendance/static/src/js/coming_soon_toast.js',
+            'produits_tendance/static/src/scss/account_pages.scss',
             'produits_tendance/static/src/js/dashboard_filters.js',
         ],
     },

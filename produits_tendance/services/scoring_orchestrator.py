@@ -46,20 +46,41 @@ class TrendScoringOrchestrator(models.AbstractModel):
         return self.env['trend.score'].create(score_values)
 
     @api.model
-    def run_daily_scoring(self,computed_at=None):
-        """Calcule un nouveau score pour chaque produit,
-        puis les classer."""
+    def run_daily_scoring(self, computed_at=None):
+        """Create missing daily scores and update the daily ranking."""
+
+        scoring_datetime = fields.Datetime.to_datetime(
+            computed_at or fields.Datetime.now()
+        )
+        score_date = scoring_datetime.date()
+
         products = self.env['trend.product'].search([])
-        created_scores = self.env['trend.score']
-        scoring_datetime = computed_at or fields.Datetime.now()
+        score_model = self.env['trend.score']
+        created_scores = score_model
+
+        existing_scores = score_model.search([
+            ('score_date', '=', score_date),
+        ])
+        already_scored_ids = set(
+            existing_scores.mapped('product_id').ids
+        )
 
         for product in products:
-            score = self.score_product(product,computed_at=scoring_datetime)
+            if product.id in already_scored_ids:
+                continue
+
+            score = self.score_product(
+                product,
+                computed_at=scoring_datetime,
+            )
             created_scores |= score
+
+            if score.computed_score > 0:
+                product.last_positive_score_at = scoring_datetime
 
         self._recompute_daily_ranks(scoring_datetime)
         return created_scores
-
+    
     @api.model
     def _recompute_daily_ranks(self, computed_at):
         """Classe les scores d'une journée en une seule écriture SQL.

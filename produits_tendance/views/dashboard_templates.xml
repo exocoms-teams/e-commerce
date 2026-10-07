@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+ 
 <odoo>
     <!-- ============================================================
          WIN-45 / WIN-50 / WIN-76 / WIN-77 : Dashboard - Classement produits +
@@ -22,8 +22,9 @@
 
     <template id="template_dashboard" name="Dashboard - Classement produits tendance">
         <t t-call="website.layout">
-            <div id="wrap" class="o_winners_dashboard">
-                <div class="container mt-5 mb-5">
+                <div id="wrap" class="o_winners_dashboard o_winners_app_layout">
+                    <t t-call="produits_tendance.template_sidebar"/>
+                    <div class="container mt-5 mb-5 o_winners_app_layout__content">
 
                     <div class="o_winners_dashboard_header mb-4">
                         <h1>Classement des produits tendance</h1>
@@ -125,38 +126,39 @@
             </div>
         </t>
     </template>
-
-    <form
-    method="get"
-    action="/dashboard"
-    class="o_winners_search"
-    >
-    <label
-        for="o_winners_search_input"
-        class="form-label"
-    >
-        Rechercher un produit
-    </label>
-
-    <div class="o_winners_search__controls">
-        <input
-            id="o_winners_search_input"
-            type="search"
-            name="search"
-            class="form-control o_winners_search__input"
-            placeholder="Ex : Montre"
-            t-att-value="search or ''"
-        />
-
-        <button
-            type="submit"
-            class="btn o_winners_search__button"
+    
+    <template id="template_dashboard_search" name="Recherche produit dashboard">
+        <form
+        method="get"
+        action="/dashboard"
+        class="o_winners_search"
         >
-            Rechercher
-        </button>
-    </div>
-</form>
+        <label
+            for="o_winners_search_input"
+            class="form-label"
+        >
+            Rechercher un produit
+        </label>
 
+        <div class="o_winners_search__controls">
+            <input
+                id="o_winners_search_input"
+                type="search"
+                name="search"
+                class="form-control o_winners_search__input"
+                placeholder="Ex : Montre"
+                t-att-value="search or ''"
+            />
+
+            <button
+                type="submit"
+                class="btn o_winners_search__button"
+            >
+                Rechercher
+            </button>
+            </div>
+        </form>
+</template>
     <!-- Sous-template réutilisé pour le rendu initial (QWeb) ET comme
          référence de structure pour le rendu JS côté client. -->
     <template id="template_product_cards" name="Grille de cartes produit">
@@ -179,12 +181,25 @@
                     <!-- Nom du produit -->
                     <h3 class="o_winners_product_card__name"><t t-esc="p['name']"/></h3>
 
-                    <!-- Footer dynamique : Score + Pays -->
+                   <!-- Footer dynamique : Score + statut + Pays -->
                     <div class="o_winners_product_card__footer">
-                        <span t-attf-class="o_winners_product_card__score #{'o_winners_product_card__score--high' if _score >= 75 else ('o_winners_product_card__score--mid' if _score >= 50 else 'o_winners_product_card__score--low')}">
-                            <t t-esc="'%.1f' % _score"/>
-                        </span>
-                        <span class="o_winners_product_card__country" t-if="p.get('country')">
+                        <div class="o_winners_product_card__score_group">
+                            <span t-attf-class="o_winners_product_card__score #{'o_winners_product_card__score--high' if _score >= 75 else ('o_winners_product_card__score--mid' if _score >= 50 else 'o_winners_product_card__score--low')}">
+                                <t t-esc="'%.1f' % _score"/>
+                            </span>
+
+                            <span
+                                t-if="p.get('is_declining')"
+                                class="o_winners_score_badge o_winners_score_badge--declining"
+                            >
+                                En baisse
+                            </span>
+                        </div>
+
+                        <span
+                            class="o_winners_product_card__country"
+                            t-if="p.get('country')"
+                        >
                             <t t-esc="p['country']"/>
                         </span>
                     </div>

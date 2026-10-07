@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="template_advertisement_list" name="Winners - Publicités">
+        <t t-call="produits_tendance.template_app_layout">
+            <div class="container mt-5 mb-5 o_winners_navigation_page">
+                <h1>Publicités</h1>
+                <p>
+                    Publicités collectées :
+                    <t t-out="total"/>
+                </p>
+
+                <div t-if="not ads" class="o_winners_card">
+                    Aucune publicité collectée pour le moment.
+                </div>
+
+                <div class="row g-3">
+                    <t t-foreach="ads" t-as="ad">
+                        <div class="col-md-6 col-xl-4">
+                            <article class="o_winners_card">
+                                <h2 class="h5">
+                                    <a t-attf-href="/ad/#{ad.id}">
+                                        <t t-out="ad.product_id.name or ad.product_name or ad.ad_ref"/>
+                                    </a>
+                                </h2>
+                                <p>
+                                    <t t-out="network_labels.get(ad.social_network, ad.social_network)"/>
+                                    · <t t-out="ad.country"/>
+                                </p>
+                                <p>
+                                    Likes : <t t-out="ad.likes_count"/>
+                                    · Partages : <t t-out="ad.shares_count"/>
+                                </p>
+                                <p>
+                                    <t t-out="'Active' if ad.is_active else 'Inactive'"/>
+                                </p>
+                                <a t-attf-href="/ad/#{ad.id}"
+                                   class="o_winners_btn_secondary">
+                                    Voir la publicité
+                                </a>
+                            </article>
+                        </div>
+                    </t>
+                </div>
+
+                <nav t-if="last_page &gt; 1"
+                     class="mt-4 d-flex gap-3 align-items-center"
+                     aria-label="Pagination des publicités">
+                    <a t-if="page_number &gt; 1"
+                       t-attf-href="/publicites?page=#{page_number - 1}"
+                       class="o_winners_btn_secondary">
+                        Précédent
+                    </a>
+                    <span>
+                        Page <t t-out="page_number"/>
+                        sur <t t-out="last_page"/>
+                    </span>
+                    <a t-if="page_number &lt; last_page"
+                       t-attf-href="/publicites?page=#{page_number + 1}"
+                       class="o_winners_btn_secondary">
+                        Suivant
+                    </a>
+                </nav>
+            </div>
+        </t>
+    </template>
+
+    <template id="template_source_overview" name="Winners - Sources">
+        <t t-call="produits_tendance.template_app_layout">
+            <div class="container mt-5 mb-5 o_winners_navigation_page">
+                <h1>Sources</h1>
+                <p>Répartition des données enregistrées dans Winners.</p>
+
+                <section class="o_winners_card mb-4">
+                    <h2 class="h4">Méthodes de collecte des produits</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Méthode</th>
+                                <th scope="col">Produits</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="source_counts" t-as="source">
+                                <td><t t-out="source['label']"/></td>
+                                <td><t t-out="source['count']"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section class="o_winners_card">
+                    <h2 class="h4">Réseaux sociaux des publicités</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Réseau</th>
+                                <th scope="col">Publicités</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="network_counts" t-as="network">
+                                <td><t t-out="network['label']"/></td>
+                                <td><t t-out="network['count']"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </t>
+    </template>
+</odoo>

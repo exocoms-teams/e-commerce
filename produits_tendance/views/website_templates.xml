@@ -120,14 +120,37 @@
                                                     <img t-attf-src="/web/image?model=res.users&amp;field=avatar_128&amp;id=#{request.env.user.id}" class="rounded-circle o_winners_header__avatar me-2" alt="Avatar" style="width:32px; height:32px; object-fit:cover;" />
                                                     <span class="o_winners_header__username fw-bold" t-esc="request.env.user.name[:15] + '...' if len(request.env.user.name) &gt; 15 else request.env.user.name"/>
                                                 </a>
-                                                <div class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                                <div class="dropdown-menu dropdown-menu-end shadow-sm border-0 o_winners_account_menu">
                                                     <t t-if="request.env.user.has_group('base.group_user')">
-                                                        <a href="/web" class="dropdown-item fw-bold text-primary">⚙️ Backend Odoo</a>
-                                                        <div class="dropdown-divider"></div>
+                                                        <a href="/web" class="dropdown-item">Backend Odoo</a>
+                                                        <div class="dropdown-divider"/>
                                                     </t>
-                                                    <a href="/my/home" class="dropdown-item">Mon compte</a>
-                                                    <div class="dropdown-divider"></div>
-                                                    <a href="/web/session/logout?redirect=/" class="dropdown-item text-danger">Se déconnecter</a>
+
+                                                    <t t-set="account_links" t-value="[
+                                                        ('Profil', '/compte/profil'),
+                                                        ('Paramètres', '/compte/parametres'),
+                                                        ('Notifications', '/compte/notifications'),
+                                                        ('Facturation', '/compte/facturation'),
+                                                        ('Équipe', '/compte/equipe'),
+                                                        ('API', '/compte/api'),
+                                                        ('Export', '/compte/export'),
+                                                        ('Aide &amp; Support', '/compte/aide')
+                                                    ]"/>
+
+                                                    <t t-foreach="account_links" t-as="account_link">
+                                                        <a t-att-href="account_link[1]"
+                                                        t-att-class="'dropdown-item o_winners_account_menu__link' + (' active' if request.httprequest.path.rstrip('/') == account_link[1] else '')"
+                                                        t-att-aria-current="'page' if request.httprequest.path.rstrip('/') == account_link[1] else None">
+                                                            <t t-out="account_link[0]"/>
+                                                        </a>
+                                                    </t>
+
+                                                    <div class="dropdown-divider"/>
+                                                    <a href="/my/home" class="dropdown-item">Mon compte portail</a>
+                                                    <div class="dropdown-divider"/>
+                                                    <a href="/web/session/logout?redirect=/" class="dropdown-item">
+                                                        Se déconnecter
+                                                    </a>
                                                 </div>
                                             </li>
                                         </t>
