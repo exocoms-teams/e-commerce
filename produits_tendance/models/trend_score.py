@@ -48,17 +48,18 @@ class TrendScore(models.Model):
         default=0,
     )
 
-    # --- GOOGLE TRENDS (purement informatif) ---
-    # Décision d'équipe : le search_volume est affiché à titre indicatif sur
-    # la fiche produit mais n'entre JAMAIS dans le calcul de computed_score.
-    # Voir models/trend_score_calculator.py : la formule ne référence pas
-    # ce champ.
+        # Google Trends returns relative search interest (0–100),
+    # not an absolute search count. Kept under the existing field name.
+    # Informational only: excluded from scoring_engine.py and ranking.
+    # Default 0 also represents unavailable data; collection failures
+    # and missing readings are logged by the collector.
     search_volume = fields.Integer(
-        string="Volume de recherche Google Trends",
+        string="Intérêt Google Trends",
         default=0,
-        help="Intérêt de recherche Google Trends au moment du calcul. "
-             "Purement informatif : n'influence pas le score de tendance "
-             "ni le classement (rank).",
+        help="Indice relatif de recherche Google Trends (0–100). "
+             "La valeur du jour peut être partielle. "
+             "0 peut également indiquer des données indisponibles. "
+             "N'influence ni le score de tendance ni le classement.",
     )
 
     # --- SNAPSHOT DES MÉTRIQUES (période T de ce calcul) ---
