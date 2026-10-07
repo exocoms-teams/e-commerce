@@ -21,10 +21,12 @@ class TrendSubmissionController(http.Controller):
 
     @http.route('/submit-trend', type='http', auth='public', website=True)
     def submit_trend_form(self, **kwargs):
+        require_winners_website()
         return request.render('produits_tendance.template_submit_trend_form', {})
 
     @http.route('/submit-trend/process', type='http', auth='public', website=True, methods=['POST'], csrf=True)
     def submit_trend_process(self, **post):
+        require_winners_website()
         if post:
             # --- NOUVELLE LOGIQUE : Tri intelligent Lien ou Description ---
             user_input = post.get('link_or_desc', '').strip()
@@ -55,6 +57,7 @@ class TrendProductDetailController(http.Controller):
 
     @http.route('/product/<int:id>', type='http', auth='user', website=True)
     def product_detail(self, id, **kwargs):
+        require_winners_website()
         api = TrendDashboardAPI(request.env)
         data = api.get_product_detail(id)
         return request.render('produits_tendance.template_product_detail', data)
@@ -67,12 +70,13 @@ class TrendAdDetailController(http.Controller):
     @http.route('/ad/<int:id>', type='http', auth='user', website=True)
     def ad_detail(self, id, **kwargs):
         # On cherche la publicité dans la base de données
+        require_winners_website()
         ad = request.env['trend.ad'].sudo().browse(id)
-        
+
         # Si elle n'existe pas, on renvoie une 404
         if not ad.exists():
             return request.not_found()
-            
+
         # On envoie les données à notre futur template QWeb
         return request.render('produits_tendance.template_ad_detail', {
             'ad': ad,
@@ -85,6 +89,7 @@ class TrendDashboardController(http.Controller):
 
     @http.route('/dashboard', type='http', auth='user', website=True)
     def dashboard(self, price_max=None, source=None, category_id=None, country=None, **kwargs):
+        require_winners_website()
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
 
@@ -124,8 +129,9 @@ class TrendDashboardController(http.Controller):
             'next_offset': offset + len(products),
         })
 
-    @http.route('/api/dashboard/filter', type='http', auth='user', methods=['GET'], csrf=False)
+    @http.route('/api/dashboard/filter', type='http', auth='user', methods=['GET'], csrf=False, website=True)
     def dashboard_filter(self, category_id=None, country=None, price_max=None, source=None, **kwargs):
+        require_winners_website()
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
 
@@ -161,11 +167,13 @@ class TrendDashboardController(http.Controller):
     # Route pour AFFICHER le Dashboard d'ingestion eBay/Meta
     @http.route('/winners/dashboard', type='http', auth='user', website=True)
     def show_dashboard(self, **kwargs):
+        require_winners_website()
         return request.render('produits_tendance.template_winners_dashboard', {})
 
     # --- ROUTE EBAY ---
-    @http.route('/dashboard/run_ebay_scan', type='jsonrpc', auth='user')
+    @http.route('/dashboard/run_ebay_scan', type='jsonrpc', auth='user', website=True)
     def run_ebay_scan(self, keyword):
+        require_winners_website()
         is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
         is_admin = request.env.user.has_group('base.group_erp_manager')
 
@@ -194,8 +202,9 @@ class TrendDashboardController(http.Controller):
         return result
 
     # --- ROUTE META ADS (MANUELLE) ---
-    @http.route('/dashboard/run_meta_scan', type='jsonrpc', auth='user')
+    @http.route('/dashboard/run_meta_scan', type='jsonrpc', auth='user', website=True)
     def run_meta_scan(self, keyword):
+        require_winners_website()
         is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
         is_admin = request.env.user.has_group('base.group_erp_manager')
 
@@ -396,47 +405,56 @@ class TrendIngestController(http.Controller):
             status=status,
             headers=[('Content-Type', 'application/json')]
         )
-    
+
 class TrendStaticPagesController(http.Controller):
 
     # --- PAGES LEGALES (Lien depuis le Footer) ---
     # Route de la Home Page
-    
+
     @http.route('/mentions-legales', type='http', auth='public', website=True)
     def mentions_legales(self, **kwargs):
+        require_winners_website()
         return request.render('produits_tendance.template_mentions_legales', {})
 
     @http.route('/confidentialite', type='http', auth='public', website=True)
     def confidentialite(self, **kwargs):
+        require_winners_website()
         return request.render('produits_tendance.template_confidentialite', {})
 
     @http.route('/cgu', type='http', auth='public', website=True)
     def cgu(self, **kwargs):
+        require_winners_website()
         return request.render('produits_tendance.template_cgu', {})
 
     # --- PAGES DE NAVIGATION (Sidebar & Dashboard) ---
     @http.route('/alertes', type='http', auth='user', website=True)
     def page_alertes(self, **kwargs):
+        require_winners_website()
         return request.render('produits_tendance.template_empty_alertes', {})
 
     @http.route('/collections', type='http', auth='user', website=True)
     def page_collections(self, **kwargs):
+        require_winners_website()
         return request.render('produits_tendance.template_empty_collections', {})
 
     @http.route('/favoris', type='http', auth='user', website=True)
     def page_favoris(self, **kwargs):
+        require_winners_website()
         return request.render('produits_tendance.template_empty_favoris', {})
-        
+
     @http.route('/historique', type='http', auth='user', website=True)
     def page_historique(self, **kwargs):
+        require_winners_website()
         return request.render('produits_tendance.template_empty_historique', {})
 
     @http.route('/comparaison', type='http', auth='user', website=True)
     def page_comparaison(self, **kwargs):
+        require_winners_website()
         return request.render('produits_tendance.template_empty_comparaison', {})
 
     @http.route('/analytics', type='http', auth='user', website=True)
     def page_analytics(self, **kwargs):
+        require_winners_website()
         return request.render('produits_tendance.template_empty_analytics', {})
 
 class WinnersWebsite(Website):
@@ -449,4 +467,4 @@ class WinnersWebsite(Website):
                 {},
             )
 
-        return super().index(**kwargs)  
+        return super().index(**kwargs)

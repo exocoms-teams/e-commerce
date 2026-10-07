@@ -17,10 +17,10 @@
         'views/trend_product_views.xml',
         'views/trend_submission_views.xml',
         'views/winners_dashboard.xml',
+        'views/sidebar_templates.xml',
         'views/trend_submission_templates.xml',
         'views/auth_templates.xml',   # WIN-47
         'views/trend_product_detail_templates.xml',
-        'views/sidebar_templates.xml',
         'views/dashboard_templates.xml',
         'views/empty_state_templates.xml',
         'views/account_templates.xml',
@@ -28,7 +28,6 @@
         #'data/subscription_plans.xml',           # WIN-66
         #'data/subscription_products.xml',        # WIN-66
         #'views/subscription_templates.xml',      # WIN-66
-        'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
         'views/legal_templates.xml',   # WIN-102
         'data/webhook_queue_cron.xml',      # WIN-67
         'data/scoring_cron.xml',
