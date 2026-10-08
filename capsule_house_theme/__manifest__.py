@@ -8,7 +8,7 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.105',
+    'version': '19.0.1.0.106',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
@@ -38,6 +38,7 @@ Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gamme
         # __init__.py. Pas de widget tiers (Crisp/Tawk/Intercom).
         'im_livechat',
         'website_livechat',
+        'website_blog',
     ],
     'data': [
         'security/ir.model.access.csv',
