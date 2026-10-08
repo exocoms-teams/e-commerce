@@ -363,48 +363,68 @@
     margin-bottom: 28px;
 }
 
-/* v19.0.1.0.102 : "Meilleures ventes" est désormais un vrai carousel
-   Bootstrap 5 (voir featured_products.xml, comparaison avec
-   exocoms_theme/views/partials/dashbord.xml, "MEILLEURES VENTES") —
-   .ch-bestsellers-grid reste utilisée mais maintenant PAR SLIDE (un lot
-   de 4 produits maximum), imbriquée dans un .carousel-item Bootstrap
-   plutôt que d'afficher tous les produits d'un coup. Le mécanisme de
-   défilement (transform/transition) est natif Bootstrap (déjà chargé
-   par le frontend Odoo), aucun CSS custom nécessaire pour ça — seuls
-   .ch-bestsellers-carousel-wrap et .ch-bestsellers-arrow sont propres
-   à ce thème (flèches stylées avec la palette Capsule House plutôt que
-   les .oi/.bg-700 d'exocoms). */
+/* "Meilleures ventes" défile en continu via main.js ; les flèches
+   déclenchent séparément un déplacement par groupes de quatre. */
 .ch-bestsellers-carousel-wrap {
+    position: relative;
+    margin: 0 20px;
+}
+
+.ch-bestsellers-carousel {
     position: relative;
 }
 
-.ch-bestsellers-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+.ch-bestsellers-viewport {
+    overflow: hidden;
+}
+
+.ch-bestsellers-track {
+    display: flex;
     gap: 22px;
+    transform: translate3d(0, 0, 0);
+    transition: none;
+}
+
+.ch-bestsellers-slide {
+    flex: 0 0 calc((100% - 66px) / 4);
+    min-width: 0;
+}
+
+.ch-bestsellers-slide .ch-product-card {
+    height: 100%;
 }
 
 .ch-bestsellers-arrow {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid var(--ch-gray-border);
-    background: var(--ch-white);
-    color: var(--ch-ink);
-    display: flex;
+    z-index: 2;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--ch-gray-border);
+    background: var(--ch-white);
+    color: var(--ch-ink);
     font-size: var(--fs-14);
-    z-index: 3;
-    box-shadow: var(--shadow-md);
-    transition: color var(--transition);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: color var(--transition), border-color var(--transition),
+                background-color var(--transition);
 }
-.ch-bestsellers-arrow:hover { border: 1px solid var(--ch-terracotta); color: var(--ch-terracotta); text-decoration: none; }
 .ch-bestsellers-arrow-prev { left: -20px; }
 .ch-bestsellers-arrow-next { right: -20px; }
+.ch-bestsellers-arrow:hover {
+    border-color: var(--ch-terracotta);
+    background: var(--ch-terracotta);
+    color: var(--ch-white);
+}
+.ch-bestsellers-arrow:focus-visible {
+    outline: 3px solid var(--ch-terracotta);
+    outline-offset: 3px;
+}
 
 .ch-product-card {
     position: relative;
@@ -740,14 +760,8 @@
         object-fit: cover;
     }
 
-    .ch-bestsellers-grid { grid-template-columns: repeat(2, 1fr); }
+    .ch-bestsellers-slide { flex-basis: calc((100% - 22px) / 2); }
     .ch-testi-grid { grid-template-columns: repeat(2, 1fr); }
-
-    /* Flèches du carousel : ramenées à l'intérieur du conteneur au lieu
-       de déborder à -20px (au-delà de 1100px elles sortent de la zone
-       visible). */
-    .ch-bestsellers-arrow-prev { left: 0; }
-    .ch-bestsellers-arrow-next { right: 0; }
 }
 
 @media (max-width: 768px) {
@@ -771,17 +785,11 @@
         gap: 12px 20px;
     }
 
-    .ch-bestsellers-grid { grid-template-columns: 1fr; }
+    .ch-bestsellers-slide { flex-basis: calc((100% - 22px) / 2); }
     .ch-bestsellers-head { flex-direction: column; align-items: flex-start; gap: 8px; }
-
-    /* Cible tactile : les flèches font 40px, sous le minimum recommandé
-       de 44px, et se posent sur les première/last cartes. */
-    .ch-bestsellers-arrow {
-        width: 44px;
-        height: 44px;
-        font-size: var(--fs-15);
-        box-shadow: var(--shadow-lg);
-    }
+    .ch-bestsellers-carousel-wrap { margin: 0 18px; }
+    .ch-bestsellers-arrow-prev { left: -18px; }
+    .ch-bestsellers-arrow-next { right: -18px; }
 
     .ch-usages-zone { grid-template-columns: 1fr 1fr; }
     .ch-testi-grid { grid-template-columns: 1fr; }
@@ -789,7 +797,10 @@
 }
 
 @media (max-width: 480px) {
-    .ch-usages-zone { grid-template-columns: 1fr; }
+    .ch-bestsellers-slide { flex-basis: 100%; }
+    .ch-bestsellers-carousel-wrap { margin: 0 16px; }
+    .ch-bestsellers-arrow-prev { left: -16px; }
+    .ch-bestsellers-arrow-next { right: -16px; }
 
     /* En dessous de 480px les deux boutons côte à côte se réduisent à un
        texte illisible sur deux lignes chacun : on les empile en pleine
@@ -811,5 +822,21 @@
         gap: 8px;
     }
 
-    .ch-bestsellers-arrow { display: none; }
+    /* Usages : une seule carte par rangée, pleine largeur. */
+    .ch-usage-card,
+    .ch-usage-card:nth-last-child(2),
+    .ch-usage-card:last-child { grid-column: 1 / -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ch-product-card,
+    .ch-product-card-add,
+    .ch-bestsellers-arrow {
+        transition: none;
+    }
+
+    .ch-product-card:hover {
+        transform: none;
+    }
+
 }

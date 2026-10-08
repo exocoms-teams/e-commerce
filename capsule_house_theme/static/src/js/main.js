@@ -13,6 +13,7 @@
     'use strict';
 
     function initScrollReveal() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         if (!('IntersectionObserver' in window)) return;
         var targets = document.querySelectorAll('.ch-product-card');
         if (!targets.length) return;
@@ -32,6 +33,162 @@
             el.style.transition = 'opacity 0.45s ease ' + (i * 0.06) + 's, transform 0.45s ease ' + (i * 0.06) + 's';
             obs.observe(el);
         });
+    }
+
+    function initFeaturedProductsCarousel() {
+        const carousel = document.getElementById('ch_bestsellers_carousel');
+        if (!carousel || carousel.dataset.chBound) return;
+
+        const viewport = carousel.querySelector('.ch-bestsellers-viewport');
+        const track = carousel.querySelector('.ch-bestsellers-track');
+        if (!viewport || !track) {
+            throw new Error('Featured products carousel track was not found.');
+        }
+
+        const originals = [...track.children];
+        const count = originals.length;
+        if (count < 2) return;
+
+        const SPEED = 28;            // px/s
+        const GROUP_SIZE = 4;        // slides par clic prev/next
+        const GROUP_DURATION = 500;  // ms
+        const CARD = '.ch-product-card';
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        const mod = (n, m) => ((n % m) + m) % m;
+        const buffer = Math.max(
+            4,
+            Math.ceil(viewport.clientWidth / originals[0].getBoundingClientRect().width)
+        ) + 4;
+
+        // --- Clones (buffer avant + après pour la boucle infinie) ---
+        const cloneAt = (i) => {
+            const clone = originals[mod(i, count)].cloneNode(true);
+            clone.querySelector(CARD)?.removeAttribute('style');
+            return clone;
+        };
+        track.prepend(...Array.from({ length: buffer }, (_, i) => cloneAt(i - buffer)));
+        track.append(...Array.from({ length: buffer }, (_, i) => cloneAt(i)));
+        const slides = [...track.children];
+
+        // --- État ---
+        let step = 0;          // largeur d'une slide + gap
+        let cycle = 0;         // largeur d'un cycle complet
+        let offset = 0;
+        let raf = 0;
+        let lastTime = null;
+        let hovered = false;
+        let anim = null;       // { from, to, startTime } pendant un clic prev/next
+        let visibleKey = '';
+
+        const isPaused = () => hovered || reducedMotion.matches;
+
+        const measure = () => {
+            const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+            step = slides[0].getBoundingClientRect().width + gap;
+            cycle = count * step;
+        };
+
+        // Ramène l'offset dans le cycle central (celui des slides originales)
+        const wrap = () => {
+            const min = buffer * step;
+            offset = min + mod(offset - min, cycle);
+        };
+
+        // Seules les slides visibles sont focusables / lues par les lecteurs d'écran
+        const updateAccessibility = () => {
+            const first = Math.floor(offset / step);
+            const end = Math.ceil((offset + viewport.clientWidth) / step);
+            const key = `${first}:${end}`;
+            if (key === visibleKey) return;
+            visibleKey = key;
+            slides.forEach((slide, i) => slide.toggleAttribute('inert', i < first || i >= end));
+        };
+
+        const render = () => {
+            track.style.transform = `translate3d(${-offset}px, 0, 0)`;
+            updateAccessibility();
+        };
+
+        // --- Boucle d'animation unique ---
+        const tick = (time) => {
+            raf = 0;
+            if (!anim && isPaused()) {
+            lastTime = null;
+            return;
+            }
+
+            if (anim) {
+            if (anim.startTime === null) anim.startTime = time;
+            const progress = Math.min((time - anim.startTime) / GROUP_DURATION, 1);
+            offset = anim.from + (anim.to - anim.from) * (1 - (1 - progress) ** 3);
+            if (progress === 1) {
+                anim = null;
+                wrap();
+            }
+            } else {
+            const dt = lastTime === null ? 0 : Math.min(time - lastTime, 50);
+            offset += (SPEED * dt) / 1000;
+            wrap();
+            }
+
+            lastTime = time;
+            render();
+            raf = requestAnimationFrame(tick);
+        };
+
+        const start = () => {
+            if (!raf) raf = requestAnimationFrame(tick);
+        };
+
+        const slideBy = (direction) => {
+            if (anim) return;
+            const distance = direction * GROUP_SIZE * step;
+            if (reducedMotion.matches) {
+            offset += distance;
+            wrap();
+            render();
+            return;
+            }
+            anim = { from: offset, to: offset + distance, startTime: null };
+            start();
+        };
+
+        // --- Événements ---
+        viewport.addEventListener('pointerover', (e) => {
+            hovered = Boolean(e.target.closest(CARD));
+            if (!hovered) start();
+        });
+        viewport.addEventListener('pointerleave', () => {
+            hovered = false;
+            start();
+        });
+
+        carousel.querySelectorAll('[data-ch-slide]').forEach((button) => {
+            button.addEventListener('click', () =>
+            slideBy(button.dataset.chSlide === 'next' ? 1 : -1)
+            );
+        });
+
+        window.addEventListener('resize', () => {
+            const position = (anim ? anim.to : offset) / step; // position en nombre de slides
+            anim = null;
+            measure();
+            offset = position * step;
+            wrap();
+            visibleKey = '';
+            render();
+            start();
+        });
+
+        reducedMotion.addEventListener('change', start);
+
+        // --- Init ---
+        measure();
+        offset = buffer * step;
+        render();
+        carousel.dataset.chBound = '1';
+        start();
     }
 
     /**
@@ -554,6 +711,7 @@
 
     function init() {
         initScrollReveal();
+        initFeaturedProductsCarousel();
         initHeroDynamicContent();
         initTestimonialsSection();
         initPaymentMethodsSection();
