@@ -46,3 +46,15 @@ failures are logged and stored as 0.
 
 This indicator does not affect `computed_score` or ranking.
 Four automated tests passed, and a live collection stored an index of 73.
+
+### Cron supervision
+
+Added an administrator-only supervision page for Odoo cron executions,
+ordered newest first with an Errors filter enabled by default.
+Failure logs survive transaction rollback, while Odoo's original
+failure handling is preserved. Standard and Pro users cannot read
+the technical logs.
+
+Available under Produits Tendance → Supervision.
+Covers jobs run through Odoo's cron runner; standalone scraper runs
+are not automatically included.

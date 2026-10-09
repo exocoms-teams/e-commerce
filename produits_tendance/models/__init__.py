@@ -8,3 +8,5 @@ from . import trend_webhook_queue
 from . import trend_score_alert
 from . import product_template
 #from . import account_move
+from . import tracker_cron_log
+from . import ir_cron

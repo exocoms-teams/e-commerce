@@ -32,6 +32,7 @@
         'data/webhook_queue_cron.xml',      # WIN-67
         'data/scoring_cron.xml',
         'data/grace_period_config.xml',
+        'views/tracker_cron_log_views.xml',
     ],
 
 
