@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="page_devis" name="monetiques.fr Demande de devis">
+        <t t-call="website.layout">
+            <section class="mn-section mn-devis text-white py-5 position-relative overflow-hidden" style="background-color: #0b0f1d; background-image: radial-gradient(rgba(37, 99, 235, 0.12) 1px, transparent 1px); background-size: 24px 24px;">
+                <div class="mn-container container py-lg-4">
+                    
+                    <!-- Header avec la charte du thème -->
+                    <div class="text-center mx-auto mb-5" style="max-width: 720px;">
+                        <span class="mn-eyebrow d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(37, 99, 235, 0.3); color: #60a5fa; font-size: 0.85rem; font-weight: 600;">
+                            <span class="rounded-circle" style="width: 6px; height: 6px; background-color: #3b82f6;"></span>
+                            Demande de devis
+                        </span>
+                        <h1 class="display-4 fw-bold text-white mb-3" style="letter-spacing: -0.02em;">
+                            Parlons de votre projet de paiement.
+                        </h1>
+                        <p class="text-white-50 fs-5">
+                            Indiquez-nous vos besoins : notre équipe vous répondra avec une proposition sur-mesure sous 24h.
+                        </p>
+                    </div>
+
+                    <!-- Message de confirmation -->
+                    <div t-if="request.params.get('submitted')" class="alert border-0 text-white mb-5 p-4" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3) !important; border-radius: 20px;" role="status">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="fa fa-check-circle fs-3 text-success"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1 text-white">Demande transmise avec succès !</h6>
+                                <span class="text-white-50">Merci, votre demande de devis a bien été envoyée. Un conseiller vous recontactera très rapidement.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Layout 2 Colonnes Dark Mode avec Bords Arrondis -->
+                    <div class="row g-4 align-items-stretch">
+                        
+                        <!-- Colonne Gauche : Réassurance Dark -->
+                        <div class="col-lg-4 d-none d-lg-block">
+                            <div class="h-100 p-4 d-flex flex-column justify-content-between" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border-radius: 28px;">
+                                <div>
+                                    <h5 class="fw-bold text-white mb-4">L'engagement monetiques.fr</h5>
+                                    
+                                    <div class="d-flex mb-4 gap-3">
+                                        <div class="p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(37, 99, 235, 0.4); color: #60a5fa; border-radius: 12px;">
+                                            <i class="fa fa-bolt"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-white mb-1">Chiffrage sous 24h</h6>
+                                            <p class="text-white-50 fs-7 mb-0">Une offre ajustée à votre volume de transactions et votre secteur d'activité.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex mb-4 gap-3">
+                                        <div class="p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(37, 99, 235, 0.4); color: #60a5fa; border-radius: 12px;">
+                                            <i class="fa fa-shield"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-white mb-1">Certifié PCI DSS</h6>
+                                            <p class="text-white-50 fs-7 mb-0">Matériel sécurisé prêt à l'emploi avec passerelle IP / 4G intégrée.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex gap-3">
+                                        <div class="p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(37, 99, 235, 0.4); color: #60a5fa; border-radius: 12px;">
+                                            <i class="fa fa-headset"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-white mb-1">Support dédié 7j/7</h6>
+                                            <p class="text-white-50 fs-7 mb-0">Paramétrage, installation et assistance technique assurés.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-3 mt-4" style="background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(37, 99, 235, 0.25); border-radius: 16px;">
+                                    <span class="fs-7 text-white-50 d-block mb-1">Un doute sur votre matériel ?</span>
+                                    <span class="fw-bold text-white fs-7"><i class="fa fa-phone me-2 text-primary"></i> Contactez le support technique</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colonne Droite : Formulaire Dark Card (Bords Arrondis) -->
+                        <div class="col-lg-8">
+                            <div class="p-4 p-md-5" style="background: #111726; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); border-radius: 28px;">
+                                <form action="/devis/submit" method="post" class="mn-devis__form">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    
+                                    <div class="row g-3">
+                                        
+                                        <!-- Nom -->
+                                        <div class="col-md-6 mb-2">
+                                            <label for="devis-name" class="form-label text-white-50 fs-7 fw-medium mb-1">Nom complet *</label>
+                                            <input id="devis-name" type="text" name="name" class="form-control text-white border-0 py-2.5 px-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 14px;" placeholder="ex: Thomas Bernard" required="required"/>
+                                        </div>
+
+                                        <!-- Email -->
+                                        <div class="col-md-6 mb-2">
+                                            <label for="devis-email" class="form-label text-white-50 fs-7 fw-medium mb-1">Email professionnel *</label>
+                                            <input id="devis-email" type="email" name="email" class="form-control text-white border-0 py-2.5 px-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 14px;" placeholder="thomas@entreprise.fr" required="required"/>
+                                        </div>
+
+                                        <!-- Téléphone -->
+                                        <div class="col-md-6 mb-2">
+                                            <label for="devis-phone" class="form-label text-white-50 fs-7 fw-medium mb-1">Téléphone *</label>
+                                            <input id="devis-phone" type="tel" name="phone" class="form-control text-white border-0 py-2.5 px-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 14px;" placeholder="06 00 00 00 00" required="required"/>
+                                        </div>
+
+                                        <!-- Société -->
+                                        <div class="col-md-6 mb-2">
+                                            <label for="devis-company" class="form-label text-white-50 fs-7 fw-medium mb-1">Nom de votre entreprise</label>
+                                            <input id="devis-company" type="text" name="company" class="form-control text-white border-0 py-2.5 px-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 14px;" placeholder="ex: Commerce / Restaurant"/>
+                                        </div>
+
+                                        <!-- Produit -->
+                                        <div class="col-md-8 mb-2">
+                                            <label for="devis-product" class="form-label text-white-50 fs-7 fw-medium mb-1">Équipement concerné *</label>
+                                            <select id="devis-product" name="product_id" class="form-select text-white border-0 py-2.5 px-3" style="background: #182032; border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 14px;" required="required">
+                                                <option value="" style="background: #111726;">-- Choisissez un modèle --</option>
+                                                <t t-foreach="products" t-as="product">
+                                                    <option t-att-value="product.id" t-esc="product.name" style="background: #111726;"/>
+                                                </t>
+                                            </select>
+                                        </div>
+
+                                        <!-- Quantité -->
+                                        <div class="col-md-4 mb-2">
+                                            <label for="devis-quantity" class="form-label text-white-50 fs-7 fw-medium mb-1">Quantité *</label>
+                                            <input id="devis-quantity" type="number" name="quantity" class="form-control text-white border-0 py-2.5 px-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 14px;" min="1" value="1" required="required"/>
+                                        </div>
+
+                                        <!-- Message -->
+                                        <div class="col-12 mb-3">
+                                            <label for="devis-notes" class="form-label text-white-50 fs-7 fw-medium mb-1">Besoins spécifiques &amp; détails du projet</label>
+                                            <textarea id="devis-notes" name="notes" class="form-control text-white border-0 p-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 14px;" rows="4" placeholder="Décrivez votre activité, la connectivité souhaitée (Wi-Fi, 4G, IP) ou vos besoins d'intégration caisse."></textarea>
+                                        </div>
+
+                                        <!-- Bouton Bleu Néon Arrondi -->
+                                        <div class="col-12 mt-2">
+                                            <button type="submit" class="btn text-white w-100 py-3 fw-bold border-0 d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border-radius: 16px; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35); transition: all 0.2s ease;">
+                                                <span>Envoyer ma demande de devis</span>
+                                                <i class="fa fa-arrow-right fs-6"></i>
+                                            </button>
+                                            <div class="text-center mt-3">
+                                                <small class="text-white-50 fs-8">
+                                                    <i class="fa fa-lock me-1 text-primary"></i> Vos données sont protégées et ne seront jamais retransmises.
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </t>
+    </template>
+
+</odoo>

@@ -11,6 +11,7 @@
         'views/templates/components.xml',
         'views/pages/home.xml',
         'views/pages/services.xml',
+        'views/pages/devis.xml',
         'data/website_data.xml',
     ],
     'assets': {
