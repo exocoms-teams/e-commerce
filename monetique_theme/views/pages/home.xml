@@ -134,8 +134,8 @@
                         <p>Équipements certifiés, prêts à déployer. Livraison et installation incluses.</p>
                     </div>
                     <div class="mn-products__grid">
-                        <t t-set="products" t-value="website.sale_product_domain()"/>
-                        <t t-foreach="request.env['product.template'].search([], limit=8)" t-as="product">
+                        <t t-if="products">
+                            <t t-foreach="products" t-as="product">
                             <a t-attf-href="/shop/#{product.id}" class="mn-product-card">
                                 <div class="mn-product-card__img">
                                     <t t-if="product.image_512">
@@ -155,6 +155,10 @@
                                     </div>
                                 </div>
                             </a>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <p class="mn-products__empty">Aucun produit n'est actuellement disponible.</p>
                         </t>
                     </div>
                     <div class="mn-section__footer">
