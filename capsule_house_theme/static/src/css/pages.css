@@ -1093,6 +1093,122 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     white-space: nowrap;
 }
 
+/* La variante accueil regroupe le statut et le détail pour les afficher
+   sur une seule ligne mobile, sans modifier le rendu desktop existant. */
+.ch-gammes-home .ch-gamme-card-link > span:nth-child(3) {
+    display: contents;
+}
+
+@media (max-width: 768px) {
+    #wrapwrap .ch-gammes-home {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gammes-title-block {
+        padding-bottom: 4px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-usages-head {
+        margin-bottom: 0;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card {
+        display: block;
+        padding: 0;
+        overflow: hidden;
+        border-radius: 20px;
+        transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-link {
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr) 34px;
+        grid-template-areas:
+            "icon title arrow"
+            "icon meta arrow";
+        column-gap: 14px;
+        row-gap: 2px;
+        align-items: center;
+        min-height: 82px;
+        padding: 14px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-icon {
+        grid-area: icon;
+        width: 52px;
+        height: 52px;
+        margin: 0;
+        border-radius: 16px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-name {
+        grid-area: title;
+        align-self: end;
+        font-size: var(--fs-18);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-link > span:nth-child(3) {
+        grid-area: meta;
+        display: flex;
+        min-width: 0;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 10px;
+        align-self: start;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-status {
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: 0;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-tagline {
+        flex-grow: 0;
+        white-space: normal;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-link > span:last-child {
+        grid-area: arrow;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        justify-self: end;
+        width: 34px;
+        height: 34px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        font-size: 0;
+        line-height: 1;
+        box-shadow: var(--shadow-sm);
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-link > span:last-child i {
+        margin: 0;
+        font-size: var(--fs-14);
+        transform: translateX(-1px);
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:active {
+        transform: scale(0.98);
+        background: var(--ch-bg-soft);
+        box-shadow: none;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-link:focus-visible {
+        outline: 3px solid var(--ch-terracotta);
+        outline-offset: 3px;
+        border-radius: 20px;
+    }
+}
+
 .ch-gamme-card-cta {
     display: inline-flex;
     align-items: center;
