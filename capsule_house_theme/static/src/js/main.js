@@ -12,6 +12,8 @@
 (function () {
     'use strict';
 
+    var boundUsageZones = new WeakSet();
+
     function initScrollReveal() {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         if (!('IntersectionObserver' in window)) return;
@@ -32,6 +34,45 @@
             el.style.transform = 'translateY(14px)';
             el.style.transition = 'opacity 0.45s ease ' + (i * 0.06) + 's, transform 0.45s ease ' + (i * 0.06) + 's';
             obs.observe(el);
+        });
+    }
+
+    function initUsageAccordions() {
+        var breakpoint = window.matchMedia('(max-width: 768px)');
+        var zones = document.querySelectorAll('.ch-usages-zone');
+
+        zones.forEach(function (zone) {
+            if (boundUsageZones.has(zone)) return;
+            var items = Array.from(zone.querySelectorAll('[data-ch-usage-accordion]'));
+            if (!items.length) return;
+            boundUsageZones.add(zone);
+
+            items.forEach(function (item) {
+                item.addEventListener('toggle', function () {
+                    if (!breakpoint.matches || !item.open) return;
+                    items.forEach(function (other) {
+                        if (other !== item) other.open = false;
+                    });
+                });
+            });
+
+            if (breakpoint.matches) {
+                items.slice(1).forEach(function (item) {
+                    item.open = false;
+                });
+            }
+
+            var syncOpenState = function (event) {
+                items.forEach(function (item, index) {
+                    item.open = event.matches ? index === 0 : true;
+                });
+            };
+
+            if (typeof breakpoint.addEventListener === 'function') {
+                breakpoint.addEventListener('change', syncOpenState);
+            } else {
+                breakpoint.addListener(syncOpenState);
+            }
         });
     }
 
@@ -711,6 +752,7 @@
 
     function init() {
         initScrollReveal();
+        initUsageAccordions();
         initFeaturedProductsCarousel();
         initHeroDynamicContent();
         initTestimonialsSection();

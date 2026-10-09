@@ -625,6 +625,137 @@
 }
 .ch-usage-bullet .fa { color: var(--ch-green); margin-top: 3px; font-size: var(--fs-11); }
 
+.ch-usage-summary {
+    display: block;
+    list-style: none;
+}
+
+.ch-usage-summary::-webkit-details-marker {
+    display: none;
+}
+
+.ch-usage-caret {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    #wrapwrap .ch-usages-zone {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    #wrapwrap .ch-usages-zone .ch-usages-title-block {
+        padding-bottom: 4px;
+    }
+
+    #wrapwrap .ch-usages-zone .ch-usages-head {
+        margin-bottom: 0;
+    }
+
+    #wrapwrap .ch-usages-zone .ch-usage-card {
+        padding: 0;
+        overflow: hidden;
+        border-radius: 20px;
+        box-shadow: 0 1px 2px rgba(60, 40, 20, 0.04);
+    }
+
+    #wrapwrap .ch-usage-summary {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px;
+        cursor: pointer;
+        transition: background 120ms ease;
+    }
+
+    #wrapwrap .ch-usage-summary:active {
+        background: var(--ch-bg-soft);
+    }
+
+    #wrapwrap .ch-usages-zone .ch-usage-icon {
+        flex: 0 0 48px;
+        height: 48px;
+        margin: 0;
+        border-radius: 15px;
+    }
+
+    #wrapwrap .ch-usages-zone .ch-usage-name {
+        flex: 1;
+        min-width: 0;
+        margin: 0;
+        font-size: var(--fs-18);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    #wrapwrap .ch-usage-caret {
+        display: grid;
+        flex: 0 0 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--ch-panel);
+        color: var(--ch-terracotta);
+        transition: transform 250ms ease, background-color 200ms ease, color 200ms ease;
+    }
+
+    #wrapwrap .ch-usage-caret .fa {
+        font-size: var(--fs-12);
+    }
+
+    #wrapwrap .ch-usage-accordion[open] .ch-usage-caret {
+        transform: rotate(180deg);
+        background: var(--ch-terracotta);
+        color: var(--ch-white);
+    }
+
+    #wrapwrap .ch-usage-content {
+        padding: 2px 16px 18px;
+        animation: ch-usage-content-in 250ms ease;
+    }
+
+    #wrapwrap .ch-usage-bullets {
+        gap: 12px;
+        padding-top: 14px;
+        border-top: 1px dashed var(--ch-gray-border);
+    }
+
+    #wrapwrap .ch-usage-bullet {
+        gap: 10px;
+        font-size: var(--fs-14-5);
+        line-height: 1.4;
+    }
+
+    #wrapwrap .ch-usage-bullet .fa {
+        flex: 0 0 16px;
+        margin-top: 2px;
+        text-align: center;
+    }
+
+    #wrapwrap .ch-usage-summary:focus-visible {
+        outline: 3px solid var(--ch-terracotta);
+        outline-offset: -3px;
+    }
+}
+
+@keyframes ch-usage-content-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #wrapwrap .ch-usage-caret,
+    #wrapwrap .ch-usage-summary {
+        transition: none;
+    }
+
+    #wrapwrap .ch-usage-content {
+        animation: none;
+    }
+}
+
 /* ── AVIS CLIENTS (accueil, v19.0.1.0.100) — voir
    views/partials/home_testimonials.xml et static/src/js/main.js
    (initTestimonialsSection). Grille peuplée dynamiquement (JS) avec
