@@ -773,6 +773,7 @@ def _setup_menus(env, website, categories):
     }
 
     known_urls = {url for _, url, _ in entries}
+    known_urls.add('/blog')
     kept_menu_ids = set()
     for name, url, seq in entries:
         existing = Menu.search([
