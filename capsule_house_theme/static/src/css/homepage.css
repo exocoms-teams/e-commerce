@@ -29,7 +29,7 @@
     grid-template-columns: 1fr 1fr;
     grid-template-areas: "hero-text hero-visual";
     direction: ltr;
-    gap: 48px;
+    gap: 28px;
     align-items: center;
 }
 
@@ -99,6 +99,11 @@
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
+}
+
+.ch-hero-btn-action a {
+    text-decoration: none;
+    outline: none;
 }
 
 .ch-hero-div-note {
@@ -735,18 +740,20 @@
    480px (petit téléphone). Les mêmes valeurs sont déjà utilisées par
    pages.css / shop.css, pour qu'une règle Media se lise pareil partout.
 
-   Règle appliquée sur tous les paliers : le TEXTE du hero passe AVANT
-   l'illustration. L'ancien `order: -1` sur .ch-hero-visual remontait
-   l'image au-dessus du H1, ce qui repoussait le titre et les deux
-   boutons d'action sous la ligne de flottaison sur téléphone — l'inverse
-   de l'objectif « action visible dès l'arrivée ». L'image reste en tête
-   de lecture sur grand écran grâce à son ordre naturel dans la grille
-   (c'est la colonne de droite), sans dépendre d'un `order`. ── */
+   La grille passe sur une colonne sous 1100px. Sur téléphone, le contenu
+   est redistribué dans l'ordre accroche → action → image → réassurance,
+   pour éviter que l'image repousse le titre et le CTA sous la ligne de
+   flottaison. ── */
 
 @media (max-width: 1100px) {
     /* Une seule colonne : la colonne de texte passe en premier (ordre
        naturel du DOM), l'illustration en second. */
-    .ch-hero-grid { grid-template-columns: 1fr; }
+    .ch-hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "hero-text"
+            "hero-visual";
+    }
     .ch-hero-visual { min-height: 320px; }
 
     /* `.ch-hero-illustration` est une balise <img> (hero.xml:137), pas un
@@ -765,11 +772,6 @@
 }
 
 @media (max-width: 768px) {
-    /* Le gap de 48px du hero est prévu pour deux colonnes côte à côte ;
-       une fois empilées, il devient un vide vertical de 48px entre le
-       bloc de boutons et l'image. */
-    .ch-hero-grid { gap: 28px; }
-
     /* Boutons d'action : le H1, le chapeau et les 2 boutons doivent
        tenir dans le premier écran. */
     .ch-hero-btn-action { gap: 12px; }
@@ -826,6 +828,249 @@
     .ch-usage-card,
     .ch-usage-card:nth-last-child(2),
     .ch-usage-card:last-child { grid-column: 1 / -1; }
+}
+
+/* Hero mobile — une composition plus proche d'un écran d'application :
+   accroche centrée, action principale évidente, réassurance en petites
+   cartes et visuel traité comme une vraie carte produit. */
+@media (max-width: 768px) {
+    #wrapwrap .ch-hero {
+        padding-top: clamp(20px, 5vw, 36px);
+        padding-bottom: clamp(24px, 5vw, 40px);
+        background: linear-gradient(180deg, var(--ch-bg-soft) 0%, var(--ch-white) 56%);
+    }
+
+    .ch-hero-grid {
+        grid-template-areas:
+            "hero-rating"
+            "hero-title"
+            "hero-subtitle"
+            "hero-actions"
+            "hero-note"
+            "hero-visual"
+            "hero-trust";
+        gap: 0;
+        text-align: center;
+    }
+
+    .ch-hero-content { display: contents; }
+
+    .ch-rating-badge { grid-area: hero-rating; }
+    .ch-hero-title { grid-area: hero-title; }
+    .ch-hero-subtitle { grid-area: hero-subtitle; }
+    .ch-hero-btn-action { grid-area: hero-actions; }
+    .ch-hero-div-note { grid-area: hero-note; }
+    .ch-hero-visual { grid-area: hero-visual; }
+    .ch-trust-row { grid-area: hero-trust; }
+
+    .ch-hero-content {
+        width: 100%;
+        max-width: 560px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .ch-rating-badge {
+        margin-right: auto;
+        margin-bottom: 14px;
+        margin-left: auto;
+    }
+
+    .ch-hero-title {
+        max-width: 18ch;
+        margin: 0 auto;
+        font-size: clamp(30px, 8vw, 36px);
+        line-height: 1.12;
+        letter-spacing: -0.9px;
+    }
+
+    .ch-hero-subtitle {
+        max-width: 36ch;
+        margin: 14px auto 0;
+        font-size: var(--fs-15-5);
+        line-height: 1.65;
+    }
+
+    .ch-hero-btn-action {
+        width: 100%;
+        max-width: 380px;
+        margin: 24px auto 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .ch-hero-btn-action .ch-btn {
+        width: 100%;
+        min-height: 50px;
+        padding: 12px 18px;
+        justify-content: center;
+        white-space: normal;
+    }
+
+    .ch-hero-btn-action .ch-btn-cta {
+        box-shadow: 0 8px 20px rgba(193, 105, 79, 0.22);
+    }
+
+    .ch-hero-btn-action .ch-btn-browse {
+        background: rgba(255, 255, 255, 0.78);
+    }
+
+    .ch-hero-div-note {
+        display: flex;
+        justify-content: center;
+        margin-top: 14px;
+    }
+
+    .ch-hero-text-note {
+        display: inline-block;
+        padding: 7px 12px;
+        border: 1px solid var(--ch-gray-border);
+        border-radius: var(--r-pill);
+        background: rgba(255, 255, 255, 0.78);
+        font-size: var(--fs-12);
+        line-height: 1.4;
+    }
+
+    .ch-trust-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: 420px;
+        margin: 24px auto 0;
+        padding-top: 18px;
+        border-top: 1px solid var(--ch-gray-border);
+        gap: 10px;
+    }
+
+    .ch-trust-item {
+        min-height: 48px;
+        padding: 9px 10px;
+        border: 1px solid var(--ch-gray-border);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.86);
+        text-align: left;
+        font-size: var(--fs-12);
+        line-height: 1.35;
+        gap: 8px;
+    }
+
+    .ch-trust-item i {
+        flex: 0 0 16px;
+        color: var(--ch-terracotta);
+        text-align: center;
+    }
+
+    .ch-trust-item:last-child { grid-column: 1 / -1; }
+
+    .ch-hero-visual {
+        min-height: 0;
+        margin-top: 24px;
+    }
+
+    .ch-hero-visual::before {
+        top: -18%;
+        right: -18%;
+        bottom: -14%;
+        left: -18%;
+        opacity: 0.28;
+        filter: blur(36px);
+    }
+
+    .ch-hero-illustration {
+        min-height: 0;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        border-radius: 22px;
+        box-shadow: var(--shadow-md);
+        object-fit: cover;
+        object-position: center 54%;
+    }
+
+    .ch-hero-float-card {
+        top: 7%;
+        right: 2%;
+        box-sizing: border-box;
+        width: 64px;
+        max-width: none;
+        padding: 8px 10px 8px 8px;
+        border-radius: 14px;
+        gap: 0;
+        overflow: visible;
+        white-space: nowrap;
+        transition: width 280ms ease, transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .ch-hero-float-body {
+        width: max-content;
+        max-width: 0;
+        overflow: hidden;
+        opacity: 0;
+        visibility: hidden;
+        transition: max-width 280ms ease, opacity 160ms ease, visibility 0s linear 280ms;
+    }
+
+    .ch-hero-float-name,
+    .ch-hero-float-price {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ch-hero-float-badge {
+        opacity: 0;
+        transition: opacity 160ms ease;
+    }
+
+    .ch-hero-float-badge-new {
+        z-index: 1;
+        opacity: 1;
+    }
+
+    .ch-hero-float-card:hover,
+    .ch-hero-float-card:focus-visible {
+        width: min(195px, 62vw);
+        gap: 10px;
+        transform: translateY(-2px);
+    }
+
+    .ch-hero-float-card:hover .ch-hero-float-body,
+    .ch-hero-float-card:focus-visible .ch-hero-float-body {
+        max-width: 120px;
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0s;
+    }
+
+    .ch-hero-float-card:hover .ch-hero-float-badge,
+    .ch-hero-float-card:focus-visible .ch-hero-float-badge {
+        opacity: 1;
+    }
+
+    .ch-hero-float-card:focus-visible {
+        outline: 2px solid var(--ch-terracotta);
+        outline-offset: 2px;
+    }
+
+    .ch-hero-float-card-2 {
+        top: auto;
+        right: auto;
+        bottom: 6%;
+        left: 2%;
+    }
+}
+
+@media (max-width: 360px) {
+    .ch-trust-row { grid-template-columns: 1fr; }
+    .ch-trust-item:last-child { grid-column: auto; }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+    .ch-hero-float-card,
+    .ch-hero-float-body,
+    .ch-hero-float-badge {
+        transition-duration: 0.01ms;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
