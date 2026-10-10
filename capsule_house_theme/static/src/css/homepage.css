@@ -53,7 +53,6 @@
     line-height: 1.15;
     letter-spacing: -1px;
     margin-bottom: 20px;
-    /* text-wrap: wrap; */
 }
 
 .ch-hero-title-accent {
@@ -77,7 +76,7 @@
 .ch-trust-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 18px 28px;
+    gap: 18px 10px;
     padding-top: 23px;
     margin-top: 28px;
     border-top: 1px solid var(--ch-gray-border);
@@ -86,14 +85,21 @@
 .ch-trust-item {
     display: flex;
     align-items: center;
+    min-height: 48px;
+    padding: 6px 10px;
+    border: 1px solid var(--ch-gray-border);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.86);
+    text-align: left;
+    font-size: var(--fs-12);
+    line-height: 1.35;
     gap: 8px;
-    font-size: var(--fs-12-5);
-    color: var(--ch-fog);
 }
 
 .ch-trust-item i {
-    color: var(--ch-ink);
-    font-size: var(--fs-15);
+    flex: 0 0 16px;
+    color: var(--ch-terracotta);
+    text-align: center;
 }
 
 .ch-hero-btn-action {
@@ -108,12 +114,18 @@
 }
 
 .ch-hero-div-note {
-    margin-top: 16px;
+    margin-top: 14px;
+    margin-left: 38px
 }
 
 .ch-hero-text-note {
-    font-size: var(--fs-12-5);
+    font-size: var(--fs-12);
+    line-height: 1.35;
     color: var(--ch-fog);
+    display: inline-block;
+    padding: 7px 12px;
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-pill);
 }
 
 /* HERO VISUAL / ILLUSTRATION */
@@ -339,9 +351,7 @@
 
 .ch-hero-cart-shortcut {
     position: absolute;
-    /* bottom: 8%; */
     bottom: 0%;
-    /* right: 4%; */
     right: 0%;
     z-index: 2;
     margin: 0;
@@ -829,43 +839,69 @@
    payment.provider réellement à l'état 'enabled' — jamais de logo de
    marque non vérifié, section masquée tant qu'aucun n'est configuré. ── */
 .ch-payment-section {
-    background: var(--ch-white);
-    padding: 0;
-    border-top: 1px solid var(--ch-gray-border);
+    background: linear-gradient(180deg, var(--ch-white) 0%, var(--ch-bg-soft) 100%);
+    padding: 0 0 12px;
+    border-top: 0;
+    border-bottom: 0;
+    position: relative;
+}
+
+#wrapwrap .ch-payment-section {
+    padding-bottom: var(--space-section);
 }
 
 .ch-payment-inner {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 18px 28px;
     flex-wrap: wrap;
-    gap: 16px 28px;
+    max-width: 960px;
+    margin: 0 auto;
 }
 
 .ch-payment-label {
     font-size: var(--fs-13);
     font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
     color: var(--ch-fog);
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    white-space: nowrap;
 }
-.ch-payment-label i { color: var(--ch-ink); }
+.ch-payment-label i {
+    color: var(--ch-terracotta);
+    font-size: var(--fs-12);
+}
 
-.ch-payment-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+.ch-payment-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+}
 
 .ch-payment-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: var(--ch-panel);
+    gap: 8px;
+    background: var(--ch-white);
     color: var(--ch-ink);
     font-size: var(--fs-12-5);
     font-weight: 600;
-    padding: 7px 14px;
+    padding: 10px 16px;
+    border: 1px solid var(--ch-gray-border);
     border-radius: var(--r-pill);
+    box-shadow: 0 10px 28px rgba(29, 25, 22, 0.05);
 }
-.ch-payment-badge i { color: var(--ch-terracotta); }
+.ch-payment-badge i {
+    color: var(--ch-terracotta);
+    font-size: var(--fs-12);
+    width: 16px;
+    text-align: center;
+}
 
 /* ── RESPONSIVE HOMEPAGE ───────────────────────────────────────────────
    Trois paliers : 1100px (bascule 2 colonnes), 768px (tablette/téléphone),
@@ -926,20 +962,16 @@
 
     .ch-usages-zone { grid-template-columns: 1fr 1fr; }
     .ch-testi-grid { grid-template-columns: 1fr; }
-    #wrapwrap .ch-payment-section {
-        padding: 20px 0;
-    }
 
     #wrapwrap .ch-payment-inner {
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
+        gap: 12px 16px;
         text-align: center;
     }
 
     .ch-payment-label {
         justify-content: center;
-        font-size: var(--fs-13);
+        font-size: var(--fs-12);
+        letter-spacing: 0.03em;
     }
 
     .ch-payment-badges {
@@ -948,7 +980,7 @@
     }
 
     .ch-payment-badge {
-        padding: 7px 12px;
+        padding: 8px 12px;
         font-size: var(--fs-12);
     }
 }
@@ -1104,10 +1136,6 @@
     }
 
     .ch-hero-text-note {
-        display: inline-block;
-        padding: 7px 12px;
-        border: 1px solid var(--ch-gray-border);
-        border-radius: var(--r-pill);
         background: rgba(255, 255, 255, 0.78);
         font-size: var(--fs-12);
         line-height: 1.4;
@@ -1121,24 +1149,6 @@
         padding-top: 18px;
         border-top: 1px solid var(--ch-gray-border);
         gap: 10px;
-    }
-
-    .ch-trust-item {
-        min-height: 48px;
-        padding: 9px 10px;
-        border: 1px solid var(--ch-gray-border);
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.86);
-        text-align: left;
-        font-size: var(--fs-12);
-        line-height: 1.35;
-        gap: 8px;
-    }
-
-    .ch-trust-item i {
-        flex: 0 0 16px;
-        color: var(--ch-terracotta);
-        text-align: center;
     }
 
     .ch-trust-item:last-child { grid-column: 1 / -1; }

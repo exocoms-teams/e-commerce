@@ -803,13 +803,11 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     grid-template-columns: 1fr 1fr;
     gap: 40px;
     align-items: center;
-    /* margin-bottom: 48px; */
 }
 /* Le <h1> du hero À propos / Le concept NE redimensionne plus rien :
    il hérite de --fs-h1 via .ch-aide-title, comme les 7 autres pages.
    L'ancien --fs-34 était le 3e largest H1 du site (après 46px
    accueil et 48px avis) sans raison de le maintenir. */
-/* .ch-entreprise-hero .ch-aide-title { margin-bottom: 16px; } */
 .ch-aide-title { margin-bottom: 16px; }
 .ch-entreprise-accent { color: var(--ch-terracotta); }
 .ch-entreprise-hero-visual { display: flex; justify-content: center; }
@@ -822,7 +820,6 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     background: var(--ch-panel);
     border-radius: var(--r-lg);
     padding: 28px 20px;
-    /* margin-bottom: 48px; */
 }
 .ch-entreprise-stat { text-align: center; }
 .ch-entreprise-stat-num {
@@ -859,7 +856,6 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     gap: 0;
     border-left: 2px solid var(--ch-gray-border);
     padding-left: 28px;
-    /* margin-bottom: 16px; */
 }
 .ch-entreprise-history-item {
     position: relative;
@@ -904,7 +900,6 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     border-radius: var(--r-lg);
     padding: 32px 24px;
     text-align: center;
-    /* margin-bottom: 24px; */
 }
 .ch-entreprise-diagram-visual { display: flex; justify-content: center; margin: 16px 0; }
 .ch-entreprise-diagram-label {
@@ -986,7 +981,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
    (repeat(auto-fit, minmax(...))), cohérent avec .ch-usages-zone. */
 .ch-gammes-zone {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 16px;
     max-width: var(--container);
     margin: 0 auto;
@@ -1124,6 +1119,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     }
 
     #wrapwrap .ch-gammes-home .ch-gamme-card-link {
+        text-decoration: none;
         display: grid;
         grid-template-columns: 52px minmax(0, 1fr) 34px;
         grid-template-areas:
@@ -1206,6 +1202,74 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
         outline: 3px solid var(--ch-terracotta);
         outline-offset: 3px;
         border-radius: 20px;
+    }
+}
+
+/* Sur desktop, la DERNIÈRE carte de la section (« Sur-mesure ») reprend la
+   mise en page compacte de la variante mobile (icône | titre + meta) et
+   s'étale en pleine largeur. Seul le bouton diffère : la pastille texte
+   d'origine occupe la colonne de droite, à la place de la flèche ronde
+   mobile (on ne touche donc pas à son style, seulement à son placement). */
+@media (min-width: 769px) {
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child {
+        grid-column: 1 / -1;
+        padding: 0;
+        border-radius: 20px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-link {
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr) auto;
+        grid-template-areas:
+            "icon title btn"
+            "icon meta btn";
+        column-gap: 14px;
+        row-gap: 2px;
+        align-items: center;
+        min-height: 82px;
+        padding: 14px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-icon {
+        grid-area: icon;
+        width: 52px;
+        height: 52px;
+        margin: 0;
+        border-radius: 16px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-name {
+        grid-area: title;
+        align-self: end;
+        font-size: var(--fs-18);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-link > span:nth-child(3) {
+        grid-area: meta;
+        display: flex;
+        min-width: 0;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 10px;
+        align-self: start;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-status {
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: 0;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-tagline {
+        flex-grow: 0;
+        white-space: normal;
+    }
+
+    /* Placement uniquement : le style du bouton reste celui du desktop. */
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-link > span:last-child {
+        grid-area: btn;
     }
 }
 

@@ -718,37 +718,37 @@
      * payment_methods_data()). Reste masquée tant qu'aucun n'est
      * configuré — jamais de logo de marque non vérifié.
      */
-    function initPaymentMethodsSection() {
-        var section = document.querySelector('[data-ch-payment-section]');
-        if (!section) return;
-        var badges = section.querySelector('[data-ch-payment-badges]');
-        if (!badges) return;
+    // function initPaymentMethodsSection() {
+    //     var section = document.querySelector('[data-ch-payment-section]');
+    //     if (!section) return;
+    //     var badges = section.querySelector('[data-ch-payment-badges]');
+    //     if (!badges) return;
 
-        fetch('/capsule-house/payment-methods-data.json', { headers: { 'Accept': 'application/json' } })
-            .then(function (response) {
-                if (!response.ok) { throw new Error('HTTP ' + response.status); }
-                return response.json();
-            })
-            .then(function (data) {
-                var items = data.items || [];
-                if (!items.length) return;
-                items.forEach(function (item) {
-                    var badge = document.createElement('span');
-                    badge.className = 'ch-payment-badge';
-                    var icon = document.createElement('i');
-                    icon.className = 'fa fa-credit-card';
-                    badge.appendChild(icon);
-                    var label = document.createElement('span');
-                    label.textContent = item.name || '';
-                    badge.appendChild(label);
-                    badges.appendChild(badge);
-                });
-                section.classList.remove('d-none');
-            })
-            .catch(function () {
-                // Silencieux : dégradation gracieuse, section reste masquée.
-            });
-    }
+    //     fetch('/capsule-house/payment-methods-data.json', { headers: { 'Accept': 'application/json' } })
+    //         .then(function (response) {
+    //             if (!response.ok) { throw new Error('HTTP ' + response.status); }
+    //             return response.json();
+    //         })
+    //         .then(function (data) {
+    //             var items = data.items || [];
+    //             if (!items.length) return;
+    //             items.forEach(function (item) {
+    //                 var badge = document.createElement('span');
+    //                 badge.className = 'ch-payment-badge';
+    //                 var icon = document.createElement('i');
+    //                 icon.className = 'fa fa-credit-card';
+    //                 badge.appendChild(icon);
+    //                 var label = document.createElement('span');
+    //                 label.textContent = item.name || '';
+    //                 badge.appendChild(label);
+    //                 badges.appendChild(badge);
+    //             });
+    //             section.classList.remove('d-none');
+    //         })
+    //         .catch(function () {
+    //             // Silencieux : dégradation gracieuse, section reste masquée.
+    //         });
+    // }
 
     function init() {
         initScrollReveal();
@@ -756,7 +756,7 @@
         initFeaturedProductsCarousel();
         initHeroDynamicContent();
         initTestimonialsSection();
-        initPaymentMethodsSection();
+        // initPaymentMethodsSection();
         initMiniCart();
     }
 

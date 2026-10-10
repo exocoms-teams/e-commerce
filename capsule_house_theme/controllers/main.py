@@ -410,17 +410,7 @@ class CapsuleHouseWebsite(Website):
     @http.route('/capsule-house/payment-methods-data.json', type='http', auth='public',
                 website=True, sitemap=False)
     def payment_methods_data(self, **kw):
-        """Moyens de paiement RÉELLEMENT actifs (payment.provider,
-        state='enabled'), en JSON — même principe que ci-dessus.
-        home_payment_methods.xml reste masqué (d-none) tant qu'aucun
-        fournisseur n'est réellement configuré : jamais de logo Visa/
-        Mastercard/PayPal... affiché avant que le client n'ait
-        lui-même activé un vrai moyen de paiement (v19.0.1.0.100).
-        Vérifié en direct sur ce site avant implémentation
-        (/odoo/payment-providers) : aucun fournisseur n'est enabled
-        aujourd'hui, la section est donc invisible tant que ça reste
-        le cas.
-        """
+        """Return enabled payment providers as JSON for integrations that need them."""
         Provider = request.env['payment.provider'].sudo()
         providers = Provider.search([('state', '=', 'enabled')], order='sequence asc')
 
