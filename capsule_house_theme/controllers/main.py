@@ -598,28 +598,30 @@ class CapsuleHouseWebsite(Website):
 
         return request.redirect('/avis?sent=1')
 
-    @http.route('/livraison', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/aide', type='http', auth='public', website=True, sitemap=True)
+    def aide(self, **kw):
+        """Central help page with hash-based topic tabs."""
+        return request.render('capsule_house_theme.aide_page', {})
+
+    @http.route('/livraison', type='http', auth='public', website=True, sitemap=False)
     def aide_livraison(self, **kw):
-        """Page d'aide "Livraison & installation". Route neuve (pas de
-        collision possible avec un autre site de la base mutualisée) :
-        pas besoin de garde `_is_our_website`, même logique que /avis.
-        """
-        return request.render('capsule_house_theme.aide_livraison_page', {})
+        """Permanently redirect the legacy delivery URL to its help tab."""
+        return request.redirect('/aide#livraison', code=301)
 
-    @http.route('/retours', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/retours', type='http', auth='public', website=True, sitemap=False)
     def aide_retours(self, **kw):
-        """Page d'aide "Retours & rétractation"."""
-        return request.render('capsule_house_theme.aide_retours_page', {})
+        """Permanently redirect the legacy returns URL to its help tab."""
+        return request.redirect('/aide#retours', code=301)
 
-    @http.route('/garantie', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/garantie', type='http', auth='public', website=True, sitemap=False)
     def aide_garantie(self, **kw):
-        """Page d'aide "Garantie constructeur"."""
-        return request.render('capsule_house_theme.aide_garantie_page', {})
+        """Permanently redirect the legacy warranty URL to its help tab."""
+        return request.redirect('/aide#garantie', code=301)
 
-    @http.route('/faq', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/faq', type='http', auth='public', website=True, sitemap=False)
     def aide_faq(self, **kw):
-        """Page d'aide "Questions fréquentes"."""
-        return request.render('capsule_house_theme.aide_faq_page', {})
+        """Permanently redirect the legacy FAQ URL to its help tab."""
+        return request.redirect('/aide#faq', code=301)
 
     @http.route('/a-propos', type='http', auth='public', website=True, sitemap=True)
     def entreprise_apropos(self, **kw):

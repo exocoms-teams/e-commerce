@@ -409,6 +409,14 @@
     align-items: start;
 }
 
+.ch-aide-hub { padding-bottom: var(--space-section); }
+.ch-aide-hub-panels { min-width: 0; }
+.ch-aide-hub-panel[hidden] { display: none !important; }
+.ch-aide-hub-tabs .ch-aide-sidebar-link:focus-visible {
+    outline: 3px solid var(--ch-amber);
+    outline-offset: 3px;
+}
+
 /* ── SIDEBAR (aide_sidebar.xml, partagée sur les 4 pages) ── */
 .ch-aide-sidebar {
     background: var(--ch-ink);
@@ -750,6 +758,16 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     .ch-aide-cards { grid-template-columns: 1fr; }
     .ch-aide-coverage { grid-template-columns: 1fr; }
     .ch-aide-warranty { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+@media (min-width: 768px) and (max-width: 900px) {
+    .ch-aide-hub.ch-aide-layout { grid-template-columns: 260px minmax(0, 1fr); }
+    .ch-aide-hub .ch-aide-sidebar {
+        position: sticky;
+        flex-direction: column;
+        overflow-x: visible;
+    }
+    .ch-aide-hub .ch-aide-sidebar-title { display: block; }
+    .ch-aide-hub .ch-aide-sidebar-link { white-space: normal; }
 }
 @media (max-width: 560px) {
     .ch-aide-timeline { grid-template-columns: 1fr; }

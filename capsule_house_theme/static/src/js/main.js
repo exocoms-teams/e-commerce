@@ -1,3 +1,148 @@
+/** @odoo-module **/
+
+import publicWidget from "@web/legacy/js/public/public_widget";
+
+publicWidget.registry.CapsuleHouseHelpTabs = publicWidget.Widget.extend({
+    selector: "[data-ch-help-tabs]",
+    disabledInEditableMode: true,
+
+    start: function () {
+        this.tabs = Array.from(this.el.querySelectorAll('[role="tab"]'));
+        this.panels = Array.from(this.el.querySelectorAll('[role="tabpanel"]'));
+        this.tabList = this.el.querySelector('[role="tablist"]');
+        this.breadcrumb = document.querySelector('[data-ch-help-breadcrumb-section]');
+        this.breadcrumbRoot = document.querySelector('[data-ch-help-breadcrumb]');
+        this.mobileBreakpoint = window.matchMedia('(max-width: 767px)');
+
+        if (!this.tabs.length || !this.panels.length) {
+            return this._super.apply(this, arguments);
+        }
+
+        this._onClick = this._onClick.bind(this);
+        this._onKeydown = this._onKeydown.bind(this);
+        this._onHistoryChange = this._onHistoryChange.bind(this);
+        this._onBreakpointChange = this._onBreakpointChange.bind(this);
+
+        this.el.addEventListener('click', this._onClick);
+        this.el.addEventListener('keydown', this._onKeydown);
+        window.addEventListener('hashchange', this._onHistoryChange);
+        window.addEventListener('popstate', this._onHistoryChange);
+        if (this.mobileBreakpoint.addEventListener) {
+            this.mobileBreakpoint.addEventListener('change', this._onBreakpointChange);
+        } else {
+            this.mobileBreakpoint.addListener(this._onBreakpointChange);
+        }
+
+        this.el.classList.add('ch-aide-tabs-ready');
+        this._onBreakpointChange();
+        this._activate(window.location.hash.slice(1) || 'livraison', false);
+        return this._super.apply(this, arguments);
+    },
+
+    _onBreakpointChange: function () {
+        if (this.tabList) {
+            this.tabList.setAttribute(
+                'aria-orientation',
+                this.mobileBreakpoint.matches ? 'horizontal' : 'vertical'
+            );
+        }
+    },
+
+    _activate: function (key, updateHistory) {
+        var selectedTab = this.tabs.find(function (tab) {
+            return tab.getAttribute('href') === '#' + key;
+        }) || this.tabs[0];
+        key = selectedTab.getAttribute('href').slice(1);
+
+        this.tabs.forEach(function (tab) {
+            var selected = tab === selectedTab;
+            tab.setAttribute('aria-selected', selected ? 'true' : 'false');
+            tab.tabIndex = selected ? 0 : -1;
+            tab.classList.toggle('active', selected);
+        });
+        this.panels.forEach(function (panel) {
+            var selected = panel.getAttribute('data-ch-help-panel') === key;
+            panel.hidden = !selected;
+            panel.setAttribute('aria-hidden', selected ? 'false' : 'true');
+        });
+
+        if (this.breadcrumb) {
+            this.breadcrumb.textContent = selectedTab.textContent.trim();
+        }
+        var panel = this.panels.find(function (item) {
+            return item.getAttribute('data-ch-help-panel') === key;
+        });
+        var heading = panel && panel.querySelector('h1');
+        var suffix = this.breadcrumbRoot &&
+            this.breadcrumbRoot.getAttribute('data-ch-title-suffix');
+        if (heading && suffix) {
+            document.title = heading.textContent.trim() + suffix;
+        }
+
+        if (updateHistory && window.location.hash !== '#' + key) {
+            window.history.pushState(null, '', '#' + key);
+        }
+    },
+
+    _onClick: function (event) {
+        var tab = event.target.closest('[role="tab"]');
+        if (!tab || !this.el.contains(tab)) {
+            return;
+        }
+        event.preventDefault();
+        this._activate(tab.getAttribute('href').slice(1), true);
+    },
+
+    _onKeydown: function (event) {
+        var tab = event.target.closest('[role="tab"]');
+        if (!tab || !this.el.contains(tab)) {
+            return;
+        }
+        var index = this.tabs.indexOf(tab);
+        var nextIndex = index;
+        var horizontal = this.mobileBreakpoint.matches;
+        if ((horizontal && event.key === 'ArrowRight') ||
+            (!horizontal && event.key === 'ArrowDown')) {
+            nextIndex = (index + 1) % this.tabs.length;
+        } else if ((horizontal && event.key === 'ArrowLeft') ||
+            (!horizontal && event.key === 'ArrowUp')) {
+            nextIndex = (index - 1 + this.tabs.length) % this.tabs.length;
+        } else if (event.key === 'Home') {
+            nextIndex = 0;
+        } else if (event.key === 'End') {
+            nextIndex = this.tabs.length - 1;
+        } else if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            this._activate(tab.getAttribute('href').slice(1), true);
+            return;
+        } else {
+            return;
+        }
+
+        event.preventDefault();
+        this.tabs.forEach(function (item) { item.tabIndex = -1; });
+        this.tabs[nextIndex].tabIndex = 0;
+        this.tabs[nextIndex].focus();
+    },
+
+    _onHistoryChange: function () {
+        this._activate(window.location.hash.slice(1) || 'livraison', false);
+    },
+
+    destroy: function () {
+        this.el.removeEventListener('click', this._onClick);
+        this.el.removeEventListener('keydown', this._onKeydown);
+        window.removeEventListener('hashchange', this._onHistoryChange);
+        window.removeEventListener('popstate', this._onHistoryChange);
+        if (this.mobileBreakpoint.removeEventListener) {
+            this.mobileBreakpoint.removeEventListener('change', this._onBreakpointChange);
+        } else {
+            this.mobileBreakpoint.removeListener(this._onBreakpointChange);
+        }
+        return this._super.apply(this, arguments);
+    },
+});
+
 /**
  * capsule_house_theme — JavaScript principal
  *

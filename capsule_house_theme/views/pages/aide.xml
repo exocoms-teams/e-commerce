@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="aide_page" name="Capsule House - Aide">
+        <t t-call="website.layout">
+            <t t-set="title" t-if="request.env.lang == 'fr_FR'">Aide | Capsule House</t>
+            <t t-set="title" t-if="request.env.lang != 'fr_FR'">Help | Capsule House</t>
+            <t t-set="head">
+                <meta name="description" content="Retrouvez les informations Capsule House sur la livraison, les retours, la garantie et les questions fréquentes."/>
+                <link rel="canonical" href="https://capsule-house.fr/aide"/>
+                <meta property="og:title" content="Centre d'aide | Capsule House"/>
+                <meta property="og:url" content="https://capsule-house.fr/aide"/>
+            </t>
+            <div class="ch-aide-breadcrumb"
+                 data-ch-help-breadcrumb="1"
+                 t-att-data-ch-title-suffix="' | Aide | Capsule House' if request.env.lang == 'fr_FR' else ' | Help | Capsule House'">
+                <a href="/" t-if="request.env.lang == 'fr_FR'">Accueil</a>
+                <a href="/" t-if="request.env.lang != 'fr_FR'">Home</a>
+                <span class="sep">/</span>
+                <a href="/aide" t-if="request.env.lang == 'fr_FR'">Aide</a>
+                <a href="/aide" t-if="request.env.lang != 'fr_FR'">Help</a>
+                <span class="sep">/</span>
+                <span data-ch-help-breadcrumb-section="1" t-if="request.env.lang == 'fr_FR'">Livraison</span>
+                <span data-ch-help-breadcrumb-section="1" t-if="request.env.lang != 'fr_FR'">Delivery</span>
+            </div>
+            <main class="ch-aide-layout ch-aide-hub" data-ch-help-tabs="1">
+                <nav class="ch-aide-sidebar ch-aide-hub-tabs"
+                     role="tablist"
+                     aria-orientation="vertical"
+                     t-att-aria-label="'Rubriques d’aide' if request.env.lang == 'fr_FR' else 'Help topics'">
+                    <span class="ch-aide-sidebar-title" t-if="request.env.lang == 'fr_FR'">Aide</span>
+                    <span class="ch-aide-sidebar-title" t-if="request.env.lang != 'fr_FR'">Help</span>
+                    <a class="ch-aide-sidebar-link active"
+                       id="ch-help-tab-livraison"
+                       href="#livraison"
+                       role="tab"
+                       aria-selected="true"
+                       aria-controls="livraison"
+                       tabindex="0"
+                       t-if="request.env.lang == 'fr_FR'">Livraison</a>
+                    <a class="ch-aide-sidebar-link active"
+                       id="ch-help-tab-livraison"
+                       href="#livraison"
+                       role="tab"
+                       aria-selected="true"
+                       aria-controls="livraison"
+                       tabindex="0"
+                       t-if="request.env.lang != 'fr_FR'">Delivery</a>
+                    <a class="ch-aide-sidebar-link"
+                       id="ch-help-tab-retours"
+                       href="#retours"
+                       role="tab"
+                       aria-selected="false"
+                       aria-controls="retours"
+                       tabindex="-1"
+                       t-if="request.env.lang == 'fr_FR'">Retours</a>
+                    <a class="ch-aide-sidebar-link"
+                       id="ch-help-tab-retours"
+                       href="#retours"
+                       role="tab"
+                       aria-selected="false"
+                       aria-controls="retours"
+                       tabindex="-1"
+                       t-if="request.env.lang != 'fr_FR'">Returns</a>
+                    <a class="ch-aide-sidebar-link"
+                       id="ch-help-tab-garantie"
+                       href="#garantie"
+                       role="tab"
+                       aria-selected="false"
+                       aria-controls="garantie"
+                       tabindex="-1"
+                       t-if="request.env.lang == 'fr_FR'">Garantie</a>
+                    <a class="ch-aide-sidebar-link"
+                       id="ch-help-tab-garantie"
+                       href="#garantie"
+                       role="tab"
+                       aria-selected="false"
+                       aria-controls="garantie"
+                       tabindex="-1"
+                       t-if="request.env.lang != 'fr_FR'">Warranty</a>
+                    <a class="ch-aide-sidebar-link"
+                       id="ch-help-tab-faq"
+                       href="#faq"
+                       role="tab"
+                       aria-selected="false"
+                       aria-controls="faq"
+                       tabindex="-1">FAQ</a>
+                </nav>
+                <div class="ch-aide-hub-panels">
+                    <section class="ch-aide-hub-panel"
+                             id="livraison"
+                             role="tabpanel"
+                             aria-labelledby="ch-help-tab-livraison"
+                             tabindex="0"
+                             data-ch-help-panel="livraison">
+                        <t t-call="capsule_house_theme.aide_livraison_section"/>
+                    </section>
+                    <section class="ch-aide-hub-panel"
+                             id="retours"
+                             role="tabpanel"
+                             aria-labelledby="ch-help-tab-retours"
+                             tabindex="0"
+                             data-ch-help-panel="retours">
+                        <t t-call="capsule_house_theme.aide_retours_section"/>
+                    </section>
+                    <section class="ch-aide-hub-panel"
+                             id="garantie"
+                             role="tabpanel"
+                             aria-labelledby="ch-help-tab-garantie"
+                             tabindex="0"
+                             data-ch-help-panel="garantie">
+                        <t t-call="capsule_house_theme.aide_garantie_section"/>
+                    </section>
+                    <section class="ch-aide-hub-panel"
+                             id="faq"
+                             role="tabpanel"
+                             aria-labelledby="ch-help-tab-faq"
+                             tabindex="0"
+                             data-ch-help-panel="faq">
+                        <t t-call="capsule_house_theme.aide_faq_section"/>
+                    </section>
+                </div>
+            </main>
+            <div class="oe_structure oe_empty" id="oe_structure_ch_aide_hub_bottom"/>
+        </t>
+    </template>
+</odoo>

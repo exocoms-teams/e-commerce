@@ -1005,31 +1005,25 @@ côté Capsule House. Vérifié dans exocoms_theme
 à `#o_wsale_pager`. Reprise à l'identique dans `shop.css` avec
 `--ch-terracotta`/`--ch-white`.
 
-## Pages Aide — Livraison, Retours, Garantie, FAQ (v19.0.1.0.46)
+## Centre d'aide — onglets Livraison, Retours, Garantie, FAQ
 
-Les 4 liens de la colonne "Aide" du footer (jusque-là en 404) mènent
-maintenant à de vraies pages, livrées d'après une maquette fournie par
-le client :
+Les informations sont regroupées sur `/aide` avec quatre onglets, une
+navigation latérale sur ordinateur et une barre horizontale défilante
+sur mobile. Le hash, le titre et le fil d'Ariane suivent l'onglet actif.
+Chaque contenu FR/EN reste défini dans son propre sous-template QWeb et
+est partagé avec les vues historiques. Les anciennes routes redirigent
+en 301 vers leur onglet :
 
-- `/livraison` : encart "livraison offerte dès 25 000 €", timeline 4
-  étapes, tableau des délais/frais par zone (France métro/Corse/DOM-TOM).
-- `/retours` : encart d'alerte sur le droit de rétractation (non
-  applicable après lancement fabrication, produit sur mesure), 3
-  cartes (avant fabrication / après livraison / procédure), bouton
-  vers `/contactus` (page de contact NATIVE d'Odoo — lien mis à jour en
-  v19.0.1.0.47, voir section "Pages Entreprise" ci-dessous ; pointait
-  vers `/contact` avant que la décision de ne jamais reconstruire de
-  page contact ne soit prise).
-- `/garantie` : bandeau "10 ans", colonnes Couvert (vert)/Non couvert
-  (rouge), étapes pour déclarer un sinistre.
-- `/faq` : questions groupées par catégorie, accordéon Bootstrap natif
-  (markup du snippet Accordéon du Website Builder, pas de JS custom).
+- `/livraison` → `/aide#livraison`
+- `/retours` → `/aide#retours`
+- `/garantie` → `/aide#garantie`
+- `/faq` → `/aide#faq`
 
-Menu latéral "Aide" partagé par les 4 pages (`aide_sidebar.xml`),
-état actif calculé dynamiquement depuis l'URL réelle (jamais codé en
-dur par page). Contenu bilingue FR/EN, même convention que le reste du
-thème. Responsive : le menu latéral passe en barre horizontale
-scrollable sous 900px.
+La FAQ conserve ses accordéons Bootstrap natifs. Les onglets sont
+accessibles au clavier et toutes les sections restent visibles si
+JavaScript n'est pas disponible. Le widget et les styles sont chargés
+via les assets `ir.asset` scopés au site Capsule House, sans modifier le
+bundle global partagé par les autres sites.
 
 Deux écarts avec le brief fourni, choisis pour rester cohérent avec le
 reste du site déjà en place (le brief ne correspondait pas exactement
