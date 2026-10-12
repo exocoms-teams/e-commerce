@@ -8,7 +8,6 @@
 
     var url = box.getAttribute('data-url');
     var key = box.getAttribute('data-key');
-    var adresse = box.getAttribute('data-adresse');
     var map = null, marker = null, mapsDemandee = false, timer = null;
 
     function chargerGoogleMaps(callback) {
@@ -18,7 +17,7 @@
         window.ssSuiviMapReady = callback;
         var s = document.createElement('script');
         s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) +
-                '&callback=ssSuiviMapReady';
+                '&loading=async&callback=ssSuiviMapReady';
         s.async = true;
         document.head.appendChild(s);
     }
@@ -33,17 +32,14 @@
         });
         marker = new google.maps.Marker({ position: pos, map: map, title: 'Votre artisan', label: '🚗' });
 
-        // Adresse d'intervention : second marqueur, et on cadre les deux points
-        if (adresse) {
-            new google.maps.Geocoder().geocode({ address: adresse }, function (res, st) {
-                if (st !== 'OK' || !res.length) { return; }
-                var dest = res[0].geometry.location;
-                new google.maps.Marker({ position: dest, map: map, title: "Adresse d'intervention", label: '🏠' });
-                var cadre = new google.maps.LatLngBounds();
-                cadre.extend(pos);
-                cadre.extend(dest);
-                map.fitBounds(cadre);
-            });
+        // Adresse d'intervention (coordonnées calculées par Odoo) : 🏠 et cadrage des deux points
+        if (data.dest_lat !== undefined) {
+            var dest = { lat: data.dest_lat, lng: data.dest_lng };
+            new google.maps.Marker({ position: dest, map: map, title: "Adresse d'intervention", label: '🏠' });
+            var cadre = new google.maps.LatLngBounds();
+            cadre.extend(pos);
+            cadre.extend(dest);
+            map.fitBounds(cadre);
         }
     }
 

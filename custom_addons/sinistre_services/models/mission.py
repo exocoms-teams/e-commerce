@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import secrets
+import requests
 from datetime import timedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -95,6 +96,11 @@ class SinistreMission(models.Model):
     artisan_lat           = fields.Float(string='Latitude artisan', digits=(10, 7))
     artisan_lng           = fields.Float(string='Longitude artisan', digits=(10, 7))
     artisan_position_date = fields.Datetime(string='Position mise à jour le', readonly=True)
+    # Coordonnées de l'adresse d'intervention (OpenStreetMap, calculées une fois)
+    dest_lat              = fields.Float(string='Latitude adresse', digits=(10, 7))
+    dest_lng              = fields.Float(string='Longitude adresse', digits=(10, 7))
+    adresse_geocodee      = fields.Char(string='Adresse géolocalisée', readonly=True,
+                                        help="Adresse pour laquelle dest_lat/dest_lng ont été calculées.")
 
     sans_reponse    = fields.Boolean(
         string='Sans réponse', default=False, tracking=True,
@@ -341,6 +347,32 @@ class SinistreMission(models.Model):
         self.write({'en_route': True, 'date_depart': fields.Datetime.now()})
         for mission in self:
             mission.message_post(body=_("🚗 %s est en route.", mission.intervenant_id.name or _("L'artisan")))
+
+    def _geocoder_adresse(self):
+        """Calcule les coordonnées de l'adresse d'intervention avec OpenStreetMap
+        (Nominatim), sans clé ni facturation. Une seule tentative par adresse :
+        on ne rappelle le service que si l'adresse change."""
+        for mission in self:
+            adresse = (mission.adresse_intervention or '').strip()
+            if not adresse or mission.adresse_geocodee == adresse:
+                continue
+            vals = {'adresse_geocodee': adresse, 'dest_lat': 0.0, 'dest_lng': 0.0}
+            try:
+                rep = requests.get(
+                    'https://nominatim.openstreetmap.org/search',
+                    params={'q': adresse, 'format': 'json', 'limit': 1, 'countrycodes': 'fr'},
+                    headers={'User-Agent': 'SinistreServices/1.0 (Odoo)'},
+                    timeout=5,
+                )
+                resultats = rep.json() if rep.ok else []
+                if resultats:
+                    vals['dest_lat'] = float(resultats[0]['lat'])
+                    vals['dest_lng'] = float(resultats[0]['lon'])
+                else:
+                    _logger.info("[sinistre] Adresse introuvable sur OpenStreetMap : %s", adresse)
+            except Exception as e:
+                _logger.warning("[sinistre] Géolocalisation de l'adresse impossible (%s) : %s", adresse, e)
+            mission.write(vals)
 
     def _arreter_suivi(self):
         """Fin du trajet (arrivée ou annulation) : on efface la position (RGPD)."""

@@ -413,6 +413,9 @@ class SinistreWebsite(http.Controller):
                 'message': "Dossier introuvable. Vérifiez le lien reçu par email.",
             })
 
+        # Coordonnées de l'adresse pour le 🏠 de la carte (calculées une seule fois)
+        if mission.state in ('assigne', 'rdv_planifie'):
+            mission._geocoder_adresse()
         return request.render('sinistre_services.ss_page_suivi', {
             'year': datetime.datetime.now().year,
             'mission': mission,
@@ -430,6 +433,8 @@ class SinistreWebsite(http.Controller):
         if not mission:
             return request.make_json_response({'error': 'introuvable'}, status=404)
         data = {'state': mission.state, 'en_route': bool(mission.en_route)}
+        if mission.dest_lat or mission.dest_lng:
+            data.update({'dest_lat': mission.dest_lat, 'dest_lng': mission.dest_lng})
         if mission.en_route and mission.artisan_position_date:
             data.update({
                 'lat': mission.artisan_lat,
