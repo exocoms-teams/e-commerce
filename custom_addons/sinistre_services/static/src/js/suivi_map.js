@@ -8,7 +8,20 @@
 
     var url = box.getAttribute('data-url');
     var key = box.getAttribute('data-key');
-    var map = null, marker = null, mapsDemandee = false, timer = null;
+    var map = null, marker = null, dest = null, mapsDemandee = false, timer = null;
+    var ZOOM_MAX = 16; // on garde un peu de contexte (rues voisines) même si l'artisan est tout près
+
+    // Cadre la carte sur l'artisan (et l'adresse si connue), sans zoomer à l'excès
+    function cadrer(pos) {
+        if (!dest) { map.setCenter(pos); return; }
+        var cadre = new google.maps.LatLngBounds();
+        cadre.extend(pos);
+        cadre.extend(dest);
+        map.fitBounds(cadre, 60);
+        google.maps.event.addListenerOnce(map, 'idle', function () {
+            if (map.getZoom() > ZOOM_MAX) { map.setZoom(ZOOM_MAX); }
+        });
+    }
 
     function chargerGoogleMaps(callback) {
         if (window.google && window.google.maps) { callback(); return; }
@@ -24,7 +37,12 @@
 
     function afficherPosition(data) {
         var pos = { lat: data.lat, lng: data.lng };
-        if (map) { marker.setPosition(pos); return; }
+        if (map) {
+            marker.setPosition(pos);
+            // L'artisan est sorti de la zone affichée : on recadre
+            if (!map.getBounds() || !map.getBounds().contains(pos)) { cadrer(pos); }
+            return;
+        }
 
         box.style.display = 'block';
         map = new google.maps.Map(box, {
@@ -32,15 +50,12 @@
         });
         marker = new google.maps.Marker({ position: pos, map: map, title: 'Votre artisan', label: '🚗' });
 
-        // Adresse d'intervention (coordonnées calculées par Odoo) : 🏠 et cadrage des deux points
+        // Adresse d'intervention (coordonnées calculées par Odoo) : 🏠
         if (data.dest_lat !== undefined) {
-            var dest = { lat: data.dest_lat, lng: data.dest_lng };
+            dest = { lat: data.dest_lat, lng: data.dest_lng };
             new google.maps.Marker({ position: dest, map: map, title: "Adresse d'intervention", label: '🏠' });
-            var cadre = new google.maps.LatLngBounds();
-            cadre.extend(pos);
-            cadre.extend(dest);
-            map.fitBounds(cadre);
         }
+        cadrer(pos);
     }
 
     function actualiser() {
