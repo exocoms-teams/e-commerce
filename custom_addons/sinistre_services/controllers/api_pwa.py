@@ -456,7 +456,7 @@ def _fmt_mission(m):
             'montant_estime_max':   m.montant_estime_max or 0,
             'reste_a_charge':       m.reste_a_charge or 0,
             'signature_avant':      bool(m.signature_avant),
-        'en_route':             bool(m.en_route),
+            'en_route':             bool(m.en_route),
             'signature_apres':      bool(m.signature_apres),
             'notes_artisan':        m.notes_artisan or '',
             'facture_numero':       '',
@@ -493,6 +493,7 @@ def _fmt_mission_payload(m):
         'ref_paiement':         getattr(m, 'ref_paiement', '') or '',
         'commission_virement':  getattr(m, 'commission_virement', 0) or 0,
         'signature_avant':      bool(m.signature_avant),
+        'en_route':             bool(m.en_route),
         'signature_apres':      bool(m.signature_apres),
         'notes_artisan':        m.notes_artisan or '',
         'facture_numero':       _mission_facture_label(m),
@@ -750,7 +751,7 @@ class SinistrePWAController(http.Controller):
                 membre_depuis = ''
 
             partner    = user.partner_id
-            phone      = partner.phone or partner.mobile or ''
+            phone      = partner.phone or ''  # 'mobile' n'existe plus en Odoo 19
             entreprise = iv.name or (partner.parent_id.name if partner.parent_id else '') or user.name
             admin_phone = request.env['ir.config_parameter'].sudo().get_param(
                 'sinistre.admin_phone', '0X0X0X'
