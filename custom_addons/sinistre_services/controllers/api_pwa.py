@@ -456,6 +456,7 @@ def _fmt_mission(m):
             'montant_estime_max':   m.montant_estime_max or 0,
             'reste_a_charge':       m.reste_a_charge or 0,
             'signature_avant':      bool(m.signature_avant),
+            'en_route':             bool(m.en_route),
             'signature_apres':      bool(m.signature_apres),
             'notes_artisan':        m.notes_artisan or '',
             'facture_numero':       '',
@@ -492,6 +493,7 @@ def _fmt_mission_payload(m):
         'ref_paiement':         getattr(m, 'ref_paiement', '') or '',
         'commission_virement':  getattr(m, 'commission_virement', 0) or 0,
         'signature_avant':      bool(m.signature_avant),
+        'en_route':             bool(m.en_route),
         'signature_apres':      bool(m.signature_apres),
         'notes_artisan':        m.notes_artisan or '',
         'facture_numero':       _mission_facture_label(m),
@@ -749,7 +751,7 @@ class SinistrePWAController(http.Controller):
                 membre_depuis = ''
 
             partner    = user.partner_id
-            phone      = partner.phone or partner.mobile or ''
+            phone      = partner.phone or ''  # 'mobile' n'existe plus en Odoo 19
             entreprise = iv.name or (partner.parent_id.name if partner.parent_id else '') or user.name
             admin_phone = request.env['ir.config_parameter'].sudo().get_param(
                 'sinistre.admin_phone', '0X0X0X'
@@ -935,6 +937,50 @@ class SinistrePWAController(http.Controller):
             return _ok({'success': True, 'state': mission.state})
         except Exception as e:
             return _err(400, str(e))
+
+    # ── EN ROUTE / POSITION (suivi du trajet par le client) ──────────
+    @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/en-route',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def mission_en_route(self, mission_id, **kwargs):
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _err(403, "Accès non autorisé")
+        mission = _check_mission(intervenant, mission_id)
+        if not mission:
+            return _err(404, "Mission introuvable")
+        try:
+            mission.action_partir_en_route()
+            return _ok({'success': True, 'en_route': True})
+        except Exception as e:
+            return _err(400, str(e))
+
+    @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/position',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def mission_position(self, mission_id, **kwargs):
+        """Reçoit la position GPS de l'artisan pendant son trajet."""
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _err(403, "Accès non autorisé")
+        mission = _check_mission(intervenant, mission_id)
+        if not mission:
+            return _err(404, "Mission introuvable")
+        try:
+            body = json.loads(request.httprequest.data.decode('utf-8'))
+            lat, lng = float(body.get('lat')), float(body.get('lng'))
+        except Exception:
+            return _err(400, "Position invalide")
+        if not (-90 <= lat <= 90 and -180 <= lng <= 180):
+            return _err(400, "Position invalide")
+        # Plus en route (arrivé ou annulé) : on dit à l'appli d'arrêter d'envoyer
+        if not mission.en_route:
+            return _ok({'success': False, 'en_route': False})
+        from odoo import fields
+        mission.write({
+            'artisan_lat': lat,
+            'artisan_lng': lng,
+            'artisan_position_date': fields.Datetime.now(),
+        })
+        return _ok({'success': True, 'en_route': True})
 
     # ── TERMINER ─────────────────────────────────────────────────────
     @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/terminer',

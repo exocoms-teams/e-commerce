@@ -463,7 +463,29 @@ window.MissionDetail = (() => {
         const st  = m.state;
         const dev = m.devis;
         const isDone = ['termine','facture','clos','annule'].includes(st);
+        // Plus en route côté serveur (arrivé, annulé…) : on coupe le GPS
+        if (!m.en_route && Tracking.isActive(m.id)) Tracking.stop();
         if (isDone) return;
+
+        // ── Trajet vers le client ──
+        if (['assigne','rdv_planifie'].includes(st)) {
+            if (!m.en_route) {
+                block.appendChild(_btn('🚗 Je suis en route', 'btn-start', async () => {
+                    try {
+                        await API.enRoute(m.id);
+                        Tracking.start(m.id);
+                        Toast.show('📍 Trajet partagé avec le client. Gardez l\'appli ouverte jusqu\'à votre arrivée.', 'success');
+                        await MissionDetail.reload();
+                    } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
+                }));
+            } else {
+                Tracking.start(m.id); // reprise après un rechargement de la page
+                const info = document.createElement('p');
+                info.className = 'tracking-info';
+                info.textContent = '📍 Trajet partagé avec le client — gardez l\'appli ouverte jusqu\'à votre arrivée.';
+                block.appendChild(info);
+            }
+        }
 
         if (!m.signature_avant) {
             block.appendChild(_btn('✍️ Signature Avant Intervention', 'btn-start', () =>
@@ -479,6 +501,7 @@ window.MissionDetail = (() => {
                     return;
                 }
                 await _action('DEMARRER_MISSION', () => API.demarrer(m.id), { missionId: m.id });
+                Tracking.stop(); // arrivé sur place : fin du partage de position
             }));
         }
 

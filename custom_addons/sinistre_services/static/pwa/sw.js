@@ -6,7 +6,7 @@
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-const CACHE_NAME = 'sinistre-pro-v6';
+const CACHE_NAME = 'sinistre-pro-v7';
 const OFFLINE_URL = '/pwa/offline.html';
 const API_BASE = '/api/sinistre/v1';
 const PWA_ICON = '/sinistre_services/static/pwa/icons/icon-192.png';

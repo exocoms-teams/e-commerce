@@ -29,6 +29,21 @@
                     </div>
                 </section>
 
+                <!-- Suivi de l'artisan pendant son trajet -->
+                <t t-if="mission.state in ('assigne', 'rdv_planifie')">
+                    <section class="card mb-3 o_colored_level" data-name="Carte Suivi Artisan">
+                        <div class="card-header">Suivi de votre artisan</div>
+                        <div class="card-body">
+                            <p id="ssSuiviStatut" class="mb-2">Chargement…</p>
+                            <div id="ssSuiviMap"
+                                 t-att-data-url="'/suivi/%s/position' % mission.token_api"
+                                 t-att-data-key="google_maps_key"
+                                 style="height:320px;border-radius:8px;display:none;"/>
+                        </div>
+                    </section>
+                    <script type="text/javascript" src="/sinistre_services/static/src/js/suivi_map.js?v=3"/>
+                </t>
+
                 <t t-set="devis" t-value="mission.devis_ids.sorted('date_devis', reverse=True)[:1]"/>
                 <t t-if="devis and devis.state in ('envoye', 'en_revision')">
                     <section class="card mb-3 border-primary o_colored_level" data-name="Carte Devis a Signer">
