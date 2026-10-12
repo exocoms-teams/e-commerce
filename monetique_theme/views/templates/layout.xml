@@ -14,7 +14,7 @@
                         <a href="/" t-attf-class="mn-nav-link #{'active' if request.httprequest.path == '/' else ''}">Home</a>
                         <a href="/shop" t-attf-class="mn-nav-link #{'active' if request.httprequest.path.startswith('/shop') else ''}">Shop</a>
                         <a href="/services" t-attf-class="mn-nav-link #{'active' if request.httprequest.path == '/services' else ''}">Services</a>
-                        <a href="/contactus" t-attf-class="mn-nav-link #{'active' if request.httprequest.path == '/contactus' else ''}">Contact</a>
+                        <a href="/contact" t-attf-class="mn-nav-link #{'active' if request.httprequest.path in ('/contact', '/contactus') else ''}">Contact</a>
                     </nav>
 
                     <!-- Actions à droite (Panier, Connexion / Profil utilisateur) -->
@@ -63,7 +63,7 @@
                         <a href="/" class="mn-mobile-link">Home</a>
                         <a href="/shop" class="mn-mobile-link">Shop</a>
                         <a href="/services" class="mn-mobile-link">Services</a>
-                        <a href="/contactus" class="mn-mobile-link">Contact</a>
+                        <a href="/contact" class="mn-mobile-link">Contact</a>
                         
                         <t t-if="request.env.user._is_public()">
                             <a href="/web/login" class="mn-mobile-link mn-mobile-login">Connexion</a>
@@ -123,7 +123,7 @@
                                 <ul>
                                     <li><a href="/a-propos">À propos</a></li>
                                     <li><a href="/emplois">Emplois</a></li>
-                                    <li><a href="/contactus">Contact</a></li>
+                                    <li><a href="/contact">Contact</a></li>
                                 </ul>
                             </div>
                         </div>
