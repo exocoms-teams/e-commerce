@@ -11,6 +11,7 @@ TAUX_COMMISSION_VIREMENT = 0.5
 MONTANT_GARANTIE_DEFAUT = 150.0
 DELAI_REPONSE_MINUTES = 15   # temps laissé aux artisans pour répondre
 TAILLE_VAGUE = 0             # 0 = tous les artisans éligibles en même temps
+FRAIS_DEPLACEMENT_DEFAUT = 80.0  # si aucun montant n'est saisi sur la mission
 
 
 class SinistreMission(models.Model):
@@ -88,6 +89,13 @@ class SinistreMission(models.Model):
 
     # ── Propositions aux artisans (tous en même temps, 15 min) ───────
     proposition_ids = fields.One2many('sinistre.proposition', 'mission_id', string='Propositions')
+    # ── Suivi de l'artisan pendant son trajet (bouton « Je suis en route ») ─
+    en_route              = fields.Boolean(string='Artisan en route', default=False, tracking=True)
+    date_depart           = fields.Datetime(string='Parti le', readonly=True)
+    artisan_lat           = fields.Float(string='Latitude artisan', digits=(10, 7))
+    artisan_lng           = fields.Float(string='Longitude artisan', digits=(10, 7))
+    artisan_position_date = fields.Datetime(string='Position mise à jour le', readonly=True)
+
     sans_reponse    = fields.Boolean(
         string='Sans réponse', default=False, tracking=True,
         help="Aucun artisan éligible n'a accepté la mission.",
@@ -321,6 +329,27 @@ class SinistreMission(models.Model):
             if not rec.photos_avant_count:
                 raise UserError(_("Au moins une photo AVANT est obligatoire pour démarrer l'intervention."))
         self.write({'state': 'en_cours', 'date_debut_travaux': fields.Datetime.now()})
+        # Arrivée sur place : fin du suivi, la position est effacée
+        self._arreter_suivi()
+
+    # ── Suivi du trajet ──────────────────────────────────────────────
+    def action_partir_en_route(self):
+        """L'artisan appuie sur « Je suis en route » : le client peut le suivre."""
+        for mission in self:
+            if mission.state not in ('assigne', 'rdv_planifie'):
+                raise UserError(_("La mission doit être assignée pour partir en route."))
+        self.write({'en_route': True, 'date_depart': fields.Datetime.now()})
+        for mission in self:
+            mission.message_post(body=_("🚗 %s est en route.", mission.intervenant_id.name or _("L'artisan")))
+
+    def _arreter_suivi(self):
+        """Fin du trajet (arrivée ou annulation) : on efface la position (RGPD)."""
+        self.filtered('en_route').write({
+            'en_route': False,
+            'artisan_lat': 0.0,
+            'artisan_lng': 0.0,
+            'artisan_position_date': False,
+        })
 
     def _accepter_devis_si_signature_fin(self):
         """Valide le devis en cours lorsque le client a signé la fin d'intervention."""
@@ -370,14 +399,25 @@ class SinistreMission(models.Model):
 
     def action_annuler(self):
         """Annulation avec gestion des frais de déplacement."""
+        etait_en_route = self.en_route
+        if etait_en_route:
+            # Annulation pendant le trajet de l'artisan : le déplacement est facturé
+            # (à l'assurance si la mission en a une, sinon au client)
+            self.write({
+                'facturer_deplacement': True,
+                'facturation_deplacement_a': 'assurance' if self.assurance_id else 'client',
+                'frais_deplacement': self.frais_deplacement or FRAIS_DEPLACEMENT_DEFAUT,
+            })
+            self.message_post(body=_("🚗 Annulation pendant le trajet de l'artisan : frais de déplacement facturés."))
         if self.artisan_sur_place and not self.facturer_deplacement:
             raise UserError(
                 "L'artisan est sur place. Confirmez si des frais de déplacement doivent être facturés "
                 "(cochez 'Facturer les frais de déplacement' puis relancez)."
             )
         self.write({'state': 'annule'})
-        if self.artisan_sur_place and self.facturer_deplacement:
+        if (self.artisan_sur_place or etait_en_route) and self.facturer_deplacement:
             self._creer_facture_deplacement()
+        self._arreter_suivi()
         self._notify_assurance('annule')
         self.message_post(
             body=f"Mission annulée par : {dict(self._fields['annule_par'].selection).get(self.annule_par, '?')} "

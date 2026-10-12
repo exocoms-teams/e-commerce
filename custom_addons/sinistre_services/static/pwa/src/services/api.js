@@ -59,6 +59,10 @@ window.API = (() => {
 
         /* ── Workflow mission ── */
         async demarrer(missionId)  { return this.post(`/intervenant/mission/${missionId}/demarrer`, {}); },
+        async enRoute(missionId)   { return this.post(`/intervenant/mission/${missionId}/en-route`, {}); },
+        async sendPosition(missionId, lat, lng) {
+            return this.post(`/intervenant/mission/${missionId}/position`, { lat, lng });
+        },
         async terminer(missionId)  { return this.post(`/intervenant/mission/${missionId}/terminer`, {}); },
 
         /* ── Signatures avant / après ── */

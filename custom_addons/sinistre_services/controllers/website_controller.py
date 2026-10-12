@@ -26,6 +26,10 @@ from ..models.departements_fr import DEPARTEMENTS_FR
 
 _logger = logging.getLogger(__name__)
 
+# Clé Google Maps (la même que la PWA). Peut être remplacée par le paramètre
+# système « sinistre_services.google_maps_key ».
+GOOGLE_MAPS_KEY_DEFAUT = 'AIzaSyBNZMVTjyHNMh3YyePuk_HN7KSzLfzYLZk'
+
 _MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 _ALLOWED_EXTENSIONS = {'.pdf', '.jpg', '.jpeg', '.png'}
 
@@ -412,7 +416,28 @@ class SinistreWebsite(http.Controller):
         return request.render('sinistre_services.ss_page_suivi', {
             'year': datetime.datetime.now().year,
             'mission': mission,
+            'google_maps_key': request.env['ir.config_parameter'].sudo().get_param(
+                'sinistre_services.google_maps_key', GOOGLE_MAPS_KEY_DEFAUT),
         })
+
+    @http.route('/suivi/<string:token>/position', type='http', auth='public',
+                methods=['GET'], csrf=False)
+    def suivi_position(self, token, **kwargs):
+        """Position de l'artisan pour la carte de la page de suivi (JSON)."""
+        mission = request.env['sinistre.mission'].sudo().search([
+            ('token_api', '=', token),
+        ], limit=1)
+        if not mission:
+            return request.make_json_response({'error': 'introuvable'}, status=404)
+        data = {'state': mission.state, 'en_route': bool(mission.en_route)}
+        if mission.en_route and mission.artisan_position_date:
+            data.update({
+                'lat': mission.artisan_lat,
+                'lng': mission.artisan_lng,
+                'date': mission.artisan_position_date.isoformat() + 'Z',
+                'artisan': mission.intervenant_id.name or '',
+            })
+        return request.make_json_response(data)
 
     @http.route('/suivi/<string:token>/avis', type='http', auth='public', website=True,
                 methods=['POST'], csrf=True)
