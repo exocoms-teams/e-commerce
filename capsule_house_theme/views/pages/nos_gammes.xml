@@ -73,17 +73,17 @@
                     <div class="ch-gamme-hero-actions" t-if="shop_category_url">
                         <div>    
                             <a t-att-href="shop_category_url" class="ch-btn ch-btn-cta" t-if="request.env.lang == 'fr_FR'">
-                                Voir dans la boutique <i class="fa fa-arrow-right"/>
+                                Voir dans la boutique <i class="fa fa-arrow-right ch-icon-small"/>
                             </a>
                             <a t-att-href="shop_category_url" class="ch-btn ch-btn-cta" t-if="request.env.lang != 'fr_FR'">
-                                View in shop <i class="fa fa-arrow-right"/>
+                                View in shop <i class="fa fa-arrow-right ch-icon-small"/>
                             </a>
                         </div>
                         <a t-attf-href="/nos-gammes/#{ gamme['slug'] }/catalogue.pdf" class="ch-btn ch-btn-cta" download="1" t-if="request.env.lang == 'fr_FR'">
-                            <i class="fa fa-download"/> Télécharger le catalogue PDF
+                            <i class="fa fa-download ch-icon-small"/> Télécharger le catalogue PDF
                         </a>
                         <a t-attf-href="/nos-gammes/#{ gamme['slug'] }/catalogue.pdf" class="ch-btn ch-btn-cta" download="1" t-if="request.env.lang != 'fr_FR'">
-                            <i class="fa fa-download"/> Download PDF catalogue
+                            <i class="fa fa-download ch-icon-small"/> Download PDF catalogue
                         </a>    
                     </div>
                 </div>
@@ -112,7 +112,7 @@
                         <h2 class="ch-gamme-perf-title" t-if="request.env.lang != 'fr_FR'">A <t t-esc="gamme['name'].lower()"/> designed for absolute comfort</h2>
                         <div class="ch-gamme-perf-grid">
                             <div t-foreach="gamme['performances']" t-as="perf" class="ch-gamme-perf-card">
-                                <i t-attf-class="fa #{ perf['icon'] } ch-gamme-perf-icon"/>
+                                <i t-attf-class="fa #{ perf['icon'] } ch-gamme-perf-icon ch-icon-large"/>
                                 <div class="ch-gamme-perf-name" t-if="request.env.lang == 'fr_FR'" t-esc="perf['title_fr']"/>
                                 <div class="ch-gamme-perf-name" t-if="request.env.lang != 'fr_FR'" t-esc="perf['title_en']"/>
                                 <div class="ch-gamme-perf-desc" t-if="request.env.lang == 'fr_FR'" t-esc="perf['desc_fr']"/>
@@ -171,12 +171,12 @@
                         <h2 class="ch-gamme-section-title" t-if="request.env.lang != 'fr_FR'">Included equipment</h2>
                         <div class="ch-gamme-equip-grid" t-if="request.env.lang == 'fr_FR'">
                             <div t-foreach="gamme['equipements_fr']" t-as="item" class="ch-gamme-equip-item">
-                                <i class="fa fa-check-circle"/><t t-esc="item"/>
+                                <i class="fa fa-check-circle ch-icon-small"/><t t-esc="item"/>
                             </div>
                         </div>
                         <div class="ch-gamme-equip-grid" t-if="request.env.lang != 'fr_FR'">
                             <div t-foreach="gamme['equipements_en']" t-as="item" class="ch-gamme-equip-item">
-                                <i class="fa fa-check-circle"/><t t-esc="item"/>
+                                <i class="fa fa-check-circle ch-icon-small"/><t t-esc="item"/>
                             </div>
                         </div>
                     </div>
