@@ -26,10 +26,20 @@
 .ch-legal-breadcrumb a:hover { color: var(--ch-ink); }
 .ch-legal-breadcrumb .sep { margin: 0 6px; color: var(--ch-gray-border); }
 
+/* Le rythme vertical commun (base.css) appliquait un --space-section
+   (40/56/72px) SOUS CHAQUE <section> pour séparer les blocs de page.
+   Ici, une <section> n'est pas un bloc mais un article du document
+   (<h2> + un paragraphe) : on obtenait donc ~100px de vide entre deux
+   articles, l'impression d'espacement signalée. On retire l'espacement
+   de section au niveau des articles (retirés des listes dans base.css)
+   et on porte l'écart d'ouverture/fermeture UNE SEULE FOIS sur le
+   conteneur — exactement le même --space-section que l'ouverture des
+   autres pages. Les articles sont désormais espacés par la seule marge
+   du <h2>, comme les catégories de la page FAQ. */
 .ch-legal-wrap {
     max-width: 760px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: var(--space-section) 24px;
 }
 
 .ch-legal-title {
@@ -64,12 +74,11 @@
     font-size: var(--fs-h2);
     font-weight: 700;
     color: var(--ch-ink);
-    margin: 36px 0 12px;
+    margin: 32px 0 12px;
     padding-left: 14px;
     border-left: 3px solid var(--ch-terracotta);
     line-height: 1.3;
 }
-.ch-legal-body h2:first-of-type { margin-top: 28px; }
 
 .ch-legal-body p {
     font-size: var(--fs-body);
@@ -89,7 +98,7 @@
 }
 
 @media (max-width: 640px) {
-    .ch-legal-wrap { padding: 0 16px; }
+    .ch-legal-wrap { padding-left: 16px; padding-right: 16px; }
     /* Plus de font-size sur h2 ici : le clamp() de --fs-h2 descend déjà
        à 23px sur mobile, on ne fige plus une valeur qui divergeait de
        celle du reste du site. */
