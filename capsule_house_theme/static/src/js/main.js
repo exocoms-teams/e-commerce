@@ -833,7 +833,7 @@ publicWidget.registry.CapsuleHouseHelpTabs = publicWidget.Widget.extend({
         stars.className = 'ch-testi-stars';
         for (var i = 1; i <= 5; i++) {
             var star = document.createElement('i');
-            star.className = 'fa ' + (i <= (item.rating || 0) ? 'fa-star' : 'fa-star-o');
+            star.className = 'fa ch-icon-small ' + (i <= (item.rating || 0) ? 'fa-star' : 'fa-star-o');
             stars.appendChild(star);
         }
         meta.appendChild(stars);

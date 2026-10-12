@@ -190,7 +190,8 @@ contenu ni à un paragraphe.
 | Bandeau garantie | `--fs-44` | `44px` | `.ch-aide-warranty-number` |
 | Chiffres stats / étoiles picker | `--fs-28` / `--fs-20` | `28px` / `20px` | `.ch-entreprise-stat-num`, `.ch-avis-star-btn` |
 | Prix produit | `--fs-17` | `17px` | `.ch-product-card-price` |
-| Icônes | `--fs-16` | `16px` | `.ch-usage-icon`, `.ch-gamme-card-icon` |
+| Petite icône | `--fs-16` | `16px` | `.ch-icon-small` dans `base.css` |
+| Icône en tuile | `--fs-18` | `18px` dans une tuile `44 × 44px` | `.ch-icon-large` dans `base.css` |
 | Corps (base) | `--fs-15` | `15px` | (aliasé par `--fs-body`) |
 | Corps cartes / boutons / liens | `--fs-14` / `--fs-14-5` | `14px` / `14.5px` | `.ch-btn`, `.ch-aide-sidebar-link` |
 | Navigation / footer | `--fs-13-5` | `13.5px` | header, liens footer |
