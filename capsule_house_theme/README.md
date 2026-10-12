@@ -1045,23 +1045,24 @@ demandées, réutilisée telle quelle.
 Les liens de la colonne "Entreprise" du footer mènent maintenant à de
 vraies pages, livrées d'après une maquette fournie par le client :
 
-- `/a-propos` : hero (texte + illustration SVG reprise à l'identique
-  du hero d'accueil), bandeau 4 statistiques (année de fondation, pods
-  installés, taille d'équipe, ateliers), 3 cartes "Nos valeurs" (design
-  intemporel / fabrication responsable / installation rapide),
-  historique en timeline verticale (4 jalons 2022→2026).
+- `/a-propos` : hero avec emplacement photo de pod (illustration SVG
+  temporaire), bandeau 4 statistiques (année de fondation, pods installés,
+  taille d'équipe, ateliers), 3 cartes "Nos valeurs" (design intemporel /
+  fabrication responsable / installation rapide), historique en grille
+  timeline 2 colonnes sur desktop, visuel atelier et appels à l'action.
 - `/le-concept` : intro "Qu'est-ce qu'un pod Capsule House ?", tableau
-  comparatif Pod vs construction traditionnelle (délai, permis,
-  empreinte carbone, mobilité, budget), 4 étapes "De l'atelier à votre
-  terrain" (matériaux/fabrication/contrôle qualité/transport & pose),
-  schéma "Coupe technique" (même illustration SVG que le hero,
-  stylisée en contour pointillé avec libellés superposés).
+  comparatif Pod vs construction traditionnelle avec son sous-titre
+  (délai, permis, empreinte carbone, mobilité, budget), 4 étapes
+  "De l'atelier à votre terrain" avec icônes SVG et lien vers la livraison,
+  coupe technique SVG numérotée avec une légende HTML accessible (toit,
+  ossature, isolation, vitrage et plancher), appels à l'action.
 - **Contact** : tous les liens pointent vers `/contactus`, dont le
   formulaire reste natif au module `website`. Depuis la v19.0.1.0.105,
   une vue héritée ajoute le fil d'Ariane et réutilise la navigation
   Entreprise ; elle enrichit aussi le hero, l'introduction
-  du formulaire et la carte de contact. Les coordonnées configurées sur la
-  société associée au site sont prioritaires ; les valeurs de secours
+  du formulaire et la carte de contact. Le hero comporte maintenant une
+  petite illustration SVG et un lien vers la FAQ. Les coordonnées configurées
+  sur la société associée au site sont prioritaires ; les valeurs de secours
   reprennent les mentions légales Capsule House.
 
 Nav en onglets "pills" partagée par les pages (`entreprise_nav.xml`),
@@ -1073,13 +1074,13 @@ CSS (`.ch-entreprise-*` dans `pages.css`) réutilise volontairement les
 classes `.ch-aide-*` existantes (titre, sous-titre, cartes, tableau)
 plutôt que dupliquer un système parallèle.
 
-Mêmes deux écarts que les pages Aide (v19.0.1.0.46), pour rester
-cohérent avec le reste du site déjà en place : police Inter (pas
-Manrope) et icônes FontAwesome (pas de SVG en ligne dédiées). Aucune
-nouvelle couleur : la palette existante (`--ch-panel`, `--ch-ink`,
-`--ch-terracotta`, `--ch-fog`, `--ch-tan-1`) couvre entièrement le
-brief — ce brief-ci ne demandait d'ailleurs pas de rouge (contrairement
-aux pages Aide).
+La police Inter et les couleurs existantes (`--ch-panel`, `--ch-ink`,
+`--ch-terracotta`, `--ch-fog`, `--ch-tan-1`) sont réutilisées. Les icônes
+des cartes "Nos valeurs" restent en FontAwesome ; les nouvelles illustrations
+et icônes de fabrication sont des SVG locaux. Les visuels-photo sont des
+emplacements SVG remplaçables depuis le Website Builder, en ratio 3:2 :
+fournir une photo de pod et une photo d'atelier, chacune en WebP de 1600 ×
+1067 px environ et idéalement sous 200 Ko.
 
 ### Intégration de `/contactus`
 
@@ -1094,9 +1095,10 @@ contact@capsule-house.fr) si un champ est vide. Les champs, le traitement de
 l'envoi et les messages de retour restent ceux du snippet natif Odoo
 `s_website_form`.
 
-`static/src/css/contact.css` habille le hero, les deux cartes et leurs
-dispositions responsive en réutilisant les variables du thème. Les règles des
-champs, erreurs et états d'envoi restent isolées dans
+`static/src/css/contact.css` habille le hero (illustration et accès rapide à la
+FAQ), les deux colonnes et leurs dispositions responsive en réutilisant les
+variables du thème. Cette mise à jour ne modifie ni les champs ni la logique
+d'envoi existants. Les règles des champs, erreurs et états d'envoi restent isolées dans
 `static/src/css/odoo-integration.css`, sous `#contactus_form`.
 
 `entreprise_nav.xml` : les 2 liens « Contact » étaient indentés 4 espaces

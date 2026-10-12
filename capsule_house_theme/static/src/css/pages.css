@@ -412,6 +412,8 @@
 .ch-aide-hub { padding-bottom: var(--space-section); }
 .ch-aide-hub-panels { min-width: 0; }
 .ch-aide-hub-panel[hidden] { display: none !important; }
+.ch-aide-hub-panel:focus,
+.ch-aide-hub-panel:focus-visible { outline: none; }
 .ch-aide-hub-tabs .ch-aide-sidebar-link:focus-visible {
     outline: 3px solid var(--ch-amber);
     outline-offset: 3px;
@@ -822,6 +824,55 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     gap: 40px;
     align-items: center;
 }
+.ch-entreprise-photo-slot {
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    background: var(--ch-panel);
+}
+.ch-entreprise-photo-slot img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+}
+.ch-entreprise-hero-photo {
+    max-width: 520px;
+}
+.ch-entreprise-story-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, .9fr);
+    align-items: center;
+    gap: 36px;
+}
+.ch-entreprise-story-visual figcaption {
+    display: grid;
+    gap: 4px;
+    padding: 15px 18px;
+    color: var(--ch-ink);
+}
+.ch-entreprise-story-visual figcaption strong {
+    font-size: var(--fs-15);
+}
+.ch-entreprise-story-visual figcaption span {
+    color: var(--ch-fog);
+    font-size: var(--fs-13);
+}
+.ch-entreprise-cta {
+    padding: 34px 0 12px;
+    text-align: center;
+}
+.ch-entreprise-cta-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.ch-entreprise-help-link:focus-visible {
+    outline: 3px solid var(--ch-terracotta);
+    outline-offset: 3px;
+}
 /* Le <h1> du hero À propos / Le concept NE redimensionne plus rien :
    il hérite de --fs-h1 via .ch-aide-title, comme les 7 autres pages.
    L'ancien --fs-34 était le 3e largest H1 du site (après 46px
@@ -866,24 +917,22 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     margin-bottom: 12px;
 }
 
-/* Historique — timeline verticale (distincte de .ch-aide-timeline qui
-   est en grille horizontale) */
+/* Historique — timeline sur deux colonnes, à côté du visuel d'atelier. */
 .ch-entreprise-history {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    border-left: 2px solid var(--ch-gray-border);
-    padding-left: 28px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 14px;
 }
 .ch-entreprise-history-item {
     position: relative;
-    padding-bottom: 28px;
+    padding: 4px 2px 4px 18px;
+    border-left: 2px solid var(--ch-gray-border);
 }
 .ch-entreprise-history-item::before {
     content: '';
     position: absolute;
-    left: -33px;
-    top: 4px;
+    left: -6px;
+    top: 8px;
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -891,7 +940,6 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     border: 2px solid var(--ch-white);
     box-shadow: 0 0 0 1px var(--ch-terracotta);
 }
-.ch-entreprise-history-item:last-child { padding-bottom: 0; }
 .ch-entreprise-history-year {
     font-size: var(--fs-12);
     font-weight: 700;
@@ -911,6 +959,23 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
 .ch-aide-table.ch-entreprise-compare td.ch-entreprise-compare-highlight {
     background: var(--ch-panel);
 }
+.ch-aide-table.ch-entreprise-compare {
+    table-layout: fixed;
+}
+.ch-entreprise-compare-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.ch-entreprise-compare-scroll:focus-visible {
+    outline: 3px solid var(--ch-terracotta);
+    outline-offset: 3px;
+}
+@media (max-width: 768px) {
+    .ch-aide-table.ch-entreprise-compare {
+        min-width: 600px;
+    }
+}
 
 /* Le concept — schéma "Coupe technique" */
 .ch-entreprise-diagram {
@@ -920,16 +985,75 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     text-align: center;
 }
 .ch-entreprise-diagram-visual { display: flex; justify-content: center; margin: 16px 0; }
+.ch-entreprise-diagram-visual svg {
+    display: block;
+    width: min(100%, 780px);
+    height: auto;
+}
 .ch-entreprise-diagram-label {
     font-size: var(--fs-13);
     font-weight: 700;
     color: var(--ch-ink);
     letter-spacing: 0.02em;
 }
+.ch-entreprise-diagram-legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 20px;
+    max-width: 780px;
+    margin: 18px auto 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+.ch-entreprise-diagram-legend li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ch-ink);
+}
+.ch-entreprise-diagram-legend li span {
+    display: inline-grid;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ch-terracotta);
+    color: var(--ch-white);
+    font-size: var(--fs-13);
+    font-weight: 700;
+}
+.ch-entreprise-concept-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, .9fr);
+    align-items: center;
+    gap: 40px;
+}
+.ch-entreprise-concept-visual {
+    max-width: 520px;
+}
+.ch-entreprise-section-title {
+    margin: 0 0 18px;
+    color: var(--ch-ink);
+    font-size: var(--fs-h2);
+    font-weight: 800;
+    line-height: 1.2;
+}
+.ch-entreprise-help-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: var(--ch-terracotta-mid);
+    font-weight: 700;
+    text-underline-offset: 4px;
+}
 
 @media (max-width: 900px) {
     .ch-entreprise-hero { grid-template-columns: 1fr; }
-    .ch-entreprise-hero-visual { order: -1; }
+    .ch-entreprise-hero-visual { order: 0; }
+    .ch-entreprise-story-grid,
+    .ch-entreprise-concept-hero { grid-template-columns: 1fr; }
+    .ch-entreprise-concept-visual { justify-self: center; }
     .ch-entreprise-stats { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 560px) {
@@ -938,6 +1062,11 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     .ch-entreprise-stats { grid-template-columns: 1fr 1fr; }
     .ch-aide-table.ch-entreprise-compare { font-size: var(--fs-12-5); }
     .ch-aide-table.ch-entreprise-compare th, .ch-aide-table.ch-entreprise-compare td { padding: 10px 8px; }
+    .ch-entreprise-diagram { padding: 24px 14px; }
+    .ch-entreprise-diagram-legend { grid-template-columns: 1fr; gap: 8px; }
+    .ch-entreprise-history { grid-template-columns: 1fr; }
+    .ch-entreprise-cta { padding-top: 22px; }
+    .ch-entreprise-cta-links { flex-direction: column; }
 }
 
 /* ── BADGE / ÉTAT VIDE PARTAGÉS — utilisés par plusieurs pages (Nos
