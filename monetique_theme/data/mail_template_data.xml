@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="email_template_lead_internal" model="mail.template">
+        <field name="name">monetiques.fr - Notification interne de formulaire</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="subject">[monetiques.fr] Nouvelle demande reçue : {{ object.name }}</field>
+        <field name="email_to">{{ object.team_id.user_id.email or object.user_id.email or object.company_id.email }}</field>
+        <field name="body_html" type="html">
+            <div style="background:#f8fafc;color:#0f172a;font-family:Arial,sans-serif;padding:24px;">
+                <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;max-width:640px;margin:auto;overflow:hidden;">
+                    <div style="background:#0b0f1d;color:#ffffff;padding:24px 28px;">
+                        <h2 style="margin:0;font-size:22px;">Nouvelle demande reçue</h2>
+                        <p style="color:#93c5fd;margin:8px 0 0;">monetiques.fr</p>
+                    </div>
+                    <div style="padding:28px;line-height:1.55;">
+                        <p><strong>Demande :</strong> <t t-out="object.name"/></p>
+                        <p><strong>Nom :</strong> <t t-out="object.contact_name or '-'"/></p>
+                        <p><strong>Email :</strong> <t t-out="object.email_from or '-'"/></p>
+                        <p><strong>Téléphone :</strong> <t t-out="object.phone or '-'"/></p>
+                        <p><strong>Société :</strong> <t t-out="object.partner_name or '-'"/></p>
+                        <p><strong>Produit / Sujet :</strong> <t t-out="object.name or '-'"/></p>
+                        <p><strong>Message / Notes :</strong></p>
+                        <div style="background:#f8fafc;border-radius:10px;padding:16px;white-space:pre-line;"><t t-out="object.description or '-'"/></div>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+
+    <record id="email_template_lead_customer" model="mail.template">
+        <field name="name">monetiques.fr - Confirmation client de formulaire</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="subject">Nous avons bien reçu votre demande - monetiques.fr</field>
+        <field name="email_to">{{ object.email_from }}</field>
+        <field name="body_html" type="html">
+            <div style="background:#f8fafc;color:#0f172a;font-family:Arial,sans-serif;padding:24px;">
+                <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;max-width:640px;margin:auto;overflow:hidden;">
+                    <div style="background:#0b0f1d;color:#ffffff;padding:24px 28px;">
+                        <h2 style="margin:0;font-size:22px;">Votre demande est bien reçue</h2>
+                        <p style="color:#93c5fd;margin:8px 0 0;">monetiques.fr</p>
+                    </div>
+                    <div style="padding:28px;line-height:1.6;">
+                        <p>Bonjour <t t-out="object.contact_name or ''"/>,</p>
+                        <p>Nous vous remercions pour votre demande. Notre équipe l'étudie et vous répondra sous 24 heures ouvrées.</p>
+                        <p>Pour toute information complémentaire, vous pouvez répondre directement à cet email.</p>
+                        <p style="margin:24px 0 0;">Cordialement,<br/><strong>L'équipe monetiques.fr</strong></p>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+
+</odoo>

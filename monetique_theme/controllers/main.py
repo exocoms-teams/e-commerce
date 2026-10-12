@@ -1,5 +1,10 @@
+import logging
+
 from odoo import http
 from odoo.http import request
+
+
+_logger = logging.getLogger(__name__)
 
 
 class Monetique(http.Controller):
@@ -36,7 +41,7 @@ class Monetique(http.Controller):
         )
         description = values.get('message') or values.get('description') or values.get('details')
 
-        request.env['crm.lead'].sudo().create({
+        return request.env['crm.lead'].sudo().create({
             'name': subject,
             'type': 'opportunity',
             'contact_name': contact_name,
@@ -44,6 +49,22 @@ class Monetique(http.Controller):
             'phone': values.get('phone') or values.get('mobile'),
             'description': description,
         })
+
+    def _send_form_notifications(self, lead):
+        """Send form emails without compromising the CRM lead creation."""
+        template_ids = (
+            'monetique_theme.email_template_lead_internal',
+            'monetique_theme.email_template_lead_customer',
+        )
+        for template_id in template_ids:
+            try:
+                template = request.env.ref(template_id)
+                template.sudo().send_mail(lead.id, force_send=True)
+            except Exception as error:
+                _logger.error(
+                    'Unable to send notification %s for CRM lead %s: %s',
+                    template_id, lead.id, error, exc_info=True,
+                )
 
     @http.route('/contact/submit', type='http', auth='public', methods=['POST'], website=True, csrf=True)
     def contact_submit(self, **post):
@@ -57,7 +78,7 @@ class Monetique(http.Controller):
             post.get('message') or 'Aucun message',
         )
 
-        request.env['crm.lead'].sudo().create({
+        lead = request.env['crm.lead'].sudo().create({
             'name': 'Prise de contact - %s' % subject,
             'type': 'opportunity',
             'contact_name': post.get('name'),
@@ -66,11 +87,13 @@ class Monetique(http.Controller):
             'partner_name': post.get('company'),
             'description': description,
         })
+        self._send_form_notifications(lead)
         return request.redirect('/contact?submitted=1')
 
     @http.route('/audit/request', type='http', auth='public', methods=['POST'], website=True, csrf=True)
     def audit_request(self, **post):
-        self._create_opportunity(post, "Demande d'audit")
+        lead = self._create_opportunity(post, "Demande d'audit")
+        self._send_form_notifications(lead)
         return request.redirect('/services?audit_submitted=1')
 
     @http.route('/devis/submit', type='http', auth='public', methods=['POST'], website=True, csrf=True)
@@ -101,7 +124,7 @@ class Monetique(http.Controller):
             post.get('notes') or 'Aucun',
         )
 
-        request.env['crm.lead'].sudo().create({
+        lead = request.env['crm.lead'].sudo().create({
             'name': 'Demande de devis - %s' % (post.get('name') or 'Site web'),
             'type': 'opportunity',
             'contact_name': post.get('name'),
@@ -110,4 +133,5 @@ class Monetique(http.Controller):
             'partner_name': post.get('company'),
             'description': description,
         })
+        self._send_form_notifications(lead)
         return request.redirect('/devis?submitted=1')

@@ -4,7 +4,7 @@
     'category': 'Website',
     'author': 'monetiques.fr',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale', 'crm'],
+    'depends': ['website', 'website_sale', 'crm', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'views/templates/layout.xml',
@@ -14,6 +14,7 @@
         'views/pages/devis.xml',
         'views/pages/contact.xml',
         'data/website_data.xml',
+        'data/mail_template_data.xml',
     ],
     'assets': {
         'web.assets_frontend': [
