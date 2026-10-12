@@ -581,6 +581,26 @@
     border-top: 1px solid var(--ch-gray-border);
 }
 
+/* Tableau « Zones de livraison » (aide_livraison.xml, hors comparatif
+   Entreprise qui dispose déjà de son propre conteneur défilant
+   .ch-entreprise-compare-scroll) : avec des cellules à 20px de chaque
+   côté, la somme des largeurs minimales (dont « France métropolitaine »)
+   dépassait la largeur de l'écran sous ~420px — la table débordait donc
+   horizontalement la page. On resserre les cellules et on autorise la
+   coupure des mots longs pour que la table tienne dans la largeur. */
+@media (max-width: 560px) {
+    .ch-aide-table:not(.ch-entreprise-compare) th,
+    .ch-aide-table:not(.ch-entreprise-compare) td {
+        padding: 12px 8px;
+    }
+    .ch-aide-table:not(.ch-entreprise-compare) th {
+        letter-spacing: 0.04em;
+    }
+    .ch-aide-table:not(.ch-entreprise-compare) td {
+        overflow-wrap: anywhere;
+    }
+}
+
 /* 3 cartes info (Retours) */
 .ch-aide-cards {
     display: grid;
