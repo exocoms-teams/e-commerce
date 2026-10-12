@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="page_contact" name="monetiques.fr Contact">
+        <t t-call="website.layout">
+            <section class="mn-contact">
+                <div class="mn-contact__grid-bg" aria-hidden="true"></div>
+                <div class="mn-contact__glow mn-contact__glow--blue" aria-hidden="true"></div>
+                <div class="mn-contact__glow mn-contact__glow--green" aria-hidden="true"></div>
+
+                <div class="mn-container mn-contact__container">
+                    <div class="mn-contact__heading">
+                        <span class="mn-eyebrow mn-eyebrow--light">Contact</span>
+                        <h1>Parlons de votre infrastructure de paiement.</h1>
+                        <p>Une question, un projet ou un besoin d'assistance ? Notre équipe vous répond avec une solution concrète.</p>
+                    </div>
+
+                    <div t-if="request.params.get('submitted')" class="mn-contact__success" role="status">
+                        <i class="fa fa-check-circle" aria-hidden="true"></i>
+                        Votre message a bien été envoyé. Nous vous recontacterons rapidement.
+                    </div>
+
+                    <div class="mn-contact__layout">
+                        <aside class="mn-contact__details">
+                            <h2>Nos coordonnées</h2>
+                            <p class="mn-contact__intro">Un expert vous accompagne de l'étude de votre besoin à la mise en service.</p>
+
+                            <div class="mn-contact__info-list">
+                                <div class="mn-contact__info">
+                                    <span class="mn-contact__icon"><i class="fa fa-phone" aria-hidden="true"></i></span>
+                                    <div><span>Téléphone</span><a href="tel:+33184803030">01 84 80 30 30</a></div>
+                                </div>
+                                <div class="mn-contact__info">
+                                    <span class="mn-contact__icon"><i class="fa fa-envelope" aria-hidden="true"></i></span>
+                                    <div><span>Email</span><a href="mailto:contact@monetiques.fr">contact@monetiques.fr</a></div>
+                                </div>
+                                <div class="mn-contact__info">
+                                    <span class="mn-contact__icon"><i class="fa fa-map-marker" aria-hidden="true"></i></span>
+                                    <div><span>Siège</span><p>Paris, France</p></div>
+                                </div>
+                                <div class="mn-contact__info">
+                                    <span class="mn-contact__icon"><i class="fa fa-headphones" aria-hidden="true"></i></span>
+                                    <div><span>Support</span><p>7j/7, de 8h à 20h</p></div>
+                                </div>
+                            </div>
+
+                            <div class="mn-contact__reassurance">
+                                <span class="mn-dot"></span>
+                                Réponse sous 24 heures ouvrées
+                            </div>
+                        </aside>
+
+                        <div class="mn-contact__form-card">
+                            <h2>Envoyez-nous un message</h2>
+                            <p>Les champs marqués d'un astérisque sont obligatoires.</p>
+                            <form action="/contact/submit" method="post">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="mn-contact__form-grid">
+                                    <div class="mn-contact__field">
+                                        <label for="contact-name">Nom complet *</label>
+                                        <input id="contact-name" type="text" name="name" required="required" autocomplete="name"/>
+                                    </div>
+                                    <div class="mn-contact__field">
+                                        <label for="contact-email">Email *</label>
+                                        <input id="contact-email" type="email" name="email" required="required" autocomplete="email"/>
+                                    </div>
+                                    <div class="mn-contact__field">
+                                        <label for="contact-phone">Téléphone *</label>
+                                        <input id="contact-phone" type="tel" name="phone" required="required" autocomplete="tel"/>
+                                    </div>
+                                    <div class="mn-contact__field">
+                                        <label for="contact-company">Société</label>
+                                        <input id="contact-company" type="text" name="company" autocomplete="organization"/>
+                                    </div>
+                                    <div class="mn-contact__field mn-contact__field--full">
+                                        <label for="contact-subject">Sujet *</label>
+                                        <input id="contact-subject" type="text" name="subject" required="required"/>
+                                    </div>
+                                    <div class="mn-contact__field mn-contact__field--full">
+                                        <label for="contact-message">Message *</label>
+                                        <textarea id="contact-message" name="message" rows="6" required="required" placeholder="Décrivez votre besoin ou votre question."></textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" class="mn-btn mn-btn--primary mn-btn--lg">
+                                    Envoyer mon message <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </t>
+    </template>
+
+</odoo>

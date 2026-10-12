@@ -24,6 +24,10 @@ class Monetique(http.Controller):
         )
         return request.render('monetique_theme.page_devis', {'products': products})
 
+    @http.route(['/contact', '/contactus'], type='http', auth='public', website=True, sitemap=True)
+    def contact(self, **kw):
+        return request.render('monetique_theme.page_contact', {})
+
     def _create_opportunity(self, values, source):
         """Create an opportunity from a website form submission."""
         contact_name = values.get('name') or values.get('contact_name')
@@ -43,8 +47,26 @@ class Monetique(http.Controller):
 
     @http.route('/contact/submit', type='http', auth='public', methods=['POST'], website=True, csrf=True)
     def contact_submit(self, **post):
-        self._create_opportunity(post, 'Demande de contact')
-        return request.redirect('/contactus?submitted=1')
+        contact_name = post.get('name') or 'Site web'
+        subject = post.get('subject') or contact_name
+        description = (
+            'Société : %s\n\n'
+            'Message :\n%s'
+        ) % (
+            post.get('company') or 'Non renseignée',
+            post.get('message') or 'Aucun message',
+        )
+
+        request.env['crm.lead'].sudo().create({
+            'name': 'Prise de contact - %s' % subject,
+            'type': 'opportunity',
+            'contact_name': post.get('name'),
+            'email_from': post.get('email'),
+            'phone': post.get('phone'),
+            'partner_name': post.get('company'),
+            'description': description,
+        })
+        return request.redirect('/contact?submitted=1')
 
     @http.route('/audit/request', type='http', auth='public', methods=['POST'], website=True, csrf=True)
     def audit_request(self, **post):

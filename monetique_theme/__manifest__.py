@@ -12,6 +12,7 @@
         'views/pages/home.xml',
         'views/pages/services.xml',
         'views/pages/devis.xml',
+        'views/pages/contact.xml',
         'data/website_data.xml',
     ],
     'assets': {
