@@ -1005,31 +1005,25 @@ côté Capsule House. Vérifié dans exocoms_theme
 à `#o_wsale_pager`. Reprise à l'identique dans `shop.css` avec
 `--ch-terracotta`/`--ch-white`.
 
-## Pages Aide — Livraison, Retours, Garantie, FAQ (v19.0.1.0.46)
+## Centre d'aide — onglets Livraison, Retours, Garantie, FAQ
 
-Les 4 liens de la colonne "Aide" du footer (jusque-là en 404) mènent
-maintenant à de vraies pages, livrées d'après une maquette fournie par
-le client :
+Les informations sont regroupées sur `/aide` avec quatre onglets, une
+navigation latérale sur ordinateur et une barre horizontale défilante
+sur mobile. Le hash, le titre et le fil d'Ariane suivent l'onglet actif.
+Chaque contenu FR/EN reste défini dans son propre sous-template QWeb et
+est partagé avec les vues historiques. Les anciennes routes redirigent
+en 301 vers leur onglet :
 
-- `/livraison` : encart "livraison offerte dès 25 000 €", timeline 4
-  étapes, tableau des délais/frais par zone (France métro/Corse/DOM-TOM).
-- `/retours` : encart d'alerte sur le droit de rétractation (non
-  applicable après lancement fabrication, produit sur mesure), 3
-  cartes (avant fabrication / après livraison / procédure), bouton
-  vers `/contactus` (page de contact NATIVE d'Odoo — lien mis à jour en
-  v19.0.1.0.47, voir section "Pages Entreprise" ci-dessous ; pointait
-  vers `/contact` avant que la décision de ne jamais reconstruire de
-  page contact ne soit prise).
-- `/garantie` : bandeau "10 ans", colonnes Couvert (vert)/Non couvert
-  (rouge), étapes pour déclarer un sinistre.
-- `/faq` : questions groupées par catégorie, accordéon Bootstrap natif
-  (markup du snippet Accordéon du Website Builder, pas de JS custom).
+- `/livraison` → `/aide#livraison`
+- `/retours` → `/aide#retours`
+- `/garantie` → `/aide#garantie`
+- `/faq` → `/aide#faq`
 
-Menu latéral "Aide" partagé par les 4 pages (`aide_sidebar.xml`),
-état actif calculé dynamiquement depuis l'URL réelle (jamais codé en
-dur par page). Contenu bilingue FR/EN, même convention que le reste du
-thème. Responsive : le menu latéral passe en barre horizontale
-scrollable sous 900px.
+La FAQ conserve ses accordéons Bootstrap natifs. Les onglets sont
+accessibles au clavier et toutes les sections restent visibles si
+JavaScript n'est pas disponible. Le widget et les styles sont chargés
+via les assets `ir.asset` scopés au site Capsule House, sans modifier le
+bundle global partagé par les autres sites.
 
 Deux écarts avec le brief fourni, choisis pour rester cohérent avec le
 reste du site déjà en place (le brief ne correspondait pas exactement
@@ -1051,23 +1045,24 @@ demandées, réutilisée telle quelle.
 Les liens de la colonne "Entreprise" du footer mènent maintenant à de
 vraies pages, livrées d'après une maquette fournie par le client :
 
-- `/a-propos` : hero (texte + illustration SVG reprise à l'identique
-  du hero d'accueil), bandeau 4 statistiques (année de fondation, pods
-  installés, taille d'équipe, ateliers), 3 cartes "Nos valeurs" (design
-  intemporel / fabrication responsable / installation rapide),
-  historique en timeline verticale (4 jalons 2022→2026).
+- `/a-propos` : hero avec emplacement photo de pod (illustration SVG
+  temporaire), bandeau 4 statistiques (année de fondation, pods installés,
+  taille d'équipe, ateliers), 3 cartes "Nos valeurs" (design intemporel /
+  fabrication responsable / installation rapide), historique en grille
+  timeline 2 colonnes sur desktop, visuel atelier et appels à l'action.
 - `/le-concept` : intro "Qu'est-ce qu'un pod Capsule House ?", tableau
-  comparatif Pod vs construction traditionnelle (délai, permis,
-  empreinte carbone, mobilité, budget), 4 étapes "De l'atelier à votre
-  terrain" (matériaux/fabrication/contrôle qualité/transport & pose),
-  schéma "Coupe technique" (même illustration SVG que le hero,
-  stylisée en contour pointillé avec libellés superposés).
+  comparatif Pod vs construction traditionnelle avec son sous-titre
+  (délai, permis, empreinte carbone, mobilité, budget), 4 étapes
+  "De l'atelier à votre terrain" avec icônes SVG et lien vers la livraison,
+  coupe technique SVG numérotée avec une légende HTML accessible (toit,
+  ossature, isolation, vitrage et plancher), appels à l'action.
 - **Contact** : tous les liens pointent vers `/contactus`, dont le
   formulaire reste natif au module `website`. Depuis la v19.0.1.0.105,
   une vue héritée ajoute le fil d'Ariane et réutilise la navigation
   Entreprise ; elle enrichit aussi le hero, l'introduction
-  du formulaire et la carte de contact. Les coordonnées configurées sur la
-  société associée au site sont prioritaires ; les valeurs de secours
+  du formulaire et la carte de contact. Le hero comporte maintenant une
+  petite illustration SVG et un lien vers la FAQ. Les coordonnées configurées
+  sur la société associée au site sont prioritaires ; les valeurs de secours
   reprennent les mentions légales Capsule House.
 
 Nav en onglets "pills" partagée par les pages (`entreprise_nav.xml`),
@@ -1079,13 +1074,13 @@ CSS (`.ch-entreprise-*` dans `pages.css`) réutilise volontairement les
 classes `.ch-aide-*` existantes (titre, sous-titre, cartes, tableau)
 plutôt que dupliquer un système parallèle.
 
-Mêmes deux écarts que les pages Aide (v19.0.1.0.46), pour rester
-cohérent avec le reste du site déjà en place : police Inter (pas
-Manrope) et icônes FontAwesome (pas de SVG en ligne dédiées). Aucune
-nouvelle couleur : la palette existante (`--ch-panel`, `--ch-ink`,
-`--ch-terracotta`, `--ch-fog`, `--ch-tan-1`) couvre entièrement le
-brief — ce brief-ci ne demandait d'ailleurs pas de rouge (contrairement
-aux pages Aide).
+La police Inter et les couleurs existantes (`--ch-panel`, `--ch-ink`,
+`--ch-terracotta`, `--ch-fog`, `--ch-tan-1`) sont réutilisées. Les icônes
+des cartes "Nos valeurs" restent en FontAwesome ; les nouvelles illustrations
+et icônes de fabrication sont des SVG locaux. Les visuels-photo sont des
+emplacements SVG remplaçables depuis le Website Builder, en ratio 3:2 :
+fournir une photo de pod et une photo d'atelier, chacune en WebP de 1600 ×
+1067 px environ et idéalement sous 200 Ko.
 
 ### Intégration de `/contactus`
 
@@ -1100,9 +1095,10 @@ contact@capsule-house.fr) si un champ est vide. Les champs, le traitement de
 l'envoi et les messages de retour restent ceux du snippet natif Odoo
 `s_website_form`.
 
-`static/src/css/contact.css` habille le hero, les deux cartes et leurs
-dispositions responsive en réutilisant les variables du thème. Les règles des
-champs, erreurs et états d'envoi restent isolées dans
+`static/src/css/contact.css` habille le hero (illustration et accès rapide à la
+FAQ), les deux colonnes et leurs dispositions responsive en réutilisant les
+variables du thème. Cette mise à jour ne modifie ni les champs ni la logique
+d'envoi existants. Les règles des champs, erreurs et états d'envoi restent isolées dans
 `static/src/css/odoo-integration.css`, sous `#contactus_form`.
 
 `entreprise_nav.xml` : les 2 liens « Contact » étaient indentés 4 espaces

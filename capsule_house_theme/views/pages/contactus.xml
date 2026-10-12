@@ -21,16 +21,18 @@
                 <t t-else="">Let's talk about your project</t>
             </h1>
         </xpath>
-        <xpath expr="//section[hasclass('ch-contact-hero')]//h1" position="before">
-            <p class="ch-contact-eyebrow" t-if="request.env.lang == 'fr_FR'">Capsule House · Contact</p>
-            <p class="ch-contact-eyebrow" t-else="">Capsule House · Get in touch</p>
-        </xpath>
         <xpath expr="//section[hasclass('ch-contact-hero')]//h1" position="after">
             <p class="ch-contact-hero-lead" t-if="request.env.lang == 'fr_FR'">
                 Maison modulaire, terrain ou livraison : décrivez votre besoin et nous vous orienterons vers le bon interlocuteur.
             </p>
             <p class="ch-contact-hero-lead" t-else="">
                 Modular home, land, or delivery: tell us what you need and we will point you in the right direction.
+            </p>
+            <p class="ch-contact-quick-answers" t-if="request.env.lang == 'fr_FR'">
+                <a href="/aide#faq">Réponses rapides : consultez la FAQ</a>
+            </p>
+            <p class="ch-contact-quick-answers" t-else="">
+                <a href="/aide#faq">Quick answers: visit our FAQ</a>
             </p>
         </xpath>
         <xpath expr="//section[hasclass('s_text_block')]//div[hasclass('col-lg-7')]/p[hasclass('lead')]" position="replace">
@@ -92,7 +94,7 @@
             <attribute name="autocomplete">tel</attribute>
         </xpath>
         <xpath expr="//form[@id='contactus_form']//textarea[@name='description']" position="attributes">
-            <attribute name="t-att-placeholder">request.env.lang == 'fr_FR' and 'Ex. : je cherche une maison de 40 m² pour un terrain en Bretagne.' or 'e.g. I’m looking for a 40 m² home for a plot in Brittany.'</attribute>
+            <attribute name="t-att-placeholder">request.env.lang == 'fr_FR' and 'Ex. : je cherche une maison de 40 m&#178; pour un terrain en Bretagne.' or 'e.g. I’m looking for a 40 m&#178; home for a plot in Brittany.'</attribute>
             <attribute name="rows">5</attribute>
         </xpath>
         <xpath expr="//form[@id='contactus_form']//textarea[@name='description']/preceding-sibling::label/span[hasclass('s_website_form_label_content')]" position="replace">

@@ -78,9 +78,21 @@ SCOPED_VIEW_XML_IDS = [
     # avis_hero.xml et README "Traduction des pages").
     'capsule_house_theme.avis_hero_fr',
     'capsule_house_theme.avis_hero_en',
-    # Ajoutés en 19.0.1.0.46 (pages Aide : Livraison/Retours/Garantie/
-    # FAQ, colonne "Aide" du footer — voir README).
+    # Centre d'aide et contenus partagés, scopés au site Capsule House.
     'capsule_house_theme.aide_sidebar',
+    'capsule_house_theme.aide_page',
+    'capsule_house_theme.aide_livraison_content_fr',
+    'capsule_house_theme.aide_livraison_content_en',
+    'capsule_house_theme.aide_livraison_section',
+    'capsule_house_theme.aide_retours_content_fr',
+    'capsule_house_theme.aide_retours_content_en',
+    'capsule_house_theme.aide_retours_section',
+    'capsule_house_theme.aide_garantie_content_fr',
+    'capsule_house_theme.aide_garantie_content_en',
+    'capsule_house_theme.aide_garantie_section',
+    'capsule_house_theme.aide_faq_content_fr',
+    'capsule_house_theme.aide_faq_content_en',
+    'capsule_house_theme.aide_faq_section',
     'capsule_house_theme.aide_livraison_page',
     'capsule_house_theme.aide_retours_page',
     'capsule_house_theme.aide_garantie_page',

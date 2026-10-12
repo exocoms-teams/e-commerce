@@ -92,11 +92,13 @@ Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gamme
         'views/partials/avis_hero.xml',
         'views/partials/avis_content.xml',
         'views/pages/avis.xml',
-        # Pages Aide (19.0.1.0.46) : Livraison, Retours, Garantie, FAQ —
-        # liens du footer colonne "Aide", jusque-là en 404. Menu latéral
-        # partagé (aide_sidebar.xml) chargé avant les 4 pages qui le
-        # t-call-ent.
+        # Centre d'aide et contenus partagés.
         'views/partials/aide_sidebar.xml',
+        'views/partials/aide_livraison.xml',
+        'views/partials/aide_retours.xml',
+        'views/partials/aide_garantie.xml',
+        'views/partials/aide_faq.xml',
+        'views/pages/aide.xml',
         'views/pages/aide_livraison.xml',
         'views/pages/aide_retours.xml',
         'views/pages/aide_garantie.xml',

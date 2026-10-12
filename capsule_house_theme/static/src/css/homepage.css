@@ -29,7 +29,7 @@
     grid-template-columns: 1fr 1fr;
     grid-template-areas: "hero-text hero-visual";
     direction: ltr;
-    gap: 48px;
+    gap: 28px;
     align-items: center;
 }
 
@@ -76,23 +76,28 @@
 .ch-trust-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 18px 28px;
-    padding-top: 23px;
-    margin-top: 28px;
+    gap: 2px;
+    padding-top: 5px;
+    margin-top: 32px;
     border-top: 1px solid var(--ch-gray-border);
 }
 
 .ch-trust-item {
     display: flex;
     align-items: center;
+    min-height: 48px;
+    padding: 6px 10px;
+    color: var(--ch-ink);
+    text-align: left;
+    font-size: var(--fs-12);
+    line-height: 1.35;
     gap: 8px;
-    font-size: var(--fs-12-5);
-    color: var(--ch-fog);
 }
 
 .ch-trust-item i {
-    color: var(--ch-ink);
-    font-size: var(--fs-15);
+    flex: 0 0 16px;
+    color: var(--ch-terracotta);
+    text-align: center;
 }
 
 .ch-hero-btn-action {
@@ -101,13 +106,23 @@
     gap: 16px;
 }
 
+.ch-hero-btn-action a {
+    text-decoration: none;
+    outline: none;
+}
+
 .ch-hero-div-note {
-    margin-top: 16px;
+    margin-top: 14px;
 }
 
 .ch-hero-text-note {
-    font-size: var(--fs-12-5);
+    font-size: var(--fs-12);
+    line-height: 1.35;
     color: var(--ch-fog);
+    display: inline-block;
+    padding: 7px 12px;
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-pill);
 }
 
 /* HERO VISUAL / ILLUSTRATION */
@@ -333,9 +348,7 @@
 
 .ch-hero-cart-shortcut {
     position: absolute;
-    /* bottom: 8%; */
     bottom: 0%;
-    /* right: 4%; */
     right: 0%;
     z-index: 2;
     margin: 0;
@@ -363,48 +376,68 @@
     margin-bottom: 28px;
 }
 
-/* v19.0.1.0.102 : "Meilleures ventes" est désormais un vrai carousel
-   Bootstrap 5 (voir featured_products.xml, comparaison avec
-   exocoms_theme/views/partials/dashbord.xml, "MEILLEURES VENTES") —
-   .ch-bestsellers-grid reste utilisée mais maintenant PAR SLIDE (un lot
-   de 4 produits maximum), imbriquée dans un .carousel-item Bootstrap
-   plutôt que d'afficher tous les produits d'un coup. Le mécanisme de
-   défilement (transform/transition) est natif Bootstrap (déjà chargé
-   par le frontend Odoo), aucun CSS custom nécessaire pour ça — seuls
-   .ch-bestsellers-carousel-wrap et .ch-bestsellers-arrow sont propres
-   à ce thème (flèches stylées avec la palette Capsule House plutôt que
-   les .oi/.bg-700 d'exocoms). */
+/* "Meilleures ventes" défile en continu via main.js ; les flèches
+   déclenchent séparément un déplacement par groupes de quatre. */
 .ch-bestsellers-carousel-wrap {
+    position: relative;
+    margin: 0 20px;
+}
+
+.ch-bestsellers-carousel {
     position: relative;
 }
 
-.ch-bestsellers-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+.ch-bestsellers-viewport {
+    overflow: hidden;
+}
+
+.ch-bestsellers-track {
+    display: flex;
     gap: 22px;
+    transform: translate3d(0, 0, 0);
+    transition: none;
+}
+
+.ch-bestsellers-slide {
+    flex: 0 0 calc((100% - 66px) / 4);
+    min-width: 0;
+}
+
+.ch-bestsellers-slide .ch-product-card {
+    height: 100%;
 }
 
 .ch-bestsellers-arrow {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid var(--ch-gray-border);
-    background: var(--ch-white);
-    color: var(--ch-ink);
-    display: flex;
+    z-index: 2;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--ch-gray-border);
+    background: var(--ch-white);
+    color: var(--ch-ink);
     font-size: var(--fs-14);
-    z-index: 3;
-    box-shadow: var(--shadow-md);
-    transition: color var(--transition);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: color var(--transition), border-color var(--transition),
+                background-color var(--transition);
 }
-.ch-bestsellers-arrow:hover { border: 1px solid var(--ch-terracotta); color: var(--ch-terracotta); text-decoration: none; }
 .ch-bestsellers-arrow-prev { left: -20px; }
 .ch-bestsellers-arrow-next { right: -20px; }
+.ch-bestsellers-arrow:hover {
+    border-color: var(--ch-terracotta);
+    background: var(--ch-terracotta);
+    color: var(--ch-white);
+}
+.ch-bestsellers-arrow:focus-visible {
+    outline: 3px solid var(--ch-terracotta);
+    outline-offset: 3px;
+}
 
 .ch-product-card {
     position: relative;
@@ -600,6 +633,137 @@
 }
 .ch-usage-bullet .fa { color: var(--ch-green); margin-top: 3px; font-size: var(--fs-11); }
 
+.ch-usage-summary {
+    display: block;
+    list-style: none;
+}
+
+.ch-usage-summary::-webkit-details-marker {
+    display: none;
+}
+
+.ch-usage-caret {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    #wrapwrap .ch-usages-zone {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    #wrapwrap .ch-usages-zone .ch-usages-title-block {
+        padding-bottom: 4px;
+    }
+
+    #wrapwrap .ch-usages-zone .ch-usages-head {
+        margin-bottom: 0;
+    }
+
+    #wrapwrap .ch-usages-zone .ch-usage-card {
+        padding: 0;
+        overflow: hidden;
+        border-radius: 20px;
+        box-shadow: 0 1px 2px rgba(60, 40, 20, 0.04);
+    }
+
+    #wrapwrap .ch-usage-summary {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px;
+        cursor: pointer;
+        transition: background 120ms ease;
+    }
+
+    #wrapwrap .ch-usage-summary:active {
+        background: var(--ch-bg-soft);
+    }
+
+    #wrapwrap .ch-usages-zone .ch-usage-icon {
+        flex: 0 0 48px;
+        height: 48px;
+        margin: 0;
+        border-radius: 15px;
+    }
+
+    #wrapwrap .ch-usages-zone .ch-usage-name {
+        flex: 1;
+        min-width: 0;
+        margin: 0;
+        font-size: var(--fs-18);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    #wrapwrap .ch-usage-caret {
+        display: grid;
+        flex: 0 0 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--ch-panel);
+        color: var(--ch-terracotta);
+        transition: transform 250ms ease, background-color 200ms ease, color 200ms ease;
+    }
+
+    #wrapwrap .ch-usage-caret .fa {
+        font-size: var(--fs-12);
+    }
+
+    #wrapwrap .ch-usage-accordion[open] .ch-usage-caret {
+        transform: rotate(180deg);
+        background: var(--ch-terracotta);
+        color: var(--ch-white);
+    }
+
+    #wrapwrap .ch-usage-content {
+        padding: 2px 16px 18px;
+        animation: ch-usage-content-in 250ms ease;
+    }
+
+    #wrapwrap .ch-usage-bullets {
+        gap: 12px;
+        padding-top: 14px;
+        border-top: 1px dashed var(--ch-gray-border);
+    }
+
+    #wrapwrap .ch-usage-bullet {
+        gap: 10px;
+        font-size: var(--fs-14-5);
+        line-height: 1.4;
+    }
+
+    #wrapwrap .ch-usage-bullet .fa {
+        flex: 0 0 16px;
+        margin-top: 2px;
+        text-align: center;
+    }
+
+    #wrapwrap .ch-usage-summary:focus-visible {
+        outline: 3px solid var(--ch-terracotta);
+        outline-offset: -3px;
+    }
+}
+
+@keyframes ch-usage-content-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #wrapwrap .ch-usage-caret,
+    #wrapwrap .ch-usage-summary {
+        transition: none;
+    }
+
+    #wrapwrap .ch-usage-content {
+        animation: none;
+    }
+}
+
 /* ── AVIS CLIENTS (accueil, v19.0.1.0.100) — voir
    views/partials/home_testimonials.xml et static/src/js/main.js
    (initTestimonialsSection). Grille peuplée dynamiquement (JS) avec
@@ -672,61 +836,89 @@
    payment.provider réellement à l'état 'enabled' — jamais de logo de
    marque non vérifié, section masquée tant qu'aucun n'est configuré. ── */
 .ch-payment-section {
-    background: var(--ch-white);
-    padding: 0;
-    border-top: 1px solid var(--ch-gray-border);
+    background: linear-gradient(180deg, var(--ch-white) 0%, var(--ch-bg-soft) 100%);
+    padding: 0 0 12px;
+    border-top: 0;
+    border-bottom: 0;
+    position: relative;
+}
+
+#wrapwrap .ch-payment-section {
+    padding-bottom: var(--space-section);
 }
 
 .ch-payment-inner {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 18px 28px;
     flex-wrap: wrap;
-    gap: 16px 28px;
+    max-width: 960px;
+    margin: 0 auto;
 }
 
 .ch-payment-label {
     font-size: var(--fs-13);
     font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
     color: var(--ch-fog);
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    white-space: nowrap;
 }
-.ch-payment-label i { color: var(--ch-ink); }
+.ch-payment-label i {
+    color: var(--ch-terracotta);
+    font-size: var(--fs-12);
+}
 
-.ch-payment-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+.ch-payment-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+}
 
 .ch-payment-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: var(--ch-panel);
+    gap: 8px;
+    background: var(--ch-white);
     color: var(--ch-ink);
     font-size: var(--fs-12-5);
     font-weight: 600;
-    padding: 7px 14px;
+    padding: 10px 16px;
+    border: 1px solid var(--ch-gray-border);
     border-radius: var(--r-pill);
+    box-shadow: 0 10px 28px rgba(29, 25, 22, 0.05);
 }
-.ch-payment-badge i { color: var(--ch-terracotta); }
+.ch-payment-badge i {
+    color: var(--ch-terracotta);
+    font-size: var(--fs-12);
+    width: 16px;
+    text-align: center;
+}
 
 /* ── RESPONSIVE HOMEPAGE ───────────────────────────────────────────────
    Trois paliers : 1100px (bascule 2 colonnes), 768px (tablette/téléphone),
    480px (petit téléphone). Les mêmes valeurs sont déjà utilisées par
    pages.css / shop.css, pour qu'une règle Media se lise pareil partout.
 
-   Règle appliquée sur tous les paliers : le TEXTE du hero passe AVANT
-   l'illustration. L'ancien `order: -1` sur .ch-hero-visual remontait
-   l'image au-dessus du H1, ce qui repoussait le titre et les deux
-   boutons d'action sous la ligne de flottaison sur téléphone — l'inverse
-   de l'objectif « action visible dès l'arrivée ». L'image reste en tête
-   de lecture sur grand écran grâce à son ordre naturel dans la grille
-   (c'est la colonne de droite), sans dépendre d'un `order`. ── */
+   La grille passe sur une colonne sous 1100px. Sur téléphone, le contenu
+   est redistribué dans l'ordre accroche → action → image → réassurance,
+   pour éviter que l'image repousse le titre et le CTA sous la ligne de
+   flottaison. ── */
 
 @media (max-width: 1100px) {
     /* Une seule colonne : la colonne de texte passe en premier (ordre
        naturel du DOM), l'illustration en second. */
-    .ch-hero-grid { grid-template-columns: 1fr; }
+    .ch-hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "hero-text"
+            "hero-visual";
+    }
     .ch-hero-visual { min-height: 320px; }
 
     /* `.ch-hero-illustration` est une balise <img> (hero.xml:137), pas un
@@ -740,22 +932,11 @@
         object-fit: cover;
     }
 
-    .ch-bestsellers-grid { grid-template-columns: repeat(2, 1fr); }
+    .ch-bestsellers-slide { flex-basis: calc((100% - 22px) / 2); }
     .ch-testi-grid { grid-template-columns: repeat(2, 1fr); }
-
-    /* Flèches du carousel : ramenées à l'intérieur du conteneur au lieu
-       de déborder à -20px (au-delà de 1100px elles sortent de la zone
-       visible). */
-    .ch-bestsellers-arrow-prev { left: 0; }
-    .ch-bestsellers-arrow-next { right: 0; }
 }
 
 @media (max-width: 768px) {
-    /* Le gap de 48px du hero est prévu pour deux colonnes côte à côte ;
-       une fois empilées, il devient un vide vertical de 48px entre le
-       bloc de boutons et l'image. */
-    .ch-hero-grid { gap: 28px; }
-
     /* Boutons d'action : le H1, le chapeau et les 2 boutons doivent
        tenir dans le premier écran. */
     .ch-hero-btn-action { gap: 12px; }
@@ -771,25 +952,38 @@
         gap: 12px 20px;
     }
 
-    .ch-bestsellers-grid { grid-template-columns: 1fr; }
+    .ch-bestsellers-slide { flex-basis: 46%; }
     .ch-bestsellers-head { flex-direction: column; align-items: flex-start; gap: 8px; }
-
-    /* Cible tactile : les flèches font 40px, sous le minimum recommandé
-       de 44px, et se posent sur les première/last cartes. */
-    .ch-bestsellers-arrow {
-        width: 44px;
-        height: 44px;
-        font-size: var(--fs-15);
-        box-shadow: var(--shadow-lg);
-    }
+    .ch-bestsellers-carousel-wrap { margin: 0 18px; }
+    .ch-bestsellers-arrow { display: none; }
 
     .ch-usages-zone { grid-template-columns: 1fr 1fr; }
     .ch-testi-grid { grid-template-columns: 1fr; }
-    .ch-payment-inner { flex-direction: column; align-items: flex-start; }
+
+    #wrapwrap .ch-payment-inner {
+        gap: 12px 16px;
+        text-align: center;
+    }
+
+    .ch-payment-label {
+        justify-content: center;
+        font-size: var(--fs-12);
+        letter-spacing: 0.03em;
+    }
+
+    .ch-payment-badges {
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .ch-payment-badge {
+        padding: 8px 12px;
+        font-size: var(--fs-12);
+    }
 }
 
 @media (max-width: 480px) {
-    .ch-usages-zone { grid-template-columns: 1fr; }
+    .ch-bestsellers-carousel-wrap { margin: 0 16px; }
 
     /* En dessous de 480px les deux boutons côte à côte se réduisent à un
        texte illisible sur deux lignes chacun : on les empile en pleine
@@ -809,7 +1003,279 @@
     .ch-trust-row {
         flex-direction: column;
         gap: 8px;
+    }    
+
+    /* Usages : une seule carte par rangée, pleine largeur. */
+    .ch-usage-card,
+    .ch-usage-card:nth-last-child(2),
+    .ch-usage-card:last-child { grid-column: 1 / -1; }
+}
+
+@media (max-width: 768px) {
+    .ch-bestsellers-track { gap: 12px; }
+
+    .ch-product-card-img { aspect-ratio: 1 / 0.8; }
+
+    .ch-product-card-body {
+        gap: 3px;
+        padding: 10px 42px 12px 10px;
     }
 
-    .ch-bestsellers-arrow { display: none; }
+    .ch-product-card-name { font-size: var(--fs-13-5); }
+    .ch-product-card-spec { font-size: var(--fs-11-5); }
+
+    .ch-product-card-price-row {
+        flex-wrap: wrap;
+        gap: 2px 6px;
+        margin-top: 3px;
+    }
+
+    .ch-product-card-price { font-size: var(--fs-14-5); }
+
+    .ch-product-card-add {
+        right: 10px;
+        bottom: 10px;
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* Hero mobile — une composition plus proche d'un écran d'application :
+   accroche centrée, action principale évidente, réassurance en petites
+   cartes et visuel traité comme une vraie carte produit. */
+@media (max-width: 768px) {
+    #wrapwrap .ch-hero {
+        padding-top: clamp(20px, 5vw, 36px);
+        padding-bottom: clamp(24px, 5vw, 40px);
+        background: linear-gradient(180deg, var(--ch-bg-soft) 0%, var(--ch-white) 56%);
+    }
+
+    .ch-hero-grid {
+        grid-template-areas:
+            "hero-rating"
+            "hero-title"
+            "hero-subtitle"
+            "hero-actions"
+            "hero-note"
+            "hero-visual"
+            "hero-trust";
+        gap: 0;
+        text-align: center;
+    }
+
+    .ch-hero-content { display: contents; }
+
+    .ch-rating-badge { grid-area: hero-rating; }
+    .ch-hero-title { grid-area: hero-title; }
+    .ch-hero-subtitle { grid-area: hero-subtitle; }
+    .ch-hero-btn-action { grid-area: hero-actions; }
+    .ch-hero-div-note { grid-area: hero-note; }
+    .ch-hero-visual { grid-area: hero-visual; }
+    .ch-trust-row { grid-area: hero-trust; }
+
+    .ch-hero-content {
+        width: 100%;
+        max-width: 560px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .ch-rating-badge {
+        margin-right: auto;
+        margin-bottom: 14px;
+        margin-left: auto;
+    }
+
+    .ch-hero-title {
+        max-width: none;
+        margin: 0 auto;
+        font-size: clamp(30px, 8vw, 36px);
+        line-height: 1.12;
+        letter-spacing: -0.9px;
+    }
+
+    .ch-hero-subtitle {
+        max-width: 36ch;
+        margin: 14px auto 0;
+        font-size: var(--fs-15-5);
+        line-height: 1.65;
+    }
+
+    .ch-hero-btn-action {
+        width: 100%;
+        max-width: 380px;
+        margin: 24px auto 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .ch-hero-btn-action .ch-btn {
+        width: 100%;
+        min-height: 50px;
+        padding: 12px 18px;
+        justify-content: center;
+        white-space: normal;
+    }
+
+    .ch-hero-btn-action .ch-btn-cta {
+        box-shadow: 0 8px 20px rgba(193, 105, 79, 0.22);
+    }
+
+    .ch-hero-btn-action .ch-btn-browse {
+        background: rgba(255, 255, 255, 0.78);
+    }
+
+    .ch-hero-div-note {
+        display: flex;
+        justify-content: center;
+        margin-top: 14px;
+    }
+
+    .ch-hero-text-note {
+        background: rgba(255, 255, 255, 0.78);
+        font-size: var(--fs-12);
+        line-height: 1.4;
+    }
+
+    .ch-trust-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: 420px;
+        margin: 24px auto 0;
+        padding-top: 18px;
+        border-top: 1px solid var(--ch-gray-border);
+        gap: 10px;
+    }
+
+    .ch-trust-item {
+        border: 1px solid var(--ch-gray-border);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.86);
+    }
+
+    .ch-trust-item:last-child { grid-column: 1 / -1; }
+
+    .ch-hero-visual {
+        min-height: 0;
+        margin-top: 24px;
+    }
+
+    .ch-hero-visual::before {
+        top: -18%;
+        right: -18%;
+        bottom: -14%;
+        left: -18%;
+        opacity: 0.28;
+        filter: blur(36px);
+    }
+
+    .ch-hero-illustration {
+        min-height: 0;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        border-radius: 22px;
+        box-shadow: var(--shadow-md);
+        object-fit: cover;
+        object-position: center 54%;
+    }
+
+    .ch-hero-float-card {
+        top: 7%;
+        right: 2%;
+        box-sizing: border-box;
+        width: 64px;
+        max-width: none;
+        padding: 8px 10px 8px 8px;
+        border-radius: 14px;
+        gap: 0;
+        overflow: visible;
+        white-space: nowrap;
+        transition: width 280ms ease, transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .ch-hero-float-body {
+        width: max-content;
+        max-width: 0;
+        overflow: hidden;
+        opacity: 0;
+        visibility: hidden;
+        transition: max-width 280ms ease, opacity 160ms ease, visibility 0s linear 280ms;
+    }
+
+    .ch-hero-float-name,
+    .ch-hero-float-price {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ch-hero-float-badge {
+        opacity: 0;
+        transition: opacity 160ms ease;
+    }
+
+    .ch-hero-float-badge-new {
+        z-index: 1;
+        opacity: 1;
+    }
+
+    .ch-hero-float-card:hover,
+    .ch-hero-float-card:focus-visible {
+        width: min(195px, 62vw);
+        gap: 10px;
+        transform: translateY(-2px);
+    }
+
+    .ch-hero-float-card:hover .ch-hero-float-body,
+    .ch-hero-float-card:focus-visible .ch-hero-float-body {
+        max-width: 120px;
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0s;
+    }
+
+    .ch-hero-float-card:hover .ch-hero-float-badge,
+    .ch-hero-float-card:focus-visible .ch-hero-float-badge {
+        opacity: 1;
+    }
+
+    .ch-hero-float-card:focus-visible {
+        outline: 2px solid var(--ch-terracotta);
+        outline-offset: 2px;
+    }
+
+    .ch-hero-float-card-2 {
+        top: auto;
+        right: auto;
+        bottom: 6%;
+        left: 2%;
+    }
+}
+
+@media (max-width: 360px) {
+    .ch-trust-row { grid-template-columns: 1fr; }
+    .ch-trust-item:last-child { grid-column: auto; }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+    .ch-hero-float-card,
+    .ch-hero-float-body,
+    .ch-hero-float-badge {
+        transition-duration: 0.01ms;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ch-product-card,
+    .ch-product-card-add,
+    .ch-bestsellers-arrow {
+        transition: none;
+    }
+
+    .ch-product-card:hover {
+        transform: none;
+    }
+
 }

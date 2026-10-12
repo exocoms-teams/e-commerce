@@ -409,6 +409,16 @@
     align-items: start;
 }
 
+.ch-aide-hub { padding-bottom: var(--space-section); }
+.ch-aide-hub-panels { min-width: 0; }
+.ch-aide-hub-panel[hidden] { display: none !important; }
+.ch-aide-hub-panel:focus,
+.ch-aide-hub-panel:focus-visible { outline: none; }
+.ch-aide-hub-tabs .ch-aide-sidebar-link:focus-visible {
+    outline: 3px solid var(--ch-amber);
+    outline-offset: 3px;
+}
+
 /* ── SIDEBAR (aide_sidebar.xml, partagée sur les 4 pages) ── */
 .ch-aide-sidebar {
     background: var(--ch-ink);
@@ -751,6 +761,16 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     .ch-aide-coverage { grid-template-columns: 1fr; }
     .ch-aide-warranty { flex-direction: column; align-items: flex-start; gap: 12px; }
 }
+@media (min-width: 768px) and (max-width: 900px) {
+    .ch-aide-hub.ch-aide-layout { grid-template-columns: 260px minmax(0, 1fr); }
+    .ch-aide-hub .ch-aide-sidebar {
+        position: sticky;
+        flex-direction: column;
+        overflow-x: visible;
+    }
+    .ch-aide-hub .ch-aide-sidebar-title { display: block; }
+    .ch-aide-hub .ch-aide-sidebar-link { white-space: normal; }
+}
 @media (max-width: 560px) {
     .ch-aide-timeline { grid-template-columns: 1fr; }
 }
@@ -803,13 +823,60 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     grid-template-columns: 1fr 1fr;
     gap: 40px;
     align-items: center;
-    /* margin-bottom: 48px; */
+}
+.ch-entreprise-photo-slot {
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    background: var(--ch-panel);
+}
+.ch-entreprise-photo-slot img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+}
+.ch-entreprise-hero-photo {
+    max-width: 520px;
+}
+.ch-entreprise-story-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, .9fr);
+    align-items: center;
+    gap: 36px;
+}
+.ch-entreprise-story-visual figcaption {
+    display: grid;
+    gap: 4px;
+    padding: 15px 18px;
+    color: var(--ch-ink);
+}
+.ch-entreprise-story-visual figcaption strong {
+    font-size: var(--fs-15);
+}
+.ch-entreprise-story-visual figcaption span {
+    color: var(--ch-fog);
+    font-size: var(--fs-13);
+}
+.ch-entreprise-cta {
+    padding: 34px 0 12px;
+    text-align: center;
+}
+.ch-entreprise-cta-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.ch-entreprise-help-link:focus-visible {
+    outline: 3px solid var(--ch-terracotta);
+    outline-offset: 3px;
 }
 /* Le <h1> du hero À propos / Le concept NE redimensionne plus rien :
    il hérite de --fs-h1 via .ch-aide-title, comme les 7 autres pages.
    L'ancien --fs-34 était le 3e largest H1 du site (après 46px
    accueil et 48px avis) sans raison de le maintenir. */
-/* .ch-entreprise-hero .ch-aide-title { margin-bottom: 16px; } */
 .ch-aide-title { margin-bottom: 16px; }
 .ch-entreprise-accent { color: var(--ch-terracotta); }
 .ch-entreprise-hero-visual { display: flex; justify-content: center; }
@@ -822,7 +889,6 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     background: var(--ch-panel);
     border-radius: var(--r-lg);
     padding: 28px 20px;
-    /* margin-bottom: 48px; */
 }
 .ch-entreprise-stat { text-align: center; }
 .ch-entreprise-stat-num {
@@ -851,25 +917,22 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     margin-bottom: 12px;
 }
 
-/* Historique — timeline verticale (distincte de .ch-aide-timeline qui
-   est en grille horizontale) */
+/* Historique — timeline sur deux colonnes, à côté du visuel d'atelier. */
 .ch-entreprise-history {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    border-left: 2px solid var(--ch-gray-border);
-    padding-left: 28px;
-    /* margin-bottom: 16px; */
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 14px;
 }
 .ch-entreprise-history-item {
     position: relative;
-    padding-bottom: 28px;
+    padding: 4px 2px 4px 18px;
+    border-left: 2px solid var(--ch-gray-border);
 }
 .ch-entreprise-history-item::before {
     content: '';
     position: absolute;
-    left: -33px;
-    top: 4px;
+    left: -6px;
+    top: 8px;
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -877,7 +940,6 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     border: 2px solid var(--ch-white);
     box-shadow: 0 0 0 1px var(--ch-terracotta);
 }
-.ch-entreprise-history-item:last-child { padding-bottom: 0; }
 .ch-entreprise-history-year {
     font-size: var(--fs-12);
     font-weight: 700;
@@ -897,6 +959,23 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
 .ch-aide-table.ch-entreprise-compare td.ch-entreprise-compare-highlight {
     background: var(--ch-panel);
 }
+.ch-aide-table.ch-entreprise-compare {
+    table-layout: fixed;
+}
+.ch-entreprise-compare-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.ch-entreprise-compare-scroll:focus-visible {
+    outline: 3px solid var(--ch-terracotta);
+    outline-offset: 3px;
+}
+@media (max-width: 768px) {
+    .ch-aide-table.ch-entreprise-compare {
+        min-width: 600px;
+    }
+}
 
 /* Le concept — schéma "Coupe technique" */
 .ch-entreprise-diagram {
@@ -904,19 +983,77 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     border-radius: var(--r-lg);
     padding: 32px 24px;
     text-align: center;
-    /* margin-bottom: 24px; */
 }
 .ch-entreprise-diagram-visual { display: flex; justify-content: center; margin: 16px 0; }
+.ch-entreprise-diagram-visual svg {
+    display: block;
+    width: min(100%, 780px);
+    height: auto;
+}
 .ch-entreprise-diagram-label {
     font-size: var(--fs-13);
     font-weight: 700;
     color: var(--ch-ink);
     letter-spacing: 0.02em;
 }
+.ch-entreprise-diagram-legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 20px;
+    max-width: 780px;
+    margin: 18px auto 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+.ch-entreprise-diagram-legend li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ch-ink);
+}
+.ch-entreprise-diagram-legend li span {
+    display: inline-grid;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ch-terracotta);
+    color: var(--ch-white);
+    font-size: var(--fs-13);
+    font-weight: 700;
+}
+.ch-entreprise-concept-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, .9fr);
+    align-items: center;
+    gap: 40px;
+}
+.ch-entreprise-concept-visual {
+    max-width: 520px;
+}
+.ch-entreprise-section-title {
+    margin: 0 0 18px;
+    color: var(--ch-ink);
+    font-size: var(--fs-h2);
+    font-weight: 800;
+    line-height: 1.2;
+}
+.ch-entreprise-help-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: var(--ch-terracotta-mid);
+    font-weight: 700;
+    text-underline-offset: 4px;
+}
 
 @media (max-width: 900px) {
     .ch-entreprise-hero { grid-template-columns: 1fr; }
-    .ch-entreprise-hero-visual { order: -1; }
+    .ch-entreprise-hero-visual { order: 0; }
+    .ch-entreprise-story-grid,
+    .ch-entreprise-concept-hero { grid-template-columns: 1fr; }
+    .ch-entreprise-concept-visual { justify-self: center; }
     .ch-entreprise-stats { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 560px) {
@@ -925,6 +1062,11 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     .ch-entreprise-stats { grid-template-columns: 1fr 1fr; }
     .ch-aide-table.ch-entreprise-compare { font-size: var(--fs-12-5); }
     .ch-aide-table.ch-entreprise-compare th, .ch-aide-table.ch-entreprise-compare td { padding: 10px 8px; }
+    .ch-entreprise-diagram { padding: 24px 14px; }
+    .ch-entreprise-diagram-legend { grid-template-columns: 1fr; gap: 8px; }
+    .ch-entreprise-history { grid-template-columns: 1fr; }
+    .ch-entreprise-cta { padding-top: 22px; }
+    .ch-entreprise-cta-links { flex-direction: column; }
 }
 
 /* ── BADGE / ÉTAT VIDE PARTAGÉS — utilisés par plusieurs pages (Nos
@@ -986,7 +1128,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
    (repeat(auto-fit, minmax(...))), cohérent avec .ch-usages-zone. */
 .ch-gammes-zone {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 16px;
     max-width: var(--container);
     margin: 0 auto;
@@ -1008,7 +1150,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
 .ch-gamme-card {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 3px;
     background: var(--ch-white);
     border: 1px solid var(--ch-gray-border);
     border-radius: var(--r-lg);
@@ -1068,6 +1210,10 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
   display: inline-block;
 }
 
+.ch-gamme-btn {
+    margin-top: 1rem;
+}
+
 .ch-gamme-badge {
     display: inline-block;
     width: fit-content;
@@ -1087,6 +1233,194 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     line-height: 1.5;
     flex-grow: 1;
     white-space: nowrap;
+}
+
+/* La variante accueil regroupe le statut et le détail pour les afficher
+   sur une seule ligne mobile, sans modifier le rendu desktop existant. */
+.ch-gammes-home .ch-gamme-card-link > span:nth-child(3) {
+    display: contents;
+}
+
+@media (max-width: 768px) {
+    #wrapwrap .ch-gammes-home {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gammes-title-block {
+        padding-bottom: 4px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-usages-head {
+        margin-bottom: 0;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card {
+        display: block;
+        padding: 0;
+        overflow: hidden;
+        border-radius: 20px;
+        transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-link {
+        text-decoration: none;
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr) 34px;
+        grid-template-areas:
+            "icon title arrow"
+            "icon meta arrow";
+        column-gap: 14px;
+        row-gap: 2px;
+        align-items: center;
+        min-height: 82px;
+        padding: 14px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-icon {
+        grid-area: icon;
+        width: 52px;
+        height: 52px;
+        margin: 0;
+        border-radius: 16px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-name {
+        grid-area: title;
+        align-self: end;
+        font-size: var(--fs-18);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-link > span:nth-child(3) {
+        grid-area: meta;
+        display: flex;
+        min-width: 0;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 10px;
+        align-self: start;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-status {
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: 0;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-tagline {
+        flex-grow: 0;
+        white-space: normal;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-link > span:last-child {
+        grid-area: arrow;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        justify-self: end;
+        width: 34px;
+        height: 34px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        font-size: 0;
+        line-height: 1;
+        box-shadow: var(--shadow-sm);
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-link > span:last-child i {
+        margin: 0;
+        font-size: var(--fs-14);
+        transform: translateX(-1px);
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:active {
+        transform: scale(0.98);
+        background: var(--ch-bg-soft);
+        box-shadow: none;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card-link:focus-visible {
+        outline: 3px solid var(--ch-terracotta);
+        outline-offset: 3px;
+        border-radius: 20px;
+    }
+}
+
+/* Sur desktop, la DERNIÈRE carte de la section (« Sur-mesure ») reprend la
+   mise en page compacte de la variante mobile (icône | titre + meta) et
+   s'étale en pleine largeur. Seul le bouton diffère : la pastille texte
+   d'origine occupe la colonne de droite, à la place de la flèche ronde
+   mobile (on ne touche donc pas à son style, seulement à son placement). */
+@media (min-width: 769px) {
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child {
+        grid-column: 1 / -1;
+        padding: 0;
+        border-radius: 20px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-link {
+        /* L'ancre a une boîte sur desktop (display:grid) : on neutralise le
+           soulignement a:hover par défaut d'Odoo, comme en mobile. */
+        text-decoration: none;
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr) auto;
+        grid-template-areas:
+            "icon title btn"
+            "icon meta btn";
+        column-gap: 14px;
+        row-gap: 2px;
+        align-items: center;
+        min-height: 82px;
+        padding: 14px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-icon {
+        grid-area: icon;
+        width: 52px;
+        height: 52px;
+        margin: 0;
+        border-radius: 16px;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-name {
+        grid-area: title;
+        align-self: end;
+        font-size: var(--fs-18);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-link > span:nth-child(3) {
+        grid-area: meta;
+        display: flex;
+        min-width: 0;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 10px;
+        align-self: start;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-status {
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: 0;
+    }
+
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-tagline {
+        flex-grow: 0;
+        white-space: normal;
+    }
+
+    /* Placement uniquement : le style du bouton reste celui du desktop. */
+    #wrapwrap .ch-gammes-home .ch-gamme-card:last-child .ch-gamme-card-link > span:last-child {
+        grid-area: btn;
+    }
 }
 
 .ch-gamme-card-cta {
