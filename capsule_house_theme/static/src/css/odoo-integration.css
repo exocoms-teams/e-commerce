@@ -150,11 +150,12 @@
     overflow: hidden;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--ch-gray-border);
-    transition: transform var(--transition), box-shadow var(--transition);
+    transition: transform var(--transition), box-shadow var(--transition),
+                border-color var(--transition);
 }
 
 .o_wsale_product_grid_wrapper:hover {
-    transform: translateY(-6px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-md);
     border-color: transparent;
 }
@@ -611,5 +612,26 @@ a.o_wish_rm {
     }
     .o_wsale_products_price_filter {
         width: 100%;
+    }
+}
+
+
+/* CH-147 — accessibilité des micro-interactions */
+@media (prefers-reduced-motion: reduce) {
+    a,
+    .ch-btn,
+    .o_wsale_product_grid_wrapper,
+    .oe_product_image_img,
+    .oe_website_sale .btn-primary,
+    .oe_website_sale .a-submit {
+        transition: none !important;
+    }
+
+    .ch-btn:hover,
+    .ch-btn-cta:hover,
+    .o_wsale_product_grid_wrapper:hover,
+    .o_wsale_product_grid_wrapper:hover .oe_product_image_img,
+    .oe_website_sale #products_grid .o_wsale_product_grid_wrapper:hover {
+        transform: none !important;
     }
 }
