@@ -467,6 +467,31 @@ window.MissionDetail = (() => {
         if (!m.en_route && Tracking.isActive(m.id)) Tracking.stop();
         if (isDone) return;
 
+        // ── Rendez-vous avec le client ──
+        if (['assigne','rdv_planifie'].includes(st)) {
+            const rdvForm = document.createElement('div');
+            rdvForm.className = 'rdv-form';
+            rdvForm.style.display = 'none';
+            const rdvInput = document.createElement('input');
+            rdvInput.type = 'datetime-local';
+            rdvInput.className = 'rdv-input';
+            rdvInput.min = _toLocalInput(new Date());
+            if (m.date_rdv) rdvInput.value = _toLocalInput(new Date(m.date_rdv));
+            rdvForm.appendChild(rdvInput);
+            rdvForm.appendChild(_btn('✔ Valider le rendez-vous', 'btn-start', async () => {
+                if (!rdvInput.value) { Toast.show('Choisissez une date et une heure', 'warning'); return; }
+                try {
+                    await API.setRdv(m.id, new Date(rdvInput.value).toISOString());
+                    Toast.show('📅 Rendez-vous enregistré, le client est prévenu', 'success');
+                    await MissionDetail.reload();
+                } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
+            }));
+            block.appendChild(_btn(m.date_rdv ? '📅 Modifier le RDV' : '📅 Fixer le RDV', 'btn-start btn-outline', () => {
+                rdvForm.style.display = rdvForm.style.display === 'none' ? 'flex' : 'none';
+            }));
+            block.appendChild(rdvForm);
+        }
+
         // ── Trajet vers le client ──
         if (['assigne','rdv_planifie'].includes(st)) {
             if (!m.en_route) {
@@ -597,6 +622,11 @@ window.MissionDetail = (() => {
     }
 
     function _fmt(n) { return parseFloat(n || 0).toFixed(2).replace('.', ','); }
+    // Date -> valeur pour <input type="datetime-local"> (heure locale du téléphone)
+    function _toLocalInput(d) {
+        const p = n => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
     function _formatDate(dt) {
         if (!dt) return '–';
         return new Date(dt).toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });

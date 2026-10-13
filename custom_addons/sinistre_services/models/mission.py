@@ -2,6 +2,9 @@
 import logging
 import secrets
 import requests
+from datetime import timezone as dt_timezone
+from zoneinfo import ZoneInfo
+from babel.dates import format_datetime as babel_format_datetime
 from datetime import timedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -13,6 +16,7 @@ MONTANT_GARANTIE_DEFAUT = 150.0
 DELAI_REPONSE_MINUTES = 15   # temps laissé aux artisans pour répondre
 TAILLE_VAGUE = 0             # 0 = tous les artisans éligibles en même temps
 FRAIS_DEPLACEMENT_DEFAUT = 80.0  # si aucun montant n'est saisi sur la mission
+TZ_AFFICHAGE = 'Europe/Paris'     # fuseau pour afficher les dates aux clients
 
 
 class SinistreMission(models.Model):
@@ -85,6 +89,7 @@ class SinistreMission(models.Model):
     # ── Dates ────────────────────────────────────────────────────────
     date_reception      = fields.Datetime(string='Date de Réception', default=fields.Datetime.now, readonly=True)
     date_rdv            = fields.Datetime(string='Date RDV', tracking=True)
+    date_rdv_affichage  = fields.Char(string='RDV (affichage)', compute='_compute_date_rdv_affichage')
     date_debut_travaux  = fields.Datetime(string='Début des Travaux')
     date_cloture        = fields.Datetime(string='Date Clôture', readonly=True)
 
@@ -326,6 +331,57 @@ class SinistreMission(models.Model):
         self._annuler_propositions_en_attente()
         self.write({'state': 'assigne', 'sans_reponse': False})
         self.message_post(body=f"Mission assignée à {self.intervenant_id.name}")
+
+    # ── Rendez-vous ──────────────────────────────────────────────────
+    @api.model
+    def _formater_date(self, dt):
+        """Date UTC -> texte en français, heure de Paris (ex. « mardi 14 octobre à 09:30 »)."""
+        if not dt:
+            return ''
+        return babel_format_datetime(
+            dt.replace(tzinfo=dt_timezone.utc), "EEEE d MMMM 'à' HH:mm",
+            tzinfo=ZoneInfo(TZ_AFFICHAGE), locale='fr_FR',
+        )
+
+    @api.depends('date_rdv')
+    def _compute_date_rdv_affichage(self):
+        for mission in self:
+            mission.date_rdv_affichage = self._formater_date(mission.date_rdv)
+
+    def action_fixer_rdv(self, date_rdv):
+        """L'artisan fixe (ou modifie) le rendez-vous depuis l'appli.
+        date_rdv : datetime UTC sans fuseau (format Odoo)."""
+        self.ensure_one()
+        if self.state not in ('assigne', 'rdv_planifie'):
+            raise UserError(_("Le rendez-vous ne peut être fixé que sur une mission assignée."))
+        if date_rdv < fields.Datetime.now() - timedelta(hours=1):
+            raise UserError(_("La date du rendez-vous est déjà passée."))
+        modification = bool(self.date_rdv)
+        self.write({'date_rdv': date_rdv, 'state': 'rdv_planifie'})
+        self.message_post(body=_(
+            "📅 Rendez-vous %(action)s par %(artisan)s : %(date)s.",
+            action=_("modifié") if modification else _("fixé"),
+            artisan=self.intervenant_id.name or _("l'artisan"),
+            date=self._formater_date(date_rdv),
+        ))
+        self._envoyer_email_rdv_client(modification)
+
+    def _envoyer_email_rdv_client(self, modification=False):
+        """Prévient le client de la date du rendez-vous."""
+        self.ensure_one()
+        email = self.client_email or (self.client_id.email if self.client_id else '')
+        if not email or not self.date_rdv:
+            return
+        suivi = f"{self._get_base_url()}/suivi/{self.token_api}"
+        titre = "Votre rendez-vous a été modifié" if modification else "Votre rendez-vous est fixé"
+        body = f"""
+            <p>Bonjour {self.client_id.name or ''},</p>
+            <p>{titre} pour votre intervention <strong>{self.reference}</strong> :</p>
+            <p style="font-size:16px;"><strong>📅 {self._formater_date(self.date_rdv)}</strong></p>
+            <p>Artisan : {self.intervenant_id.name or ''}</p>
+            <p><a href="{suivi}">Suivre ma mission</a></p>
+        """
+        self._send_mail(email, f"[Sinistre Services] {titre} — {self.reference}", body)
 
     def action_planifier_rdv(self):
         self.write({'state': 'rdv_planifie'})

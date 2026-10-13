@@ -25,6 +25,7 @@
                         <th>Type</th>
                         <th>Adresse</th>
                         <th>Date</th>
+                        <th>Rendez-vous</th>
                         <th>État</th>
                         <th/>
                     </tr>
@@ -35,6 +36,7 @@
                         <td><span t-field="m.type_intervention"/></td>
                         <td t-out="m.adresse_intervention"/>
                         <td><span t-field="m.date_reception" t-options="{'widget': 'date'}"/></td>
+                        <td t-out="m.date_rdv_affichage or '—'"/>
                         <td><span class="badge text-bg-light" t-field="m.state"/></td>
                         <td class="text-end">
                             <a class="btn btn-sm btn-primary" t-attf-href="/suivi/#{m.token_api}">Suivre</a>
