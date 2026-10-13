@@ -24,7 +24,19 @@ class SinistreProposition(models.Model):
         ('refuse', 'Refusée'),
         ('expire', 'Expirée'),
         ('annule', 'Annulée'),
+        ('desiste', 'Désistée'),
     ], string='État', default='en_attente', required=True, index=True)
     date_envoi = fields.Datetime(string='Envoyée le', default=fields.Datetime.now, required=True)
     date_limite = fields.Datetime(string='Limite de réponse', required=True, index=True)
     date_reponse = fields.Datetime(string='Répondue le')
+
+    # Désistement de l'artisan après acceptation
+    motif_desistement = fields.Selection([
+        ('empechement', 'Empêchement'),
+        ('hors_zone', 'Hors de ma zone'),
+        ('competences', 'Pas les compétences nécessaires'),
+        ('client_injoignable', 'Client injoignable'),
+        ('autre', 'Autre'),
+    ], string='Motif du désistement')
+    message_desistement = fields.Text(string='Message de l\'artisan')
+    date_desistement = fields.Datetime(string='Désisté le')

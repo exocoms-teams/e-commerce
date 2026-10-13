@@ -938,6 +938,27 @@ class SinistrePWAController(http.Controller):
         except Exception as e:
             return _err(400, str(e))
 
+    # ── DÉSISTEMENT ──────────────────────────────────────────────────
+    @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/desister',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def mission_desister(self, mission_id, **kwargs):
+        """L'artisan renonce à la mission. Corps : {"motif": "...", "message": "..."}."""
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _err(403, "Accès non autorisé")
+        mission = _check_mission(intervenant, mission_id)
+        if not mission:
+            return _err(404, "Mission introuvable")
+        try:
+            body = json.loads(request.httprequest.data.decode('utf-8'))
+        except Exception:
+            return _err(400, "Requête invalide")
+        try:
+            mission.action_desister(intervenant, body.get('motif'), body.get('message'))
+        except Exception as e:
+            return _err(400, str(e))
+        return _ok({'success': True})
+
     # ── RENDEZ-VOUS ──────────────────────────────────────────────────
     @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/rdv',
                 type='http', auth='user', methods=['POST'], csrf=False)

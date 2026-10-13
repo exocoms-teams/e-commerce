@@ -60,6 +60,9 @@ window.API = (() => {
         /* ── Workflow mission ── */
         async demarrer(missionId)  { return this.post(`/intervenant/mission/${missionId}/demarrer`, {}); },
         async enRoute(missionId)   { return this.post(`/intervenant/mission/${missionId}/en-route`, {}); },
+        async desister(missionId, motif, message) {
+            return this.post(`/intervenant/mission/${missionId}/desister`, { motif, message });
+        },
         async setRdv(missionId, isoDate) {
             return this.post(`/intervenant/mission/${missionId}/rdv`, { date_rdv: isoDate });
         },

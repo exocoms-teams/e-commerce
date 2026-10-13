@@ -492,6 +492,40 @@ window.MissionDetail = (() => {
             block.appendChild(rdvForm);
         }
 
+        // ── Désistement (tant que l'intervention n'a pas démarré) ──
+        if (['assigne','rdv_planifie'].includes(st)) {
+            const desForm = document.createElement('div');
+            desForm.className = 'desist-form';
+            desForm.style.display = 'none';
+            desForm.innerHTML = `
+                <label class="desist-label">Motif</label>
+                <select class="desist-motif">
+                    <option value="empechement">Empêchement</option>
+                    <option value="hors_zone">Hors de ma zone</option>
+                    <option value="competences">Pas les compétences nécessaires</option>
+                    <option value="client_injoignable">Client injoignable</option>
+                    <option value="autre">Autre</option>
+                </select>
+                <label class="desist-label">Message pour la plateforme (obligatoire)</label>
+                <textarea class="desist-message" rows="3" placeholder="Expliquez en quelques mots pourquoi vous renoncez à cette mission"></textarea>`;
+            desForm.appendChild(_btn('Confirmer le désistement', 'btn-start btn-desist', async () => {
+                const motif = desForm.querySelector('.desist-motif').value;
+                const message = desForm.querySelector('.desist-message').value.trim();
+                if (message.length < 10) { Toast.show('Merci d\'expliquer votre désistement en quelques mots', 'warning'); return; }
+                if (!confirm('Confirmer votre désistement ? La mission sera proposée à d\'autres artisans.')) return;
+                try {
+                    await API.desister(m.id, motif, message);
+                    Tracking.stop();
+                    Toast.show('Désistement enregistré. La mission est reproposée à d\'autres artisans.', 'success');
+                    App.goBack();
+                } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
+            }));
+            block.appendChild(_btn('❌ Me désister', 'btn-start btn-outline btn-desist-open', () => {
+                desForm.style.display = desForm.style.display === 'none' ? 'flex' : 'none';
+            }));
+            block.appendChild(desForm);
+        }
+
         // ── Trajet vers le client ──
         if (['assigne','rdv_planifie'].includes(st)) {
             if (!m.en_route) {
