@@ -216,8 +216,6 @@
     position: relative;
     overflow: hidden;
 }
-.ch-avis-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-
 .ch-avis-card-head { display: flex; align-items: center; gap: 14px; }
 
 .ch-avis-avatar {
@@ -853,6 +851,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     width: 100%;
     aspect-ratio: 3 / 2;
     object-fit: cover;
+    transition: transform var(--ch-dur-base, 250ms) var(--ch-ease-out, ease);
 }
 .ch-entreprise-hero-photo {
     max-width: 520px;
@@ -1160,11 +1159,22 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     padding: 18px;
     transition: all var(--transition);
 }
-.ch-gamme-card:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px); 
+
+@media (hover: hover) {
+    #wrapwrap .ch-entreprise-photo-slot:hover img {
+        transform: scale(1.05);
+    }
 }
 
+@media (prefers-reduced-motion: reduce) {
+    #wrapwrap .ch-entreprise-photo-slot img {
+        transition: none;
+    }
+
+    #wrapwrap .ch-entreprise-photo-slot:hover img {
+        transform: none;
+    }
+}
 .ch-gamme-card-link {
     display: contents;
     text-decoration: none;
