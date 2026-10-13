@@ -264,6 +264,33 @@
     max-width: 420px;
 }
 
+/* Conteneur des cartes flottantes du hero : overlay plein cadre couvrant
+   l'illustration, sans intercepter les clics (pointer-events: none, réactivé
+   sur chaque carte). C'est LUI qui porte le flottement continu. Animer le
+   conteneur plutôt que les cartes évite d'entrer en conflit avec le
+   `transform: translateY()` de survol posé sur .ch-hero-float-card
+   (base.css). Le cadre coïncide exactement avec .ch-hero-visual, donc les
+   positions en % des cartes sont inchangées.
+
+   z-index OBLIGATOIRE : `animation` applique un `transform`, et un
+   transform non nul crée un nouveau stacking context sur ce conteneur.
+   Sans z-index, il serait peint au niveau auto (0), donc SOUS
+   .ch-hero-illustration (z-index: 1) — les cartes disparaîtraient derrière
+   l'image. z-index: 2 (> 1) rétablit la profondeur d'origine des cartes,
+   qui étaient auparavant enfants directs de .ch-hero-visual avec z-index: 2. */
+.ch-hero-float-cards {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    animation: ch-hero-float 6s ease-in-out infinite;
+}
+
+@keyframes ch-hero-float {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -10px, 0); }
+}
+
 .ch-hero-float-card {
     position: absolute;
     display: flex;
@@ -278,6 +305,7 @@
     top: 12%;
     right: -4%;
     z-index: 2;
+    pointer-events: auto;
 }
 
 .ch-hero-float-card-2 {
@@ -289,7 +317,6 @@
 
 .ch-hero-float-card:hover {
     text-decoration: none;
-    transform: translateY(-2px);
 }
 
 .ch-hero-float-badge {
@@ -298,7 +325,7 @@
     left: -8px;
     padding: 3px 10px;
     border-radius: var(--r-pill);
-    font-size: var(--fs-10);
+    font-size: var(--fs-12);
     font-weight: 700;
     color: var(--ch-white);
     text-transform: uppercase;
@@ -316,10 +343,11 @@
     flex-shrink: 0;
 }
 
-.ch-hero-float-img img {
+#wrapwrap .ch-hero-float-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform var(--ch-dur-base) var(--ch-ease-out);
 }
 
 .ch-hero-float-body {
@@ -337,7 +365,7 @@
 .ch-hero-float-price {
     font-size: var(--fs-13);
     font-weight: 700;
-    color: var(--ch-terracotta);
+    color: var(--ch-terracotta-mid);
 }
 
 .ch-hero-cart-shortcut {
@@ -442,11 +470,6 @@
     transition: all var(--transition);
 }
 
-.ch-product-card:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-}
-
 .ch-product-card-img {
     display: block;
     width: 100%;
@@ -455,10 +478,11 @@
     overflow: hidden;
 }
 
-.ch-product-card-img img {
+#wrapwrap .ch-product-card-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform var(--ch-dur-base) var(--ch-ease-out);
 }
 
 .ch-product-card-body {
@@ -529,10 +553,30 @@
     transition: background var(--transition);
 }
 
-.ch-product-card-add:hover {
-    background: var(--ch-terracotta-mid);
-    color: var(--ch-white);
-    text-decoration: none;
+#wrapwrap .ch-product-card-add {
+    transition: transform var(--ch-dur-fast) var(--ch-ease-spring),
+                background-color var(--ch-dur-fast) var(--ch-ease-out);
+}
+
+#wrapwrap .ch-product-card-add:focus-visible {
+    outline: 3px solid var(--ch-ink);
+    outline-offset: 3px;
+}
+
+@media (hover: hover) {
+    #wrapwrap .ch-hero-float-card:hover .ch-hero-float-img img {
+        transform: scale(1.05);
+    }
+
+    #wrapwrap .ch-product-card:hover .ch-product-card-img img {
+        transform: scale(1.05);
+    }
+
+    #wrapwrap .ch-product-card:hover .ch-product-card-add {
+        background: var(--ch-terracotta-mid);
+        color: var(--ch-white);
+        transform: translateY(-2px);
+    }
 }
 
 /* ── USAGES (accueil, v19.0.1.0.71) — voir views/partials/home_usages.xml
@@ -773,7 +817,7 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: var(--ch-terracotta);
+    background: var(--ch-terracotta-mid);
     color: var(--ch-white);
     font-family: var(--font-head);
     font-size: var(--fs-16);
@@ -984,7 +1028,7 @@
     }
 
     .ch-product-card-name { font-size: var(--fs-13-5); }
-    .ch-product-card-spec { font-size: var(--fs-11-5); }
+    .ch-product-card-spec { font-size: var(--fs-12); }
 
     .ch-product-card-price-row {
         flex-wrap: wrap;
@@ -1051,7 +1095,7 @@
     .ch-hero-title {
         max-width: none;
         margin: 0 auto;
-        font-size: clamp(30px, 8vw, 36px);
+        font-size: var(--fs-h1);
         line-height: 1.12;
         letter-spacing: -0.9px;
     }
@@ -1230,14 +1274,22 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .ch-product-card,
-    .ch-product-card-add,
-    .ch-bestsellers-arrow {
-        transition: none;
+    #wrapwrap .ch-hero-float-cards {
+        animation: none !important;
     }
 
-    .ch-product-card:hover {
-        transform: none;
+    #wrapwrap .ch-product-card,
+    #wrapwrap .ch-product-card-img img,
+    #wrapwrap .ch-product-card-add,
+    #wrapwrap .ch-hero-float-img img,
+    #wrapwrap .ch-bestsellers-arrow {
+        transition: none !important;
     }
 
+    #wrapwrap .ch-product-card:hover,
+    #wrapwrap .ch-product-card:hover .ch-product-card-img img,
+    #wrapwrap .ch-product-card:hover .ch-product-card-add,
+    #wrapwrap .ch-hero-float-card:hover .ch-hero-float-img img {
+        transform: none !important;
+    }
 }

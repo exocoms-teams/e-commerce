@@ -102,12 +102,12 @@
 }
 
 .o_wsale_products_categories .list-group-item:hover {
-    color: var(--ch-terracotta);
+    color: var(--ch-terracotta-mid);
 }
 
 .o_wsale_products_categories .list-group-item.active,
 .o_wsale_products_categories .list-group-item.text-primary {
-    color: var(--ch-terracotta) !important;
+    color: var(--ch-terracotta-mid) !important;
     font-weight: 700;
 }
 
@@ -150,27 +150,11 @@
     overflow: hidden;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--ch-gray-border);
-    transition: transform var(--transition), box-shadow var(--transition),
-                border-color var(--transition);
-}
-
-.o_wsale_product_grid_wrapper:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: transparent;
 }
 
 .oe_product_image {
     border-radius: var(--r-lg) var(--r-lg) 0 0;
     background: var(--ch-panel);
-}
-
-.oe_product_image_img {
-    transition: transform var(--transition);
-}
-
-.o_wsale_product_grid_wrapper:hover .oe_product_image_img {
-    transform: scale(1.05);
 }
 
 .o_wsale_products_item_title {
@@ -204,7 +188,7 @@
 }
 
 .o_add_wishlist:hover {
-    color: var(--ch-terracotta);
+    color: var(--ch-terracotta-mid);
 }
 
 /* ========================================
@@ -218,7 +202,7 @@
     font-size: var(--fs-12);
     text-transform: uppercase;
 }
-.product_ribbon.sale { background: var(--ch-terracotta); color: var(--ch-white); }
+.product_ribbon.sale { background: var(--ch-terracotta-mid); color: var(--ch-white); }
 .product_ribbon.new { background: var(--ch-green); color: var(--ch-white); }
 .product_ribbon.out_of_stock { background: var(--ch-fog); color: var(--ch-white); }
 
@@ -240,8 +224,8 @@ a.btn-primary.o_add_to_cart_btn,
 .o_wsale_product_btn .btn-primary,
 #add_to_cart,
 #products_grid .btn-primary {
-    background: var(--ch-terracotta) !important;
-    border-color: var(--ch-terracotta) !important;
+    background: var(--ch-terracotta-mid) !important;
+    border-color: var(--ch-terracotta-mid) !important;
     color: var(--ch-white) !important;
     border-radius: var(--r-pill) !important;
     padding: 10px 20px !important;
@@ -255,8 +239,8 @@ a.btn-primary.o_add_to_cart_btn,
 a.btn-primary.o_add_to_cart_btn:hover,
 .o_wsale_product_btn .btn-primary:hover,
 #add_to_cart:hover {
-    background: var(--ch-terracotta-mid) !important;
-    border-color: var(--ch-terracotta-mid) !important;
+    background: var(--ch-terracotta-dark) !important;
+    border-color: var(--ch-terracotta-dark) !important;
     color: var(--ch-white) !important;
     transform: translateY(-2px) !important;
     box-shadow: var(--shadow-md) !important;
@@ -273,8 +257,8 @@ a.o_wish_rm {
 }
 .o_wsale_compare:hover,
 .o_add_wishlist_dyn:hover {
-    color: var(--ch-terracotta);
-    border-color: var(--ch-terracotta);
+    color: var(--ch-terracotta-mid);
+    border-color: var(--ch-terracotta-mid);
 }
 
 /* ========================================
@@ -517,12 +501,12 @@ a.o_wish_rm {
    Le template porte .ch-btn-cta ; on reprend ici son accent avec
    la spécificité nécessaire face au style natif du formulaire. */
 #contactus_form .s_website_form_send {
-    background: var(--ch-terracotta);
-    border: 2px solid var(--ch-terracotta);
+    background: var(--ch-terracotta-mid);
+    border: 2px solid var(--ch-terracotta-mid);
 }
 #contactus_form .s_website_form_send:hover {
-    background: var(--ch-terracotta-mid);
-    border-color: var(--ch-terracotta-mid);
+    background: var(--ch-terracotta-dark);
+    border-color: var(--ch-terracotta-dark);
 }
 /* ========================================
    ALERTES (messages panier/checkout/portail)
@@ -558,8 +542,8 @@ a.o_wish_rm {
     border-radius: var(--r-pill);
 }
 .o_portal_wrap .btn-primary:hover {
-    background: var(--ch-terracotta);
-    border-color: var(--ch-terracotta);
+    background: var(--ch-terracotta-mid);
+    border-color: var(--ch-terracotta-mid);
 }
 .o_portal_wrap .table thead {
     background: var(--ch-panel);
@@ -590,14 +574,14 @@ a.o_wish_rm {
    n'existe déjà — donc uniquement sur les pages natives non couvertes,
    sans risque de régression sur le reste du site. */
 .btn-primary {
-    background: var(--ch-terracotta);
-    border-color: var(--ch-terracotta);
+    background: var(--ch-terracotta-mid);
+    border-color: var(--ch-terracotta-mid);
     color: var(--ch-white);
 }
 
 .btn-primary:hover {
-    background: var(--ch-terracotta-mid);
-    border-color: var(--ch-terracotta-mid);
+    background: var(--ch-terracotta-dark);
+    border-color: var(--ch-terracotta-dark);
     color: var(--ch-white);
 }
 
@@ -612,26 +596,5 @@ a.o_wish_rm {
     }
     .o_wsale_products_price_filter {
         width: 100%;
-    }
-}
-
-
-/* CH-147 — accessibilité des micro-interactions */
-@media (prefers-reduced-motion: reduce) {
-    a,
-    .ch-btn,
-    .o_wsale_product_grid_wrapper,
-    .oe_product_image_img,
-    .oe_website_sale .btn-primary,
-    .oe_website_sale .a-submit {
-        transition: none !important;
-    }
-
-    .ch-btn:hover,
-    .ch-btn-cta:hover,
-    .o_wsale_product_grid_wrapper:hover,
-    .o_wsale_product_grid_wrapper:hover .oe_product_image_img,
-    .oe_website_sale #products_grid .o_wsale_product_grid_wrapper:hover {
-        transform: none !important;
     }
 }

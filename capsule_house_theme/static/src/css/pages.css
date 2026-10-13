@@ -216,15 +216,13 @@
     position: relative;
     overflow: hidden;
 }
-.ch-avis-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-
 .ch-avis-card-head { display: flex; align-items: center; gap: 14px; }
 
 .ch-avis-avatar {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: var(--ch-terracotta);
+    background: var(--ch-terracotta-mid);
     color: var(--ch-white);
     font-family: var(--font-head);
     font-size: var(--fs-16);
@@ -284,11 +282,11 @@
 
 .ch-avis-section-eyebrow {
     display: inline-block;
-    font-size: var(--fs-11);
+    font-size: var(--fs-12);
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--ch-terracotta);
+    color: var(--ch-terracotta-mid);
     background: var(--ch-highlight);
     padding: 5px 14px;
     border-radius: var(--r-pill);
@@ -345,7 +343,7 @@
 }
 .ch-avis-star-btn:hover, .ch-avis-star-btn.active { color: var(--ch-amber); transform: scale(1.15); }
 .ch-avis-star-hint { font-size: var(--fs-12); color: var(--ch-fog); margin-top: 8px; min-height: 16px; font-style: italic; }
-.ch-avis-req { color: var(--ch-terracotta); margin-left: 2px; }
+.ch-avis-req { color: var(--ch-terracotta-mid); margin-left: 2px; }
 
 .ch-avis-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .ch-avis-form-group { margin-bottom: 18px; }
@@ -449,7 +447,7 @@
     transition: background var(--transition), color var(--transition);
 }
 .ch-aide-sidebar-link:hover { color: var(--ch-white); background: rgba(255,255,255,0.06); }
-.ch-aide-sidebar-link.active { background: var(--ch-terracotta); color: var(--ch-white); }
+.ch-aide-sidebar-link.active { background: var(--ch-terracotta-mid); color: var(--ch-white); }
 
 /* ── CONTENU COMMUN ── */
 /* .ch-aide-title porte le <h1> de page sur /livraison, /retours,
@@ -567,11 +565,11 @@
 .ch-aide-table th {
     background: var(--ch-panel);
     text-align: left;
-    font-size: var(--fs-11-5);
+    font-size: var(--fs-12);
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--ch-fog);
+    color: var(--ch-ink);
     padding: 14px 20px;
 }
 .ch-aide-table td {
@@ -579,6 +577,26 @@
     font-size: var(--fs-14);
     color: var(--ch-ink);
     border-top: 1px solid var(--ch-gray-border);
+}
+
+/* Tableau « Zones de livraison » (aide_livraison.xml, hors comparatif
+   Entreprise qui dispose déjà de son propre conteneur défilant
+   .ch-entreprise-compare-scroll) : avec des cellules à 20px de chaque
+   côté, la somme des largeurs minimales (dont « France métropolitaine »)
+   dépassait la largeur de l'écran sous ~420px — la table débordait donc
+   horizontalement la page. On resserre les cellules et on autorise la
+   coupure des mots longs pour que la table tienne dans la largeur. */
+@media (max-width: 560px) {
+    .ch-aide-table:not(.ch-entreprise-compare) th,
+    .ch-aide-table:not(.ch-entreprise-compare) td {
+        padding: 12px 8px;
+    }
+    .ch-aide-table:not(.ch-entreprise-compare) th {
+        letter-spacing: 0.04em;
+    }
+    .ch-aide-table:not(.ch-entreprise-compare) td {
+        overflow-wrap: anywhere;
+    }
 }
 
 /* 3 cartes info (Retours) */
@@ -624,7 +642,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     border-radius: var(--r-pill);
     transition: background var(--transition);
 }
-.ch-aide-btn-dark:hover { background: var(--ch-terracotta); }
+.ch-aide-btn-dark:hover { background: var(--ch-terracotta-mid); }
 
 /* Bandeau "10 ans" (Garantie) */
 .ch-aide-warranty {
@@ -709,7 +727,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--ch-terracotta);
+    color: var(--ch-terracotta-mid);
     margin: 32px 0 12px;
 }
 .ch-aide-faq-category:first-child { margin-top: 0; }
@@ -806,7 +824,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     text-decoration: none !important;
     transition: var(--transition);
 }
-.ch-entreprise-pill:hover { border-color: var(--ch-terracotta); color: var(--ch-terracotta); }
+.ch-entreprise-pill:hover { border-color: var(--ch-terracotta-mid); color: var(--ch-terracotta-mid); }
 .ch-entreprise-pill.active {
     background: var(--ch-ink);
     border-color: var(--ch-ink);
@@ -833,6 +851,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     width: 100%;
     aspect-ratio: 3 / 2;
     object-fit: cover;
+    transition: transform var(--ch-dur-base, 250ms) var(--ch-ease-out, ease);
 }
 .ch-entreprise-hero-photo {
     max-width: 520px;
@@ -859,12 +878,14 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
 .ch-entreprise-cta {
     padding: 34px 0 12px;
     text-align: center;
+    text-decoration: none;
 }
 .ch-entreprise-cta-links {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 12px;
+    text-decoration: none;
 }
 .ch-entreprise-help-link:focus-visible {
     outline: 3px solid var(--ch-terracotta);
@@ -927,7 +948,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     font-size: var(--fs-12);
     font-weight: 700;
     letter-spacing: 0.06em;
-    color: var(--ch-terracotta);
+    color: var(--ch-terracotta-mid);
     margin-bottom: 4px;
 }
 
@@ -1002,7 +1023,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     flex: 0 0 28px;
     place-items: center;
     border-radius: 50%;
-    background: var(--ch-terracotta);
+    background: var(--ch-terracotta-mid);
     color: var(--ch-white);
     font-size: var(--fs-13);
     font-weight: 700;
@@ -1065,7 +1086,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--ch-terracotta);
+    color: var(--ch-terracotta-mid);
     margin-bottom: 10px;
 }
 
@@ -1140,11 +1161,22 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     padding: 18px;
     transition: all var(--transition);
 }
-.ch-gamme-card:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px); 
+
+@media (hover: hover) {
+    #wrapwrap .ch-entreprise-photo-slot:hover img {
+        transform: scale(1.05);
+    }
 }
 
+@media (prefers-reduced-motion: reduce) {
+    #wrapwrap .ch-entreprise-photo-slot img {
+        transition: none;
+    }
+
+    #wrapwrap .ch-entreprise-photo-slot:hover img {
+        transform: none;
+    }
+}
 .ch-gamme-card-link {
     display: contents;
     text-decoration: none;
@@ -1187,7 +1219,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
 .ch-gamme-badge {
     display: inline-block;
     width: fit-content;
-    font-size: var(--fs-10-5);
+    font-size: var(--fs-12);
     font-weight: 700;
     letter-spacing: 0.03em;
     padding: 3px 10px;
@@ -1195,7 +1227,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     margin: 6px 0 8px;
 }
 .ch-gamme-badge-ok { background: rgba(46, 125, 91, 0.10); color: var(--ch-green); }
-.ch-gamme-badge-tbd { background: rgba(193, 105, 79, 0.10); color: var(--ch-terracotta); }
+.ch-gamme-badge-tbd { background: rgba(168, 86, 64, 0.10); color: var(--ch-terracotta-mid); }
 
 .ch-gamme-card-tagline {
     font-size: var(--fs-12-5);
@@ -1390,7 +1422,7 @@ h2.ch-aide-card-title { font-size: var(--fs-h2); }
     gap: 6px;
     font-size: var(--fs-12-5);
     font-weight: 700;
-    color: var(--ch-terracotta);
+    color: var(--ch-terracotta-mid);
     margin-top: 12px;
     text-decoration: none;
 }

@@ -30,16 +30,16 @@
 /* Harmonisation couleurs Odoo shop */
 .oe_website_sale .btn-primary,
 .oe_website_sale .a-submit {
-    background: var(--ch-terracotta) !important;
-    border-color: var(--ch-terracotta) !important;
+    background: var(--ch-terracotta-mid) !important;
+    border-color: var(--ch-terracotta-mid) !important;
     font-family: var(--font-body) !important;
     font-weight: 600 !important;
     border-radius: var(--r-pill) !important;
 }
 
 .oe_website_sale .btn-primary:hover {
-    background: var(--ch-terracotta-mid) !important;
-    border-color: var(--ch-terracotta-mid) !important;
+    background: var(--ch-terracotta-dark) !important;
+    border-color: var(--ch-terracotta-dark) !important;
 }
 
 .oe_website_sale .oe_currency_value,
@@ -49,18 +49,57 @@
     font-weight: 800 !important;
 }
 
-.oe_website_sale #products_grid .o_wsale_product_grid_wrapper {
+/* La carte réelle est `.o_wsale_product_grid_wrapper` (le conteneur autour
+   de `.oe_product_cart`) ; l'image est `.oe_product_image_img`. On scope via
+   `#wrapwrap #products_grid` plutôt que `#o_wsale_container` : ce dernier
+   existe bien en 19.0 mais `#products_grid` est le point d'ancrage stable
+   et suffit (2 id + classe > spécificité des règles natives en classes).
+   On neutralise le zoom natif `o_wsale_products_opt_img_hover_zoom_out_light`
+   (image déjà zoomée au repos, dé-zoomée au survol) pour reproduire à
+   l'identique l'effet de l'accueil : carte qui se soulève + image zoomée. */
+#wrapwrap #products_grid .o_wsale_product_grid_wrapper {
     border: 1px solid var(--ch-gray-border) !important;
     border-radius: var(--r-lg) !important;
     overflow: hidden;
-    transition: transform var(--transition), box-shadow var(--transition),
-                border-color var(--transition) !important;
+    transition: transform var(--ch-dur-base) var(--ch-ease-out),
+                box-shadow var(--ch-dur-base) var(--ch-ease-out),
+                border-color var(--ch-dur-base) var(--ch-ease-out) !important;
 }
 
-.oe_website_sale #products_grid .o_wsale_product_grid_wrapper:hover {
-    box-shadow: var(--shadow-md) !important;
-    border-color: var(--ch-terracotta) !important;
-    transform: translateY(-2px);
+#wrapwrap #products_grid .oe_product_image {
+    overflow: hidden;
+}
+
+#wrapwrap #products_grid .oe_product_image_img {
+    transform: none !important;
+    transition: transform var(--ch-dur-base) var(--ch-ease-out);
+}
+
+@media (hover: hover) {
+    #wrapwrap #products_grid .o_wsale_product_grid_wrapper:hover {
+        box-shadow: var(--shadow-md) !important;
+        transform: translateY(-4px) !important;
+    }
+
+    /* Double déclencheur : la carte entière, ou l'image elle-même (le
+       survol natif d'Odoo cible `.oe_product_image:hover`). */
+    #wrapwrap #products_grid .o_wsale_product_grid_wrapper:hover .oe_product_image_img,
+    #wrapwrap #products_grid .oe_product_image:hover .oe_product_image_img {
+        transform: scale(1.05) !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #wrapwrap #products_grid .o_wsale_product_grid_wrapper,
+    #wrapwrap #products_grid .oe_product_image_img {
+        transition: none !important;
+    }
+
+    #wrapwrap #products_grid .o_wsale_product_grid_wrapper:hover,
+    #wrapwrap #products_grid .o_wsale_product_grid_wrapper:hover .oe_product_image_img,
+    #wrapwrap #products_grid .oe_product_image:hover .oe_product_image_img {
+        transform: none !important;
+    }
 }
 
 /* Galerie des fiches produit : ratio uniforme, interactions natives Odoo conservées. */
@@ -82,18 +121,18 @@
    lieu de leur bleu.
 ============================================================ */
 #o_wsale_pager .pagination .page-item.active .page-link {
-    background-color: var(--ch-terracotta) !important;
-    border-color: var(--ch-terracotta) !important;
+    background-color: var(--ch-terracotta-mid) !important;
+    border-color: var(--ch-terracotta-mid) !important;
     color: var(--ch-white) !important;
 }
 
 #o_wsale_pager .pagination .page-link {
-    color: var(--ch-terracotta) !important;
+    color: var(--ch-terracotta-mid) !important;
 }
 
 #o_wsale_pager .pagination .page-link:hover {
-    background-color: rgba(193, 105, 79, 0.08) !important;
-    color: var(--ch-terracotta) !important;
+    background-color: rgba(168, 86, 64, 0.08) !important;
+    color: var(--ch-terracotta-mid) !important;
 }
 
 #o_wsale_pager .pagination .page-item.disabled .page-link {

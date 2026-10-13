@@ -38,13 +38,13 @@ img {
 }
 
 a {
-    color: var(--ch-terracotta);
+    color: var(--ch-terracotta-mid);
     text-decoration: none;
     transition: color var(--transition);
 }
 
 a:hover {
-    color: var(--ch-terracotta-mid);
+    color: var(--ch-terracotta-dark);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -151,7 +151,6 @@ h1, h2, h3 {
 
 #wrapwrap .ch-aide-layout .oe_structure > section,
 #wrapwrap .ch-entreprise-wrap .oe_structure > section,
-#wrapwrap .ch-legal-wrap .oe_structure > section,
 #wrapwrap .ch-gammes-zone,
 #wrapwrap .ch-usages-zone,
 #wrapwrap .ch-bestsellers,
@@ -164,7 +163,6 @@ h1, h2, h3 {
 /* Ouverture de page : le même espacement au-dessus du premier contenu. */
 #wrapwrap .ch-entreprise-wrap .oe_structure > section:first-child,
 #wrapwrap .ch-aide-layout .oe_structure > section:first-child,
-#wrapwrap .ch-legal-wrap .oe_structure > section:first-child,
 #wrapwrap .ch-avis-stats-section,
 #wrapwrap .ch-gamme-section,
 #wrapwrap .ch-gammes-zone,
@@ -192,11 +190,11 @@ h1, h2, h3 {
 .ch-see-all {
     font-size: var(--fs-14);
     font-weight: 600;
-    color: var(--ch-terracotta);
+    color: var(--ch-terracotta-mid);
 }
 
 .ch-see-all:hover {
-    color: var(--ch-terracotta-mid);
+    color: var(--ch-terracotta-dark);
 }
 
 .ch-featured-empty {
@@ -232,6 +230,8 @@ h1, h2, h3 {
     font-size: var(--fs-18);
     line-height: 1;
     text-align: center;
+    transition: color var(--ch-dur-fast, 150ms) var(--ch-ease-out, ease),
+                background-color var(--ch-dur-fast, 150ms) var(--ch-ease-out, ease);
 }
 
 .ch-usage-card .ch-icon-large,
@@ -252,6 +252,13 @@ h1, h2, h3 {
 .ch-bestsellers-arrow > .ch-icon-small,
 .ch-usage-caret > .ch-icon-small {
     color: inherit;
+}
+
+@media (hover: hover) {
+    #wrapwrap .ch-icon-large:hover {
+        color: var(--ch-panel);
+        background-color: var(--ch-terracotta);
+    }
 }
 
 /* ── BOUTONS ── */
@@ -297,12 +304,12 @@ h1, h2, h3 {
 }
 
 .ch-btn-primary {
-    background: var(--ch-terracotta);
+    background: var(--ch-terracotta-mid);
     color: var(--ch-white);
 }
 
 .ch-btn-primary:hover {
-    background: var(--ch-terracotta-mid);
+    background: var(--ch-terracotta-dark);
     color: var(--ch-white);
     text-decoration: none;
 }
@@ -332,9 +339,9 @@ h1, h2, h3 {
 }
 
 .ch-btn-cta {
-    background: var(--ch-terracotta);
+    background: var(--ch-terracotta-mid);
     color: var(--ch-white);
-    border-color: var(--ch-terracotta);
+    border-color: var(--ch-terracotta-mid);
     padding: 10px 20px;
     font-size: var(--fs-14);
     font-weight: 700;
@@ -343,12 +350,17 @@ h1, h2, h3 {
 }
 
 .ch-btn-cta:hover {
-    background: var(--ch-terracotta-mid);
+    background: var(--ch-terracotta-dark);
     color: var(--ch-white);
-    border-color: var(--ch-terracotta-mid);
-    transform: translateY(-2px);
+    border-color: var(--ch-terracotta-dark);
     box-shadow: var(--shadow-md);
     text-decoration: none;
+}
+
+.ch-aide-btn-dark {
+    transition: transform var(--ch-dur-base, 250ms) var(--ch-ease-out, ease),
+                box-shadow var(--ch-dur-base, 250ms) var(--ch-ease-out, ease),
+                background-color var(--ch-dur-base, 250ms) var(--ch-ease-out, ease);
 }
 
 /* ── PASTILLES / BADGES ── */
@@ -384,6 +396,148 @@ h1, h2, h3 {
 .ch-rating-sep {
     color: var(--ch-fog);
     font-weight: 400;
+}
+
+/* ── MICRO-INTERACTIONS ── */
+#wrapwrap {
+    --ch-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ch-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ch-dur-fast: 150ms;
+    --ch-dur-base: 250ms;
+}
+
+#wrapwrap .btn,
+#wrapwrap .ch-btn {
+    transition: transform var(--ch-dur-base) var(--ch-ease-out),
+                box-shadow var(--ch-dur-base) var(--ch-ease-out),
+                background-color var(--ch-dur-base) var(--ch-ease-out);
+}
+
+#wrapwrap .btn:focus-visible,
+#wrapwrap .ch-btn:focus-visible {
+    outline: 3px solid var(--ch-ink);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
+}
+
+#wrapwrap .oe_structure a:not(.btn):not(.ch-btn):not([class*="card"]):not([class*="icon"]) {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0 1px;
+    transition: background-size var(--ch-dur-base) var(--ch-ease-out);
+}
+
+#wrapwrap .ch-product-card,
+#wrapwrap .ch-usage-card,
+#wrapwrap .ch-gamme-card,
+#wrapwrap .ch-avis-card,
+#wrapwrap .ch-testi-card,
+#wrapwrap .ch-aide-card,
+#wrapwrap .ch-contact-info-card,
+#wrapwrap .ch-gamme-perf-card,
+    #wrapwrap .ch-gamme-format-card,
+    #wrapwrap .ch-entreprise-stat,
+    #wrapwrap .ch-entreprise-history-item,
+    #wrapwrap .ch-aide-timeline-item,
+    #wrapwrap .ch-aide-steps-item,
+    #wrapwrap .ch-aide-warranty,
+    #wrapwrap .ch-avis-score-block,
+    #wrapwrap .ch-hero-float-card {
+        transition: transform var(--ch-dur-base) var(--ch-ease-out),
+                box-shadow var(--ch-dur-base) var(--ch-ease-out);
+}
+
+@media (hover: hover) {
+    #wrapwrap .btn:hover,
+    #wrapwrap .ch-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(31, 36, 33, 0.16);
+    }
+
+    #wrapwrap .oe_structure a:not(.btn):not(.ch-btn):not([class*="card"]):not([class*="icon"]):hover {
+        background-size: 100% 1px;
+    }
+
+    #wrapwrap .ch-product-card:hover,
+    #wrapwrap .ch-usage-card:hover,
+    #wrapwrap .ch-gamme-card:hover,
+    #wrapwrap .ch-avis-card:hover,
+    #wrapwrap .ch-testi-card:hover,
+    #wrapwrap .ch-aide-card:hover,
+    #wrapwrap .ch-contact-info-card:hover,
+    #wrapwrap .ch-gamme-perf-card:hover,
+    #wrapwrap .ch-gamme-format-card:hover,
+    #wrapwrap .ch-entreprise-stat:hover,
+    #wrapwrap .ch-entreprise-history-item:hover,
+    #wrapwrap .ch-aide-timeline-item:hover,
+    #wrapwrap .ch-aide-steps-item:hover,
+    #wrapwrap .ch-aide-warranty:hover,
+    #wrapwrap .ch-avis-score-block:hover,
+    #wrapwrap .ch-hero-float-card:hover,
+    #wrapwrap .ch-aide-btn-dark:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 14px 34px rgba(31, 36, 33, 0.12);
+    }
+}
+
+#wrapwrap .oe_structure a:not(.btn):not(.ch-btn):not([class*="card"]):not([class*="icon"]):focus-visible {
+    background-size: 100% 1px;
+}
+
+#wrapwrap .btn:active,
+#wrapwrap .ch-btn:active {
+    transform: translateY(0) scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #wrapwrap .btn,
+    #wrapwrap .ch-btn,
+    #wrapwrap .oe_structure a:not(.btn):not(.ch-btn):not([class*="card"]):not([class*="icon"]),
+    #wrapwrap .ch-product-card,
+    #wrapwrap .ch-usage-card,
+    #wrapwrap .ch-gamme-card,
+    #wrapwrap .ch-avis-card,
+    #wrapwrap .ch-testi-card,
+    #wrapwrap .ch-aide-card,
+    #wrapwrap .ch-contact-info-card,
+    #wrapwrap .ch-gamme-perf-card,
+    #wrapwrap .ch-gamme-format-card,
+    #wrapwrap .ch-entreprise-stat,
+    #wrapwrap .ch-entreprise-history-item,
+    #wrapwrap .ch-aide-timeline-item,
+    #wrapwrap .ch-aide-steps-item,
+    #wrapwrap .ch-aide-warranty,
+    #wrapwrap .ch-avis-score-block,
+    #wrapwrap .ch-hero-float-card,
+    #wrapwrap .ch-icon-large,
+    #wrapwrap .ch-aide-btn-dark {
+        transition: none !important;
+    }
+
+    #wrapwrap .btn:hover,
+    #wrapwrap .btn:active,
+    #wrapwrap .ch-btn:hover,
+    #wrapwrap .ch-btn:active,
+    #wrapwrap .ch-product-card:hover,
+    #wrapwrap .ch-usage-card:hover,
+    #wrapwrap .ch-gamme-card:hover,
+    #wrapwrap .ch-avis-card:hover,
+    #wrapwrap .ch-testi-card:hover,
+    #wrapwrap .ch-aide-card:hover,
+    #wrapwrap .ch-contact-info-card:hover,
+    #wrapwrap .ch-gamme-perf-card:hover,
+    #wrapwrap .ch-gamme-format-card:hover,
+    #wrapwrap .ch-entreprise-stat:hover,
+    #wrapwrap .ch-entreprise-history-item:hover,
+    #wrapwrap .ch-aide-timeline-item:hover,
+    #wrapwrap .ch-aide-steps-item:hover,
+    #wrapwrap .ch-aide-warranty:hover,
+    #wrapwrap .ch-avis-score-block:hover,
+    #wrapwrap .ch-hero-float-card:hover,
+    #wrapwrap .ch-aide-btn-dark:hover {
+        transform: none !important;
+    }
 }
 
 /* Plus aucun media query sur .ch-section-title : le clamp() de
