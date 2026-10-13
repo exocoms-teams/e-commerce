@@ -383,6 +383,71 @@ class SinistreMission(models.Model):
         """
         self._send_mail(email, f"[Sinistre Services] {titre} — {self.reference}", body)
 
+    # ── Désistement de l'artisan ─────────────────────────────────────
+    def action_desister(self, intervenant, motif, message):
+        """L'artisan renonce à une mission acceptée, avec une explication.
+        La mission redevient libre et est reproposée aux autres artisans."""
+        self.ensure_one()
+        if self.intervenant_id != intervenant:
+            raise UserError(_("Cette mission ne vous est pas assignée."))
+        if self.state not in ('assigne', 'rdv_planifie'):
+            raise UserError(_("L'intervention a déjà démarré : contactez la plateforme."))
+        message = (message or '').strip()
+        if len(message) < 10:
+            raise UserError(_("Merci d'expliquer votre désistement en quelques mots."))
+        Proposition = self.env['sinistre.proposition'].sudo()
+        motifs = dict(Proposition._fields['motif_desistement'].selection)
+        if motif not in motifs:
+            motif = 'autre'
+        maintenant = fields.Datetime.now()
+        vals_desistement = {
+            'state': 'desiste',
+            'motif_desistement': motif,
+            'message_desistement': message,
+            'date_desistement': maintenant,
+        }
+        # On garde la trace sur sa proposition (ou on en crée une s'il avait été assigné à la main)
+        proposition = Proposition.search([
+            ('mission_id', '=', self.id),
+            ('intervenant_id', '=', intervenant.id),
+            ('state', '=', 'accepte'),
+        ], order='id desc', limit=1)
+        if proposition:
+            proposition.write(vals_desistement)
+        else:
+            Proposition.create(dict(vals_desistement,
+                                    mission_id=self.id,
+                                    intervenant_id=intervenant.id,
+                                    date_limite=maintenant))
+
+        avait_rdv = bool(self.date_rdv)
+        self._arreter_suivi()
+        self.write({'intervenant_id': False, 'state': 'nouveau', 'date_rdv': False, 'sans_reponse': False})
+        self.message_post(body=_(
+            "❌ %(artisan)s s'est désisté — Motif : %(motif)s — Message : %(message)s",
+            artisan=intervenant.name, motif=motifs[motif], message=message,
+        ))
+        self._envoyer_email_desistement_client(avait_rdv)
+        # Reproposition automatique (l'artisan qui s'est désisté est exclu)
+        self._proposer_vague_suivante()
+
+    def _envoyer_email_desistement_client(self, avait_rdv=False):
+        """Message neutre au client : on ne lui transmet pas le message de l'artisan."""
+        self.ensure_one()
+        email = self.client_email or (self.client_id.email if self.client_id else '')
+        if not email:
+            return
+        suivi = f"{self._get_base_url()}/suivi/{self.token_api}"
+        rdv = "<p>Le rendez-vous prévu est annulé ; le nouvel artisan vous en proposera un autre.</p>" if avait_rdv else ""
+        body = f"""
+            <p>Bonjour {self.client_id.name or ''},</p>
+            <p>L'artisan prévu pour votre intervention <strong>{self.reference}</strong> a dû se désister.
+            Nous recherchons dès maintenant un autre artisan disponible.</p>
+            {rdv}
+            <p><a href="{suivi}">Suivre ma mission</a></p>
+        """
+        self._send_mail(email, f"[Sinistre Services] Changement d'artisan — {self.reference}", body)
+
     def action_planifier_rdv(self):
         self.write({'state': 'rdv_planifie'})
 

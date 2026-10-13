@@ -76,6 +76,7 @@ class SinistreIntervenant(models.Model):
     mission_ids       = fields.One2many('sinistre.mission', 'intervenant_id', string='Missions')
     certification_ids = fields.One2many('sinistre.certification', 'intervenant_id', string='Certifications')
     mission_count     = fields.Integer(compute='_compute_stats', string='Nb Missions')
+    nb_desistements   = fields.Integer(compute='_compute_nb_desistements', string='Désistements')
     ca_total          = fields.Monetary(
         string='CA Total', compute='_compute_stats', currency_field='currency_id',
     )
@@ -150,6 +151,16 @@ class SinistreIntervenant(models.Model):
             'view_mode': 'list,kanban,form',
             'domain': [('intervenant_id', '=', self.id)],
         }
+
+    def _compute_nb_desistements(self):
+        """Nombre de missions acceptées puis abandonnées par l'artisan."""
+        donnees = self.env['sinistre.proposition'].sudo()._read_group(
+            [('intervenant_id', 'in', self.ids), ('state', '=', 'desiste')],
+            ['intervenant_id'], ['__count'],
+        )
+        compte = {intervenant.id: nb for intervenant, nb in donnees}
+        for intervenant in self:
+            intervenant.nb_desistements = compte.get(intervenant.id, 0)
 
 
 class SinistreIntervenantAbsence(models.Model):
