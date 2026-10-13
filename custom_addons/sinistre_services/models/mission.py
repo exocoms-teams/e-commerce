@@ -759,8 +759,13 @@ class SinistreMission(models.Model):
                 ('state', '=', 'en_attente'),
             ]):
                 continue
+            # Exclus : ceux qui ont déjà eu leur chance (en attente, refus, expiration,
+            # désistement). Les propositions « annulées » (un autre artisan avait
+            # accepté, ou assignation à la main) ne comptent pas : ces artisans
+            # peuvent recevoir la mission si elle redevient libre.
             deja_proposes = Proposition.search([
                 ('mission_id', '=', mission.id),
+                ('state', '!=', 'annule'),
             ]).mapped('intervenant_id')
             suivants = mission._get_intervenants_eligibles() - deja_proposes
             if not suivants:
