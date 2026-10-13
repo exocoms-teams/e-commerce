@@ -446,7 +446,7 @@ def _fmt_mission(m):
             'contact_sur_place':    m.contact_sur_place or '',
             'adresse':              m.adresse_intervention or '',
             'adresse_intervention': m.adresse_intervention or '',
-            'date_rdv':             str(m.date_rdv) if m.date_rdv else None,
+            'date_rdv':             (m.date_rdv.isoformat() + 'Z') if m.date_rdv else None,
             'date_cloture':         str(m.date_cloture) if m.date_cloture else None,
             'description':          m.description_sinistre or '',
             'description_sinistre': m.description_sinistre or '',
@@ -479,7 +479,7 @@ def _fmt_mission_payload(m):
         'contact_sur_place':    m.contact_sur_place or '',
         'adresse':              m.adresse_intervention or '',
         'adresse_intervention': m.adresse_intervention or '',
-        'date_rdv':             str(m.date_rdv) if m.date_rdv else None,
+        'date_rdv':             (m.date_rdv.isoformat() + 'Z') if m.date_rdv else None,
         'date_cloture':         str(m.date_cloture) if m.date_cloture else None,
         'description':          m.description_sinistre or '',
         'description_sinistre': m.description_sinistre or '',
@@ -937,6 +937,35 @@ class SinistrePWAController(http.Controller):
             return _ok({'success': True, 'state': mission.state})
         except Exception as e:
             return _err(400, str(e))
+
+    # ── RENDEZ-VOUS ──────────────────────────────────────────────────
+    @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/rdv',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def mission_rdv(self, mission_id, **kwargs):
+        """L'artisan fixe ou modifie le rendez-vous. Corps : {"date_rdv": ISO 8601 avec fuseau}."""
+        import datetime as _dt
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _err(403, "Accès non autorisé")
+        mission = _check_mission(intervenant, mission_id)
+        if not mission:
+            return _err(404, "Mission introuvable")
+        try:
+            body = json.loads(request.httprequest.data.decode('utf-8'))
+            date_rdv = _dt.datetime.fromisoformat(str(body.get('date_rdv')).replace('Z', '+00:00'))
+            if date_rdv.tzinfo:
+                date_rdv = date_rdv.astimezone(_dt.timezone.utc).replace(tzinfo=None)
+        except Exception:
+            return _err(400, "Date de rendez-vous invalide")
+        try:
+            mission.action_fixer_rdv(date_rdv)
+        except Exception as e:
+            return _err(400, str(e))
+        return _ok({
+            'success': True,
+            'date_rdv': mission.date_rdv.isoformat() + 'Z',
+            'state': mission.state,
+        })
 
     # ── EN ROUTE / POSITION (suivi du trajet par le client) ──────────
     @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/en-route',
@@ -1422,7 +1451,7 @@ class SinistrePWAController(http.Controller):
             'urgence':            m.urgence,
             'description':        m.description_sinistre or '',
             'adresse':            m.adresse_intervention or '',
-            'date_rdv':           str(m.date_rdv) if m.date_rdv else None,
+            'date_rdv':           (m.date_rdv.isoformat() + 'Z') if m.date_rdv else None,
             'montant_garanti':    m.montant_garanti or 0,
             'montant_devis':      m.montant_devis or 0,
             'montant_estime':     m.montant_estime or 0,
