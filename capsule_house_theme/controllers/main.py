@@ -533,9 +533,18 @@ class CapsuleHouseWebsite(Website):
             '/shop/category/%s' % request.env['ir.http']._slug(category)
         ) if category else False
 
+        gallery_models_by_slug = {
+            "cabine": ["Cabine Rustique Bois", "Cabine Urbaine Design", "Cabine Premium Éco"],
+            "dome": ["Dôme Géodésique 5m", "Dôme Glamping VIP 7m", "Dôme Transparent Cosy"],
+            "modulaire": ["Module Modulaire Block-1", "Module Modulaire Flex Space", "Module Modulaire Arch-XL"],
+            "pliable": ["Structure Pliable Pop-Up", "Habitation Pliable Nomad", "Module Pliable Shelter-X"],
+        }
+        gallery_models = gallery_models_by_slug.get(slug, [])
+
         return request.render('capsule_house_theme.page_nos_gammes_detail', {
             'gamme': gamme,
             'shop_category_url': shop_category_url,
+            'gallery_models': gallery_models,
         })
 
     @http.route('/avis', type='http', auth='public', website=True, sitemap=True)
