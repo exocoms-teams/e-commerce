@@ -65,7 +65,9 @@
                                              t-att-aria-label="('Produit %s sur %s' if request.env.lang == 'fr_FR' else 'Product %s of %s') % (item_index + 1, len(featured_products))">
                                                 <div class="ch-product-card">
                                                     <a t-att-href="item['url']" class="ch-product-card-img">
-                                                        <img t-attf-src="/web/image/product.template/#{ item['id'] }/image_512"
+                                                        <img t-att-src="('/web/image/product.template/%s/image_512' % item['id'])
+                                                                        if item['has_image']
+                                                                        else '/web/image/web.image_placeholder'"
                                                              t-att-alt="item['name']"
                                                              loading="lazy" decoding="async"/>
                                                         <!-- Image juste pour le developpement et non en production -->
