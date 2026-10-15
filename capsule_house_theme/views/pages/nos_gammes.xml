@@ -95,12 +95,17 @@
                         <div class="ch-gamme-gallery-viewport" data-ch-gallery-viewport="1">
                             <div class="ch-gamme-gallery-track" data-ch-gallery-track="1">
                                 <div t-foreach="gallery_models" t-as="model" class="ch-gamme-gallery-slide" role="group" aria-roledescription="slide">
-                                    <div class="ch-gamme-gallery-placeholder">
+                                    <a t-if="model['has_image']" t-att-href="model['url']" class="ch-gamme-gallery-product">
+                                        <img t-att-src="model['image_url']"
+                                             t-att-alt="model['name']"
+                                             loading="lazy" decoding="async"/>
+                                    </a>
+                                    <a t-else="" t-att-href="model['url']" class="ch-gamme-gallery-placeholder">
                                         <i class="fa fa-image" aria-hidden="true"/>
                                         <span t-if="request.env.lang == &quot;fr_FR&quot;">Visuel produit à ajouter</span>
                                         <span t-if="request.env.lang != &quot;fr_FR&quot;">Product image to be added</span>
-                                    </div>
-                                    <p class="ch-gamme-gallery-model" t-esc="model"/>
+                                    </a>
+                                    <a t-att-href="model['url']" class="ch-gamme-gallery-model" t-esc="model['name']"/>
                                 </div>
                             </div>
                         </div>
