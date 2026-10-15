@@ -1,0 +1,178 @@
+/*
+ * Apparition du contenu Capsule House.
+ * Les classes sont posees uniquement par reveal.js : sans JavaScript,
+ * le contenu garde son affichage normal.
+ */
+
+/*
+ * Pré-masquage dès le head, avant le démarrage des assets Odoo.
+ * AVERTISSEMENT : cette liste reprend TARGET_SELECTORS de reveal.js ; garder
+ * les deux listes synchronisées lors de toute modification des cibles.
+ * Les exclusions reflètent _isExcluded() et les classes fixed/sticky connues.
+ * :has() reprend aussi le filtre d'images prioritaires de _getTargets().
+ * La liste répétée dans :not(:is(...) *) reprend sa déduplication des enfants.
+ */
+html.js-reveal :is(#wrapwrap *):is(
+    #wrapwrap main h1,
+    #wrapwrap main h2,
+    #wrapwrap main h3,
+    #wrapwrap main p,
+    #wrapwrap main .ch-btn,
+    #wrapwrap main .accordion-button,
+    #wrapwrap main img:not(.ch-hero-illustration):not([fetchpriority="high"]),
+    .ch-rating-badge,
+    .ch-hero-btn-action,
+    .ch-hero-div-note,
+    .ch-trust-row,
+    .ch-product-card,
+    #products_grid .o_wsale_product_grid_wrapper,
+    .ch-gamme-card,
+    .ch-usage-card,
+    .ch-models-empty,
+    .ch-testi-card,
+    .ch-avis-card,
+    .ch-avis-form-card,
+    .ch-aide-card,
+    .ch-aide-faq-category,
+    .ch-aide-faq .accordion,
+    .ch-aide-timeline-item,
+    .ch-aide-steps-item,
+    .ch-aide-warranty,
+    .ch-aide-callout,
+    .ch-aide-table tbody > tr,
+    .ch-gamme-perf-card,
+    .ch-gamme-format-card,
+    .ch-gamme-equip-item,
+    .ch-entreprise-stat,
+    .ch-entreprise-history-item,
+    .ch-entreprise-diagram-visual svg,
+    .ch-entreprise-diagram-legend,
+    .ch-entreprise-compare tbody > tr,
+    .ch-avis-score-block,
+    .ch-avis-bars-block,
+    .ch-contact-form-intro,
+    .ch-contact-reassurance,
+    .ch-contact-info-card,
+    .ch-devis-content
+):not(:has(img[fetchpriority="high"], img.ch-hero-illustration)):not(:is(
+    #wrapwrap main h1,
+    #wrapwrap main h2,
+    #wrapwrap main h3,
+    #wrapwrap main p,
+    #wrapwrap main .ch-btn,
+    #wrapwrap main .accordion-button,
+    #wrapwrap main img:not(.ch-hero-illustration):not([fetchpriority="high"]),
+    .ch-rating-badge,
+    .ch-hero-btn-action,
+    .ch-hero-div-note,
+    .ch-trust-row,
+    .ch-product-card,
+    #products_grid .o_wsale_product_grid_wrapper,
+    .ch-gamme-card,
+    .ch-usage-card,
+    .ch-models-empty,
+    .ch-testi-card,
+    .ch-avis-card,
+    .ch-avis-form-card,
+    .ch-aide-card,
+    .ch-aide-faq-category,
+    .ch-aide-faq .accordion,
+    .ch-aide-timeline-item,
+    .ch-aide-steps-item,
+    .ch-aide-warranty,
+    .ch-aide-callout,
+    .ch-aide-table tbody > tr,
+    .ch-gamme-perf-card,
+    .ch-gamme-format-card,
+    .ch-gamme-equip-item,
+    .ch-entreprise-stat,
+    .ch-entreprise-history-item,
+    .ch-entreprise-diagram-visual svg,
+    .ch-entreprise-diagram-legend,
+    .ch-entreprise-compare tbody > tr,
+    .ch-avis-score-block,
+    .ch-avis-bars-block,
+    .ch-contact-form-intro,
+    .ch-contact-reassurance,
+    .ch-contact-info-card,
+    .ch-devis-content
+) *):not(:is(
+    header,
+    header *,
+    nav,
+    nav *,
+    footer,
+    footer *,
+    [role="navigation"],
+    [role="navigation"] *,
+    [data-no-reveal],
+    [data-no-reveal] *,
+    .ch-aide-sidebar,
+    .ch-aide-sidebar *,
+    .ch-entreprise-nav,
+    .ch-entreprise-nav *,
+    .ch-contact-aside,
+    .ch-contact-aside *,
+    .ch-avis-filters,
+    .ch-avis-filters *,
+    .position-fixed,
+    .position-fixed *,
+    .position-sticky,
+    .position-sticky *,
+    .fixed-top,
+    .fixed-top *,
+    .fixed-bottom,
+    .fixed-bottom *,
+    .sticky-top,
+    .sticky-top *,
+    [style*="position: fixed" i],
+    [style*="position: fixed" i] *,
+    [style*="position:fixed" i],
+    [style*="position:fixed" i] *,
+    [style*="position: sticky" i],
+    [style*="position: sticky" i] *,
+    [style*="position:sticky" i],
+    [style*="position:sticky" i] *
+)) {
+    opacity: 0;
+}
+
+#wrapwrap .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 0.7s ease-out var(--delay, 0ms),
+        transform 0.7s ease-out var(--delay, 0ms),
+        box-shadow var(--ch-dur-base, 240ms) var(--ch-ease-out, ease);
+}
+
+#wrapwrap .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+#wrapwrap .reveal-intro {
+    animation: ch-reveal-intro 0.7s ease-out var(--delay, 0ms) both;
+}
+
+@keyframes ch-reveal-intro {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #wrapwrap .reveal,
+    #wrapwrap .reveal.is-visible,
+    #wrapwrap .reveal-intro {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}

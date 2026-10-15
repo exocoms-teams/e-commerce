@@ -69,6 +69,44 @@
         <xpath expr="//header[@id='top']" position="before">
             <t t-call="capsule_house_theme.theme_announce_bar"/>
         </xpath>
+        <!--
+            Odoo 19 website.layout expose editable/translatable et reprend
+            portal.frontend_layout. Ce script, insere avant le premier enfant
+            du head, masque les cibles avant le chargement du bundle frontend.
+        -->
+        <xpath expr="//head/*[1]" position="before">
+            <t t-if="not editable and not translatable">
+                <script type="text/javascript">
+                    (function () {
+                        var navigationEntries = window.performance &amp;&amp;
+                            typeof window.performance.getEntriesByType === 'function' &amp;&amp;
+                            window.performance.getEntriesByType('navigation');
+                        var navigation = navigationEntries &amp;&amp; navigationEntries[0];
+                        var isBackForward = navigation &amp;&amp; navigation.type === 'back_forward';
+                        var prefersReducedMotion = window.matchMedia &amp;&amp;
+                            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                        if (window.location.hash || window.scrollY !== 0 || isBackForward || prefersReducedMotion) {
+                            return;
+                        }
+
+                        document.documentElement.classList.add('js-reveal');
+                        window.__capsuleHouseRevealSafetyTimeout = window.setTimeout(function () {
+                            window.__capsuleHouseRevealTimedOut = true;
+                            document.documentElement.classList.remove('js-reveal');
+                        }, 2500);
+
+                        window.addEventListener('pageshow', function (event) {
+                            if (!event.persisted) {
+                                return;
+                            }
+                            window.clearTimeout(window.__capsuleHouseRevealSafetyTimeout);
+                            document.documentElement.classList.remove('js-reveal');
+                        });
+                    })();
+                </script>
+            </t>
+        </xpath>
         <xpath expr="//head" position="inside">
             <!--
                 SEO global (v19.0.1.0.63) — même principe que
@@ -140,8 +178,8 @@
                 chaque bump de version, cf. "À chaque bump de version" du
                 README), pour invalider le cache navigateur à chaque mise à jour.
             -->
-            <t t-set="ch_theme_version" t-value="(request.env['ir.module.module'].sudo().search([('name', '=', 'capsule_house_theme')], limit=1).installed_version or '1') + '-microinteractions-2'"/>
-            <t t-foreach="['variables.css', 'base.css', 'layout.css', 'homepage.css', 'shop.css', 'odoo-integration.css', 'pages.css', 'contact.css']" t-as="ch_css_file">
+            <t t-set="ch_theme_version" t-value="(request.env['ir.module.module'].sudo().search([('name', '=', 'capsule_house_theme')], limit=1).installed_version or '1') + '-microinteractions-4'"/>
+            <t t-foreach="['variables.css', 'base.css', 'layout.css', 'homepage.css', 'shop.css', 'odoo-integration.css', 'pages.css', 'contact.css', 'reveal.css']" t-as="ch_css_file">
                 <link rel="stylesheet" t-attf-href="/capsule_house_theme/static/src/css/#{ch_css_file}?v=#{ch_theme_version}"/>
             </t>
         </xpath>
