@@ -9,6 +9,7 @@
         'security/ir.model.access.csv',
         'views/templates/layout.xml',
         'views/templates/components.xml',
+        'views/templates/shop.xml',
         'views/pages/home.xml',
         'views/pages/services.xml',
         'views/pages/devis.xml',
@@ -20,6 +21,7 @@
     'assets': {
         'web.assets_frontend': [
             'monetique_theme/static/src/css/main.css',
+            'monetique_theme/static/src/css/shop_categories.css',
             'monetique_theme/static/src/css/header_optimized.css',
             'monetique_theme/static/src/css/footer_optimized.css',
         ],

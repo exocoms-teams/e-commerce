@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Keep the catalogue filters specific to payment equipment. The price
+         filter is rendered separately by website_sale and remains available. -->
+    <template id="monetique_product_attribute_filters"
+              inherit_id="website_sale.product_attribute_filters_form"
+              name="Monetique product attribute filters">
+        <xpath expr="//form" position="before">
+            <t t-set="attributes"
+               t-value="attributes.filtered(lambda a: a.name in ('Marque', 'Brand', 'Modèle', 'Modele', 'Model', 'Connectivité', 'Connectivite', 'Connectivity'))"/>
+        </xpath>
+    </template>
+</odoo>

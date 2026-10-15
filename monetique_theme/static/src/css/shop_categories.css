@@ -1,0 +1,133 @@
+/* Shop catalogue: premium, uniform product cards.
+ * Scoped to /shop markup so the website editor and other page cards keep their
+ * native appearance. Grid columns remain controlled by Odoo's CSS grid. */
+#wrap.o_wsale_products_page #o_wsale_products_grid .o_wsale_product_grid_wrapper,
+#wrap.o_wsale_products_page .oe_product_cart {
+  background: rgba(255, 255, 255, .94);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, .035);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+#wrap.o_wsale_products_page #o_wsale_products_grid .o_wsale_product_grid_wrapper:hover,
+#wrap.o_wsale_products_page .oe_product_cart:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+  transform: translateY(-4px);
+}
+
+/* Odoo uses these containers across the standard grid and older themes. */
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_wsale_product_image,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .oe_product_image,
+#wrap.o_wsale_products_page .oe_product_cart .oe_product_image,
+#wrap.o_wsale_products_page .oe_product_cart .product_img_link {
+  align-items: center;
+  aspect-ratio: 1 / 1;
+  background: #f8fafc;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_wsale_product_image img,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .oe_product_image img,
+#wrap.o_wsale_products_page .oe_product_cart .oe_product_image img,
+#wrap.o_wsale_products_page .oe_product_cart .product_img_link img {
+  height: 100% !important;
+  object-fit: contain;
+  padding: 16px;
+  transition: transform .3s ease;
+  width: 100% !important;
+}
+
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper:hover .o_wsale_product_image img,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper:hover .oe_product_image img,
+#wrap.o_wsale_products_page .oe_product_cart:hover .oe_product_image img,
+#wrap.o_wsale_products_page .oe_product_cart:hover .product_img_link img {
+  transform: scale(1.035);
+}
+
+/* Product copy stays aligned even when titles have different lengths. */
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_wsale_product_information,
+#wrap.o_wsale_products_page .oe_product_cart .o_wsale_product_information {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px 18px;
+}
+
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_wsale_product_information h6,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_wsale_product_information .o_wsale_product_name,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_wsale_products_item_title,
+#wrap.o_wsale_products_page .oe_product_cart .o_wsale_product_name {
+  color: #0f172a;
+  font-size: .98rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .oe_price,
+#wrap.o_wsale_products_page .oe_product_cart .oe_price {
+  color: #1d4ed8;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .oe_default_price,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper del,
+#wrap.o_wsale_products_page .oe_product_cart .oe_default_price,
+#wrap.o_wsale_products_page .oe_product_cart del {
+  color: #94a3b8;
+  font-size: .85rem;
+  font-weight: 400;
+}
+
+/* Wishlist and cart controls read as compact floating action pills. */
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_add_wishlist,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .js_add_cart_json,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_wsale_product_btn .btn,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_wsale_product_btn a,
+#wrap.o_wsale_products_page .oe_product_cart .o_add_wishlist,
+#wrap.o_wsale_products_page .oe_product_cart .js_add_cart_json {
+  align-items: center;
+  background: rgba(255, 255, 255, .92);
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, .1);
+  color: #1e40af;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  min-width: 38px;
+  padding: 0 11px;
+  transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_add_wishlist:hover,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .js_add_cart_json:hover,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_wsale_product_btn .btn:hover,
+#wrap.o_wsale_products_page .o_wsale_product_grid_wrapper .o_wsale_product_btn a:hover,
+#wrap.o_wsale_products_page .oe_product_cart .o_add_wishlist:hover,
+#wrap.o_wsale_products_page .oe_product_cart .js_add_cart_json:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #wrap.o_wsale_products_page #o_wsale_products_grid .o_wsale_product_grid_wrapper,
+  #wrap.o_wsale_products_page .oe_product_cart,
+  #wrap.o_wsale_products_page .o_wsale_product_grid_wrapper img,
+  #wrap.o_wsale_products_page .oe_product_cart img {
+    transition: none;
+  }
+}
