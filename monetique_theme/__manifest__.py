@@ -14,6 +14,7 @@
         'views/pages/devis.xml',
         'views/pages/contact.xml',
         'data/website_data.xml',
+        'data/product_public_category_data.xml',
         'data/mail_template_data.xml',
     ],
     'assets': {
