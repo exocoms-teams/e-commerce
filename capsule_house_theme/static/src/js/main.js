@@ -895,10 +895,81 @@ publicWidget.registry.CapsuleHouseHelpTabs = publicWidget.Widget.extend({
             });
     }
 
+    function initRangeGalleries() {
+        document.querySelectorAll("[data-ch-gamme-gallery]").forEach(function (gallery) {
+            if (gallery.dataset.chGalleryBound === "1") return;
+            var viewport = gallery.querySelector("[data-ch-gallery-viewport]");
+            var track = gallery.querySelector("[data-ch-gallery-track]");
+            var slides = track ? Array.prototype.slice.call(track.children) : [];
+            var prev = gallery.querySelector("[data-ch-gallery-prev]");
+            var next = gallery.querySelector("[data-ch-gallery-next]");
+            var dotsContainer = gallery.querySelector("[data-ch-gallery-dots]");
+            var status = gallery.querySelector("[data-ch-gallery-status]");
+            if (!viewport || !track || !slides.length || !prev || !next || !dotsContainer) return;
+            gallery.dataset.chGalleryBound = "1";
+            var index = 0, startX = null, startY = null, dots = [];
+            slides.forEach(function (slide, i) {
+                var dot = document.createElement("button");
+                dot.type = "button";
+                dot.className = "ch-gamme-gallery-dot";
+                var isFrench = document.documentElement.lang.toLowerCase().startsWith("fr");
+                dot.setAttribute("aria-label", (isFrench ? "Afficher le modèle " : "Show model ") + (i + 1));
+                dot.addEventListener("click", function () { showSlide(i); });
+                dotsContainer.appendChild(dot);
+                dots.push(dot);
+            });
+            function showSlide(target) {
+                index = (target + slides.length) % slides.length;
+                track.style.transform = "translateX(-" + (index * 100) + "%)";
+                slides.forEach(function (slide, i) {
+                    var active = i === index;
+                    slide.setAttribute("aria-hidden", active ? "false" : "true");
+                    if ("inert" in slide) slide.inert = !active;
+                });
+                dots.forEach(function (dot, i) {
+                    var active = i === index;
+                    dot.classList.toggle("is-active", active);
+                    dot.setAttribute("aria-current", active ? "true" : "false");
+                });
+                if (status) status.textContent = (index + 1) + " / " + slides.length;
+            }
+            gallery.addEventListener("keydown", function (event) {
+                if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+                var target = event.target;
+                if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
+                if (event.key === "ArrowLeft") {
+                    event.preventDefault();
+                    showSlide(index - 1);
+                } else if (event.key === "ArrowRight") {
+                    event.preventDefault();
+                    showSlide(index + 1);
+                }
+            });
+            prev.addEventListener("click", function () { showSlide(index - 1); });
+            next.addEventListener("click", function () { showSlide(index + 1); });
+            viewport.addEventListener("pointerdown", function (event) {
+                if (event.pointerType === "mouse" && event.button !== 0) return;
+                startX = event.clientX; startY = event.clientY;
+            });
+            viewport.addEventListener("pointerup", function (event) {
+                if (startX === null || startY === null) return;
+                var dx = event.clientX - startX, dy = event.clientY - startY;
+                startX = null; startY = null;
+                if (Math.abs(dx) >= 40 && Math.abs(dx) > Math.abs(dy)) showSlide(index + (dx < 0 ? 1 : -1));
+            });
+            viewport.addEventListener("pointercancel", function () { startX = null; startY = null; });
+            showSlide(0);
+            if (slides.length < 2) {
+                prev.hidden = true; next.hidden = true; dotsContainer.hidden = true;
+            }
+        });
+    }
+
     function init() {
         initScrollReveal();
         initUsageAccordions();
         initFeaturedProductsCarousel();
+        initRangeGalleries();
         initHeroDynamicContent();
         initTestimonialsSection();
         initPaymentMethodsSection();

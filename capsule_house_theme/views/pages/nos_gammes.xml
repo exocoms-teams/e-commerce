@@ -89,6 +89,35 @@
                 </div>
             </section>
 
+            <section class="ch-gamme-gallery-section" t-if="gallery_models">
+                <div class="container">
+                    <div class="ch-gamme-gallery" data-ch-gamme-gallery="1" role="region" aria-roledescription="carousel" t-att-aria-label="'Galerie de modèles' if request.env.lang == 'fr_FR' else 'Model gallery'" tabindex="0">
+                        <div class="ch-gamme-gallery-viewport" data-ch-gallery-viewport="1">
+                            <div class="ch-gamme-gallery-track" data-ch-gallery-track="1">
+                                <div t-foreach="gallery_models" t-as="model" class="ch-gamme-gallery-slide" role="group" aria-roledescription="slide">
+                                    <a t-if="model['has_image']" t-att-href="model['url']" class="ch-gamme-gallery-product">
+                                        <img t-att-src="model['image_url']"
+                                             t-att-alt="model['name']"
+                                             loading="lazy" decoding="async"/>
+                                    </a>
+                                    <a t-else="" t-att-href="model['url']" class="ch-gamme-gallery-placeholder">
+                                        <i class="fa fa-image" aria-hidden="true"/>
+                                        <span t-if="request.env.lang == &quot;fr_FR&quot;">Visuel produit à ajouter</span>
+                                        <span t-if="request.env.lang != &quot;fr_FR&quot;">Product image to be added</span>
+                                    </a>
+                                    <a t-att-href="model['url']" class="ch-gamme-gallery-model" t-esc="model['name']"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ch-gamme-gallery-controls">
+                            <button type="button" class="ch-gamme-gallery-arrow" data-ch-gallery-prev="1" t-att-aria-label="'Modèle précédent' if request.env.lang == 'fr_FR' else 'Previous model'"><i class="fa fa-chevron-left" aria-hidden="true"/></button>
+                            <div class="ch-gamme-gallery-dots" data-ch-gallery-dots="1"/>
+                            <button type="button" class="ch-gamme-gallery-arrow" data-ch-gallery-next="1" t-att-aria-label="'Modèle suivant' if request.env.lang == 'fr_FR' else 'Next model'"><i class="fa fa-chevron-right" aria-hidden="true"/></button>
+                        </div>
+                        <p class="ch-gamme-gallery-status" data-ch-gallery-status="1" aria-live="polite" data-status-fr="1 / 3" data-status-en="1 / 3">1 / 3</p>
+                    </div>
+                </div>
+            </section>
 
             <section class="ch-gammes-content">
                 <div class="container">

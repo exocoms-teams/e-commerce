@@ -138,3 +138,27 @@
 #o_wsale_pager .pagination .page-item.disabled .page-link {
     color: var(--ch-gray-border) !important;
 }
+
+
+/* CH-151 — galerie interactive des pages de gammes, indépendante de la galerie native Odoo. */
+.ch-gamme-gallery-section { padding: 1.5rem 0 2rem; }
+.ch-gamme-gallery { max-width: 980px; margin: 0 auto; }
+.ch-gamme-gallery-viewport { overflow: hidden; border: 1px solid var(--ch-gray-border); border-radius: var(--r-lg); background: var(--ch-gray-light, #f7f5f2); touch-action: pan-y; }
+.ch-gamme-gallery-track { display: flex; transition: transform 280ms ease; will-change: transform; }
+.ch-gamme-gallery-slide { flex: 0 0 100%; min-width: 0; padding: clamp(1rem, 3vw, 2rem); text-align: center; }
+.ch-gamme-gallery-product { display: flex; align-items: center; justify-content: center; min-height: clamp(220px, 38vw, 440px); overflow: hidden; border-radius: var(--r-md, 12px); background: var(--ch-white, #fff); }
+.ch-gamme-gallery-product img { display: block; width: 100%; height: clamp(220px, 38vw, 440px); object-fit: contain; }
+.ch-gamme-gallery-placeholder { min-height: clamp(220px, 38vw, 440px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .8rem; padding: 1.5rem; border: 1px dashed var(--ch-gray-border); border-radius: var(--r-md, 12px); color: var(--ch-ink); background: rgba(255,255,255,.55); text-decoration: none; }
+.ch-gamme-gallery-placeholder .fa { font-size: clamp(2rem, 5vw, 3.5rem); color: var(--ch-terracotta); }
+.ch-gamme-gallery-placeholder span { font-size: .95rem; text-align: center; }
+.ch-gamme-gallery-model { display: inline-block; margin: 1rem 0 0; font-family: var(--font-head); font-weight: 700; color: var(--ch-ink); text-decoration: none; }
+.ch-gamme-gallery-model:hover, .ch-gamme-gallery-model:focus-visible { color: var(--ch-terracotta); text-decoration: underline; }
+.ch-gamme-gallery-controls { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem; }
+.ch-gamme-gallery-arrow { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; flex: 0 0 42px; border: 1px solid var(--ch-gray-border); border-radius: 50%; background: var(--ch-white, #fff); color: var(--ch-terracotta); cursor: pointer; }
+.ch-gamme-gallery-arrow:hover, .ch-gamme-gallery-arrow:focus-visible { border-color: var(--ch-terracotta); outline-offset: 3px; }
+.ch-gamme-gallery-arrow:disabled { opacity: .45; cursor: default; }
+.ch-gamme-gallery-dots { display: flex; align-items: center; justify-content: center; gap: .55rem; }
+.ch-gamme-gallery-dot { width: 10px; height: 10px; padding: 0; border: 0; border-radius: 50%; background: var(--ch-gray-border); cursor: pointer; }
+.ch-gamme-gallery-dot.is-active { background: var(--ch-terracotta); transform: scale(1.2); }
+.ch-gamme-gallery-status { margin: .5rem 0 0; text-align: center; color: var(--ch-ink); font-size: .8rem; opacity: .75; }
+@media (prefers-reduced-motion: reduce) { .ch-gamme-gallery-track { transition: none; } }
