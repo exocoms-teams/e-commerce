@@ -159,29 +159,6 @@ publicWidget.registry.CapsuleHouseHelpTabs = publicWidget.Widget.extend({
 
     var boundUsageZones = new WeakSet();
 
-    function initScrollReveal() {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        if (!('IntersectionObserver' in window)) return;
-        var targets = document.querySelectorAll('.ch-product-card');
-        if (!targets.length) return;
-        var obs = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                    obs.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
-
-        targets.forEach(function (el, i) {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(14px)';
-            el.style.transition = 'opacity 0.45s ease ' + (i * 0.06) + 's, transform 0.45s ease ' + (i * 0.06) + 's';
-            obs.observe(el);
-        });
-    }
-
     function initUsageAccordions() {
         var breakpoint = window.matchMedia('(max-width: 768px)');
         var zones = document.querySelectorAll('.ch-usages-zone');
@@ -896,7 +873,6 @@ publicWidget.registry.CapsuleHouseHelpTabs = publicWidget.Widget.extend({
     }
 
     function init() {
-        initScrollReveal();
         initUsageAccordions();
         initFeaturedProductsCarousel();
         initHeroDynamicContent();
