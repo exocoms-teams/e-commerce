@@ -933,6 +933,59 @@ existe déjà, on s'assure que sa classe grid porte bien
 `o_wsale_products_opt_design_chips` — jamais de vue créée, jamais la
 vue générique partagée par les 17 sites touchée.
 
+## Boutons des cartes produit /shop sur mobile
+
+Retour client : « le responsive mobile des cards dans mon /shop est
+moche, le bouton add to cart et compare prend trop de place ». Sur
+téléphone, les trois actions de la carte (ajouter au panier, comparer,
+favoris) apparaissaient bien sur une seule ligne, mais trop grosses
+(le bouton principal s'étirait en longue barre).
+
+Diagnostic mené dans le code réel d'Odoo 19, pas deviné
+(`addons/website_sale/views/product_tile_templates.xml` pour le DOM,
+`addons/website_sale/static/src/scss/website_sale.scss` pour le style) :
+
+- La carte produit est rendue par `website_sale.products_item`, les
+  actions par `website_sale.shop_product_buttons`. Le bouton d'ajout
+  porte désormais la classe `.o_wsale_product_btn_primary` (+ `.btn
+  .btn-primary .a-submit`), l'action comparer `.o_add_compare`
+  (module `website_sale_comparison`), les favoris `.o_add_wishlist`
+  (`website_sale_wishlist`). Les anciennes classes ciblées par le
+  thème (`.o_add_to_cart_btn`, `.o_wsale_compare`,
+  `.o_add_wishlist_dyn`…) n'existent plus sous ces noms en Odoo 19.
+- Odoo 19 dimensionne ces boutons via ses propres variables CSS
+  (`--o-wsale-card-*`). Sur une carte réellement étroite, une **container
+  query** (`@container (max-width: 265px)`, mixin
+  `hide-submit-button-label`) masque le libellé et "dégonfle" le bouton
+  principal (`flex-grow: 0`, `aspect-ratio: 1`, `padding-x: 0`), puis le
+  bouton d'ajout est poussé à gauche (`margin: 0 auto 0 0`), les
+  secondaires à droite.
+
+Le piège : cette container query se base sur la largeur de la **carte**,
+pas de l'écran. Sur un téléphone où la carte fait plus de 265px (1
+colonne, ou 2 colonnes larges), elle ne se déclenche pas et le bouton
+principal conserve son `flex-grow: 1` du layout catalog — d'où la
+« longue barre » ; pire, le libellé réapparaît dès `min-width: 576px`
+(`@include media-breakpoint-up(sm)`). Un premier correctif (retrait du
+`padding: 10px 20px !important` / `font-size: 14px !important` que le
+thème imposait sur `.o_wsale_product_btn .btn-primary` et
+`#products_grid .btn-primary`) ne suffisait donc que sur desktop.
+
+**Fix (CSS pur)** : recoloration via les variables natives
+(`--o-wsale-card-btns-*`) — pastille terracotta pour « Ajouter au
+panier », pastille blanche (bordure `--ch-gray-border`) pour
+comparer/favoris, soulèvement au survol — **plus** une media query
+`@media (max-width: 767.98px)` qui force, dès le mobile et quelle que
+soit la largeur de la carte, exactement le jeu de variables du mixin
+natif `hide-submit-button-label` (`--o-wsale-card-btn-submit-*`) et
+`--o-wsale-card-btns-btn-flex-grow: 0`, pour trois pastilles compactes
+de même gabarit (36px, 32px sous 400px). Le wishlist inline voit sa
+taille fixe de 34px libérée pour adopter le carré natif
+(`aspect-ratio: 1`). Le gros bouton pilule de la FICHE PRODUIT est
+conservé à l'identique, mais ciblé uniquement par `#add_to_cart` (id
+unique) au lieu des sélecteurs de grille. Desktop garde le
+dimensionnement natif d'Odoo.
+
 ## Menu compte en anglais + couleurs pages de connexion, d'après exocoms_theme (v19.0.1.0.42)
 
 Client, capture du menu déroulant du compte natif : "tu vois ça ne suit

@@ -50,7 +50,9 @@ THEME_ASSETS = {
     'pages.css': 'capsule_house_theme/static/src/css/pages.css',
     'legal.css': 'capsule_house_theme/static/src/css/legal.css',
     'contact.css': 'capsule_house_theme/static/src/css/contact.css',
+    'reveal.css': 'capsule_house_theme/static/src/css/reveal.css',
     'main.js': 'capsule_house_theme/static/src/js/main.js',
+    'reveal.js': 'capsule_house_theme/static/src/js/reveal.js',
 }
 
 

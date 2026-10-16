@@ -138,6 +138,7 @@ class CapsuleHouseWebsite(Website):
                 'name': product.name,
                 'url': product.website_url,
                 'id': product.id,
+                'has_image': bool(product.image_512),
                 'variant_id': product.product_variant_id.id,
                 'price': product.list_price,
                 'currency': product.currency_id,

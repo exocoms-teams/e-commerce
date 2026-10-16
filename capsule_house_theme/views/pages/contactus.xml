@@ -81,6 +81,15 @@
         <xpath expr="//form[@id='contactus_form']//div[hasclass('s_website_form_field')][.//input[@name='name' or @name='email_from' or @name='phone']]" position="attributes">
             <attribute name="class" remove="col-lg-6" add="col-12" separator=" "/>
         </xpath>
+        <!-- Libellé du champ "name" : l'input garde son attribut name="name"
+             (mapping du lead natif website_crm inchangé), seul le texte
+             affiché passe de "Your Name" à "Nom complet"/"Full name". -->
+        <xpath expr="//form[@id='contactus_form']//div[hasclass('s_website_form_field')][.//input[@name='name']]//label/span[hasclass('s_website_form_label_content')]" position="replace">
+            <span class="s_website_form_label_content">
+                <t t-if="request.env.lang == 'fr_FR'">Nom complet</t>
+                <t t-else="">Full name</t>
+            </span>
+        </xpath>
         <xpath expr="//form[@id='contactus_form']//input[@name='name']" position="attributes">
             <attribute name="t-att-placeholder">request.env.lang == 'fr_FR' and 'Ex. : Camille Martin' or 'e.g. Camille Martin'</attribute>
             <attribute name="autocomplete">name</attribute>
@@ -89,7 +98,14 @@
             <attribute name="placeholder">name@example.com</attribute>
             <attribute name="autocomplete">email</attribute>
         </xpath>
+        <!-- Indicatif téléphone : valeur par défaut "+33 " posée dans
+             l'attribut value (et non un placeholder) pour neutraliser le
+             pré-remplissage GeoIP natif de website (form.js : sur un
+             input[type=tel] vide, valeur = "+" + code pays du visiteur).
+             Une fois value non vide, ce code n'est plus injecté ; le
+             champ reste modifiable et vidable normalement. -->
         <xpath expr="//form[@id='contactus_form']//input[@name='phone']" position="attributes">
+            <attribute name="value">+33 </attribute>
             <attribute name="t-att-placeholder">request.env.lang == 'fr_FR' and 'Facultatif' or 'Optional'</attribute>
             <attribute name="autocomplete">tel</attribute>
         </xpath>
