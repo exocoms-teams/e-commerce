@@ -4,8 +4,11 @@
     <template id="monetique_products_searchbar"
               inherit_id="website_sale.search"
               name="Monetique products search bar">
-        <xpath expr="//input[@name='search']" position="attributes">
-            <attribute name="placeholder">Rechercher un TPE, une caisse, un accessoire...</attribute>
+        <!-- The input is rendered by website.website_search_box_input; set
+             its QWeb variable in the call context instead of targeting an
+             element which is not part of this parent template. -->
+        <xpath expr="//t[@t-call='website.website_search_box_input']" position="inside">
+            <t t-set="placeholder" t-value="'Rechercher un TPE, une caisse, un accessoire...'"/>
         </xpath>
     </template>
 
