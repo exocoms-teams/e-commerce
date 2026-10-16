@@ -941,9 +941,85 @@ publicWidget.registry.CapsuleHouseHelpTabs = publicWidget.Widget.extend({
             }
         });
     }
+    /**
+     * État "actif" du menu principal.
+     *
+     * Odoo pose lui-même la classe .active sur les liens du menu natif
+     * (website.menu._is_active), mais sa logique ne correspond pas à la
+     * navigation voulue ici — deux écarts constatés en conditions
+     * réelles :
+     *
+     *   - sur /shop?promotions=1, "Tous les pods" (/shop, sans query)
+     *     est marqué actif EN MÊME TEMPS que "Promotions" : la
+     *     comparaison Odoo n'exige que la présence des paramètres de
+     *     query du menu, pas l'égalité stricte ;
+     *   - le menu "Blog" (/blog) n'est jamais actif, car /blog
+     *     redirige (302) vers /blog/<slug> dès qu'il n'y a qu'un blog
+     *     (website_blog.controllers.main.blog) : l'URL réellement
+     *     affichée ne correspond plus exactement à /blog.
+     *
+     * On recalcule donc l'état actif côté client, uniquement dans le
+     * header de notre site (assets ir.asset scopés website_id, jamais
+     * chargés sur les autres sites de la base mutualisée) : un menu est
+     * actif si l'URL courante lui correspond exactement (chemin + query),
+     * avec une exception de préfixe pour le blog (/blog/<slug> et les
+     * articles /blog/<slug>/<post>). Le menu le plus spécifique (chemin
+     * le plus long) l'emporte en cas d'ambiguïté.
+     */
+    function initNavActive() {
+        if (document.body.classList.contains('editor_enable')) return;
+
+        var containers = document.querySelectorAll(
+            'header#top #top_menu, header#top .o_navbar_mobile'
+        );
+        if (!containers.length) return;
+
+        var currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+        var currentSearch = window.location.search || '';
+
+        containers.forEach(function (container) {
+            var links = Array.from(container.querySelectorAll('.nav-item > .nav-link'));
+            if (!links.length) return;
+
+            var candidates = [];
+            links.forEach(function (link) {
+                var href = link.getAttribute('href');
+                // Liens non pertinents : CTA/téléphone masqués par CSS,
+                // entrées parentes de sous-menu (dropdown-toggle).
+                if (!href || href.charAt(0) === '#') return;
+                if (href.indexOf('tel:') === 0 || href.indexOf('mailto:') === 0) return;
+                if (link.classList.contains('btn_cta') || link.classList.contains('dropdown-toggle')) return;
+
+                var url;
+                try {
+                    url = new URL(href, window.location.origin);
+                } catch (e) {
+                    return;
+                }
+                var menuPath = url.pathname.replace(/\/+$/, '') || '/';
+                var menuSearch = url.search || '';
+                var isBlog = /\/blog$/.test(menuPath);
+
+                var active = menuPath === currentPath && menuSearch === currentSearch;
+                if (!active && isBlog) {
+                    active = currentPath.indexOf(menuPath + '/') === 0;
+                }
+                if (active) {
+                    candidates.push({ link: link, depth: menuPath.length });
+                }
+            });
+
+            links.forEach(function (link) { link.classList.remove('active'); });
+            if (candidates.length) {
+                candidates.sort(function (a, b) { return b.depth - a.depth; });
+                candidates[0].link.classList.add('active');
+            }
+        });
+    }
 
     function init() {
         initUsageAccordions();
+        initNavActive();
         initFeaturedProductsCarousel();
         initRangeGalleries();
         initHeroDynamicContent();
