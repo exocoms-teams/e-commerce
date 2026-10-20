@@ -6,6 +6,17 @@ class TestDashboardFilterAPI(HttpCase):
     """Vérifie TrendDashboardAPI.get_product_list() / get_filter_options()
     et la route /api/dashboard/filter (WIN-45 / WIN-50)."""
 
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # These HTTP tests target the Winners website.
+        # Changes are rolled back with the test transaction.
+        cls.env.ref("website.default_website").write({
+            "name": "Winners",
+            "domain": False,
+        })
+
     def setUp(self):
         super().setUp()
         self.cat_electronique = self.env['trend.category'].create({'name': 'Électronique'})

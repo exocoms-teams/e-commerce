@@ -4,6 +4,17 @@ from odoo.tests.common import HttpCase
 class TestSubmissionFormUI(HttpCase):
     """WIN-105 : habillage charte graphique de /submit-trend."""
 
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # These HTTP tests target the Winners website.
+        # Changes are rolled back with the test transaction.
+        cls.env.ref("website.default_website").write({
+            "name": "Winners",
+            "domain": False,
+        })
+
     def test_submit_trend_page_uses_shared_components(self):
         response = self.url_open('/submit-trend')
         self.assertEqual(response.status_code, 200)
