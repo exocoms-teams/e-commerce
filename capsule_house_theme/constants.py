@@ -17,6 +17,9 @@ CONFIG_LOGO_APPLIED_KEY = 'capsule_house_theme.logo_applied_v1'
 # n'écrase jamais un réglage modifié ensuite par le client.
 CONFIG_GALLERY_KEY = 'capsule_house_theme.product_gallery_applied_v1'
 
+# Garde-fou pour _setup_product_zoom() (zoom au clic de la galerie produit).
+CONFIG_GALLERY_ZOOM_KEY = 'capsule_house_theme.product_gallery_zoom_applied_v1'
+
 # Garde-fou pour _set_logo() : appliquer notre logo UNE SEULE FOIS,
 # jamais à chaque passage (cron horaire / migration), voir le docstring
 # de cette fonction pour le contexte du bug qu'il corrige (website.logo
