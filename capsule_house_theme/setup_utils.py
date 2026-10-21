@@ -28,6 +28,7 @@ from .constants import (
     CONFIG_WEBSITE_ID_KEY,
     CONFIG_ASSETS_FIX_KEY,
     CONFIG_LOGO_APPLIED_KEY,
+    CONFIG_GALLERY_KEY,
     CONFIG_DOMAIN_LIVE_KEY,
     COMPANY_NAME,
     WEBSITE_NAME,
@@ -741,7 +742,56 @@ def _setup_shop_grid_design(env, website):
             "capsule_house_theme: échec recherche des vues grid "
             "produits (site id=%s).", website.id,
         )
+        
+def _setup_product_gallery(env, website):
+    """
+    Galerie des fiches produit : carrousel natif + agrandissement au clic.
 
+    Appliqué UNE SEULE FOIS (garde CONFIG_GALLERY_KEY) : le client peut
+    ensuite changer ces réglages dans Personnaliser sans que le cron
+    horaire ne les écrase. Chaque champ est détecté ET sa valeur est
+    validée contre la sélection du champ : un nom ou une valeur absents
+    de cette version d'Odoo sont ignorés et signalés dans le log, au lieu
+    de faire planter la maintenance.
+    """
+    ICP = env['ir.config_parameter'].sudo()
+    if ICP.get_param(CONFIG_GALLERY_KEY) == '1':
+        return
+
+    Website = env['website']
+    wanted = {
+        'product_page_image_layout': 'carousel',   # carrousel + miniatures
+        'product_page_image_width': '66_pc',       # largeur de la galerie
+        'product_page_image_zoom': 'click',        # agrandissement au clic
+    }
+    to_write, skipped = {}, []
+    for field_name, value in wanted.items():
+        field = Website._fields.get(field_name)
+        if not field:
+            skipped.append(field_name)
+            continue
+        selection = field.selection
+        if callable(selection):
+            selection = selection(Website)
+        if value not in {key for key, _label in (selection or [])}:
+            skipped.append('%s=%s' % (field_name, value))
+            continue
+        if website[field_name] != value:
+            to_write[field_name] = value
+
+    if to_write:
+        website.write(to_write)
+    ICP.set_param(CONFIG_GALLERY_KEY, '1')
+    _logger.info(
+        "capsule_house_theme: galerie produit configurée (site id=%s) : "
+        "écrit=%s, ignoré=%s.", website.id, list(to_write), skipped,
+    )
+    if skipped:
+        _logger.warning(
+            "capsule_house_theme: réglages galerie non appliqués (%s) — à "
+            "régler à la main : fiche produit > Personnaliser > Galerie "
+            "(disposition « Carrousel », zoom « Au clic »).", skipped,
+        )
 
 def _setup_menus(env, website, categories):
     """
