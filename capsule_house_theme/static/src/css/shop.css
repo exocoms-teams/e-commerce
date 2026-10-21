@@ -24,7 +24,7 @@
 
 .ch-shop-hero-subtitle {
     font-size: var(--fs-body);
-    color: rgba(255,255,255,0.75);
+    color: rgba(255, 255, 255, 0.75);
 }
 
 /* Harmonisation couleurs Odoo shop */
@@ -62,8 +62,8 @@
     border-radius: var(--r-lg) !important;
     overflow: hidden;
     transition: transform var(--ch-dur-base) var(--ch-ease-out),
-                box-shadow var(--ch-dur-base) var(--ch-ease-out),
-                border-color var(--ch-dur-base) var(--ch-ease-out) !important;
+        box-shadow var(--ch-dur-base) var(--ch-ease-out),
+        border-color var(--ch-dur-base) var(--ch-ease-out) !important;
 }
 
 #wrapwrap #products_grid .oe_product_image {
@@ -90,6 +90,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     #wrapwrap #products_grid .o_wsale_product_grid_wrapper,
     #wrapwrap #products_grid .oe_product_image_img {
         transition: none !important;
@@ -103,13 +104,50 @@
 }
 
 /* Galerie des fiches produit : ratio uniforme, interactions natives Odoo conservées. */
-#product_detail_main .o_wsale_product_images {
+/* #product_detail_main .o_wsale_product_images {
     --o-wsale-product-image-ratio: 4 / 3 !important;
 }
 
 #product_detail_main .o_wsale_product_images img.product_detail_img {
     aspect-ratio: 4 / 3 !important;
     object-fit: cover !important;
+} */
+
+/* ============================================================
+   Galerie des fiches produit : un seul ratio pour toutes les images
+   (principales + miniatures). Les interactions natives (carrousel,
+   agrandissement au clic) sont conservées.
+
+   La visionneuse plein écran est rendue hors de #product_detail_main :
+   elle n'est donc pas recadrée et affiche l'image entière.
+============================================================ */
+#product_detail_main .o_wsale_product_images {
+    --ch-gallery-ratio: 4 / 3;
+    --o-wsale-product-image-ratio: var(--ch-gallery-ratio) !important;
+}
+
+#product_detail_main .o_wsale_product_images img.product_detail_img {
+    aspect-ratio: var(--ch-gallery-ratio) !important;
+    width: 100%;
+    object-fit: cover !important;
+    border-radius: var(--r-md, 12px);
+    background: var(--ch-gray-light, #f7f5f2);
+}
+
+/* Miniatures du carrousel : carrées et de taille identique. */
+#product_detail_main .o_wsale_product_images .carousel-indicators img,
+#product_detail_main .o_wsale_product_images .o_carousel_product_indicators img {
+    aspect-ratio: 1 / 1 !important;
+    object-fit: cover !important;
+    border-radius: var(--r-sm, 8px);
+}
+
+/* Navigation clavier visible sur les contrôles de la galerie. */
+#product_detail_main .o_wsale_product_images .carousel-control-prev:focus-visible,
+#product_detail_main .o_wsale_product_images .carousel-control-next:focus-visible,
+#product_detail_main .o_wsale_product_images .carousel-indicators :focus-visible {
+    outline: 2px solid var(--ch-terracotta);
+    outline-offset: 2px;
 }
 
 /* ============================================================
@@ -141,24 +179,158 @@
 
 
 /* CH-151 — galerie interactive des pages de gammes, indépendante de la galerie native Odoo. */
-.ch-gamme-gallery-section { padding: 1.5rem 0 2rem; }
-.ch-gamme-gallery { max-width: 980px; margin: 0 auto; }
-.ch-gamme-gallery-viewport { overflow: hidden; border: 1px solid var(--ch-gray-border); border-radius: var(--r-lg); background: var(--ch-gray-light, #f7f5f2); touch-action: pan-y; }
-.ch-gamme-gallery-track { display: flex; transition: transform 280ms ease; will-change: transform; }
-.ch-gamme-gallery-slide { flex: 0 0 100%; min-width: 0; padding: clamp(1rem, 3vw, 2rem); text-align: center; }
-.ch-gamme-gallery-product { display: flex; align-items: center; justify-content: center; min-height: clamp(220px, 38vw, 440px); overflow: hidden; border-radius: var(--r-md, 12px); background: var(--ch-white, #fff); }
-.ch-gamme-gallery-product img { display: block; width: 100%; height: clamp(220px, 38vw, 440px); object-fit: contain; }
-.ch-gamme-gallery-placeholder { min-height: clamp(220px, 38vw, 440px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .8rem; padding: 1.5rem; border: 1px dashed var(--ch-gray-border); border-radius: var(--r-md, 12px); color: var(--ch-ink); background: rgba(255,255,255,.55); text-decoration: none; }
-.ch-gamme-gallery-placeholder .fa { font-size: clamp(2rem, 5vw, 3.5rem); color: var(--ch-terracotta); }
-.ch-gamme-gallery-placeholder span { font-size: .95rem; text-align: center; }
-.ch-gamme-gallery-model { display: inline-block; margin: 1rem 0 0; font-family: var(--font-head); font-weight: 700; color: var(--ch-ink); text-decoration: none; }
-.ch-gamme-gallery-model:hover, .ch-gamme-gallery-model:focus-visible { color: var(--ch-terracotta); text-decoration: underline; }
-.ch-gamme-gallery-controls { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem; }
-.ch-gamme-gallery-arrow { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; flex: 0 0 42px; border: 1px solid var(--ch-gray-border); border-radius: 50%; background: var(--ch-white, #fff); color: var(--ch-terracotta); cursor: pointer; }
-.ch-gamme-gallery-arrow:hover, .ch-gamme-gallery-arrow:focus-visible { border-color: var(--ch-terracotta); outline-offset: 3px; }
-.ch-gamme-gallery-arrow:disabled { opacity: .45; cursor: default; }
-.ch-gamme-gallery-dots { display: flex; align-items: center; justify-content: center; gap: .55rem; }
-.ch-gamme-gallery-dot { width: 10px; height: 10px; padding: 0; border: 0; border-radius: 50%; background: var(--ch-gray-border); cursor: pointer; }
-.ch-gamme-gallery-dot.is-active { background: var(--ch-terracotta); transform: scale(1.2); }
-.ch-gamme-gallery-status { margin: .5rem 0 0; text-align: center; color: var(--ch-ink); font-size: .8rem; opacity: .75; }
-@media (prefers-reduced-motion: reduce) { .ch-gamme-gallery-track { transition: none; } }
+.ch-gamme-gallery-section {
+    padding: 1.5rem 0 2rem;
+}
+
+.ch-gamme-gallery {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.ch-gamme-gallery-viewport {
+    overflow: hidden;
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-lg);
+    background: var(--ch-gray-light, #f7f5f2);
+    touch-action: pan-y;
+}
+
+.ch-gamme-gallery-track {
+    display: flex;
+    transition: transform 280ms ease;
+    will-change: transform;
+}
+
+.ch-gamme-gallery-slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    padding: clamp(1rem, 3vw, 2rem);
+    text-align: center;
+}
+
+.ch-gamme-gallery-product {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: clamp(220px, 38vw, 440px);
+    overflow: hidden;
+    border-radius: var(--r-md, 12px);
+    background: var(--ch-white, #fff);
+}
+
+.ch-gamme-gallery-product img {
+    display: block;
+    width: 100%;
+    height: clamp(220px, 38vw, 440px);
+    object-fit: contain;
+}
+
+.ch-gamme-gallery-placeholder {
+    min-height: clamp(220px, 38vw, 440px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .8rem;
+    padding: 1.5rem;
+    border: 1px dashed var(--ch-gray-border);
+    border-radius: var(--r-md, 12px);
+    color: var(--ch-ink);
+    background: rgba(255, 255, 255, .55);
+    text-decoration: none;
+}
+
+.ch-gamme-gallery-placeholder .fa {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--ch-terracotta);
+}
+
+.ch-gamme-gallery-placeholder span {
+    font-size: .95rem;
+    text-align: center;
+}
+
+.ch-gamme-gallery-model {
+    display: inline-block;
+    margin: 1rem 0 0;
+    font-family: var(--font-head);
+    font-weight: 700;
+    color: var(--ch-ink);
+    text-decoration: none;
+}
+
+.ch-gamme-gallery-model:hover,
+.ch-gamme-gallery-model:focus-visible {
+    color: var(--ch-terracotta);
+    text-decoration: underline;
+}
+
+.ch-gamme-gallery-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.ch-gamme-gallery-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border: 1px solid var(--ch-gray-border);
+    border-radius: 50%;
+    background: var(--ch-white, #fff);
+    color: var(--ch-terracotta);
+    cursor: pointer;
+}
+
+.ch-gamme-gallery-arrow:hover,
+.ch-gamme-gallery-arrow:focus-visible {
+    border-color: var(--ch-terracotta);
+    outline-offset: 3px;
+}
+
+.ch-gamme-gallery-arrow:disabled {
+    opacity: .45;
+    cursor: default;
+}
+
+.ch-gamme-gallery-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+}
+
+.ch-gamme-gallery-dot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ch-gray-border);
+    cursor: pointer;
+}
+
+.ch-gamme-gallery-dot.is-active {
+    background: var(--ch-terracotta);
+    transform: scale(1.2);
+}
+
+.ch-gamme-gallery-status {
+    margin: .5rem 0 0;
+    text-align: center;
+    color: var(--ch-ink);
+    font-size: .8rem;
+    opacity: .75;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ch-gamme-gallery-track {
+        transition: none;
+    }
+}

@@ -40,6 +40,7 @@ from .setup_utils import (
     _clean_demo_data,
     _setup_shop_categories,
     _setup_shop_display,
+    _setup_product_gallery,
     _setup_shop_grid_design,
     _setup_menus,
     _setup_shop_filters,
@@ -94,6 +95,7 @@ def run_theme_maintenance(env):
     # 7. Taxonomie boutique, affichage des grilles produits et génération du menu Header
     categories = _setup_shop_categories(env, website)
     _setup_shop_display(env, website)
+    _setup_product_gallery(env, website)
     _setup_shop_grid_design(env, website)
     _setup_menus(env, website, categories)
     

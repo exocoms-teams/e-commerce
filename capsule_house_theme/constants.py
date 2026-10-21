@@ -12,6 +12,10 @@ CONFIG_WEBSITE_ID_KEY = 'capsule_house_theme.website_id'
 CONFIG_ASSETS_FIX_KEY = 'capsule_house_theme.frontend_assets_regenerated_v1'
 CONFIG_LOGO_APPLIED_KEY = 'capsule_house_theme.logo_applied_v1'
 
+# Garde-fou pour _setup_product_gallery() : la configuration de la galerie
+# des fiches produit n'est posée qu'UNE SEULE FOIS, pour que le cron horaire
+# n'écrase jamais un réglage modifié ensuite par le client.
+CONFIG_GALLERY_KEY = 'capsule_house_theme.product_gallery_applied_v1'
 
 # Garde-fou pour _set_logo() : appliquer notre logo UNE SEULE FOIS,
 # jamais à chaque passage (cron horaire / migration), voir le docstring
