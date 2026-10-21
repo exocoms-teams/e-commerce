@@ -29,6 +29,7 @@ from .constants import (
     CONFIG_ASSETS_FIX_KEY,
     CONFIG_LOGO_APPLIED_KEY,
     CONFIG_GALLERY_KEY,
+    CONFIG_GALLERY_ZOOM_KEY,
     CONFIG_DOMAIN_LIVE_KEY,
     COMPANY_NAME,
     WEBSITE_NAME,
@@ -762,7 +763,6 @@ def _setup_product_gallery(env, website):
     wanted = {
         'product_page_image_layout': 'carousel',   # carrousel + miniatures
         'product_page_image_width': '66_pc',       # largeur de la galerie
-        'product_page_image_zoom': 'click',        # agrandissement au clic
     }
     to_write, skipped = {}, []
     for field_name, value in wanted.items():
@@ -792,6 +792,63 @@ def _setup_product_gallery(env, website):
             "régler à la main : fiche produit > Personnaliser > Galerie "
             "(disposition « Carrousel », zoom « Au clic »).", skipped,
         )
+
+def _setup_product_zoom(env, website):
+    """
+    Active l'agrandissement au clic (visionneuse plein écran) des images
+    de la fiche produit. En 19.0 ce n'est pas un champ de website mais une
+    vue « Personnaliser » de website_sale : on la RETROUVE par sa clé
+    (magnify / zoom) plutôt que de la deviner, et on l'active pour NOTRE
+    site uniquement (écriture avec website_id dans le contexte = copie
+    spécifique au site, les autres sites de la base ne sont pas touchés).
+
+    Appliqué UNE SEULE FOIS (garde CONFIG_GALLERY_ZOOM_KEY) : le client
+    peut ensuite désactiver le zoom sans que le cron horaire le réactive.
+    """
+    ICP = env['ir.config_parameter'].sudo()
+    if ICP.get_param(CONFIG_GALLERY_ZOOM_KEY) == '1':
+        return
+
+    View = env['ir.ui.view'].sudo().with_context(active_test=False)
+    base_views = View.search([
+        ('website_id', '=', False),
+        '|',
+        ('key', 'like', 'website_sale.%magnify%'),
+        ('key', 'like', 'website_sale.%zoom%'),
+    ])
+    found = sorted(set(base_views.mapped('key')))
+    wanted_keys = (
+        [k for k in found if 'click' in k]
+        or [k for k in found if 'both' in k]
+    )
+
+    activated = []
+    for key in wanted_keys:
+        specific = View.search(
+            [('key', '=', key), ('website_id', '=', website.id)], limit=1,
+        )
+        if specific:
+            if not specific.active:
+                specific.write({'active': True})
+                activated.append(key)
+            continue
+        base = base_views.filtered(lambda v, k=key: v.key == k)[:1]
+        if base and not base.active:
+            base.with_context(website_id=website.id).write({'active': True})
+            activated.append(key)
+
+    ICP.set_param(CONFIG_GALLERY_ZOOM_KEY, '1')
+    _logger.info(
+        "capsule_house_theme: zoom galerie produit (site id=%s) : "
+        "vues trouvées=%s, activées=%s.", website.id, found, activated,
+    )
+    if not wanted_keys:
+        _logger.warning(
+            "capsule_house_theme: aucune vue de zoom « au clic » trouvée "
+            "(%s) — activer à la main dans l'éditeur (zoom « Au clic »).",
+            found,
+        )
+                
 
 def _setup_menus(env, website, categories):
     """
