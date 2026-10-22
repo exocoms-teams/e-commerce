@@ -1,0 +1,46 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template
+        id="capsule_house_alternative_products"
+        inherit_id="website_sale.alternative_products"
+        name="Capsule House - Produits recommandés">
+
+        <!-- Titre personnalisé -->
+        <xpath
+            expr="//section[@data-snippet='s_dynamic_snippet_products']"
+            position="before">
+
+            <section
+                class="ch-recommended-heading"
+                t-if="product.alternative_product_ids">
+
+                <div class="container">
+                    <span class="ch-recommended-eyebrow">
+                        CAPSULE HOUSE
+                    </span>
+
+                    <h2>
+                        Vous pourriez aussi aimer
+                    </h2>
+
+                    <p>
+                        Découvrez des produits sélectionnés
+                        pour compléter votre intérieur.
+                    </p>
+                </div>
+            </section>
+        </xpath>
+
+        <!-- Personnalisation du bloc de produits natif -->
+        <xpath
+            expr="//section[@data-snippet='s_dynamic_snippet_products']"
+            position="attributes">
+
+            <attribute name="class"
+                       add="ch-recommended-products"
+                       separator=" "/>
+        </xpath>
+
+    </template>
+</odoo>
