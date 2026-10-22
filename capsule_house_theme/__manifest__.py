@@ -118,6 +118,8 @@ Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gamme
         'views/pages/mentions_legales.xml',
         'views/pages/cgv.xml',
         'views/pages/confidentialite.xml',
+        # section pour les produits similaires
+        'views/produits_similaires.xml',
     ],
     # NB: pas de clé 'assets' ici. Les CSS/JS de ce thème sont enregistrés
     # dynamiquement à l'installation via `_setup_theme_assets()` (ir.asset
