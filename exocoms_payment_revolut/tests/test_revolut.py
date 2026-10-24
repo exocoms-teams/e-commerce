@@ -7,6 +7,7 @@ import time
 from unittest.mock import patch
 
 from odoo.tests import tagged
+from odoo.tools import mute_logger
 
 from odoo.addons.exocoms_payment_revolut import const
 from odoo.addons.exocoms_payment_revolut.tests.common import RevolutCommon
@@ -68,9 +69,13 @@ class TestRevolutProvider(RevolutCommon):
         """A notification older than the tolerance must not be replayable."""
         body = '{"event":"ORDER_COMPLETED"}'
         stale = str(int(time.time() * 1000) - const.WEBHOOK_TIMESTAMP_TOLERANCE_MS - 1000)
-        self.assertFalse(
-            self.provider._revolut_verify_webhook_signature(body, stale, self._sign(body, stale))
-        )
+
+        with mute_logger('odoo.addons.exocoms_payment_revolut.models.payment_provider'):
+            self.assertFalse(
+                self.provider._revolut_verify_webhook_signature(
+                    body, stale, self._sign(body, stale)
+                )
+            )
 
     def test_signature_of_another_secret_is_rejected(self):
         body, ts = '{"event":"ORDER_COMPLETED"}', str(int(time.time() * 1000))
@@ -89,7 +94,13 @@ class TestRevolutProvider(RevolutCommon):
     def test_missing_secret_rejects_everything(self):
         self.provider.revolut_webhook_secret = False
         body, ts = '{}', str(int(time.time() * 1000))
-        self.assertFalse(self.provider._revolut_verify_webhook_signature(body, ts, 'v1=whatever'))
+
+        with mute_logger('odoo.addons.exocoms_payment_revolut.models.payment_provider'):
+            self.assertFalse(
+                self.provider._revolut_verify_webhook_signature(
+                    body, ts, 'v1=whatever'
+                )
+            )
 
     def test_malformed_headers_are_rejected(self):
         body = '{}'
@@ -188,12 +199,16 @@ class TestRevolutTransaction(RevolutCommon):
                 tx = self._create_transaction(
                     flow='redirect', reference=f'ref-{order_state}'
                 )
-                tx._apply_updates(self._build_order_data(state=order_state))
+                with mute_logger('odoo.tools.translate'):
+                    tx._apply_updates(self._build_order_data(state=order_state))
                 self.assertEqual(tx.state, expected)
 
     def test_unknown_order_state_sets_an_error(self):
         tx = self._create_transaction(flow='redirect')
-        tx._apply_updates(self._build_order_data(state='teleported'))
+
+        with mute_logger('odoo.addons.exocoms_payment_revolut.models.payment_transaction'):
+            tx._apply_updates(self._build_order_data(state='teleported'))
+
         self.assertEqual(tx.state, 'error')
 
     def test_processing_marks_capture_children_as_done(self):
