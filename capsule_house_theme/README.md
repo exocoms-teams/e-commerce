@@ -114,6 +114,22 @@ templates dans `views/pages/`, un CSS dédié le cas échéant dans
    a un champ `website_id` sur cette version d'Odoo avant de le poser ;
    sinon logue un avertissement (taxonomie alors partagée nativement).
 
+## CH-135 — Harmonisation des pages des gammes
+
+Les pages Cabine, Dôme, Modulaire, Pliable et Capsule partagent désormais
+une structure cohérente :
+
+1. **Galerie** : affichage du carrousel lorsque des modèles sont disponibles ;
+   un message de remplacement FR/EN est affiché si la galerie est vide.
+2. **Description** : présentation issue de `tagline_fr` ou `tagline_en`.
+3. **Fiche technique** : titre explicite avant les caractéristiques techniques.
+4. **Demande de devis** : section finale avec un CTA vers `/devis-sur-mesure`.
+
+Cette évolution concerne les vues et leur présentation. Elle ne modifie ni
+les modèles de données, ni le schéma SQL, ni les données des cinq gammes.
+La migration `19.0.1.0.107` reprend le hook de maintenance idempotent du
+module (`run_theme_maintenance`) conformément à la convention de versionnage.
+
 ## Structure
 
 ```
