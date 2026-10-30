@@ -62,8 +62,6 @@
                     <div class="ch-gamme-detail-head">
                         <div>
                             <h1 class="ch-aide-title" t-esc="gamme['name']"/>
-                            <p class="ch-aide-subtitle" t-if="request.env.lang == 'fr_FR'" t-esc="gamme['tagline_fr']"/>
-                            <p class="ch-aide-subtitle" t-if="request.env.lang != 'fr_FR'" t-esc="gamme['tagline_en']"/>
                         </div>
                         <span t-if="gamme['status'] == 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Détails disponibles</span>
                         <span t-if="gamme['status'] == 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Details available</span>
@@ -89,9 +87,11 @@
                 </div>
             </section>
 
-            <section class="ch-gamme-gallery-section" t-if="gallery_models">
+            <section class="ch-gamme-gallery-section">
                 <div class="container">
-                    <div class="ch-gamme-gallery" data-ch-gamme-gallery="1" role="region" aria-roledescription="carousel" t-att-aria-label="'Galerie de modèles' if request.env.lang == 'fr_FR' else 'Model gallery'" tabindex="0">
+                    <p t-if="not gallery_models and request.env.lang == 'fr_FR'" class="ch-models-empty">Les photos de cette gamme seront bientôt disponibles.</p>
+                    <p t-if="not gallery_models and request.env.lang != 'fr_FR'" class="ch-models-empty">Photos for this range will be available soon.</p>
+                    <div t-if="gallery_models" class="ch-gamme-gallery" data-ch-gamme-gallery="1" role="region" aria-roledescription="carousel" t-att-aria-label="'Galerie de modèles' if request.env.lang == 'fr_FR' else 'Model gallery'" tabindex="0">
                         <div class="ch-gamme-gallery-viewport" data-ch-gallery-viewport="1">
                             <div class="ch-gamme-gallery-track" data-ch-gallery-track="1">
                                 <div t-foreach="gallery_models" t-as="model" class="ch-gamme-gallery-slide" role="group" aria-roledescription="slide">
@@ -119,8 +119,19 @@
                 </div>
             </section>
 
+            <section class="ch-gamme-description-section">
+                <div class="container">
+                    <h2 class="ch-gamme-section-title" t-if="request.env.lang == 'fr_FR'">Description</h2>
+                    <h2 class="ch-gamme-section-title" t-if="request.env.lang != 'fr_FR'">Description</h2>
+                    <p t-if="request.env.lang == 'fr_FR'" t-esc="gamme['tagline_fr']"/>
+                    <p t-if="request.env.lang != 'fr_FR'" t-esc="gamme['tagline_en']"/>
+                </div>
+            </section>
+
             <section class="ch-gammes-content">
                 <div class="container">
+                    <h2 class="ch-gamme-section-title" t-if="request.env.lang == 'fr_FR'">Fiche technique</h2>
+                    <h2 class="ch-gamme-section-title" t-if="request.env.lang != 'fr_FR'">Technical specifications</h2>
 
                     <!-- Bandeau "valeurs indicatives" retiré en v19.0.1.0.79
                          — demande client : "pas besoin d'indiquer cela sur
@@ -221,6 +232,13 @@
                         </div>
                     </div>
 
+                </div>
+            </section>
+
+            <section class="ch-gamme-quote-section">
+                <div class="container text-center">
+                    <a href="/devis-sur-mesure" class="ch-btn ch-btn-cta" t-if="request.env.lang == 'fr_FR'">Demander un devis</a>
+                    <a href="/devis-sur-mesure" class="ch-btn ch-btn-cta" t-if="request.env.lang != 'fr_FR'">Request a quote</a>
                 </div>
             </section>
 
