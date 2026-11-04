@@ -1,0 +1,1 @@
+console.log('EXOCOMS Premium Theme');
