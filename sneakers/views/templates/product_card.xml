@@ -170,7 +170,7 @@
                         t-att-data-product-name="product.name if product else product_name"
                         t-att-data-product-price="product.list_price if product else product_price"
                         t-att-data-product-image="('/web/image/product.template/%s/image_1024' % product.id) if product else product_image"
-                        t-att-data-stock="product.product_variant_id.qty_available if product else 0"
+                        t-att-data-stock="str((product.product_variant_id.qty_available or 0) if product else 0)"
                         t-att-data-cart-qty="0">
 
                     Add to Cart
