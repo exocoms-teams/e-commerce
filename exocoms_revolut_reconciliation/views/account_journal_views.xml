@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_journal_view_form" model="ir.ui.view">
+        <field name="name">account.journal.form.revolut</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="revolut" string="Revolut" invisible="type != 'bank'">
+                    <group>
+                        <group>
+                            <field name="revolut_connection_id"/>
+                            <field name="revolut_sync_enabled"
+                                   invisible="not revolut_connection_id"/>
+                            <field name="revolut_account_id"
+                                   invisible="not revolut_connection_id"/>
+                        </group>
+                        <group>
+                            <field name="revolut_sync_start_date"
+                                   invisible="not revolut_connection_id"/>
+                            <field name="revolut_last_sync"/>
+                        </group>
+                    </group>
+                    <div invisible="not revolut_connection_id">
+                        <button name="action_revolut_list_accounts" type="object"
+                                string="Lister les comptes Revolut" class="btn-link"
+                                icon="fa-list"/>
+                        <button name="action_revolut_sync" type="object"
+                                string="Synchroniser maintenant" class="btn-link"
+                                icon="fa-refresh"
+                                invisible="not revolut_account_id"/>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

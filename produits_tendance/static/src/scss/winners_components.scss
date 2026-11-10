@@ -1,0 +1,55 @@
+/* static/src/scss/winners_components.scss
+   Composants de base partagés (charte graphique Winners, section 5) :
+   .o_winners_card, .o_winners_btn_primary, .o_winners_btn_secondary.
+
+   WIN-105 : ces classes sont documentées dans le tableau des composants
+   partagés depuis un moment ("base de toute l'UI") mais n'avaient encore
+   aucune definition CSS reelle nulle part dans le code (verifie : aucun
+   fichier .scss ne les definissait, meme .o_winners_signup_field, deja
+   utilise depuis WIN-47, n'a jamais eu de style). Implementees ici pour
+   de vrai, plutot que de continuer a inventer des classes bespoke par
+   page - objectif explicite de la section 5 de la charte. */
+
+.o_winners_card {
+    background-color: $o-winners-white;
+    border-radius: $o-winners-radius;
+    box-shadow: $o-winners-shadow-soft;
+}
+
+.o_winners_btn_primary {
+    display: inline-block;
+    background-color: $o-winners-accent;
+    color: $o-winners-white;
+    border-radius: $o-winners-radius;
+    font-weight: 700;
+    font-family: $o-winners-font-family;
+    border: none;
+    padding: ($o-winners-spacing-unit * 1.5) ($o-winners-spacing-unit * 3);
+    text-decoration: none;
+    text-align: center;
+    transition: filter 0.2s ease;
+
+    &:hover {
+        filter: brightness(0.92);
+        color: $o-winners-white;
+    }
+}
+
+.o_winners_btn_secondary {
+    display: inline-block;
+    background-color: $o-winners-white;
+    color: $o-winners-text-dark;
+    border: $o-winners-border-soft;
+    border-radius: $o-winners-radius;
+    font-weight: 700;
+    font-family: $o-winners-font-family;
+    padding: ($o-winners-spacing-unit * 1.5) ($o-winners-spacing-unit * 3);
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: $o-winners-bg-light;
+        color: $o-winners-text-dark;
+    }
+}

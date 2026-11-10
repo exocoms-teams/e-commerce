@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         Snippet réutilisé : menu de la sidebar Compte
+    ============================================================ -->
+    <template id="account_sidebar" name="Winners - Sidebar Compte">
+        <nav class="o_winners_sidebar_menu o_winners_account_sidebar">
+            <t t-foreach="menu" t-as="item">
+                <a t-attf-href="#{item['url']}"
+                   t-attf-class="o_winners_account_sidebar__link #{'o_winners_account_sidebar__link--active' if item['active'] else ''}">
+                    <t t-esc="item['label']"/>
+                </a>
+            </t>
+        </nav>
+    </template>
+
+    <!-- ============================================================
+         Page : /compte/profil — FONCTIONNELLE
+    ============================================================ -->
+    <template id="account_profil_page" name="Winners - Compte / Profil">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container o_winners_account_page">
+
+                    <t t-call="produits_tendance.account_sidebar"/>
+
+                    <main class="o_winners_account_content">
+                        <div class="o_winners_card o_winners_account_card">
+
+                            <h1 class="o_winners_account_content__title">Profil</h1>
+                            <p class="o_winners_account_content__subtitle">
+                                Gérez les informations de votre compte.
+                            </p>
+
+                            <div t-if="success" class="alert alert-success" role="alert">
+                                Vos informations ont été mises à jour.
+                            </div>
+                            <div t-if="error" class="alert alert-danger" role="alert">
+                                <t t-esc="error"/>
+                            </div>
+
+                            <form method="post" action="/compte/profil" class="o_winners_account_form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Nom complet</label>
+                                    <input type="text" class="form-control" id="name" name="name"
+                                           t-att-value="user.name" required="required"/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Adresse e-mail</label>
+                                    <input type="email" class="form-control" id="email"
+                                           t-att-value="user.email" disabled="disabled"/>
+                                    <small class="form-text text-muted">
+                                        Pour changer votre e-mail, contactez le support.
+                                    </small>
+                                </div>
+
+                                <button type="submit" class="o_winners_btn_primary">
+                                    Enregistrer les modifications
+                                </button>
+                            </form>
+                        </div>
+                    </main>
+
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================
+         Pages : /compte/* — 7 sous-pages coquilles
+    ============================================================ -->
+    <template id="account_coming_soon_page" name="Winners - Compte / Fonctionnalité à venir">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container o_winners_account_page">
+
+                    <t t-call="produits_tendance.account_sidebar"/>
+
+                    <main class="o_winners_account_content">
+                        <div class="o_winners_card o_winners_account_card">
+
+                            <div class="o_winners_empty_state">
+                                <i class="fa fa-clock-o o_winners_empty_state__icon" role="presentation"/>
+                                <h2 class="o_winners_empty_state__title">
+                                    <t t-esc="page_title"/>
+                                </h2>
+                                <p class="o_winners_empty_state__text">
+                                    Fonctionnalité à venir
+                                </p>
+                            </div>
+
+                        </div>
+                    </main>
+
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

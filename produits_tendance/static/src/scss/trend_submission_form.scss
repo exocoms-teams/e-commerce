@@ -1,0 +1,58 @@
+/* static/src/scss/trend_submission_form.scss */
+
+/* Le sélecteur racine utilise le préfixe o_winners_ */
+.o_winners_submission_form {
+    font-family: $o-winners-font-family;
+    background-color: $o-winners-bg-light;
+    color: $o-winners-text-dark;
+    padding: ($o-winners-spacing-unit * 4);
+    
+    /* Élément enfant : le header (titres) */
+    &__header {
+        h1 {
+            font-weight: 700;
+            color: $o-winners-primary;
+        }
+        p {
+            font-weight: 400;
+            color: $o-winners-text-muted;
+            font-size: 16px;
+        }
+    }
+
+    /* Élément enfant : la carte du formulaire (le look "carte" lui-même
+       vient de .o_winners_card, ici juste l'espacement propre à cette
+       page - voir website_templates.xml / winners_components.scss) */
+    &__card {  
+       padding: ($o-winners-spacing-unit * 4);
+    }
+
+    /* Champs de saisie (name/link_or_desc/category/country/email) */
+    &__input {
+        border: $o-winners-border-soft;
+        border-radius: $o-winners-radius;
+        color: $o-winners-text-dark;
+
+        &:focus {
+            border-color: $o-winners-accent;
+            box-shadow: 0 0 0 2px rgba($o-winners-accent, 0.15);
+        }
+    }
+
+    /* Boutons radio (raison de la soumission) */
+    &__radio:checked {
+        background-color: $o-winners-accent;
+        border-color: $o-winners-accent;
+    }
+
+    /* Message de succès (?success=1) */
+    &__success {
+        padding: ($o-winners-spacing-unit * 3);
+        border-left: 4px solid $o-winners-success;
+    }
+
+    &__success_title {
+        color: $o-winners-success;
+        font-weight: 700;
+    }
+}

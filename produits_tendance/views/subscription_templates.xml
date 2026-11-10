@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WIN-66 : page de tarifs /abonnement. Respecte la charte graphique
+         Winners : uniquement les variables de _winners_variables.scss,
+         classes préfixées o_winners_. Le bouton "Souscrire" renvoie vers la
+         page produit standard (/shop/<id>), qui gère nativement le choix du
+         plan mensuel/annuel via website_sale_subscription. -->
+    <template id="template_subscription_pricing" name="Abonnement Winners - Tarifs">
+        <t t-call="website.layout">
+            <div id="wrap" class="o_winners_subscription_pricing">
+                <div class="container mt-5 mb-5">
+
+                    <div class="o_winners_subscription_pricing__header text-center mb-5">
+                        <h1>Passez à l'offre Pro</h1>
+                        <p>Débloquez les fonctionnalités avancées de Winners, mensuel ou annuel.</p>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-4 mb-4" t-if="standard_product">
+                            <div class="o_winners_subscription_pricing__card">
+                                <h3 t-esc="standard_product.name"/>
+                                <a t-attf-href="/shop/#{standard_product.id}"
+                                   class="o_winners_subscription_pricing__cta">
+                                    Souscrire
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-4" t-if="pro_product">
+                            <div class="o_winners_subscription_pricing__card o_winners_subscription_pricing__card--highlight">
+                                <h3 t-esc="pro_product.name"/>
+                                <a t-attf-href="/shop/#{pro_product.id}"
+                                   class="o_winners_subscription_pricing__cta">
+                                    Souscrire à l'abonnement Premium
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WIN-67 : traite la file d'attente des webhooks (Slack/Telegram) en
+         dehors du thread de sauvegarde du score, cf. models/trend_webhook_queue.py. -->
+    <record id="ir_cron_process_webhook_queue" model="ir.cron">
+        <field name="name">WIN-67: Traiter la file d'attente des webhooks d'alerte</field>
+        <field name="model_id" ref="model_trend_webhook_queue"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_process_pending()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

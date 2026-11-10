@@ -1,0 +1,27 @@
+/* static/src/scss/trend_chart.scss */
+/* Aucune couleur en dur : uniquement les variables de
+   _winners_variables.scss. Toute classe custom est préfixée o_winners_. */
+
+.o_winners_trend_chart {
+    font-family: $o-winners-font-family;
+
+    h3 {
+        color: $o-winners-primary;
+        font-weight: 700;
+    }
+
+    &__canvas_wrapper {
+        /* Expose la couleur de la courbe au JS (trend_chart.js) via une
+           custom property CSS, pour ne jamais coder de couleur en dur
+           côté JavaScript. */
+        --o-winners-chart-line-color: #{$o-winners-primary};
+
+        position: relative;
+        height: 300px;
+        background-color: $o-winners-white;
+        border: $o-winners-border-soft;
+        border-radius: $o-winners-radius;
+        box-shadow: $o-winners-shadow-soft;
+        padding: $o-winners-spacing-unit;
+    }
+}
