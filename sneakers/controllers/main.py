@@ -19,6 +19,17 @@ def _serve_website_fallback():
     return request.not_found()
 
 
+def _website_domain():
+    """Domain limiting records to the current website.
+
+    Mirrors core Odoo's website scoping: keep records shared by all
+    websites (``website_id`` empty) plus the ones owned by the website
+    currently serving the request, so one site never sees another
+    site's categories or products.
+    """
+    return ('website_id', 'in', [False, request.website.id])
+
+
 def _is_module_installed(module_name):
     mod = request.env['ir.module.module'].sudo().search([
         ('name', '=', module_name),
@@ -142,12 +153,14 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
         # ==========================
 
         categories = request.env['product.public.category'].sudo().search([
-            ('parent_id', '=', False)
+            ('parent_id', '=', False),
+            _website_domain(),
         ])
 
         selected_category = False
         subcategories = request.env['product.public.category'].sudo().search([
-            ('parent_id', '!=', False)
+            ('parent_id', '!=', False),
+            _website_domain(),
         ])
 
         category_name = kwargs.get('category')
@@ -156,7 +169,8 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
         if category_name:
 
             category = request.env['product.public.category'].sudo().search([
-                ('name', '=ilike', category_name)
+                ('name', '=ilike', category_name),
+                _website_domain(),
             ], limit=1)
 
             if category:
@@ -169,7 +183,8 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
                     subcategories = request.env[
                         'product.public.category'
                     ].sudo().search([
-                        ('parent_id', '=', selected_category.id)
+                        ('parent_id', '=', selected_category.id),
+                        _website_domain(),
                     ])
 
         unique_subcategories = {}
@@ -189,7 +204,10 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
         if subcategory_id:
             selected_subcategory = request.env[
                 'product.public.category'
-            ].sudo().browse(int(subcategory_id))
+            ].sudo().search([
+                ('id', '=', int(subcategory_id)),
+                _website_domain(),
+            ], limit=1)
 
             if not selected_subcategory.exists():
                 selected_subcategory = request.env['product.public.category']
@@ -199,7 +217,9 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
         # ==========================
 
         products = request.env['product.template'].sudo().search([
-            ('sale_ok', '=', True)
+            ('sale_ok', '=', True),
+            ('website_published', '=', True),
+            _website_domain(),
         ])
 
         # ==========================
@@ -460,14 +480,17 @@ class SneakersController(CustomerPortal):
         popular_products = request.env['product.template'].sudo().search(
             [
                 ('sale_ok', '=', True),
-                ('website_published', '=', True)
+                ('website_published', '=', True),
+                _website_domain(),
             ],
             limit=8
         )
 
 
         categories = request.env['product.public.category'].sudo().search(
-            [],
+            [
+                _website_domain(),
+            ],
             limit=6
         )
 
@@ -526,7 +549,9 @@ class SneakersController(CustomerPortal):
 
         related_products = request.env['product.template'].sudo().search([
             ('id', '!=', product.id),
-            ('public_categ_ids', 'in', product.public_categ_ids.ids)
+            ('public_categ_ids', 'in', product.public_categ_ids.ids),
+            ('website_published', '=', True),
+            _website_domain(),
         ], limit=4)
 
         related_product_ratings = _get_product_ratings(related_products)
