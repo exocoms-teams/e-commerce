@@ -5,7 +5,7 @@
     "summary": "Retire le # du titre des devis, commandes et factures pro forma imprimés, et des listes du portail",
     "author": "EXOCOMS",
     "website": "https://exocoms.fr",
-    "license": "LGPL-3",
+    "license": "Other proprietary",
     "depends": ["sale"],
     "data": [
         "views/report_saleorder_document.xml",
